@@ -1,0 +1,88 @@
+#pragma once
+
+#include "hsd/gobj.h"
+#include "util/vector.h"
+
+struct ECB {
+	vec2 top, bottom, left, right;
+};
+
+struct Physics {
+	HSD_GObj *gobj;
+	vec3 position;
+	vec3 trace_start_position;
+	vec3 start_position;
+	vec3 last_position;
+	char pad0034[0x84 - 0x34];
+	ECB desired_ecb;
+	ECB ecb;
+	ECB trace_start_ecb;
+	ECB last_ecb;
+	s32 use_ecb_bones;
+	HSD_JObj *root_bone;
+	HSD_JObj *ecb_bones[6];
+	char pad0124[0x130 - 0x124];
+	u32 ecb_update_flags;
+	u32 surface_type;
+	u32 last_surface_type;
+	char pad013C[0x19C - 0x13C];
+	s32 ecb_timer;
+};
+
+struct SubactionState {
+	f32 timer;
+	f32 frame_count;
+	char *script_pointer;
+	u32 loop_count;
+	void *event_return;
+	u32 loop_count_2;
+	char pad0018[0x1C - 0x18];
+};
+
+struct Hitbox {
+	u32 state;
+	u32 active;
+	u32 damage;
+	f32 staled_damage;
+	vec3 offset;
+	f32 radius;
+	u32 angle;
+	u32 kbg;
+	u32 fkv;
+	u32 bkb;
+	u32 element;
+	u32 shield_damage;
+	char pad0038[0x3C - 0x38];
+	u32 sfx;
+	u8 flags1;
+	u8 flags2;
+	u8 flags3;
+	u8 flags4;
+	char pad0044[0x4C - 0x44];
+	vec3 position;
+	vec3 last_position;
+	vec3 last_contact;
+	f32 last_contact_depth;
+	struct {
+		HSD_GObj *gobj;
+		u32 flags;
+	} hit_objects[12];
+	char pad00D4[0x138 - 0xD4];
+};
+
+struct Hurtbox {
+	u32 body_state;
+	vec3 offset1;
+	vec3 offset2;
+	f32 radius;
+	HSD_JObj *bone;
+	u8 flags;
+	char align0025[0x28 - 0x25];
+	vec3 position1;
+	vec3 position2;
+	u32 bone_id;
+	u32 flinch_type;
+	u32 grabbable;
+};
+
+extern "C" bool Physics_IsOnPlatform(const Physics *physics);

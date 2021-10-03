@@ -1,7 +1,7 @@
 #pragma once
 
 #include "os/os.h"
-#include "util/types.h"
+#include <gctypes.h>
 #include <ogc/gx.h>
 
 inline union {

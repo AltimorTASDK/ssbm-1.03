@@ -1,7 +1,8 @@
 /*
- * Define hooks as pairs of words containing the original function address
- * and the hook address. We then apply these and overwrite the original address
- * with the contents of the overwritten instruction.
+ * Define hooks as pairs of words containing the function address and the hook
+ * address. We then overwrite the first instruction of the function with a
+ * branch to the hook, and then overwrite the hook definition with the original
+ * instruction and a branch back to the original function.
  */
 .section .init
 
@@ -21,17 +22,24 @@ hook_loop:
 cmpw    r3, r4
 beq     hook_end
 
-# Copy instruction bytes over original address
+# Copy original instruction over function address
 lwzu    r5, 4(r3)
-lwz     r6, 0(r5)
-stw     r6, 0(r3)
+lwz     r0, 0(r5)
+stw     r0, 0(r3)
 
 # Overwrite original instruction with branch to hook
 lwzu    r6, 4(r3)
-sub     r6, r6, r5
-rlwinm  r6, r6, 0, 6, 29
-oris    r6, r6, 0x4800
-stw     r6, 0(r5)
+sub     r0, r6, r5
+rlwinm  r0, r0, 0, 6, 29
+oris    r0, r0, 0x4800
+stw     r0, 0(r5)
+
+# Overwrite hook address with branch to original
+addi    r0, r5, 4
+sub     r0, r0, r3
+rlwinm  r0, r0, 0, 6, 29
+oris    r0, r0, 0x4800
+stw     r0, 0(r3)
 
 b       hook_loop
 
@@ -71,8 +79,6 @@ hooks_start:
         .int hook_\name
 .endm
 
-#add_hook HSD_ResetScene
-#add_hook StartMelee
-#add_hook DevelopText_DrawAll
+add_hook Interrupt_SpotDodge_OoS
 
 hooks_end:

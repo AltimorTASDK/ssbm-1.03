@@ -26,9 +26,10 @@ DEPFILES := $(patsubst $(OBJDIR)/%.o, $(DEPDIR)/%.d, $(OBJFILES))
 LIBOGC := $(DEVKITPATH)/libogc
 
 LINKSCRIPT := -Tgci_bin.ld
-LDFLAGS    := -Wl,-Map=output.map -nostdlib
+LDFLAGS    := -Wl,-Map=output.map -Wl,--gc-sections -nostdlib
 
-CFLAGS   := -DGEKKO -mogc -mcpu=750 -meabi -mhard-float -O3 -Wall -Wno-register -Wno-unused-value
+CFLAGS   := -DGEKKO -mogc -mcpu=750 -meabi -mhard-float -O3 -Wall \
+			-Wno-register -Wno-unused-value -ffunction-sections -fdata-sections
 CXXFLAGS := $(CFLAGS) -std=c++2b -fconcepts -fno-rtti -fno-exceptions
 INCLUDE  := -Isrc -I$(LIBOGC)/include
 
