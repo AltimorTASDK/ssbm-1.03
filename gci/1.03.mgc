@@ -1,0 +1,28 @@
+1.03 Version A MGC SCRIPT
+
+The save file has three main components:
+1. The ACE exploit that runs our custom code when entering "Name Entry" in Melee
+2. The custom data we want to load, such as the Gecko codehandler and codeset
+3. The datacopy table, which tells the ACE loader where to copy our custom data
+--------------------------------------------------------------------------------
+
+!begin
+
+!src "1.03_data/ace_exploit.mgc"
+!src "1.03_data/datacopy_table.mgc"
+
+# Load our custom data into the addresses expected by the datacopy table
+
+# Internal filename
+!loc 8046180c
+!string "103Settings"
+# pad to 0x18 length
+00 00 00 00 00 00 00 00 00 00 00 00 00
+
+# Displayed filename
+!loc 80461824
+!string "1.03 Datafile"
+
+# Compiled code
+!loc 80461834
+!file "1.03_data/code.bin"
