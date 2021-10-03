@@ -47,12 +47,6 @@ struct PadLibData {
 	u8 reset_switch_status;
 	u8 reset_switch;
 	void *rumble_info;
-
-	PADStatus *queue_get(int port, int index) const
-	{
-		index = (qnum + (index % qnum)) % qnum;
-		return queue[index].stat[port];
-	}
 };
 
-extern "C" PadLibData *HSD_PadLibData;
+extern "C" PadLibData HSD_PadLibData;

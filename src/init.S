@@ -80,5 +80,6 @@ hooks_start:
 .endm
 
 add_hook Interrupt_SpotDodge_OoS
+add_hook Interrupt_AS_Turn
 
 hooks_end:

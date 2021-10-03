@@ -6,6 +6,43 @@
 #include "util/vector.h"
 #include <gctypes.h>
 
+enum CID {
+	CID_Mario,
+	CID_Fox,
+	CID_Falcon,
+	CID_Dong,
+	CID_Kirby,
+	CID_Bowser,
+	CID_Link,
+	CID_Sheik,
+	CID_Ness,
+	CID_Peach,
+	CID_Popo,
+	CID_Nana,
+	CID_Pikachu,
+	CID_Samus,
+	CID_Yoshi,
+	CID_Jigglypuff,
+	CID_Mewtwo,
+	CID_Luigi,
+	CID_Marth,
+	CID_Zelda,
+	CID_YLink,
+	CID_DrMario,
+	CID_Falco,
+	CID_Pichu,
+	CID_GameNWatch,
+	CID_Ganondorf,
+	CID_Roy,
+	CID_MasterHand,
+	CID_CrazyHand,
+	CID_Boi,
+	CID_Gorl,
+	CID_GigaBowser,
+	CID_Sandbag,
+	CID_Max
+};
+
 struct PlayerInput {
     vec2 stick;
     vec2 last_stick;
@@ -49,6 +86,16 @@ struct PlayerInput {
     u8 last_neutral_b_input;
     u8 jump_input_interval;
     u8 up_b_input_interval;
+};
+
+struct PopoData {
+	u32 buttons;
+	u8 analog_l;
+	u8 analog_r;
+	vec2c stick;
+	vec2c cstick;
+	vec3 position;
+	float direction;
 };
 
 struct Player {
@@ -147,7 +194,15 @@ struct Player {
 	char pad19A4[0x1A68 - 0x19A4];
 	u16 grab_type_mask;
 	u16 grab_invuln_mask;
-	char pad1A6C[0x2218 - 0x1A6C];
+	char pad1A6C[0x1B80 - 0x1A6C];
+	u8 cpu_flags1;
+	u8 cpu_flags2;
+	u8 cpu_flags3;
+	u8 cpu_flags4;
+	PopoData popo_data_buffer[30];
+	PopoData *popo_data_write;
+	PopoData *popo_data_read;
+	char pad1ED4[0x2218 - 0x1ED4];
 	u8 flags1;
 	u8 flags2;
 	u8 flags3;
@@ -155,9 +210,10 @@ struct Player {
 	u8 flags5;
 	u8 flags6;
 	u8 flags7;
-	u8 flags8_0 : 1;
-	u8 flags8_1 : 1;
-	u8 flags8_2 : 1;
+	u8 flags8_80 : 1;
+	u8 flags8_40 : 1;
+	u8 flags8_20 : 1;
+	u8 no_update : 1;
 	u8 is_backup_climber : 1;
 	u8 flags9;
 	u8 flags10;
@@ -176,7 +232,20 @@ struct Player {
 	union {
 		char raw[0xAC];
 		struct {
-			int is_smash_turn;
+			u32 is_smash_turn;
+			f32 turn_direction;
+			f32 dash_direction;
+			u32 pad00C;
+			f32 tilt_turn_timer;
+			u32 pad014;
+			u32 can_dash;
+			u32 buffered_buttons;
 		} Turn;
 	} as_data;
 };
+
+extern "C" {
+	
+HSD_GObj *PlayerBlock_GetSubCharGObj(int slot, int subchar);
+	
+}
