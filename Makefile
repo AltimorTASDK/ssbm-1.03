@@ -7,6 +7,7 @@ CXX := powerpc-eabi-g++
 LD  := powerpc-eabi-ld
 
 SOURCES   := src
+BINDIR    := bin
 OBJDIR    := obj
 DEPDIR    := dep
 TOOLS     := tools
@@ -25,7 +26,7 @@ DEPFILES := $(patsubst $(OBJDIR)/%.o, $(DEPDIR)/%.d, $(OBJFILES))
 
 LIBOGC := $(DEVKITPATH)/libogc
 
-LINKSCRIPT := -Tgci_bin.ld
+LINKSCRIPT := gci_bin.ld
 LDFLAGS    := -Wl,-Map=output.map -Wl,--gc-sections -nostdlib
 
 CFLAGS   := -DGEKKO -mogc -mcpu=750 -meabi -mhard-float -O3 -Wall \
@@ -33,17 +34,27 @@ CFLAGS   := -DGEKKO -mogc -mcpu=750 -meabi -mhard-float -O3 -Wall \
 CXXFLAGS := $(CFLAGS) -std=c++2b -fconcepts -fno-rtti -fno-exceptions
 INCLUDE  := -Isrc -I$(LIBOGC)/include
 
-GCIFILE := bin/ssbm-1.03.gci
-BINFILE := $(GCIDIR)/1.03_data/code.bin
+GCIFILE     := $(BINDIR)/ssbm-1.03.gci
+GCIFILE20XX := $(BINDIR)/ssbm-1.03-20XX.gci
+GCISRC20XX  := $(GCIDIR)/20XX.gci
+BINFILE     := $(GCIDIR)/1.03_data/code.bin
 
+MGCMAIN  := $(GCIDIR)/1.03.mgc
 MGCFILES := $(shell find $(GCIDIR) -type f -name '*.mgc')
+
+.PHONY: all
+all: $(GCIFILE) $(GCIFILE20XX)
 
 $(GCIFILE): $(BINFILE) $(MGCFILES)
 	@[ -d $(@D) ] || mkdir -p $(@D)
-	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -o $@ gci/1.03.mgc
+	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -o $@ $(MGCMAIN)
 
-$(BINFILE): $(OBJFILES) GALE01.ld gci_bin.ld | clean_unused
-	$(CC) $(LDFLAGS) $(LINKSCRIPT) $(OBJFILES) -o $@
+$(GCIFILE20XX): $(BINFILE) $(MGCFILES) $(GCISRC20XX)
+	@[ -d $(@D) ] || mkdir -p $(@D)
+	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -i $(GCISRC20XX) -o $@ $(MGCMAIN)
+
+$(BINFILE): $(OBJFILES) GALE01.ld $(LINKSCRIPT) | clean_unused
+	$(CC) $(LDFLAGS) -T$(LINKSCRIPT) $(OBJFILES) -o $@
 
 GALE01.ld: GALE01.map $(TOOLS)/map_to_linker_script.py
 	python $(TOOLS)/map_to_linker_script.py
@@ -65,8 +76,7 @@ $(OBJDIR)/%.o: %.S
 
 .PHONY: clean
 clean:
-	rm -rf $(OBJDIR)/* $(DEPDIR)/*
-	rm $(BINFILE)
+	rm -rf $(OBJDIR) $(DEPDIR) $(BINDIR) $(BINFILE)
 
 # Remove unused obj/dep files
 .PHONY: clean_unused

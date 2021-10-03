@@ -4,6 +4,9 @@
 #include "util/vector.h"
 #include <cmath>
 
+// 0.2750
+constexpr auto deadzone = 22;
+
 bool check_ucf_xsmash(const Player *player);
 
 inline int abs_coord_to_int(float x)

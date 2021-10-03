@@ -11,7 +11,7 @@ bool should_suppress_spotdodge(HSD_GObj *gobj)
 	if (player->input.cstick.y <= plco->spot_dodge_stick_threshold)
 		return false;
 
-	// Must be on a platform
+	// Must be on a platform (not checked by UCF)
 	if (!Physics_IsOnPlatform(&player->phys))
 		return false;
 
