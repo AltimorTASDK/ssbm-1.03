@@ -65,6 +65,7 @@ $(OBJDIR)/%.o: %.S
 .PHONY: clean
 clean:
 	rm -rf $(OBJDIR)/* $(DEPDIR)/*
+	rm $(BINFILE)
 
 # Remove unused obj/dep files
 .PHONY: clean_unused

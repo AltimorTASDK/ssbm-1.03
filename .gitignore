@@ -4,3 +4,4 @@ dep/*
 output.map
 .vscode
 GALE01.ld
+gci/1.03_data/code.bin
