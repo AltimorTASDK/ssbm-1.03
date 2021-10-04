@@ -33,7 +33,7 @@ static void check_dashback(HSD_GObj *gobj)
 	// Hardware value comparison
 	if (!check_ucf_xsmash(player))
 		return;
-		
+
 	player->direction = -player->direction;
 	player->as_data.Turn.is_smash_turn = true;
 	player->as_data.Turn.can_dash = true;

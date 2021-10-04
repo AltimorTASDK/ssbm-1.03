@@ -90,6 +90,7 @@ hooks_start:
 .endm
 
 .set TumbleWiggleCheck, Interrupt_AS_DamageFall+0x9C
+.set UpdatePadButtons, HSD_PadRenewMasterStatus+0x400
 
 add_hook HSD_PadClamp
 add_hook Interrupt_AS_Turn
@@ -98,5 +99,6 @@ add_hook Interrupt_SquatRv
 add_hook Stage_Fountain_Init
 add_hook Stage_Dreamland_WhispyUpdate
 add_hook TumbleWiggleCheck
+add_hook UpdatePadButtons
 
 hooks_end:

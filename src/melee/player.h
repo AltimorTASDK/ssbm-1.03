@@ -99,8 +99,8 @@ struct PopoData {
 };
 
 struct Player {
-	static constexpr auto max_hitboxes = 4;
-	static constexpr auto max_hurtboxes = 15;
+	static constexpr auto MAX_HITBOXES = 4;
+	static constexpr auto MAX_HURTBOXES = 15;
 
 	HSD_GObj *gobj;
 	u32 character_id;
@@ -167,11 +167,11 @@ struct Player {
 	f32 anim_lerp_progress;
 	HSD_JObj *lerp_target_jobj;
 	char pad08B0[0x914 - 0x8B0];
-	Hitbox hitboxes[max_hitboxes];
+	Hitbox hitboxes[MAX_HITBOXES];
 	char pad0DF4[0x119E - 0xDF4];
 	u8 hurtbox_count;
 	char pad119F[0x11A0 - 0x119F];
-	Hurtbox hurtboxes[max_hurtboxes];
+	Hurtbox hurtboxes[MAX_HURTBOXES];
 	char pad1614[0x18A8 - 0x1614];
 	f32 last_received_knockback;
 	s32 frames_since_last_hit;

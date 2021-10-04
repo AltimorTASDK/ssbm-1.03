@@ -4,7 +4,7 @@
 
 .global hook_TumbleWiggleCheck
 hook_TumbleWiggleCheck:
-        mr      r3, r30
+        mr      r3, r30 # gobj
         bl      check_tumble_wiggle
         cmpwi   r3, 0
         bne     damagefall_return

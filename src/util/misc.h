@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <climits>
 #include <functional>
 #include <tuple>
 #include <type_traits>
@@ -24,9 +25,10 @@ constexpr auto align_up(auto value, auto alignment)
 }
 
 template<typename T>
-inline T copysign_int(T value, T sign)
+constexpr T copysign_int(T value, T sign)
 {
-	const auto mask = value >> (sizeof(T) * 8 - 1);
+	// int cast required so srawi sign extends properly
+	const auto mask = sign >> (sizeof(T) * CHAR_BIT - 1);
 	return (value + mask) ^ mask;
 }
 
