@@ -4,8 +4,8 @@
 
 OUTPUT_FORMAT(binary);
 OUTPUT_ARCH(powerpc:common);
-EXTERN(__start);
-ENTRY(__start);
+EXTERN(entry);
+ENTRY(entry);
 
 INCLUDE GALE01.ld
 
@@ -13,7 +13,6 @@ SECTIONS
 {
     load_base = 0x817f1000;
 
-    /* new sections */
     init_offset = 0;
     init_base = load_base;
     .init init_base : AT(init_offset) { *(.init*) }

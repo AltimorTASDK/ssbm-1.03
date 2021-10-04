@@ -7,10 +7,10 @@
 .section .init
 
 /*
- * void __start()
+ * void entry()
  */
- .global __start
- __start:
+ .global entry
+ entry:
         mflr    r0
         stw     r0, 4(r1)
         stwu    r1, -16(r1)
@@ -44,6 +44,7 @@ hook_loop:
         b       hook_loop
 hook_end:
 
+/*
         # Run C++ constructors
         lis     r31, (ctors_base - 4)@h
         ori     r31, r31, (ctors_base - 4)@l
@@ -60,6 +61,7 @@ ctor_loop:
         bctrl
         b       ctor_loop
 ctor_end:
+*/
 
         lwz     r0, 20(r1)
         lwz     r31, 12(r1)
