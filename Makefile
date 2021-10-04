@@ -43,7 +43,13 @@ MGCMAIN  := $(GCIDIR)/1.03.mgc
 MGCFILES := $(shell find $(GCIDIR) -type f -name '*.mgc')
 
 .PHONY: all
-all: $(GCIFILE) $(GCIFILE20XX)
+all: ssbm 20xx
+
+.PHONY: ssbm
+ssbm: $(GCIFILE)
+
+.PHONY: 20xx
+20xx: $(GCIFILE20XX)
 
 $(GCIFILE): $(BINFILE) $(MGCFILES)
 	@[ -d $(@D) ] || mkdir -p $(@D)

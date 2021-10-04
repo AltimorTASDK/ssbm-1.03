@@ -38,9 +38,14 @@ Format:
 803bac3c
 00000010
 
+# Loader 2
+80469000
+817f0000
+000001c0
+
 # Compiled code
 80461834
-817f4000
+817f1000
 00003700
 
 # End table
