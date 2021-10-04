@@ -1,7 +1,5 @@
 .section .text
 
-.extern check_tumble_wiggle
-
 .global hook_TumbleWiggleCheck
 hook_TumbleWiggleCheck:
         mr      r3, r30 # gobj
