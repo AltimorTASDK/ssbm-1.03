@@ -44,12 +44,11 @@ hook_loop:
         b       hook_loop
 hook_end:
 
-/*
         # Run C++ constructors
-        lis     r31, (ctors_base - 4)@h
-        ori     r31, r31, (ctors_base - 4)@l
-        lis     r30, (ctors_end - 4)@h
-        ori     r30, r30, (ctors_end - 4)@l
+        lis     r31, (__ctors_base - 4)@h
+        ori     r31, r31, (__ctors_base - 4)@l
+        lis     r30, (__ctors_end - 4)@h
+        ori     r30, r30, (__ctors_end - 4)@l
 
 ctor_loop:
         cmpw    r31, r30
@@ -61,7 +60,6 @@ ctor_loop:
         bctrl
         b       ctor_loop
 ctor_end:
-*/
 
         lwz     r0, 20(r1)
         lwz     r31, 12(r1)
