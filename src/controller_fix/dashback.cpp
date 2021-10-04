@@ -7,10 +7,6 @@ static void check_dashback(HSD_GObj *gobj)
 {
 	auto *player = gobj->get<Player>();
 	
-	// Check that Turn wasn't already canceled
-	if (player->action_state != AS_Turn)
-		return;
-	
 	// Must be tilt turn f2
 	if (player->animation_frame != 2.f)
 		return;
