@@ -27,7 +27,7 @@ void check_dashback(HSD_GObj *gobj)
 	if (player->input.stick.x * -player->direction < plco->x_smash_threshold)
 		return;
 
-	if (player->input.stick_x_hold_time > plco->x_smash_frames)
+	if (player->input.stick_x_hold_time >= plco->x_smash_frames)
 		return;
 
 	// Hardware value comparison
