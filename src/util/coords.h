@@ -15,16 +15,9 @@ inline int abs_coord_to_int(float x)
 	return static_cast<int>(std::abs(x) * 80 - .0001f) + 1;
 }
 
-inline int coord_to_int(float x)
-{
-	return std::copysign(abs_coord_to_int(x), x);
-}
-
 inline bool is_rim_coord(const vec2 &coords)
 {
-	// Preserves a bug with UCF's rim behavior that incorrectly considers (5875, 7875) in any
-	// quadrant a rim coord. The proper check would be > 80 * 80.
 	const auto converted = vec2i(abs_coord_to_int(coords.x) + 1,
 	                             abs_coord_to_int(coords.y) + 1);
-	return converted.length_sqr() >= 80 * 80;
+	return converted.length_sqr() > 80 * 80;
 }
