@@ -29,7 +29,7 @@ LIBOGC := $(DEVKITPATH)/libogc
 LINKSCRIPT := gci_bin.ld
 LDFLAGS    := -Wl,-Map=output.map -Wl,--gc-sections
 
-CFLAGS   := -DGEKKO -mogc -mcpu=750 -meabi -mhard-float -O3 -Wall \
+CFLAGS   := -DGEKKO -mogc -mcpu=750 -meabi -mhard-float -Os -Wall \
 			-Wno-register -Wno-unused-value -ffunction-sections -fdata-sections
 CXXFLAGS := $(CFLAGS) -std=c++2b -fconcepts -fno-rtti -fno-exceptions
 INCLUDE  := -Isrc -I$(LIBOGC)/include
