@@ -91,8 +91,8 @@ hooks_start:
 
 .set TumbleWiggleCheck, Interrupt_AS_DamageFall+0x9C
 .set UpdatePadButtons, HSD_PadRenewMasterStatus+0x400
+.set UpdatePlayerStick, PlayerThink_Input+0x1D0
 
-add_hook HSD_PadClamp
 add_hook Interrupt_AS_Turn
 add_hook Interrupt_SpotDodge_OoS
 add_hook Interrupt_SquatRv
@@ -102,5 +102,6 @@ add_hook Stage_FinalDestination_BackgroundUpdate
 add_hook Stage_YoshisStory_ShyGuyUpdate
 add_hook TumbleWiggleCheck
 add_hook UpdatePadButtons
+add_hook UpdatePlayerStick
 
 hooks_end:

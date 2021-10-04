@@ -1317,7 +1317,7 @@
 8006a360 00000840 8006a360 0 PlayerThinkAgain
 8006aba0 0000004c 8006aba0 0 HumanOrCPUCheck
 8006abec 00000124 8006abec 0 Player_UpdateActionInputTimers
-8006ad10 00000b1c 8006ad10 0 PlayerThink_ControllerInputsToDataOffset
+8006ad10 00000b1c 8006ad10 0 PlayerThink_Input
 8006b82c 000008c4 8006b82c 0 PlayerThink_Physics
 8006c0f0 0000018c 8006c0f0 0 zz_006c0f0_
 8006c27c 00000378 8006c27c 0 zz_006c27c_
