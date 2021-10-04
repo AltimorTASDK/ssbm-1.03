@@ -35,7 +35,8 @@ static void check_dashback(HSD_GObj *gobj)
 		return;
 		
 	player->direction = -player->direction;
-	AS_020_Dash(gobj, false);
+	player->as_data.Turn.is_smash_turn = true;
+	player->as_data.Turn.can_dash = true;
 	
 	// Retroactively write smash turn to Nana inputs
 	if (player->character_id != CID_Popo)
@@ -51,6 +52,6 @@ static void check_dashback(HSD_GObj *gobj)
 extern "C" void orig_Interrupt_AS_Turn(HSD_GObj *gobj);
 extern "C" void hook_Interrupt_AS_Turn(HSD_GObj *gobj)
 {
-	orig_Interrupt_AS_Turn(gobj);
 	check_dashback(gobj);
+	orig_Interrupt_AS_Turn(gobj);
 }
