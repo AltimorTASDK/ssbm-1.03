@@ -16,7 +16,7 @@ bool should_suppress_spotdodge(HSD_GObj *gobj)
 		return false;
 
 	// Roll must be disabled
-	if (player->input.stick_x_hold_time <= plco->roll_stick_frames)
+	if (player->input.stick_x_hold_time < plco->roll_stick_frames)
 		return false;
 
 	// Must be outside X deadzone
