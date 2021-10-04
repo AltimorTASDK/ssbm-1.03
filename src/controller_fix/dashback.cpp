@@ -19,7 +19,7 @@ static void check_dashback(HSD_GObj *gobj)
 		return;
 		
 	// Must satisfy vanilla xsmash conditions
-	// UCF doesn't check direction and it allows a UCF only ICs desync
+	// UCF v0.74+ doesn't check direction and it allows a UCF only ICs desync
 	if (player->input.stick.x * -player->direction < plco->x_smash_threshold)
 		return;
 
@@ -34,14 +34,14 @@ static void check_dashback(HSD_GObj *gobj)
 	player->as_data.Turn.is_smash_turn = true;
 	player->as_data.Turn.can_dash = true;
 	
-	// Retroactively write smash turn to Nana inputs
 	if (player->character_id != CID_Popo)
 		return;
 	
-	// UCF doesn't zero out Y, making it possible for Nana to achieve impossible input values
+	// Retroactively write dashback to Nana inputs
 	HSD_GObj *nana_gobj = PlayerBlock_GetSubCharGObj(player->slot, 1);
 	auto *nana = nana_gobj->get<Player>();
 	nana->popo_data_write->stick.x = player->direction > 0.f ? 127 : -128;
+	// UCF doesn't zero out Y, making it possible for Nana to achieve impossible input values
 	nana->popo_data_write->stick.y = 0;
 }
 
