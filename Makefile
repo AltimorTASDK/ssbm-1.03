@@ -27,7 +27,7 @@ DEPFILES := $(patsubst $(OBJDIR)/%.o, $(DEPDIR)/%.d, $(OBJFILES))
 LIBOGC := $(DEVKITPATH)/libogc
 
 LINKSCRIPT := gci_bin.ld
-LDFLAGS    := -Wl,-Map=output.map -Wl,--gc-sections -nostdlib
+LDFLAGS    := -Wl,-Map=output.map -Wl,--gc-sections -Wl,--print-gc-sections -nostdlib
 
 CFLAGS   := -DGEKKO -mogc -mcpu=750 -meabi -mhard-float -O3 -Wall \
 			-Wno-register -Wno-unused-value -ffunction-sections -fdata-sections
@@ -51,13 +51,16 @@ ssbm: $(GCIFILE)
 .PHONY: 20xx
 20xx: $(GCIFILE20XX)
 
-$(GCIFILE): $(BINFILE) $(MGCFILES)
+$(GCIFILE): bin $(MGCFILES)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -o $@ $(MGCMAIN)
 
-$(GCIFILE20XX): $(BINFILE) $(MGCFILES) $(GCISRC20XX)
+$(GCIFILE20XX): bin $(MGCFILES) $(GCISRC20XX)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -i $(GCISRC20XX) -o $@ $(MGCMAIN)
+
+.PHONY: bin
+bin: $(BINFILE)
 
 $(BINFILE): $(OBJFILES) GALE01.ld $(LINKSCRIPT) | clean_unused
 	$(CC) $(LDFLAGS) -T$(LINKSCRIPT) $(OBJFILES) -o $@
