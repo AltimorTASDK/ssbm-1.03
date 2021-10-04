@@ -94,9 +94,10 @@ hooks_start:
 add_hook Interrupt_AS_Turn
 add_hook Interrupt_SpotDodge_OoS
 add_hook Interrupt_SquatRv
-add_hook Stage_Fountain_Init
 add_hook Stage_Dreamland_WhispyUpdate
 add_hook Stage_FinalDestination_BackgroundUpdate
+add_hook Stage_Fountain_Init
+add_hook Stage_PokemonStadium_TransformationDecide
 add_hook Stage_YoshisStory_ShyGuyUpdate
 add_hook TumbleWiggleCheck
 add_hook UpdatePadButtons
