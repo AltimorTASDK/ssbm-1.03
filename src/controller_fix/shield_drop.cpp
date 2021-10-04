@@ -3,7 +3,7 @@
 #include "melee/player.h"
 #include "util/coords.h"
 
-bool should_suppress_spotdodge(HSD_GObj *gobj)
+static bool should_suppress_spotdodge(HSD_GObj *gobj)
 {
 	const auto *player = gobj->get<Player>();
 

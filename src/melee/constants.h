@@ -9,11 +9,14 @@ struct PlayerConstants {
 	char pad044[0x90 - 0x44];
 	float squat_threshold;
 	float max_squatwait_threshold;
-	char pad098[0x314 - 0x98];
+	char pad098[0x210 - 0x98];
+	f32 tumble_wiggle_threshold;
+	s32 tumble_wiggle_frames;
+	char pad218[0x314 - 0x218];
 	f32 spot_dodge_stick_threshold;
-	u32 spot_dodge_stick_frames;
+	s32 spot_dodge_stick_frames;
 	f32 roll_stick_threshold;
-	u32 roll_stick_frames;
+	s32 roll_stick_frames;
 };
 
 extern "C" PlayerConstants *plco;

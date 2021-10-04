@@ -95,6 +95,7 @@ add_hook HSD_PadClamp
 add_hook Interrupt_AS_Turn
 add_hook Interrupt_SpotDodge_OoS
 add_hook Interrupt_SquatRv
+add_hook Stage_Fountain_Init
 add_hook TumbleWiggleCheck
 
 hooks_end:
