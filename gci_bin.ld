@@ -16,7 +16,7 @@ SECTIONS
     /* new sections */
     init_offset = 0;
     init_base = load_base;
-    .init init_base : AT(init_offset) { obj/src/init.o }
+    .init init_base : AT(init_offset) { *(.init*) }
 
     text_offset = init_offset + SIZEOF(.init);
     text_offset = (text_offset + 3) & ~3;

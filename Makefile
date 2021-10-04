@@ -18,9 +18,9 @@ CXXFILES := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.cpp'
 SFILES   := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.S'))
 
 OBJFILES := \
-    $(patsubst %.c,   $(OBJDIR)/%.o, $(CFILES)) \
-    $(patsubst %.cpp, $(OBJDIR)/%.o, $(CXXFILES)) \
-    $(patsubst %.S,   $(OBJDIR)/%.o, $(SFILES))
+    $(patsubst %, $(OBJDIR)/%.o, $(CFILES)) \
+    $(patsubst %, $(OBJDIR)/%.o, $(CXXFILES)) \
+    $(patsubst %, $(OBJDIR)/%.o, $(SFILES))
 
 DEPFILES := $(patsubst $(OBJDIR)/%.o, $(DEPDIR)/%.d, $(OBJFILES))
 
@@ -65,17 +65,17 @@ $(BINFILE): $(OBJFILES) GALE01.ld $(LINKSCRIPT) | clean_unused
 GALE01.ld: GALE01.map $(TOOLS)/map_to_linker_script.py
 	python $(TOOLS)/map_to_linker_script.py
 
-$(OBJDIR)/%.o: %.c
+$(OBJDIR)/%.c.o: %.c
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	@[ -d $(subst $(OBJDIR), $(DEPDIR), $(@D)) ] || mkdir -p $(subst $(OBJDIR), $(DEPDIR), $(@D))
 	$(CC) -MMD -MP -MF $(patsubst $(OBJDIR)/%.o, $(DEPDIR)/%.d, $@) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
-$(OBJDIR)/%.o: %.cpp
+$(OBJDIR)/%.cpp.o: %.cpp
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	@[ -d $(subst $(OBJDIR), $(DEPDIR), $(@D)) ] || mkdir -p $(subst $(OBJDIR), $(DEPDIR), $(@D))
 	$(CXX) -MMD -MP -MF $(patsubst $(OBJDIR)/%.o, $(DEPDIR)/%.d, $@) $(CXXFLAGS) $(INCLUDE) -c $< -o $@
 
-$(OBJDIR)/%.o: %.S
+$(OBJDIR)/%.S.o: %.S
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	@[ -d $(subst $(OBJDIR), $(DEPDIR), $(@D)) ] || mkdir -p $(subst $(OBJDIR), $(DEPDIR), $(@D))
 	$(AS) -mregnames -mgekko $^ -o $@
