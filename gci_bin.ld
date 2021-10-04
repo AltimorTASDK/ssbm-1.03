@@ -19,9 +19,9 @@ SECTIONS
     .text   : { *(.text   .text.*) }
     .rodata : { *(.rodata .rodata.*) }
     .data   : { *(.data   .data.*) }
-    PROVIDE(__ctors_base = .)
+    PROVIDE(__ctors_base = .);
     .ctors  : { *(.ctors  .ctors.*) }
-    PROVIDE(__ctors_end = .)
+    PROVIDE(__ctors_end = .);
     .bss    : { *(.bss    .bss.*) }
 
     /DISCARD/ : { *(*) *crtbegin.o(*) *crtend.o(*) }
