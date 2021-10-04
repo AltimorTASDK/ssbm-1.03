@@ -22,5 +22,5 @@ SECTIONS
     .ctors  : { *(.ctors  .ctors.*) }
     .bss    : { *(.bss    .bss.*) }
 
-    /DISCARD/ : { *(*) }
+    /DISCARD/ : { *(*) *crtbegin.o(*) *crtend.o(*) }
 }

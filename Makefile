@@ -27,7 +27,7 @@ DEPFILES := $(patsubst $(OBJDIR)/%.o, $(DEPDIR)/%.d, $(OBJFILES))
 LIBOGC := $(DEVKITPATH)/libogc
 
 LINKSCRIPT := gci_bin.ld
-LDFLAGS    := -Wl,-Map=output.map -Wl,--gc-sections -nostdlib
+LDFLAGS    := -Wl,-Map=output.map -Wl,--gc-sections
 
 CFLAGS   := -DGEKKO -mogc -mcpu=750 -meabi -mhard-float -O3 -Wall \
 			-Wno-register -Wno-unused-value -ffunction-sections -fdata-sections
