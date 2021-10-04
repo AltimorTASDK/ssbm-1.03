@@ -11,7 +11,7 @@ INCLUDE GALE01.ld
 
 SECTIONS
 {
-    load_base = 0x817f1000;
+    load_base = 0x817F1000;
 
     init_offset = 0;
     init_base = load_base;
