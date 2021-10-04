@@ -40,12 +40,12 @@ Format:
 
 # Loader 2
 80469000
-817f0000
+817e0000
 000001c0
 
 # Compiled code
 80461834
-817f1000
+817e1000
 00003700
 
 # End table

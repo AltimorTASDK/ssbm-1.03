@@ -10,7 +10,7 @@ INCLUDE GALE01.ld
 
 MEMORY
 {
-    load (rwx) : ORIGIN = 0x817F1000, LENGTH = 0x3700
+    load (rwx) : ORIGIN = 0x817E1000, LENGTH = 0x3700
 }
 
 SECTIONS
