@@ -1,4 +1,5 @@
 #include "util/coords.h"
+#include "util/misc.h"
 #include <cmath>
 #include <gctypes.h>
 
@@ -10,12 +11,12 @@ extern "C" void hook_HSD_PadClamp(s8 *x, s8 *y, bool shift, s8 min, s8 max)
 
 	// Produce 1.0 cardinals when one axis is >= 80 and the other is in the deadzone
 	if (abs_x >= max && abs_y <= deadzone) {
-		*x = std::copysign(max, *x);
+		*x = copysign_int(max, *x);
 		*y = 0;
 		return;
 	} else if (abs_y >= max && abs_x <= deadzone) {
 		*x = 0;
-		*y = std::copysign(max, *y);
+		*y = copysign_int(max, *y);
 		return;
 	}
 	

@@ -23,6 +23,13 @@ constexpr auto align_up(auto value, auto alignment)
 	return (value + alignment - 1) & ~(alignment - 1);
 }
 
+template<typename T>
+inline T copysign_int(T value, T sign)
+{
+	const auto mask = value >> (sizeof(T) * 8 - 1);
+	return (value + mask) ^ mask;
+}
+
 constexpr auto sum_tuple(auto &&tuple)
 {
 	return [&]<size_t ...I>(std::index_sequence<I...>) {
