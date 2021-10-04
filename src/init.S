@@ -7,9 +7,10 @@
 .section .init
 
 /*
- * void main()
+ * void __start()
  */
- main:
+ .global __start
+ __start:
         mflr    r0
         stw     r0, 4(r1)
         stwu    r1, -16(r1)
