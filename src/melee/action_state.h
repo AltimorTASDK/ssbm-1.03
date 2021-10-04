@@ -350,5 +350,6 @@ enum ActionState {
 extern "C" {
 
 void AS_020_Dash(HSD_GObj *gobj, int forward);
+void AS_041_SquatRv(HSD_GObj *gobj);
 
 }
