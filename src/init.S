@@ -96,6 +96,7 @@ add_hook Interrupt_AS_Turn
 add_hook Interrupt_SpotDodge_OoS
 add_hook Interrupt_SquatRv
 add_hook Stage_Fountain_Init
+add_hook Stage_Dreamland_WhispyUpdate
 add_hook TumbleWiggleCheck
 
 hooks_end:
