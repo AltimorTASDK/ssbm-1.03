@@ -7,10 +7,10 @@
 .section .init
 
 /*
- * void entry()
+ * void _start()
  */
- .global entry
- entry:
+ .global _start
+ _start:
         mflr    r0
         stw     r0, 4(r1)
         stwu    r1, -16(r1)
@@ -89,9 +89,12 @@ hooks_start:
         .int hook_\name
 .endm
 
+.set TumbleWiggleCheck, Interrupt_AS_DamageFall+0x9C
+
 add_hook HSD_PadClamp
 add_hook Interrupt_AS_Turn
 add_hook Interrupt_SpotDodge_OoS
 add_hook Interrupt_SquatRv
+add_hook TumbleWiggleCheck
 
 hooks_end:

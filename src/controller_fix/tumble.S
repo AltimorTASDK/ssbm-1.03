@@ -1,0 +1,14 @@
+.section .text
+
+.extern check_tumble_wiggle
+
+.global hook_TumbleWiggleCheck
+hook_TumbleWiggleCheck:
+        mr      r3, r31
+        bl      check_tumble_wiggle
+        cmpwi   r3, 0
+        bne     damagefall_return
+        b       Interrupt_AS_DamageFall+0xE0
+
+damagefall_return:
+        b       Interrupt_AS_DamageFall+0xFC
