@@ -1,6 +1,7 @@
 #include "hsd/mobj.h"
 #include "hsd/tobj.h"
 #include "resources/rules/ledge_grab_limit.tex.h"
+#include "resources/rules/air_time_limit.tex.h"
 
 #include "os/os.h"
 
@@ -65,7 +66,7 @@ extern "C" void hook_Menu_SetupRuleMenu(u32 entry_point)
 	// Replace rule name textures
 	const auto *matanim = MenMainCursorRl_Top_matanim_joint->child->child->next->matanim;
 	matanim->texanim->imagetbl[3]->img_ptr = ledge_grab_limit_tex_data;
-	OSReport("tex data %p\n", ledge_grab_limit_tex_data);
+	matanim->texanim->imagetbl[4]->img_ptr = air_time_limit_tex_data;
 	
 	orig_Menu_SetupRuleMenu(entry_point);
 }

@@ -35,7 +35,6 @@ def encode_i4(out_file, get_pixel, width, height):
     BLOCK_SIZE = (8, 8)
 
     for block_x , block_y in block_range(width, height, BLOCK_SIZE):
-        print(f"block {block_x} {block_y}")
         for offset_x, offset_y in block_range(*BLOCK_SIZE, (2, 1)):
             x = block_x + offset_x
             y = block_y + offset_y
