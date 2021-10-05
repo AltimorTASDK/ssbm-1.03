@@ -6,4 +6,5 @@ output.map
 GALE01.ld
 gci/1.03_data/code.bin
 gci/1.03_data/code.elf
+gci/tmp
 src/resources
