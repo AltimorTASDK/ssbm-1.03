@@ -16,7 +16,8 @@ bool should_suppress_squatrv(const HSD_GObj *gobj)
 	if (!is_rim_coord(player->input.stick))
 		return false;
 
-	// Raise SquatRv threshold by 2 values. This would be 6000, but 5900 avoids an ICs desync.
+	// Raise the max SquatWait coord by 2 values.
+	// This would be 6000, but 5900 avoids an ICs desync.
 	if (player->input.stick.y > -.5900f)
 		return false;
 	
