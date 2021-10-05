@@ -66,7 +66,7 @@ bin: $(BINFILE)
 $(BINFILE): $(ELFFILE)
 	powerpc-eabi-objcopy -O binary $< $@
 
-$(ELFFILE): $(OBJFILES) GALE01.ld $(LINKSCRIPT) | clean_unused
+$(ELFFILE): $(OBJFILES) GALE01.ld $(LINKSCRIPT) | resources clean_unused
 	$(CC) $(LDFLAGS) -T$(LINKSCRIPT) $(OBJFILES) -o $@
 
 GALE01.ld: GALE01.map $(TOOLS)/map_to_linker_script.py
@@ -86,15 +86,61 @@ $(OBJDIR)/%.S.o: %.S
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	@[ -d $(subst $(OBJDIR), $(DEPDIR), $(@D)) ] || mkdir -p $(subst $(OBJDIR), $(DEPDIR), $(@D))
 	$(AS) -mregnames -mgekko $^ -o $@
+	
+RESOURCE_DIR_IN  := resources
+RESOURCE_DIR_OUT := src/resources
+RESOURCES        := $(foreach dir, $(RESOURCE_DIR_IN), $(shell find $(dir) -type f))
+RESOURCES        := $(filter-out %.psd, $(RESOURCES))
+TEXTURES         := $(filter     %.png, $(RESOURCES))
+RESOURCES        := $(filter-out %.png, $(RESOURCES))
+
+define get_resource_out
+$(subst $(RESOURCE_DIR_IN), $(RESOURCE_DIR_OUT), $1)
+endef
+
+define get_texture_out
+$(shell echo $(subst $(RESOURCE_DIR_IN), $(RESOURCE_DIR_OUT), $1) | sed -r "s/([^.]*)\\.?.*\\.png/\\1.tex/")
+endef
+
+define make_resource_rule
+$(call get_resource_out, $1): $1
+	cp $$< $$@
+endef
+
+define make_texture_rule
+$(call get_texture_out, $1): $1 $(TOOLS)/encode_texture.py
+	python $(TOOLS)/encode_texture.py $$< $$@
+endef
+
+define make_header_rule
+$1.h: $1
+	python $(TOOLS)/bin_to_header.py $$< $$@
+endef
+
+RESOURCES_OUT := $(foreach resource, $(RESOURCES), $(call get_resource_out, $(resource)))
+RESOURCES_H_OUT := $(foreach out, $(RESOURCES_OUT), $(out).h)
+TEXTURES_OUT := $(foreach texture, $(TEXTURES), $(call get_texture_out, $(texture)))
+TEXTURES_H_OUT := $(foreach out, $(TEXTURES_OUT), $(out).h)
+
+.PHONY: resources
+resources: $(RESOURCES_OUT) $(RESOURCES_H_OUT) $(TEXTURES_OUT) $(TEXTURES_H_OUT)
+
+$(foreach resource, $(RESOURCES), $(eval $(call make_resource_rule, $(resource))))
+$(foreach texture, $(TEXTURES), $(eval $(call make_texture_rule, $(texture))))
+
+$(foreach resource, $(RESOURCES_OUT) $(TEXTURES_OUT), $(eval $(call make_header_rule, $(resource))))
 
 .PHONY: clean
 clean:
-	rm -rf $(OBJDIR) $(DEPDIR) $(BINDIR) $(BINFILE)
+	rm -rf $(OBJDIR) $(DEPDIR) $(BINDIR) $(BINFILE) $(RESOURCE_DIR_OUT)
 
-# Remove unused obj/dep files
+# Remove unused obj/dep/resource files
 .PHONY: clean_unused
 clean_unused:
 	$(foreach file, $(shell find $(OBJDIR) -type f), $(if $(filter $(file), $(OBJFILES)),, $(shell rm $(file))))
 	$(foreach file, $(shell find $(DEPDIR) -type f), $(if $(filter $(file), $(DEPFILES)),, $(shell rm $(file))))
+	$(foreach file, $(shell find $(RESOURCE_DIR_OUT) -type f), \
+		$(if $(filter $(file), $(RESOURCES_OUT) $(RESOURCES_H_OUT) $(TEXTURES_OUT) $(TEXTURES_H_OUT)),, \
+		$(shell rm $(file))))
 
 -include $(DEPFILES)

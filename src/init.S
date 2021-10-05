@@ -94,6 +94,7 @@ hooks_start:
 add_hook Interrupt_AS_Turn
 add_hook Interrupt_SpotDodge_OoS
 add_hook Interrupt_SquatRv
+add_hook Menu_SetupRuleMenu
 add_hook Stage_Dreamland_WhispyUpdate
 add_hook Stage_FinalDestination_BackgroundUpdate
 add_hook Stage_Fountain_Init
