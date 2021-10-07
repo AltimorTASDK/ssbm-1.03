@@ -20,6 +20,8 @@ constexpr auto ascii_to_melee()
 		return std::make_tuple('\x20', '\xE6');
 	else if constexpr (c == '.')
 		return std::make_tuple('\x20', '\xE7');
+	else if constexpr (c == '\'')
+		return std::make_tuple('\x20', '\xF3');
 	else if constexpr (c == '-')
 		return std::make_tuple('\x20', '\xFC');
 	else if constexpr (c == ' ')
