@@ -15,14 +15,15 @@ MEMORY
 
 SECTIONS
 {
+    /DISCARD/ : { *crtbegin.o(*) *crtend.o(*) }
+
     .init   : { *(.init   .init.*) }
     .text   : { *(.text   .text.*) }
     .rodata : { *(.rodata .rodata.*) }
+    .ctors  : { KEEP(*(.ctors .ctors.*)) }
     .data   : { *(.data   .data.*) }
-    PROVIDE(__ctors_base = .);
-    .ctors  : { *(.ctors  .ctors.*) }
-    PROVIDE(__ctors_end = .);
     .bss    : { *(.bss    .bss.*) }
+    .sbss   : { *(.sbss   .sbss.*) }
 
-    /DISCARD/ : { *(*) *crtbegin.o(*) *crtend.o(*) }
+    /DISCARD/ : { *(*) }
 }

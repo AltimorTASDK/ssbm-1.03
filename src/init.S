@@ -45,10 +45,10 @@ hook_loop:
 hook_end:
 
         # Run C++ constructors
-        lis     r31, (__ctors_base - 4)@h
-        ori     r31, r31, (__ctors_base - 4)@l
-        lis     r30, (__ctors_end - 4)@h
-        ori     r30, r30, (__ctors_end - 4)@l
+        lis     r31, (__CTOR_LIST__ - 4)@h
+        ori     r31, r31, (__CTOR_LIST__ - 4)@l
+        lis     r30, (__CTOR_END__ - 4)@h
+        ori     r30, r30, (__CTOR_END__ - 4)@l
 
 ctor_loop:
         cmpw    r31, r30
@@ -87,14 +87,17 @@ hooks_start:
         .int hook_\name
 .endm
 
-.set TumbleWiggleCheck, Interrupt_AS_DamageFall+0x9C
-.set UpdatePadButtons, HSD_PadRenewMasterStatus+0x400
-.set UpdatePlayerStick, PlayerThink_Input+0x1D0
+.set TumbleWiggleCheck,       Interrupt_AS_DamageFall+0x9C
+.set UpdatePadButtons,        HSD_PadRenewMasterStatus+0x400
+.set UpdatePlayerStick,       PlayerThink_Input+0x1D0
+.set CheckScrollingRuleIndex, Menu_UpdateRuleDisplay+0x418
 
+add_hook CheckScrollingRuleIndex
 add_hook Interrupt_AS_Turn
 add_hook Interrupt_SpotDodge_OoS
 add_hook Interrupt_SquatRv
 add_hook Menu_SetupRuleMenu
+add_hook Menu_UpdateRuleValue
 add_hook Stage_Dreamland_WhispyUpdate
 add_hook Stage_FinalDestination_BackgroundUpdate
 add_hook Stage_Fountain_Init
