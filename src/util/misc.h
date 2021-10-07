@@ -7,6 +7,19 @@
 #include <type_traits>
 #include <utility>
 
+// Wrap string literals so they can be passed as template params
+template<size_t N>
+struct string_literal {
+	static constexpr auto size = N;
+
+	constexpr string_literal(const char(&str)[N])
+	{
+		std::copy_n(str, N, value);
+	}
+
+	char value[N];
+};
+
 template<typename T>
 constexpr auto is_void = std::is_same_v<T, void>;
 

@@ -1,4 +1,11 @@
+#pragma once
+
 #include <gctypes.h>
+
+struct HSD_JObjDesc;
+struct HSD_AnimJoint;
+struct HSD_MatAnimJoint;
+struct HSD_ShapeAnimJoint;
 
 struct HSD_ArchiveHeader {
 	u32 file_size;
@@ -35,6 +42,13 @@ struct HSD_Archive {
 	char *name;
 	u32 flags;
 	void *top_ptr;
+};
+
+struct ArchiveModel {
+	HSD_JObjDesc *joint;
+	HSD_AnimJoint *animjoint;
+	HSD_MatAnimJoint *matanim_joint;
+	HSD_ShapeAnimJoint *shapeanim_joint;
 };
 
 // Loaded archive pointers
