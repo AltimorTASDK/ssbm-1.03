@@ -75,11 +75,11 @@ constexpr auto atl_description = text_builder::build(
 	text_builder::textbox<179, 179>(),
 	text_builder::unk06<0, 0>(),
 	text_builder::fit(),
-	text_builder::ascii<"Limit the amount of time Jigglypuff">(),
+	text_builder::ascii<"Limit the amount of time">(),
 	text_builder::end_fit(),
 	text_builder::br(),
 	text_builder::fit(),
-	text_builder::ascii<"can spend in mid-air.">(),
+	text_builder::ascii<"Jigglypuff can spend in mid-air.">(),
 	text_builder::end_fit(),
 	text_builder::end_textbox(),
 	text_builder::end_color());
