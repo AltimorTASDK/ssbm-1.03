@@ -47,6 +47,8 @@ extern "C" struct {
 	ArchiveModel Background;
 	ArchiveModel NowLoading;
 } *MnSlMapModels;
+	
+constexpr auto ICON_SCALE = 1.f;
 
 extern "C" StageSelectIcon StageSelectIcons[29];
 
@@ -65,6 +67,35 @@ static bool is_legal_stage(int id)
 	}
 }
 
+static void random_icon_proc(HSD_GObj *gobj)
+{
+	auto *jobj = (HSD_JObj*)gobj->hsd_obj;
+
+	// Update matrix with constraint, then set USER_DEF_MTX so position can be adjusted
+	jobj->flags &= ~USER_DEF_MTX;
+	GObj_ProcAnimate(gobj);
+	HSD_JObjSetupMatrix(jobj);
+	jobj->flags |= USER_DEF_MTX;
+	
+	// Place random at (16.4, -9.5), opposite to the stage name
+	jobj->mtx.get<0, 3>() = jobj->position.x += 14.1f + 16.4f;
+	jobj->mtx.get<1, 3>() = jobj->position.y = -9.5f;
+}
+
+static void stage_icon_proc(HSD_GObj *gobj)
+{
+	auto *jobj = (HSD_JObj*)gobj->hsd_obj;
+
+	// Update matrix with constraint, then set USER_DEF_MTX so position can be adjusted
+	jobj->flags &= ~USER_DEF_MTX;
+	GObj_ProcAnimate(gobj);
+	HSD_JObjSetupMatrix(jobj);
+	jobj->flags |= USER_DEF_MTX;
+	
+	jobj->mtx.get<0, 3>() = jobj->position.x *= ICON_SCALE;
+	jobj->mtx.get<1, 3>() = jobj->position.y = 3.8f;
+}
+
 static void setup_icon(StageSelectIcon *icon, HSD_JObj *constraint,
                        const HSD_MatAnimJoint *matanim_joint, float frame)
 {
@@ -75,7 +106,7 @@ static void setup_icon(StageSelectIcon *icon, HSD_JObj *constraint,
 	auto *jobj = HSD_JObjLoadJoint(model.joint);
 	GObj_InitKindObj(gobj, GOBJ_KIND_JOBJ, jobj);
 	GObj_SetupGXLink(gobj, GObj_GXProcDisplay, 4, 0x83);
-	GObj_CreateProcWithCallback(gobj, GObj_ProcAnimate, 3);
+	GObj_CreateProcWithCallback(gobj, stage_icon_proc, 3);
 	
 	// Set anims with given matanim_joint and frame
 	HSD_JObjAddAnimAll(jobj, model.animjoint, matanim_joint, model.shapeanim_joint);
@@ -91,6 +122,37 @@ static void setup_icon(StageSelectIcon *icon, HSD_JObj *constraint,
 	// Replace icon jobj
 	HSD_JObjRemoveAll(icon->jobj);
 	icon->jobj = jobj;
+	
+	// Update sizes
+	jobj->scale *= ICON_SCALE;
+
+	icon->select_region_size = { 3.10f * ICON_SCALE, 2.90f * ICON_SCALE };
+	icon->select_box_scale   = { 1.05f * ICON_SCALE, 1.15f * ICON_SCALE };
+}
+
+static void setup_random_icon(HSD_JObj *random_joint)
+{
+	// Find the gobj with a jobj constrained to the random icon joint
+	for (auto *gobj = plinkhigh_gobjs[5]; gobj != nullptr; gobj = gobj->next) {
+		if (gobj->obj_kind != GOBJ_KIND_JOBJ)
+			continue;
+			
+		auto *jobj = (HSD_JObj*)gobj->hsd_obj;
+		if (jobj == nullptr)
+			continue;
+
+		auto *robj = jobj->robj;
+		if (robj == nullptr)
+			continue;
+			
+		if ((robj->flags & TYPE_MASK) != REFTYPE_JOBJ)
+			continue;
+
+		if (robj->u.jobj == random_joint) {
+			gobj->proc->callback = random_icon_proc;
+			break;
+		}
+	}
 }
 
 extern "C" void orig_SSS_Initialization(void *menu);
@@ -128,4 +190,8 @@ extern "C" void hook_SSS_Initialization(void *menu)
 			icon->unlocked = 0;
 		}
 	}
+
+	// Replace random icon's gobj proc to apply offset
+	HSD_JObj *random_joint = HSD_JObjGetFromTreeByIndex(position_jobj, 17);
+	setup_random_icon(random_joint);
 }

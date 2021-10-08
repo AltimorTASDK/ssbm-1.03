@@ -18,7 +18,7 @@ struct HSD_GObjProc {
 	u8 s_link;
 	s8 flags;
 	HSD_GObj *gobj;
-	void (*callback)(HSD_GObj*);
+	GObjProcCallback *callback;
 };
 
 struct HSD_GObj {
@@ -62,6 +62,7 @@ HSD_GObj *GObj_Create(u8 obj_class, u8 p_link, u8 prio);
 void GObj_InitKindObj(HSD_GObj *gobj, s8 obj_kind, void *obj_ptr);
 void GObj_SetupGXLink(HSD_GObj *gobj, GObjRenderCallback *render_cb, u8 gx_link, u8 priority);
 void GObj_CreateProcWithCallback(HSD_GObj *gobj, GObjProcCallback *cb, u8 s_prio);
+void GObj_ProcRemove(HSD_GObjProc *proc);
 
 void GObj_ProcAnimate(HSD_GObj *gobj);
 void GObj_GXProcDisplay(HSD_GObj *gobj, u32 pass);

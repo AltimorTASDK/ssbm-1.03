@@ -21,8 +21,9 @@ struct HSD_MatAnimJoint;
 struct HSD_ShapeAnimJoint;
 
 enum JObjFlag {
-	HIDDEN    = (1 << 4),
-	MTX_DIRTY = (1 << 6)
+	HIDDEN       = (1 << 4),
+	MTX_DIRTY    = (1 << 6),
+	USER_DEF_MTX = (1 << 23)
 };
 
 struct HSD_JObj {
@@ -60,6 +61,8 @@ void HSD_JObjAnimAll(HSD_JObj *jobj);
 void HSD_JObjAddChild(HSD_JObj *jobj, HSD_JObj *child);
 void HSD_JObjRemove(HSD_JObj *jobj);
 void HSD_JObjRemoveAll(HSD_JObj *jobj);
+
+void HSD_JObjSetupMatrix(HSD_JObj *jobj);
 
 void HSD_JObjAddConstraintPos(HSD_JObj *jobj, HSD_JObj *constraint);
 

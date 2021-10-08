@@ -12,15 +12,18 @@ public:
 	static constexpr auto row_count = N;
 	static constexpr auto col_count = M;
 	static constexpr auto elem_count = M * N;
-	
-	static constexpr matrix identity = std::make_from_tuple<matrix>(
+
+	template<T factor>
+	static constexpr matrix scale = std::make_from_tuple<matrix>(
 		for_range_product<N, M>([]<typename... pairs>() {
 			return std::make_tuple(([]() {
 				constexpr auto i = tuple_constant<0, pairs>;
 				constexpr auto j = tuple_constant<1, pairs>;
-				return i == j ? 1 : 0;
+				return i == j ? factor : 0;
 			}())...);
 		}));
+	
+	static constexpr matrix identity = scale<1>;
 
 	T elems[N * M];
 
