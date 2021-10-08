@@ -7,6 +7,8 @@
 #include "util/vector.h"
 #include <gctypes.h>
 
+// TODO: Not compatible with 20XX striking
+
 enum UnlockType {
 	UnlockType_Hidden,
 	UnlockType_Locked,
