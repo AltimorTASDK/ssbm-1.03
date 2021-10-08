@@ -62,6 +62,16 @@ constexpr auto end_left()
 	return std::make_tuple((char)text_opcode::reset_left_align);
 };
 
+constexpr auto center()
+{
+	return std::make_tuple((char)text_opcode::centered);
+};
+
+constexpr auto end_center()
+{
+	return std::make_tuple((char)text_opcode::reset_centered);
+};
+
 constexpr auto fit()
 {
 	return std::make_tuple((char)text_opcode::fitting);
@@ -76,8 +86,8 @@ template<u16 x, u16 y>
 constexpr auto textbox()
 {
 	return std::make_tuple((char)text_opcode::set_textbox,
-			       (char)(x >> 16), (char)(x & 0xFF),
-			       (char)(y >> 16), (char)(y & 0xFF));
+			       (char)(x >> 8), (char)(x & 0xFF),
+			       (char)(y >> 8), (char)(y & 0xFF));
 };
 
 constexpr auto end_textbox()
@@ -85,12 +95,20 @@ constexpr auto end_textbox()
 	return std::make_tuple((char)text_opcode::reset_textbox);
 };
 
+template<s16 x, s16 y>
+constexpr auto offset()
+{
+	return std::make_tuple((char)text_opcode::offset,
+			       (char)(x >> 8), (char)(x & 0xFF),
+			       (char)(y >> 8), (char)(y & 0xFF));
+};
+
 template<u16 a, u16 b>
 constexpr auto unk06()
 {
 	return std::make_tuple((char)text_opcode::unknown_06,
-			       (char)(a >> 16), (char)(a & 0xFF),
-			       (char)(b >> 16), (char)(b & 0xFF));
+			       (char)(a >> 8), (char)(a & 0xFF),
+			       (char)(b >> 8), (char)(b & 0xFF));
 };
 
 constexpr auto br()
