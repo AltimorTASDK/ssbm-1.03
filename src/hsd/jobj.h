@@ -21,7 +21,8 @@ struct HSD_MatAnimJoint;
 struct HSD_ShapeAnimJoint;
 
 enum JObjFlag {
-	HIDDEN = (1 << 4)
+	HIDDEN    = (1 << 4),
+	MTX_DIRTY = (1 << 6)
 };
 
 struct HSD_JObj {
@@ -36,7 +37,6 @@ struct HSD_JObj {
 		struct HSD_Spline *spline;
 	} u;
 	vec4 rotation;
-	char pad0028[0x2C - 0x28];
 	vec3 scale;
 	vec3 position;
 	matrix3x4 mtx;
@@ -49,10 +49,11 @@ struct HSD_JObj {
 
 extern "C" {
 	
-HSD_JObj *HSD_JObjLoadJoint(HSD_JObjDesc *desc);
+HSD_JObj *HSD_JObjLoadJoint(const HSD_JObjDesc *desc);
 
-void HSD_JObjAddAnimAll(HSD_JObj *jobj, HSD_AnimJoint *animjoint, HSD_MatAnimJoint *matanim_joint,
-                        HSD_ShapeAnimJoint *shapeanim_joint);
+void HSD_JObjAddAnimAll(HSD_JObj *jobj, const HSD_AnimJoint *animjoint,
+			const HSD_MatAnimJoint *matanim_joint,
+			const HSD_ShapeAnimJoint *shapeanim_joint);
 void HSD_JObjReqAnimAll(HSD_JObj *jobj, float frame);
 void HSD_JObjAnimAll(HSD_JObj *jobj);
 
@@ -60,16 +61,18 @@ void HSD_JObjAddChild(HSD_JObj *jobj, HSD_JObj *child);
 void HSD_JObjRemove(HSD_JObj *jobj);
 void HSD_JObjRemoveAll(HSD_JObj *jobj);
 
+void HSD_JObjAddConstraintPos(HSD_JObj *jobj, HSD_JObj *constraint);
+
 void HSD_JObjSetFlagsAll(HSD_JObj *jobj, u32 flags);
 void HSD_JObjClearFlagsAll(HSD_JObj *jobj, u32 flags);
 
-void HSD_JObjGetFromTreeByIndices(HSD_JObj *jobj, HSD_JObj **out_list,
+void HSD_JObjGetFromTreeByIndices(const HSD_JObj *jobj, HSD_JObj **out_list,
                                   const u16 *indices, s32 count);
 
 }
 
 // Helper function to get single jobj
-inline HSD_JObj *HSD_JObjGetFromTreeByIndex(HSD_JObj *jobj, u16 index)
+inline HSD_JObj *HSD_JObjGetFromTreeByIndex(const HSD_JObj *jobj, u16 index)
 {
 	HSD_JObj *result;
 	HSD_JObjGetFromTreeByIndices(jobj, &result, &index, 1);
@@ -78,7 +81,7 @@ inline HSD_JObj *HSD_JObjGetFromTreeByIndex(HSD_JObj *jobj, u16 index)
 
 // Helper function to get entire tree up to a certain size
 template<size_t N>
-inline void HSD_JObjGetTree(HSD_JObj *jobj, HSD_JObj **out_list)
+inline void HSD_JObjGetTree(const HSD_JObj *jobj, HSD_JObj **out_list)
 {
 	const auto indices = for_range<N>([]<size_t ...I>() {
 		return std::array { (u16)I... };
