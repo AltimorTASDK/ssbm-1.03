@@ -44,6 +44,13 @@ hook_loop:
         b       hook_loop
 hook_end:
 
+        # Zero out the bussy
+        lis     r3, __BSS_START__@h
+        ori     r3, r3, __BSS_START__@l
+        li      r4, 0
+        li      r5, __BSS_SIZE__
+        bl      memset
+
         # Run C++ constructors
         lis     r31, (__CTOR_LIST__ - 4)@h
         ori     r31, r31, (__CTOR_LIST__ - 4)@l

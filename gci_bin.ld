@@ -22,8 +22,10 @@ SECTIONS
     .rodata : { *(.rodata .rodata.*) }
     .ctors  : { KEEP(*(.ctors .ctors.*)) }
     .data   : { *(.data   .data.*) }
+    PROVIDE(__BSS_START__ = .);
     .bss    : { *(.bss    .bss.*) }
     .sbss   : { *(.sbss   .sbss.*) }
+    PROVIDE(__BSS_SIZE__ = . - __BSS_START__);
 
     /DISCARD/ : { *(*) }
 }
