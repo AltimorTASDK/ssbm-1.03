@@ -63,7 +63,9 @@ void HSD_JObjRemoveAll(HSD_JObj *jobj);
 
 void HSD_JObjAddConstraintPos(HSD_JObj *jobj, HSD_JObj *constraint);
 
+void HSD_JObjSetFlags(HSD_JObj *jobj, u32 flags);
 void HSD_JObjSetFlagsAll(HSD_JObj *jobj, u32 flags);
+void HSD_JObjClearFlags(HSD_JObj *jobj, u32 flags);
 void HSD_JObjClearFlagsAll(HSD_JObj *jobj, u32 flags);
 
 void HSD_JObjGetFromTreeByIndices(const HSD_JObj *jobj, HSD_JObj **out_list,

@@ -5,6 +5,11 @@
 struct HSD_GObj;
 
 using GObjRenderCallback = void(HSD_GObj *gobj, u32 pass);
+using GObjProcCallback = void(HSD_GObj *gobj);
+
+enum GObjKind {
+	GOBJ_KIND_JOBJ = 3
+};
 
 struct HSD_GObjProc {
 	HSD_GObjProc *child;
@@ -48,3 +53,17 @@ struct HSD_GObj {
 		return static_cast<const T*>(data);
 	}
 };
+
+extern "C" {
+
+extern HSD_GObj **plinkhigh_gobjs;
+
+HSD_GObj *GObj_Create(u8 obj_class, u8 p_link, u8 prio);
+void GObj_InitKindObj(HSD_GObj *gobj, s8 obj_kind, void *obj_ptr);
+void GObj_SetupGXLink(HSD_GObj *gobj, GObjRenderCallback *render_cb, u8 gx_link, u8 priority);
+void GObj_CreateProcWithCallback(HSD_GObj *gobj, GObjProcCallback *cb, u8 s_prio);
+
+void GObj_ProcAnimate(HSD_GObj *gobj);
+void GObj_GXProcDisplay(HSD_GObj *gobj, u32 pass);
+
+}
