@@ -15,6 +15,10 @@ enum Rule {
 	Rule_Max             = 7
 };
 
+enum Mode {
+	Mode_Stock = 1
+};
+
 struct GameRules {
 	u16 pad000;
 	u8 mode;

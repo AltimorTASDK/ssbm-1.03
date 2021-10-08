@@ -16,7 +16,6 @@ extern "C" ArchiveModel MenMainCursorRl_Top;
 
 extern "C" ArchiveModel MenMainNmRl_Top;
 
-extern "C" HSD_GObj *RulesMenuObject;
 extern "C" u16 SelectedRuleIndex;
 extern "C" u8 SelectedRuleValue;
 
@@ -102,12 +101,10 @@ static void replace_value_jobj(HSD_JObj *parent, HSD_JObj **jobj_tree)
 	HSD_JObjAddChild(parent, value_jobj);
 }
 
-static void replace_counter_jobj(int index)
+static void replace_counter_jobj(RulesMenuData *rules_data, int index)
 {
-	auto *rules_data = RulesMenuObject->get<RulesMenuData>();
 	auto *parent = rules_data->jobj_tree.rules[index];
 	auto **jobj_tree = rules_data->value_jobj_trees[index].tree;
-	
 	replace_value_jobj(parent, jobj_tree);
 
 	// Hide ":"
@@ -118,12 +115,10 @@ static void replace_counter_jobj(int index)
 	HSD_JObjAddChild(jobj_tree[8], HSD_JObjFromArchiveModel(&MenMainNmRl_Top));
 }
 
-static void replace_timer_jobj(int index)
+static void replace_timer_jobj(RulesMenuData *rules_data, int index)
 {
-	auto *rules_data = RulesMenuObject->get<RulesMenuData>();
 	auto *parent = rules_data->jobj_tree.rules[index];
 	auto **jobj_tree = rules_data->value_jobj_trees[index].tree;
-	
 	replace_value_jobj(parent, jobj_tree);
 
 	// Minutes
@@ -210,10 +205,11 @@ static void update_atl_value(HSD_GObj *menu_obj, u32 value)
 	update_value_digit(jobj_tree[6], seconds % 10);
 }
 
-extern "C" void orig_Menu_SetupRuleMenu(u32 entry_point);
-extern "C" void hook_Menu_SetupRuleMenu(u32 entry_point)
+extern "C" HSD_GObj *orig_Menu_SetupRuleMenu(u32 entry_point);
+extern "C" HSD_GObj *hook_Menu_SetupRuleMenu(u32 entry_point)
 {
-	orig_Menu_SetupRuleMenu(entry_point);
+	auto *menu_obj = orig_Menu_SetupRuleMenu(entry_point);
+	auto *rules_data = menu_obj->get<RulesMenuData>();
 
 	// Replace rule name textures
 	const auto *matanim = MenMainCursorRl_Top.matanim_joint->child->child->next->matanim;
@@ -221,13 +217,14 @@ extern "C" void hook_Menu_SetupRuleMenu(u32 entry_point)
 	matanim->texanim->imagetbl[4]->img_ptr = air_time_limit_tex_data;
 	
 	// Replace rule value models
-	replace_counter_jobj(Rule_LedgeGrabLimit);
-	replace_timer_jobj(Rule_AirTimeLimit);
+	replace_counter_jobj(rules_data, Rule_LedgeGrabLimit);
+	replace_timer_jobj(rules_data, Rule_AirTimeLimit);
 	
 	// Display initial values
-	auto *rules_data = RulesMenuObject->get<RulesMenuData>();
-	update_lgl_value(RulesMenuObject, rules_data->handicap);
-	update_atl_value(RulesMenuObject, rules_data->damage_ratio);
+	update_lgl_value(menu_obj, rules_data->handicap);
+	update_atl_value(menu_obj, rules_data->damage_ratio);
+	
+	return menu_obj;
 }
 
 extern "C" void orig_Menu_UpdateRuleValue(HSD_GObj *menu_obj, HSD_JObj *jobj, u8 index, u32 value);
