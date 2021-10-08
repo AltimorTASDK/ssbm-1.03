@@ -1,5 +1,14 @@
 #pragma once
 
+enum StageID {
+	Stage_FoD = 2,
+	Stage_PS  = 3,
+	Stage_YS  = 8,
+	Stage_DL  = 28,
+	Stage_BF  = 31,
+	Stage_FD  = 32
+};
+
 union StageParams {
 	struct {
 		float left_plat_height;
