@@ -244,3 +244,19 @@ constexpr auto zip_apply(auto &&callable, auto &&...tuples)
 		return apply_multi(callable, std::forward<decltype(args)>(args)...);
 	}, zip(tuples...));
 }
+	
+namespace detail {
+constexpr auto array_cat_impl(size_t offset, auto &result, auto &&head, auto &&...tail) {
+	std::copy(head.begin(), head.end(), result.begin() + offset);
+	if constexpr (sizeof...(tail) != 0)
+		array_cat_impl(offset + head.size(), result, tail...);
+};
+}
+
+template<typename T, size_t ...sizes>
+constexpr auto array_cat(const std::array<T, sizes> &...arrays)
+{
+	std::array<T, (sizes + ...)> result;
+	detail::array_cat_impl(0, result, arrays...);
+	return result;
+}
