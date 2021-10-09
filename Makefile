@@ -113,7 +113,7 @@ $(call get_texture_out, $1): $1 $(TOOLS)/encode_texture.py
 endef
 
 define make_header_rule
-$1.h: $1
+$1.h: $1 $(TOOLS)/bin_to_header.py
 	python $(TOOLS)/bin_to_header.py $$< $$@
 endef
 
