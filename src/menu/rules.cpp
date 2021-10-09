@@ -8,6 +8,7 @@
 #include "resources/rules/ledge_grab_limit.tex.h"
 #include "resources/rules/air_time_limit.tex.h"
 #include "rules/values.h"
+#include "util/compression.h"
 #include "util/melee/text_builder.h"
 #include <gctypes.h>
 
@@ -74,11 +75,11 @@ constexpr auto atl_description = text_builder::build(
 	text_builder::textbox<179, 179>(),
 	text_builder::unk06<0, 0>(),
 	text_builder::fit(),
-	text_builder::ascii<"Set Jigglypuff's ATL in the">(),
+	text_builder::ascii<"Set the ATL in the event of">(),
 	text_builder::end_fit(),
 	text_builder::br(),
 	text_builder::fit(),
-	text_builder::ascii<"event of a time-out.">(),
+	text_builder::ascii<"a time-out.">(),
 	text_builder::end_fit(),
 	text_builder::end_textbox(),
 	text_builder::end_color());
@@ -213,8 +214,8 @@ extern "C" HSD_GObj *hook_Menu_SetupRuleMenu(u32 entry_point)
 
 	// Replace rule name textures
 	const auto *matanim = MenMainCursorRl_Top.matanim_joint->child->child->next->matanim;
-	matanim->texanim->imagetbl[3]->img_ptr = ledge_grab_limit_tex_data;
-	matanim->texanim->imagetbl[4]->img_ptr = air_time_limit_tex_data;
+	matanim->texanim->imagetbl[3]->img_ptr = rle_decode(ledge_grab_limit_tex_data);
+	matanim->texanim->imagetbl[4]->img_ptr = rle_decode(air_time_limit_tex_data);
 	
 	// Replace rule value models
 	replace_counter_jobj(rules_data, Rule_LedgeGrabLimit);
