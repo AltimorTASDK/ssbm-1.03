@@ -9,6 +9,18 @@
 #include <type_traits>
 
 template<typename base>
+class vec_impl;
+
+template<typename T>
+constexpr auto is_vector_type = false;
+
+template<typename T>
+constexpr auto is_vector_type<vec_impl<T>> = true;
+
+template<typename T>
+concept vector_type = is_vector_type<T>;
+
+template<typename base>
 class vec_impl : public base {
 	template<typename other_base>
 	friend class vec_impl;
@@ -18,23 +30,40 @@ class vec_impl : public base {
 
 	static constexpr auto elem_count = sizeof_tuple<elem_tuple>;
 
-	constexpr auto foreach(auto &&callable, auto &&...tuples)
-	{
-		static_assert(((sizeof_tuple<decltype(tuples)> == elem_count) && ...));
-		return zip_apply(callable, elems(), tuples...);
-	}
-
-	constexpr auto foreach(auto &&callable, auto &&...tuples) const
-	{
-		static_assert(((sizeof_tuple<decltype(tuples)> == elem_count) && ...));
-		return zip_apply(callable, elems(), tuples...);
-	}
-
 public:
 	using base::elems;
 
 	static constexpr vec_impl zero = vec_impl(fill_tuple<elem_count>(elem_type{}));
 	static constexpr vec_impl one = vec_impl(fill_tuple<elem_count>(elem_type{1}));
+
+	static constexpr elem_type dot(const vec_impl &a, const vec_impl &b)
+	{
+		return sum_tuple(a.foreach(operators::mul, b.elems()));
+	}
+	
+	// Component-wise min of two vectors
+	static constexpr vec_impl min(const vec_impl &a, const vec_impl &b)
+	{
+		return vec_impl(a.foreach(operators::min, b.elems()));
+	}
+	
+	// Component-wise max of two vectors
+	static constexpr vec_impl max(const vec_impl &a, const vec_impl &b)
+	{
+		return vec_impl(a.foreach(operators::max, b.elems()));
+	}
+
+	// Component-wise min and max of two vectors
+	static constexpr auto min_max(const vec_impl &a, const vec_impl &b)
+	{
+		return std::make_tuple(min(a, b), max(a, b));
+	}
+
+	// Component-wise lerp of two vectors
+	static constexpr vec_impl lerp(const vec_impl &a, const vec_impl &b, auto t)
+	{
+		return vec_impl(a.foreach(bind_back(std::lerp, t), b.elems()));
+	}
 
 	constexpr vec_impl()
 	{
@@ -75,6 +104,35 @@ public:
 
 	template<size_t N>
 	constexpr auto get() const { return std::get<N>(elems()); }
+
+	constexpr auto foreach(auto &&callable, auto &&...tuples)
+	{
+		static_assert(((sizeof_tuple<decltype(tuples)> == elem_count) && ...));
+		return zip_apply(callable, elems(), tuples...);
+	}
+
+	constexpr auto foreach(auto &&callable, auto &&...tuples) const
+	{
+		static_assert(((sizeof_tuple<decltype(tuples)> == elem_count) && ...));
+		return zip_apply(callable, elems(), tuples...);
+	}
+
+	constexpr auto length_sqr() const
+	{
+		return dot(*this, *this);
+	}
+
+	constexpr auto length() const
+	{
+		return sqrt(length_sqr());
+	}
+	
+	// Create a new vector by applying a function to each component
+	template<typename T = vec_impl> requires is_vector_type<T>
+	constexpr T map(auto &&callable) const
+	{
+		return T(foreach(callable));
+	}
 
 	constexpr vec_impl &operator=(const vec_impl &other)
 	{
@@ -171,45 +229,6 @@ public:
 	{
 		return vec_impl(foreach(operators::neg));
 	}
-
-	constexpr auto length_sqr() const
-	{
-		return dot(*this, *this);
-	}
-
-	constexpr auto length() const
-	{
-		return sqrt(length_sqr());
-	}
-
-	static constexpr auto dot(const vec_impl &a, const vec_impl &b)
-	{
-		return sum_tuple(a.foreach(operators::mul, b.elems()));
-	}
-	
-	// Component-wise min of two vectors
-	static constexpr auto min(const vec_impl &a, const vec_impl &b)
-	{
-		return vec_impl(a.foreach(operators::min, b.elems()));
-	}
-	
-	// Component-wise max of two vectors
-	static constexpr auto max(const vec_impl &a, const vec_impl &b)
-	{
-		return vec_impl(a.foreach(operators::max, b.elems()));
-	}
-
-	// Component-wise min and max of two vectors
-	static constexpr auto min_max(const vec_impl &a, const vec_impl &b)
-	{
-		return std::make_tuple(min(a, b), max(a, b));
-	}
-
-	// Component-wise lerp of two vectors
-	static constexpr auto lerp(const vec_impl &a, const vec_impl &b, auto t)
-	{
-		return vec_impl(a.foreach(bind_back(std::lerp, t), b.elems()));
-	}
 };
 
 template<typename T>
@@ -299,12 +318,3 @@ struct uv_coord_base {
 };
 
 using uv_coord = vec_impl<uv_coord_base>;
-
-template<typename T>
-constexpr auto is_vector_type = false;
-
-template<typename T>
-constexpr auto is_vector_type<vec_impl<T>> = true;
-
-template<typename T>
-concept vector_type = is_vector_type<T>;

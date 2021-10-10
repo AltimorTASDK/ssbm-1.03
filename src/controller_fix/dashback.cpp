@@ -41,9 +41,7 @@ static void check_dashback(HSD_GObj *gobj)
 	auto *nana_gobj = PlayerBlock_GetSubCharGObj(player->slot, 1);
 	auto *nana = nana_gobj->get<Player>();
 	nana->popo_data_write->direction = player->direction;
-	nana->popo_data_write->stick.x = player->direction > 0.f ? 127 : -128;
-	// UCF doesn't zero out Y, making it possible for Nana to achieve impossible input values
-	nana->popo_data_write->stick.y = 0;
+	nana->popo_data_write->stick = popo_to_nana(player->input.stick);
 }
 
 extern "C" void orig_Interrupt_AS_Turn(HSD_GObj *gobj);
