@@ -20,7 +20,7 @@ void fix_stick(const vec2c &hw_values, vec2 *stick)
 extern "C" void apply_cardinal_fix(HSD_GObj *gobj)
 {
 	auto *player = gobj->get<Player>();
-	const auto &pad = get_input(player->port, 0);
+	const auto &pad = get_input<0>(player->port);
 
 	fix_stick(pad.stick, &player->input.stick);
 	fix_stick(pad.cstick, &player->input.cstick);

@@ -12,20 +12,31 @@ constexpr auto DEADZONE = 22;
 // 1.0
 constexpr auto STICK_MAX = 80;
 
-inline int clamp_pad_index(int index)
+namespace detail {
+constexpr auto qnum = 5;
+
+inline const PADStatus &get_input_impl(int port, int offset)
 {
-	return (HSD_PadLibData.qnum + (index % HSD_PadLibData.qnum)) % HSD_PadLibData.qnum;
+	// index is guaranteed to be in range [0, 8], avoid modulo
+	auto index = HSD_PadLibData.qread + offset;
+	if (index >= qnum)
+		index -= qnum;
+
+	return HSD_PadLibData.queue[index].stat[port];
+}
 }
 
-inline const PADStatus &get_input(int port, int offset)
+template<int offset>
+inline const PADStatus &get_input(int port)
 {
-	return HSD_PadLibData.queue[clamp_pad_index(HSD_PadLibData.qread + offset - 1)].stat[port];
+	constexpr auto real_offset = (((offset - 1) % detail::qnum) + detail::qnum) % detail::qnum;
+	return detail::get_input_impl(port, real_offset);
 }
 
 inline bool check_ucf_xsmash(const Player *player)
 {
-	const auto &prev_input = get_input(player->port, -2);
-	const auto &current_input = get_input(player->port, 0);
+	const auto &prev_input = get_input<-2>(player->port);
+	const auto &current_input = get_input<0>(player->port);
 	const auto delta = current_input.stick.x - prev_input.stick.x;
 	return delta * delta > 75 * 75;
 }
