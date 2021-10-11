@@ -30,7 +30,8 @@ LINKSCRIPT := gci_bin.ld
 LDFLAGS    := -Wl,-Map=output.map -Wl,--gc-sections -flto
 
 CFLAGS   := -DGEKKO -mogc -mcpu=750 -meabi -mhard-float -Os -Wall \
-			-Wno-register -Wno-unused-value -ffunction-sections -fdata-sections -flto
+			-Wno-register -Wno-unused-value -Wconversion -Warith-conversion \
+			-ffunction-sections -fdata-sections -flto
 CXXFLAGS := $(CFLAGS) -std=c++2b -fconcepts -fno-rtti -fno-exceptions
 INCLUDE  := -Isrc -I$(LIBOGC)/include
 
