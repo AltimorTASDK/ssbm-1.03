@@ -1,4 +1,4 @@
-#include "util/coords.h"
+#include "util/melee/pad.h"
 #include <cmath>
 #include <gctypes.h>
 

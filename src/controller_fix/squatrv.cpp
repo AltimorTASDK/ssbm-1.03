@@ -1,5 +1,5 @@
 #include "melee/player.h"
-#include "util/coords.h"
+#include "util/melee/pad.h"
 
 bool should_suppress_squatrv(const HSD_GObj *gobj)
 {

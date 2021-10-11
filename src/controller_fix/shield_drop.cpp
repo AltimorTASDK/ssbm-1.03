@@ -1,7 +1,7 @@
 #include "os/os.h"
 #include "melee/constants.h"
 #include "melee/player.h"
-#include "util/coords.h"
+#include "util/melee/pad.h"
 
 static bool should_suppress_spotdodge(HSD_GObj *gobj)
 {

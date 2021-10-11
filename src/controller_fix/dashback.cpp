@@ -1,7 +1,7 @@
 #include "melee/action_state.h"
 #include "melee/constants.h"
 #include "melee/player.h"
-#include "util/coords.h"
+#include "util/melee/pad.h"
 
 static void check_dashback(HSD_GObj *gobj)
 {

@@ -1,7 +1,7 @@
 #include "melee/action_state.h"
 #include "melee/constants.h"
 #include "melee/player.h"
-#include "util/coords.h"
+#include "util/melee/pad.h"
 #include <cmath>
 
 static bool should_wiggle_out(HSD_GObj *gobj)
