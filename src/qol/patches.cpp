@@ -4,8 +4,8 @@
 
 extern "C" void Camera_CStickControl();
 
-constexpr auto NOP = 0x60000000;
-constexpr auto BLR = 0x4E800020;
+constexpr u32 NOP = 0x60000000;
+constexpr u32 BLR = 0x4E800020;
 
 const auto patches = std::array {
 	// Enable cstick in develop mode
