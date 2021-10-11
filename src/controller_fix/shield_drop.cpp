@@ -30,8 +30,8 @@ static bool should_suppress_spotdodge(HSD_GObj *gobj)
 	return true;
 }
 
-extern "C" int orig_Interrupt_SpotDodge_OoS(HSD_GObj *gobj);
-extern "C" int hook_Interrupt_SpotDodge_OoS(HSD_GObj *gobj)
+extern "C" bool orig_Interrupt_SpotDodge_OoS(HSD_GObj *gobj);
+extern "C" bool hook_Interrupt_SpotDodge_OoS(HSD_GObj *gobj)
 {
 	return !should_suppress_spotdodge(gobj) && orig_Interrupt_SpotDodge_OoS(gobj);
 }

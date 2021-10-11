@@ -24,8 +24,8 @@ bool should_suppress_squatrv(const HSD_GObj *gobj)
 	return true;
 }
 
-extern "C" int orig_Interrupt_SquatRv(HSD_GObj *gobj);
-extern "C" int hook_Interrupt_SquatRv(HSD_GObj *gobj)
+extern "C" bool orig_Interrupt_SquatRv(HSD_GObj *gobj);
+extern "C" bool hook_Interrupt_SquatRv(HSD_GObj *gobj)
 {
 	return !should_suppress_squatrv(gobj) && orig_Interrupt_SquatRv(gobj);
 }

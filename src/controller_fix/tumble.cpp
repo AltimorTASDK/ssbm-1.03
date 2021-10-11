@@ -31,7 +31,7 @@ static bool should_wiggle_out(HSD_GObj *gobj)
 }
 
 // Called from tumble.S
-extern "C" int check_tumble_wiggle(HSD_GObj *gobj)
+extern "C" bool check_tumble_wiggle(HSD_GObj *gobj)
 {
 	if (!should_wiggle_out(gobj))
 		return false;
