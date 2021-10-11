@@ -5,23 +5,24 @@
 #include <gctypes.h>
 
 // First two are singles or red P1/blue P1, second two are red P2/blue P2
-constexpr vec2 bf_spawns[]  = { { -38.80f, 35.20f }, { 38.80f, 35.20f },
-                                { -38.80f,  5.00f }, { 38.80f,  5.00f } };
+constexpr vec2 bf_spawns[]  = { { -38.8000f, 35.2000f }, { 38.8000f, 35.2000f },
+                                { -38.8000f,  5.0000f }, { 38.8000f,  5.0000f } };
 
-constexpr vec2 dl_spawns[]  = { { -46.60f, 37.20f }, { 47.40f, 37.30f },
-                                { -46.60f,  5.00f }, { 47.40f,  5.00f } };
+constexpr vec2 dl_spawns[]  = { { -46.6000f, 37.2215f }, { 47.3891f, 37.3215f },
+                                { -46.6000f,  5.0000f }, { 47.3891f,  5.0000f } };
 
-constexpr vec2 fd_spawns[]  = { { -60.00f, 10.00f }, { 60.00f, 10.00f },
-                                { -20.00f, 10.00f }, { 20.00f, 10.00f } };
+constexpr vec2 fd_spawns[]  = { { -60.0000f, 10.0000f }, { 60.0000f, 10.0000f },
+                                { -20.0000f, 10.0000f }, { 20.0000f, 10.0000f } };
 
-constexpr vec2 fod_spawns[] = { { -41.25f, 21.00f }, { 41.25f, 27.00f },
-                                { -41.25f,  5.00f }, { 41.25f,  5.00f } };
+// Modified to account for neutral platform heights (vanilla Y 21 & 27)
+constexpr vec2 fod_spawns[] = { { -41.2500f, 25.0000f }, { 41.2500f, 23.0000f },
+                                { -41.2500f,  5.0000f }, { 41.2500f,  5.0000f } };
 
-constexpr vec2 ps_spawns[]  = { { -40.00f, 32.00f }, { 40.00f, 32.00f },
-                                { -40.00f,  5.00f }, { 40.00f,  5.00f } };
+constexpr vec2 ps_spawns[]  = { { -40.0000f, 32.0000f }, { 40.0000f, 32.0000f },
+                                { -40.0000f,  5.0000f }, { 40.0000f,  5.0000f } };
 
-constexpr vec2 ys_spawns[]  = { { -42.00f, 26.60f }, { 42.00f, 28.00f },
-                                { -42.00f,  5.00f }, { 42.00f,  5.00f } };
+constexpr vec2 ys_spawns[]  = { { -42.0000f, 26.6000f }, { 42.0000f, 28.0000f },
+                                { -42.0000f,  5.0000f }, { 42.0000f,  5.0000f } };
 					 
 static const vec2 *get_spawn_list()
 {
@@ -112,8 +113,8 @@ extern "C" void hook_Stage_GetSpawnPoint(u32 slot, vec3 *result)
 {
 	orig_Stage_GetSpawnPoint(slot, result);
 	
-	// No singleplayer
-	if (SinglePlayerModeCheck())
+	// No singleplayer except for training mode
+	if (IsSinglePlayerMode() && SceneMajor != Scene_Training)
 		return;
 	
 	// No P5/P6
