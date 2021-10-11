@@ -36,6 +36,7 @@ CXXFLAGS := $(CFLAGS) -std=c++2b -fconcepts -fno-rtti -fno-exceptions
 INCLUDE  := -Isrc -I$(LIBOGC)/include
 
 GCIFILE     := $(BINDIR)/ssbm-1.03.gci
+GCISRC      := $(GCIDIR)/ssbm.gci
 GCIFILE20XX := $(BINDIR)/ssbm-1.03-20XX.gci
 GCISRC20XX  := $(GCIDIR)/20XX.gci
 ELFFILE     := $(GCIDIR)/1.03_data/code.elf
@@ -55,7 +56,7 @@ ssbm: $(GCIFILE)
 
 $(GCIFILE): $(BINFILE) $(MGCFILES)
 	@[ -d $(@D) ] || mkdir -p $(@D)
-	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -o $@ $(MGCMAIN)
+	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -i $(GCISRC) -o $@ $(MGCMAIN)
 
 $(GCIFILE20XX): $(BINFILE) $(MGCFILES) $(GCISRC20XX)
 	@[ -d $(@D) ] || mkdir -p $(@D)
