@@ -209,14 +209,16 @@ struct Player {
 	u8 flags4;
 	u8 flags5;
 	u8 flags6;
-	u8 is_invisible : 1;
-	u8 flags7_40 : 1;
-	u8 flags7_20 : 1;
-	u8 flags8_80 : 1;
-	u8 flags8_40 : 1;
-	u8 flags8_20 : 1;
-	u8 no_update : 1;
-	u8 is_backup_climber : 1;
+	struct {
+		u8 is_invisible : 1;
+	};
+	struct {
+		u8 flags8_80 : 1;
+		u8 flags8_40 : 1;
+		u8 flags8_20 : 1;
+		u8 no_update : 1;
+		u8 is_backup_climber : 1;
+	};
 	u8 flags9;
 	u8 flags10;
 	u8 flags11;
