@@ -98,6 +98,7 @@ hooks_start:
 .set UpdatePadButtons,        HSD_PadRenewMasterStatus+0x400
 .set UpdatePlayerStick,       PlayerThink_Input+0x1D0
 .set CheckScrollingRuleIndex, Menu_UpdateRuleDisplay+0x418
+.set ShowNameTagCheck,        NameTag_DisplayInGame+0x28
 
 add_hook CheckScrollingRuleIndex
 add_hook Interrupt_AS_Turn
@@ -108,6 +109,7 @@ add_hook Menu_CreateRuleDescriptionText
 add_hook Menu_SetupMainMenu
 add_hook Menu_SetupRuleMenu
 add_hook Menu_UpdateRuleValue
+add_hook ShowNameTagCheck
 add_hook SSS_Initialization
 add_hook Stage_Dreamland_WhispyUpdate
 add_hook Stage_FinalDestination_BackgroundUpdate

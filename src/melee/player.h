@@ -209,7 +209,9 @@ struct Player {
 	u8 flags4;
 	u8 flags5;
 	u8 flags6;
-	u8 flags7;
+	u8 is_invisible : 1;
+	u8 flags7_40 : 1;
+	u8 flags7_20 : 1;
 	u8 flags8_80 : 1;
 	u8 flags8_40 : 1;
 	u8 flags8_20 : 1;
@@ -246,6 +248,9 @@ struct Player {
 
 extern "C" {
 	
-HSD_GObj *PlayerBlock_GetSubCharGObj(int slot, int subchar);
+HSD_GObj *PlayerBlock_GetSubCharGObj(s32 slot, s32 subchar);
+HSD_GObj *PlayerBlock_GetGObj(s32 slot);
+
+void PlayerThink_Input(HSD_GObj *gobj);
 	
 }
