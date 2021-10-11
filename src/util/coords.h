@@ -29,7 +29,7 @@ inline const PADStatus &get_input_impl(int port, int offset)
 template<int offset>
 inline const PADStatus &get_input(int port)
 {
-	constexpr auto real_offset = (((offset - 1) % detail::qnum) + detail::qnum) % detail::qnum;
+	constexpr auto real_offset = (((offset - 1) % PAD_QNUM) + PAD_QNUM) % PAD_QNUM;
 	return detail::get_input_impl(port, real_offset);
 }
 

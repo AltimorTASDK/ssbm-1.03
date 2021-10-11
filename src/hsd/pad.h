@@ -3,6 +3,8 @@
 #include "util/vector.h"
 #include <gctypes.h>
 
+constexpr auto PAD_QNUM = 5;
+
 enum Button {
 	Button_DPadLeft = 1,
 	Button_DPadRight = 2,
