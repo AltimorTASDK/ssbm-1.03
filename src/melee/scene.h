@@ -2,5 +2,11 @@
 
 #include <gctypes.h>
 
-extern "C" u8 SceneMajor;
-extern "C" u8 SceneMinor;
+extern "C" {
+
+extern u8 SceneMajor;
+extern u8 SceneMinor;
+
+bool SinglePlayerModeCheck();
+
+}

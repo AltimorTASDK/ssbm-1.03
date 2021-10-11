@@ -43,6 +43,13 @@ enum CID {
 	CID_Max
 };
 
+enum SlotKind {
+	SlotKind_Human = 0,
+	SlotKind_CPU = 1,
+	SlotKind_None = 3,
+	SlotKind_Boss = 4
+};
+
 struct PlayerInput {
     vec2 stick;
     vec2 last_stick;
@@ -252,6 +259,8 @@ extern "C" {
 	
 HSD_GObj *PlayerBlock_GetSubCharGObj(s32 slot, s32 subchar);
 HSD_GObj *PlayerBlock_GetGObj(s32 slot);
+u8 PlayerBlock_GetTeam(s32 slot);
+u32 PlayerBlock_GetSlotType(s32 slot);
 
 void PlayerThink_Input(HSD_GObj *gobj);
 	
