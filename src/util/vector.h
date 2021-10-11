@@ -1,6 +1,6 @@
 #pragma once
 
-#include "util/misc.h"
+#include "util/meta.h"
 #include "util/operators.h"
 #include <cmath>
 #include <gctypes.h>

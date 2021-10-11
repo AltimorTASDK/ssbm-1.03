@@ -1,5 +1,6 @@
 #include "hsd/archive.h"
 #include "hsd/pad.h"
+#include "util/math.h"
 #include <numeric>
 #include <gctypes.h>
 
@@ -58,7 +59,7 @@ void configure_remap(int port)
 	const auto lrz_buttons = status.buttons & LRZ_MASK;
 
 	// Must be holding exactly one of X/Y and L/R/Z
-	if (std::popcount(xy_buttons) != 1 || std::popcount(lrz_buttons) != 1) {
+	if (!is_pow2(xy_buttons) || !is_pow2(lrz_buttons)) {
 		remap_timer[port] = 0;
 		return;
 	}

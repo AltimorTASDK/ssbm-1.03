@@ -4,7 +4,7 @@
 #include "hsd/object.h"
 #include "util/vector.h"
 #include "util/matrix.h"
-#include "util/misc.h"
+#include "util/meta.h"
 #include <gctypes.h>
 #include <array>
 #include <tuple>

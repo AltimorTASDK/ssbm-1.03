@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <climits>
+#include <cmath>
 #include <functional>
 #include <tuple>
 #include <type_traits>
@@ -30,20 +31,6 @@ constexpr auto sizeof_tuple = std::tuple_size_v<std::remove_reference_t<T>>;
 // Extract values from a tuple of std::integral_constants
 template<size_t N, typename T>
 constexpr auto tuple_constant = std::tuple_element_t<N, T>::value;
-
-constexpr auto align_up(auto value, auto alignment)
-{
-	// Powers of 2 only
-	return (value + alignment - 1) & ~(alignment - 1);
-}
-
-template<typename T>
-constexpr T copysign_int(T value, T sign)
-{
-	// int cast required so srawi sign extends properly
-	const auto mask = sign >> (sizeof(T) * CHAR_BIT - 1);
-	return (value + mask) ^ mask;
-}
 
 constexpr auto sum_tuple(auto &&tuple)
 {
