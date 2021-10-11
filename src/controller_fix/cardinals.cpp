@@ -9,11 +9,11 @@ void fix_stick(const vec2c &hw_values, vec2 *stick)
 
 	// Produce 1.0 cardinals when one axis is >= 80 and the other is in the deadzone
 	if (abs_x >= STICK_MAX && abs_y <= DEADZONE) {
-		stick->x = std::copysign(1.f, hw_values.x);
+		stick->x = hw_values.x > 0 ? 1.f : -1.f;
 		stick->y = 0;
 	} else if (abs_y >= STICK_MAX && abs_x <= DEADZONE) {
 		stick->x = 0;
-		stick->y = std::copysign(1.f, hw_values.y);
+		stick->y = hw_values.y > 0 ? 1.f : -1.f;
 	}
 }
 
