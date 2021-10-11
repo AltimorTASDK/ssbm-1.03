@@ -31,7 +31,7 @@ struct MainMenuData {
 extern "C" ArchiveModel MenMainCursor_Top;
 extern "C" ArchiveModel MenMainConTop_Top;
 
-constexpr auto debug_menu_description = text_builder::build(
+static constexpr auto debug_menu_description = text_builder::build(
 	text_builder::kern(),
 	text_builder::left(),
 	text_builder::color<170, 170, 170>(),
@@ -50,7 +50,7 @@ constexpr auto debug_menu_description = text_builder::build(
 	text_builder::end_textbox(),
 	text_builder::end_color());
 
-constexpr auto controls_description = text_builder::build(
+static constexpr auto controls_description = text_builder::build(
 	text_builder::kern(),
 	text_builder::left(),
 	text_builder::color<170, 170, 170>(),

@@ -52,7 +52,7 @@ struct RulesMenuData {
 	 Text *description_text;
 };
 
-constexpr auto lgl_description = text_builder::build(
+static constexpr auto lgl_description = text_builder::build(
 	text_builder::kern(),
 	text_builder::left(),
 	text_builder::color<170, 170, 170>(),
@@ -68,7 +68,7 @@ constexpr auto lgl_description = text_builder::build(
 	text_builder::end_textbox(),
 	text_builder::end_color());
 
-constexpr auto atl_description = text_builder::build(
+static constexpr auto atl_description = text_builder::build(
 	text_builder::kern(),
 	text_builder::left(),
 	text_builder::color<170, 170, 170>(),
