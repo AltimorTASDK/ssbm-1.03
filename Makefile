@@ -54,7 +54,7 @@ ssbm: $(GCIFILE)
 .PHONY: 20xx
 20xx: $(GCIFILE20XX)
 
-$(GCIFILE): $(BINFILE) $(MGCFILES)
+$(GCIFILE): $(BINFILE) $(MGCFILES) $(GCISRC)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -i $(GCISRC) -o $@ $(MGCMAIN)
 
