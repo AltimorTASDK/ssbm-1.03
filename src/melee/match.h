@@ -22,7 +22,12 @@ struct MatchPlayerData {
 	char pad00E[0x2C - 0x0E];
 	s32 score;
 	u32 subscore;
-	char pad034[0xA8 - 0x34];
+	char pad034[0x6C - 0x34];
+	s32 ground_time;
+	s32 air_time;
+	char pad074[0x8C - 0x74];
+	s32 ledge_grabs;
+	char pad090[0xA8 - 0x90];
 };
 
 struct MatchTeamData {

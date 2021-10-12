@@ -12,15 +12,22 @@ struct score {
 	int percent;
 };
 
-static bool lgl_violated(int slot)
+static bool lgl_violated(const MatchPlayerData &player)
 {
 	const auto lgl = get_ledge_grab_limit();
 	if (lgl == 0)
 		return 0;
 	
-	const auto *stats = PlayerBlock_GetStats(slot);
-	const auto ledge_grabs = PlayerBlockStats_GetActionStat(stats, ActionStat_LedgeGrabs);
-	return ledge_grabs > lgl;
+	return player.ledge_grabs > lgl;
+}
+
+static bool atl_violated(const MatchPlayerData &player)
+{
+	const auto atl = get_air_time_limit();
+	if (atl == 0)
+		return 0;
+	
+	return player.air_time > atl;
 }
 
 static bool is_score_better(const score &a, const score &b)
@@ -68,14 +75,16 @@ static int get_player_scores(MatchController *match, score *scores, bool *violat
 	*violation = false;
 
 	for (auto i = 0; i < 6; i++) {
-		if (match->players[i].slot_type == SlotType_None)
+		const auto &player = match->players[i];
+
+		if (player.slot_type == SlotType_None)
 			continue;
 
 		scores[count] = {
 			.id = i,
-			.violation = lgl_violated(i),
-			.stocks = match->players[i].score,
-			.percent = match->players[i].percent
+			.violation = lgl_violated(player) || atl_violated(player),
+			.stocks = player.score,
+			.percent = player.percent
 		};
 		
 		if (scores[count].violation)
