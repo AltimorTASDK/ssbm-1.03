@@ -8,8 +8,8 @@
 constexpr auto XY_MASK = (Button_X | Button_Y);
 constexpr auto LRZ_MASK = (Button_L | Button_R | Button_Z);
 
-// X/Y + L/R/Z for 3 seconds at CSS
-constexpr auto REMAP_HOLD_TIME = 180;
+// X/Y + L/R/Z for 1 second at CSS
+constexpr auto REMAP_HOLD_TIME = 60;
 
 u32 remapping[4] = { 0 };
 int remap_timer[4] = { 0 };
