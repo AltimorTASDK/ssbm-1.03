@@ -34,7 +34,7 @@ struct StageSelectIcon {
 	u32 pad004;
 	u8 unlocked;
 	u8 anim_frame;
-	u8 pad00A;
+	u8 stage_index;
 	u8 stage_id;
 	vec2 select_region_size;
 	vec2 select_box_scale;
@@ -199,7 +199,14 @@ static void strike_stage(int port)
 
 extern "C" bool hook_Stage_IsValidRandomChoice(u16 index)
 {
-	return is_legal_stage(StageIndexToID[index]);
+	// Only select from visible stages
+	for (auto i = 0; i < 29; i++) {
+		const auto &icon = StageSelectIcons[i];
+		if (icon.stage_index == index && icon.unlocked != 2)
+			return false;
+	}
+	
+	return true;
 }
 
 extern "C" void orig_SSS_Think();
