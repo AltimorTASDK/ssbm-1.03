@@ -1,3 +1,4 @@
+#include "melee/match.h"
 #include "melee/rules.h"
 #include "rules/values.h"
 
@@ -18,3 +19,11 @@ struct init_rules {
 		rules->friendly_fire = true;
 	}
 } init_rules;
+
+extern "C" void orig_Match_Init(StartMeleeData *data);
+extern "C" void hook_Match_Init(StartMeleeData *data)
+{
+	data->rules.damage_ratio = 1.f;
+	data->rules.item_frequency = -1;
+	orig_Match_Init(data);
+}
