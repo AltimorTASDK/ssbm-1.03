@@ -40,7 +40,7 @@ struct MatchTeamData {
 };
 
 struct MatchController {
-	s32 timer;
+	s32 last_update_time;
 	u8 result;
 	char pad005;
 	u8 is_teams;
