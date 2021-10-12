@@ -50,11 +50,11 @@ enum ActionStat {
 	ActionStat_Taunts       = 0x71
 };
 
-enum SlotKind {
-	SlotKind_Human = 0,
-	SlotKind_CPU = 1,
-	SlotKind_None = 3,
-	SlotKind_Boss = 4
+enum SlotType {
+	SlotType_Human = 0,
+	SlotType_CPU = 1,
+	SlotType_None = 3,
+	SlotType_Boss = 4
 };
 
 struct PlayerInput {

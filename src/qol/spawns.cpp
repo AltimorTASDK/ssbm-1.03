@@ -44,7 +44,7 @@ static int get_singles_spawn(u32 slot)
 	int spawn;
 
 	for (u32 i = 0; i < 4; i++) {
-		if (PlayerBlock_GetSlotType(i) == SlotKind_None)
+		if (PlayerBlock_GetSlotType(i) == SlotType_None)
 			continue;
 			
 		if (i == slot)
@@ -69,7 +69,7 @@ static int get_doubles_spawn(u32 slot)
 	int spawn_team;
 
 	for (u32 i = 0; i < 4; i++) {
-		if (PlayerBlock_GetSlotType(i) == SlotKind_None)
+		if (PlayerBlock_GetSlotType(i) == SlotType_None)
 			continue;
 			
 		auto team = PlayerBlock_GetTeam(i);
