@@ -162,31 +162,39 @@ static void setup_random_icon(HSD_JObj *random_joint)
 	}
 }
 
-void stage_striking(int port)
+static void reset_striking(int port)
 {
-	const auto &pad = HSD_PadMasterStatus[port];
-
-	if (pad.buttons & Button_Y) {
-		// Show all legal stages
-		for (auto i = 0; i < 29; i++) {
-			auto *icon = &StageSelectIcons[i];
-			if (is_legal_stage(icon->stage_id)) {
-				HSD_JObjClearFlagsAll(icon->jobj, HIDDEN);
-				icon->unlocked = 2;
-			}
+	// Show all legal stages
+	for (auto i = 0; i < 29; i++) {
+		auto *icon = &StageSelectIcons[i];
+		if (is_legal_stage(icon->stage_id)) {
+			HSD_JObjClearFlagsAll(icon->jobj, HIDDEN);
+			icon->unlocked = 2;
 		}
-	} else if (pad.buttons & Button_X) {
-		// Don't strike random/none
-		if (SelectedStageIcon >= Icon_Random)
-			return;
-
-		// Strike stage
-		auto *icon = &StageSelectIcons[SelectedStageIcon];
-		HSD_JObjSetFlagsAll(icon->jobj, HIDDEN);
-		icon->unlocked = 0;
-		
-		SelectedStageIcon = Icon_None;
 	}
+}
+
+static void strike_stage(int port)
+{
+	// Don't strike random/none
+	if (SelectedStageIcon >= Icon_Random)
+		return;
+
+	// Don't allow striking the last visible stage
+	for (auto i = 0; i < 29; i++) {
+		auto *icon = &StageSelectIcons[i];
+		if (icon->unlocked != 0)
+			break;
+		else if (i == 28)
+			return;
+	}
+
+	// Strike stage
+	auto *icon = &StageSelectIcons[SelectedStageIcon];
+	HSD_JObjSetFlagsAll(icon->jobj, HIDDEN);
+	icon->unlocked = 0;
+	
+	SelectedStageIcon = Icon_None;
 }
 
 extern "C" bool hook_Stage_IsValidRandomChoice(u16 index)
@@ -199,8 +207,14 @@ extern "C" void hook_SSS_Think()
 {
 	orig_SSS_Think();
 	
-	for (auto i = 0; i < 4; i++)
-		stage_striking(i);
+	for (auto port = 0; port < 4; port++) {
+		const auto &pad = HSD_PadMasterStatus[port];
+
+		if (pad.buttons & Button_Y)
+			reset_striking(port);
+		else if (pad.buttons & Button_X)
+			strike_stage(port);
+	}
 }
 
 extern "C" void orig_SSS_Init(void *menu);
