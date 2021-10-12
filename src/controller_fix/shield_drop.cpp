@@ -25,7 +25,7 @@ static bool should_suppress_spotdodge(HSD_GObj *gobj)
 		return false;
 #else
 	// Must be outside of X deadzone
-	if (player->input.stick.x > 0.f)
+	if (player->input.stick.x == 0.f)
 		return false;
 #endif
 
