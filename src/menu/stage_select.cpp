@@ -2,12 +2,15 @@
 #include "hsd/gobj.h"
 #include "hsd/jobj.h"
 #include "hsd/mobj.h"
+#include "hsd/pad.h"
 #include "hsd/robj.h"
 #include "melee/stage.h"
 #include "util/vector.h"
 #include <gctypes.h>
 
 // TODO: Not compatible with 20XX striking
+
+extern "C" u8 SelectedStageIcon;
 
 enum UnlockType {
 	UnlockType_Hidden,
@@ -16,12 +19,14 @@ enum UnlockType {
 };
 
 enum IconID {
-	Icon_YS  = 6,
-	Icon_FoD = 8,
-	Icon_PS  = 18,
-	Icon_BF  = 24,
-	Icon_FD  = 25,
-	Icon_DL  = 26
+	Icon_YS     = 6,
+	Icon_FoD    = 8,
+	Icon_PS     = 18,
+	Icon_BF     = 24,
+	Icon_FD     = 25,
+	Icon_DL     = 26,
+	Icon_Random = 29,
+	Icon_None   = 30
 };
 
 struct StageSelectIcon {
@@ -157,9 +162,45 @@ static void setup_random_icon(HSD_JObj *random_joint)
 	}
 }
 
+void stage_striking(int port)
+{
+	const auto &pad = HSD_PadMasterStatus[port];
+
+	if (pad.buttons & Button_Y) {
+		// Show all legal stages
+		for (auto i = 0; i < 29; i++) {
+			auto *icon = &StageSelectIcons[i];
+			if (is_legal_stage(icon->stage_id)) {
+				HSD_JObjClearFlagsAll(icon->jobj, HIDDEN);
+				icon->unlocked = 2;
+			}
+		}
+	} else if (pad.buttons & Button_X) {
+		// Don't strike random/none
+		if (SelectedStageIcon >= Icon_Random)
+			return;
+
+		// Strike stage
+		auto *icon = &StageSelectIcons[SelectedStageIcon];
+		HSD_JObjSetFlagsAll(icon->jobj, HIDDEN);
+		icon->unlocked = 0;
+		
+		SelectedStageIcon = Icon_None;
+	}
+}
+
 extern "C" bool hook_Stage_IsValidRandomChoice(u16 index)
 {
 	return is_legal_stage(StageIndexToID[index]);
+}
+
+extern "C" void orig_SSS_Think();
+extern "C" void hook_SSS_Think()
+{
+	orig_SSS_Think();
+	
+	for (auto i = 0; i < 4; i++)
+		stage_striking(i);
 }
 
 extern "C" void orig_SSS_Init(void *menu);

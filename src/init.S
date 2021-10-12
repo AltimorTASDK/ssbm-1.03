@@ -115,6 +115,7 @@ add_hook Menu_UpdateRuleValue
 add_hook Scene_Match_Exit
 add_hook ShowNameTagCheck
 add_hook SSS_Init
+add_hook SSS_Think
 add_hook Stage_Dreamland_WhispyUpdate
 add_hook Stage_FinalDestination_BackgroundUpdate
 add_hook Stage_Fountain_Init
