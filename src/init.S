@@ -114,7 +114,7 @@ add_hook MatchController_UpdateWinners
 add_hook Menu_CreatePortalDescriptionText
 add_hook Menu_CreateRuleDescriptionText
 add_hook Menu_SetupMainMenu
-add_hook Menu_SetupRuleMenu
+add_hook Menu_SetupRulesMenu
 add_hook Menu_UpdateRuleValue
 add_hook Scene_Match_Exit
 add_hook ShowNameTagCheck

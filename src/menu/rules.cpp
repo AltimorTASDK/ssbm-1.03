@@ -206,10 +206,10 @@ static void update_atl_value(HSD_GObj *menu_obj, u32 value)
 	update_value_digit(jobj_tree[6], seconds % 10);
 }
 
-extern "C" HSD_GObj *orig_Menu_SetupRuleMenu(u32 entry_point);
-extern "C" HSD_GObj *hook_Menu_SetupRuleMenu(u32 entry_point)
+extern "C" HSD_GObj *orig_Menu_SetupRulesMenu(u32 entry_point);
+extern "C" HSD_GObj *hook_Menu_SetupRulesMenu(u32 entry_point)
 {
-	auto *menu_obj = orig_Menu_SetupRuleMenu(entry_point);
+	auto *menu_obj = orig_Menu_SetupRulesMenu(entry_point);
 	auto *rules_data = menu_obj->get<RulesMenuData>();
 
 	// Replace rule name textures
