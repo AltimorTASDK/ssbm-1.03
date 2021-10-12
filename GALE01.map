@@ -8564,7 +8564,7 @@
 8016b7f8 00000094 8016b7f8 0 zz_016b7f8_
 8016b88c 00000048 8016b88c 0 zz_016b88c_
 8016b8d4 00000044 8016b8d4 0 zz_016b8d4_
-8016b918 000001dc 8016b918 0 StockMatch_Steal_Check
+8016b918 000001dc 8016b918 0 Match_CheckStockSteal
 8016baf4 000000c0 8016baf4 0 Debug_FightingButtons1
 8016bbb4 000000c0 8016bbb4 0 Debug_FightingButtons2
 8016bc74 0000020c 8016bc74 0 Pause_CheckButtonInputsToPause
