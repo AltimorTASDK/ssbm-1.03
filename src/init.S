@@ -105,6 +105,7 @@ hooks_start:
 add_hook CheckScrollingRuleIndex
 add_hook CheckStockStealInput
 add_hook CreateCSSNameText
+add_hook HUD_GetStockIconPosition
 add_hook Interrupt_AS_Turn
 add_hook Interrupt_SpotDodge_OoS
 add_hook Interrupt_SquatRv
