@@ -113,8 +113,10 @@ extern "C" void hook_Stage_GetSpawnPoint(u32 slot, vec3 *result)
 {
 	orig_Stage_GetSpawnPoint(slot, result);
 	
+	const auto training = SceneMajor == Scene_Training;
+	
 	// No singleplayer except for training mode
-	if (IsSinglePlayerMode() && SceneMajor != Scene_Training)
+	if (IsSinglePlayerMode() && !training)
 		return;
 	
 	// No P5/P6
@@ -127,7 +129,7 @@ extern "C" void hook_Stage_GetSpawnPoint(u32 slot, vec3 *result)
 		return;
 		
 	int spawn_index;
-	if (MatchInfo_IsTeams())
+	if (MatchInfo_IsTeams() && !training)
 		spawn_index = get_doubles_spawn(slot);
 	else
 		spawn_index = get_singles_spawn(slot);
