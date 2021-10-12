@@ -182,8 +182,7 @@ static void strike_stage(int port)
 
 	// Don't allow striking the last visible stage
 	for (auto i = 0; i < 29; i++) {
-		auto *icon = &StageSelectIcons[i];
-		if (icon->unlocked != 0)
+		if (i != SelectedStageIcon && StageSelectIcons[i].unlocked != 0)
 			break;
 		else if (i == 28)
 			return;
