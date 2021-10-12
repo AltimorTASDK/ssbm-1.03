@@ -19,9 +19,15 @@ static bool should_suppress_spotdodge(HSD_GObj *gobj)
 	if (player->input.stick_x_hold_time < plco->roll_stick_frames)
 		return false;
 
+#ifdef UCF
 	// Must be above Y -8000
 	if (player->input.stick.y <= -.8000f)
 		return false;
+#else
+	// Must be outside of X deadzone
+	if (player->input.stick.x > 0.f)
+		return false;
+#endif
 
 	// Must be a rim coord
 	if (!is_rim_coord(player->input.stick))
