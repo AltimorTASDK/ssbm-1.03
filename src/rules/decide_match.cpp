@@ -69,10 +69,9 @@ static score add_score(const score &a, const score &b)
 }
 
 // Returns count
-static int get_player_scores(MatchController *match, score *scores, bool *violation)
+static int get_player_scores(MatchController *match, score *scores)
 {
 	auto count = 0;
-	*violation = false;
 
 	for (auto i = 0; i < 6; i++) {
 		const auto &player = match->players[i];
@@ -87,8 +86,9 @@ static int get_player_scores(MatchController *match, score *scores, bool *violat
 			.percent = player.percent
 		};
 		
+		// Custom match result
 		if (scores[count].violation)
-			*violation = true;
+			match->result = MatchResult_RuleViolation;
 		
 		count++;
 	}
@@ -97,10 +97,10 @@ static int get_player_scores(MatchController *match, score *scores, bool *violat
 }
 
 // Returns count
-static int get_team_scores(MatchController *match, score *team_scores, bool *violation)
+static int get_team_scores(MatchController *match, score *team_scores)
 {
 	score player_scores[6];
-	const auto players = get_player_scores(match, player_scores, violation);
+	const auto players = get_player_scores(match, player_scores);
 
 	auto count = 0;
 	bool team_exists[5] = { false };
@@ -148,9 +148,8 @@ static bool decide_winners(MatchController *match, bool teams)
 		return false;
 
 	score scores[6];
-	bool violation;
-	const auto count = teams ? get_team_scores(match, scores, &violation)
-	                         : get_player_scores(match, scores, &violation);
+	const auto count = teams ? get_team_scores(match, scores)
+	                         : get_player_scores(match, scores);
 
 	// We only care about the highest score
 	std::partial_sort(scores, scores + 1, scores + count, is_score_better);
@@ -167,10 +166,6 @@ static bool decide_winners(MatchController *match, bool teams)
 		const auto win = is_score_equal(scores[i], scores[0]);
 		set_result(match, teams, scores[i].id, win);
 	}
-		
-	// Custom result type
-	if (violation)
-		match->result = MatchResult_RuleViolation;
 	
 	return true;
 }
