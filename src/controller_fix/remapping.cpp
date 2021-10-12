@@ -82,7 +82,7 @@ extern "C" void process_remapping(int port);
 extern "C" void process_remapping(int port)
 {
 	// Reset if unplugged
-	if (status.err != 0) {
+	if (HSD_PadMasterStatus[port].err != 0) {
 		remapping[port] = 0;
 		remap_timer[port] = 0;
 		return;
