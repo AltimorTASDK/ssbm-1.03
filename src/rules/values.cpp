@@ -25,5 +25,12 @@ extern "C" void hook_Match_Init(StartMeleeData *data)
 {
 	data->rules.damage_ratio = 1.f;
 	data->rules.item_frequency = -1;
+	
+	for (auto i = 0; i < 6; i++) {
+		data->players->handicap = 9;
+		data->players->offense_ratio = 1.f;
+		data->players->defense_ratio = 1.f;
+	}
+	
 	orig_Match_Init(data);
 }

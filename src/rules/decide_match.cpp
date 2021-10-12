@@ -3,13 +3,21 @@
 #include "melee/rules.h"
 #include "melee/scene.h"
 #include "rules/values.h"
+#include <algorithm>
 
-struct VictoryScreenInitData {
-	char pad000[0x08];
-	MatchController match_controller;
+struct MatchExitData {
+	char pad000[0x0C];
+	MatchController match;
 };
 
-bool lgl_violated(int slot)
+struct score {
+	int id;
+	bool violation;
+	int stocks;
+	int percent;
+};
+
+static bool lgl_violated(int slot)
 {
 	const auto lgl = get_ledge_grab_limit();
 	if (lgl == 0)
@@ -20,65 +28,126 @@ bool lgl_violated(int slot)
 	return ledge_grabs > lgl;
 }
 
-// Returns false if not 1v1
-bool get_player_indices(int *p1, int *p2)
+static bool is_score_better(const score &a, const score &b)
+{
+	if (!a.violation && b.violation)
+		return true;
+
+	if (a.stocks > b.stocks)
+		return true;
+	
+	if (a.percent < b.percent)
+		return true;
+		
+	return false;
+}
+
+static bool is_score_equal(const score &a, const score &b)
+{
+	if (a.violation != b.violation)
+		return false;
+
+	if (a.stocks != b.stocks)
+		return false;
+	
+	if (a.percent != b.percent)
+		return false;
+		
+	return true;
+}
+
+static score add_score(const score &a, const score &b)
+{
+	return {
+		.id = a.id,
+		.violation = a.violation || b.violation,
+		.stocks = a.stocks + b.stocks,
+		.percent = a.percent + b.percent
+	};
+}
+
+// Returns count
+static int get_player_scores(MatchController *match, score *scores, bool *violation)
 {
 	auto count = 0;
+	*violation = false;
 
-	for (u32 i = 0; i < 4; i++) {
-		if (PlayerBlock_GetSlotType(i) == SlotKind_None)
+	for (auto i = 0; i < 6; i++) {
+		if (match->players[i].slot_type == SlotType_None)
 			continue;
-			
-		if (count == 0)
-			*p1 = i;
-		else if (count == 1)
-			*p2 = i;
-		else
-			return false;
 
+		scores[count] = {
+			.id = i,
+			.violation = lgl_violated(i),
+			.stocks = match->players[i].score,
+			.percent = match->players[i].percent
+		};
+		
+		if (scores[count].violation)
+			*violation = true;
+		
 		count++;
 	}
 	
-	return count == 2;
+	return count;
 }
 
-void set_winner(MatchController *controller, int winner, int loser)
+static void set_player_result(MatchController *match, int slot, bool win)
 {
-	controller->players[winner].is_big_loser = false;
-	controller->players[loser].is_big_loser = true;
+	match->players[slot].is_big_loser = !win;
+	if (win) {
+		match->winners[match->winner_count] = (u8)slot;
+		match->winner_count++;
+	}
 }
 
-bool enforce_rules(MatchController *controller)
+static bool decide_winners(MatchController *match)
 {
-	// Only check for timeouts
-	if (controller->result != MatchResult_Timeout)
+	// Only apply for timeouts
+	if (match->result != MatchResult_Timeout)
 		return false;
+		
+	// Don't check singles win conditions in teams
+	if(match->is_teams)
+		return false;
+
+	score scores[6];
+	bool violation;
+	const auto count = get_player_scores(match, scores, &violation);
+
+	// We only care about the highest score
+	std::partial_sort(scores, scores + 1, scores + count, is_score_better);
 	
-	// Must be 1v1
-	if (MatchInfo_IsTeams())
-		return false;
-
-	int p1, p2;
-	if (!get_player_indices(&p1, &p2))
-		return false;
+	// Everyone tied for first wins
+	set_player_result(match, scores[0].id, true);
+	
+	for (auto i = 1; i < count; i++) {
+		const auto win = is_score_equal(scores[i], scores[0]);
+		set_player_result(match, scores[i].id, win);
+	}
 		
-	const auto p1_violated = lgl_violated(p1);
-	const auto p2_violated = lgl_violated(p2);
-		
-	if (!p1_violated && p2_violated)
-		set_winner(controller, p1, p2);
-	else if (!p2_violated && p1_violated)
-		set_winner(controller, p2, p1);
-		
-	return p1_violated || p2_violated;
+	// Custom result type
+	if (violation)
+		match->result = MatchResult_RuleViolation;
+	
+	return true;
 }
 
-extern "C" void orig_VictoryScreen_Init(VictoryScreenInitData *data);
-extern "C" void hook_VictoryScreen_Init(VictoryScreenInitData *data)
+extern "C" void orig_MatchController_UpdateWinners(MatchController *match);
+extern "C" void hook_MatchController_UpdateWinners(MatchController *match)
 {
-	// Skip victory screen if no rule enforcement
-	if (!enforce_rules(&data->match_controller))
-		EndScene();
-	
-	orig_VictoryScreen_Init(data);
+	if (!decide_winners(match))
+		orig_MatchController_UpdateWinners(match);
+}
+
+extern "C" void orig_Scene_Match_Exit(SceneMinorData *data, u8 victory_screen, u8 sudden_death);
+extern "C" void hook_Scene_Match_Exit(SceneMinorData *data, u8 victory_screen, u8 sudden_death)
+{
+	const auto *exit_data = (MatchExitData*)data->exit_data;
+
+	// Skip victory screen if no rule enforcement and never enter sudden death
+	if (exit_data->match.result != MatchResult_RuleViolation)
+		orig_Scene_Match_Exit(data, VsScene_CSS, VsScene_CSS);
+	else
+		orig_Scene_Match_Exit(data, victory_screen, victory_screen);
 }

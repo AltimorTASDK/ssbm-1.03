@@ -105,11 +105,13 @@ add_hook Interrupt_AS_Turn
 add_hook Interrupt_SpotDodge_OoS
 add_hook Interrupt_SquatRv
 add_hook Match_Init
+add_hook MatchController_UpdateWinners
 add_hook Menu_CreatePortalDescriptionText
 add_hook Menu_CreateRuleDescriptionText
 add_hook Menu_SetupMainMenu
 add_hook Menu_SetupRuleMenu
 add_hook Menu_UpdateRuleValue
+add_hook Scene_Match_Exit
 add_hook ShowNameTagCheck
 add_hook SSS_Init
 add_hook Stage_Dreamland_WhispyUpdate
@@ -121,6 +123,5 @@ add_hook Stage_YoshisStory_ShyGuyUpdate
 add_hook TumbleWiggleCheck
 add_hook UpdatePadButtons
 add_hook UpdatePlayerStick
-add_hook VictoryScreen_Init
 
 hooks_end:

@@ -12,6 +12,12 @@ constexpr auto DEADZONE = 22;
 // 1.0
 constexpr auto STICK_MAX = 80;
 
+// 0.3
+constexpr auto TRIGGER_DEADZONE = 42;
+
+// 1.0
+constexpr auto TRIGGER_MAX = 140;
+
 namespace detail {
 constexpr auto qnum = 5;
 
