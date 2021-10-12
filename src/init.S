@@ -52,17 +52,17 @@ hook_end:
         bl      memset
 
         # Run C++ constructors
-        lis     r31, (__CTOR_LIST__ - 4)@h
-        ori     r31, r31, (__CTOR_LIST__ - 4)@l
-        lis     r30, (__CTOR_END__ - 4)@h
-        ori     r30, r30, (__CTOR_END__ - 4)@l
+        lis     r31, __CTOR_END__@h
+        ori     r31, r31, __CTOR_END__@l
+        lis     r30, __CTOR_LIST__@h
+        ori     r30, r30, __CTOR_LIST__@l
 
 ctor_loop:
         cmpw    r31, r30
         beq     ctor_end
 
         # Call constructor
-        lwzu    r0, 4(r31)
+        lwzu    r0, -4(r31)
         mtctr   r0
         bctrl
         b       ctor_loop
