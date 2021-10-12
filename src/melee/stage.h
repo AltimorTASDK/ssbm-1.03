@@ -42,6 +42,8 @@ struct StageObject {
 };
 
 extern "C" {
+	
+extern u16 StageIndexToID[29];
 
 StageParams *Stage_GetParameters();
 void Stage_GetSpawnPoint(u32 slot, vec3 *spawn);

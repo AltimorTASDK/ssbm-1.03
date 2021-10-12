@@ -157,6 +157,11 @@ static void setup_random_icon(HSD_JObj *random_joint)
 	}
 }
 
+extern "C" bool hook_Stage_IsValidRandomChoice(u16 index)
+{
+	return is_legal_stage(StageIndexToID[index]);
+}
+
 extern "C" void orig_SSS_Init(void *menu);
 extern "C" void hook_SSS_Init(void *menu)
 {
