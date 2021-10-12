@@ -105,6 +105,7 @@ add_hook Interrupt_AS_Turn
 add_hook Interrupt_SpotDodge_OoS
 add_hook Interrupt_SquatRv
 add_hook Match_Init
+add_hook MatchController_UpdateTeamWinners
 add_hook MatchController_UpdateWinners
 add_hook Menu_CreatePortalDescriptionText
 add_hook Menu_CreateRuleDescriptionText
