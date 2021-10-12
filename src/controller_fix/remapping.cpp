@@ -1,5 +1,6 @@
 #include "hsd/archive.h"
 #include "hsd/pad.h"
+#include "util/melee/pad.h"
 #include "util/math.h"
 #include <numeric>
 #include <gctypes.h>
@@ -22,15 +23,25 @@ void apply_remap(int port)
 	const auto xy_remap = remapping[port] & XY_MASK;
 	const auto lrz_remap = remapping[port] & LRZ_MASK;
 	
-	// Disable analog inputs from the remapped trigger
-	if (lrz_remap & Button_L)
-		status->analog_l = 0;
-
-	if (lrz_remap & Button_R)
-		status->analog_r = 0;
+	auto old_buttons = status->buttons;
 	
+	// Trigger remapped input on analog press
+	// Suppress analog inputs from the remapped trigger
+	if (lrz_remap & Button_L) {
+		if (status->raw_analog_l > TRIGGER_DEADZONE)
+			old_buttons |= Button_L;
+
+		status->raw_analog_l = 0;
+		status->analog_l = 0;
+	} else if (lrz_remap & Button_R) {
+		if (status->raw_analog_r > TRIGGER_DEADZONE)
+			old_buttons |= Button_R;
+
+		status->raw_analog_r = 0;
+		status->analog_r = 0;
+	}
+
 	// Swap xy_remap bit with lrz_remap bit
-	const auto old_buttons = status->buttons;
 	status->buttons &= ~remapping[port];
 	status->buttons |= (old_buttons & xy_remap) != 0 ? lrz_remap : 0;
 	status->buttons |= (old_buttons & lrz_remap) != 0 ? xy_remap : 0;
