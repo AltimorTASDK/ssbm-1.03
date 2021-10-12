@@ -54,13 +54,6 @@ void configure_remap(int port)
 		return;
 
 	const auto &status = HSD_PadMasterStatus[port];
-	
-	// Reset if unplugged
-	if (status.err != 0) {
-		remapping[port] = 0;
-		remap_timer[port] = 0;
-		return;
-	}
 		
 	// Check if already remapped
 	if (remapping[port] != 0)
@@ -88,6 +81,13 @@ void configure_remap(int port)
 extern "C" void process_remapping(int port);
 extern "C" void process_remapping(int port)
 {
+	// Reset if unplugged
+	if (status.err != 0) {
+		remapping[port] = 0;
+		remap_timer[port] = 0;
+		return;
+	}
+
 	configure_remap(port);
 	apply_remap(port);
 }
