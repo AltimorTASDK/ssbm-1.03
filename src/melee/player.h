@@ -109,7 +109,7 @@ struct PopoData {
 	vec2c stick;
 	vec2c cstick;
 	vec3 position;
-	float direction;
+	f32 direction;
 };
 
 struct Player {

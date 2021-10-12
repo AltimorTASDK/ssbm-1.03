@@ -82,10 +82,10 @@ struct HSD_PadStatus {
 	u8 raw_analog_b;
 	vec2 stick;
 	vec2 cstick;
-	float analog_l;
-	float analog_r;
-	float analog_a;
-	float analog_b;
+	f32 analog_l;
+	f32 analog_r;
+	f32 analog_a;
+	f32 analog_b;
 	u8 cross_dir;
 	s8 err;
 };

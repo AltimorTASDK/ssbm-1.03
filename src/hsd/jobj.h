@@ -55,7 +55,7 @@ HSD_JObj *HSD_JObjLoadJoint(const HSD_JObjDesc *desc);
 void HSD_JObjAddAnimAll(HSD_JObj *jobj, const HSD_AnimJoint *animjoint,
 			const HSD_MatAnimJoint *matanim_joint,
 			const HSD_ShapeAnimJoint *shapeanim_joint);
-void HSD_JObjReqAnimAll(HSD_JObj *jobj, float frame);
+void HSD_JObjReqAnimAll(HSD_JObj *jobj, f32 frame);
 void HSD_JObjAnimAll(HSD_JObj *jobj);
 
 void HSD_JObjAddChild(HSD_JObj *jobj, HSD_JObj *child);

@@ -14,21 +14,21 @@ enum StageID {
 
 union StageParams {
 	struct {
-		float left_plat_height;
-		float pad004;
-		float right_plat_height;
+		f32 left_plat_height;
+		f32 pad004;
+		f32 right_plat_height;
 	} fod;
 	struct {
 		char pad000[8];
 		s32 whispy_push_timer_min;
 		s32 whispy_push_timer_max;
-		float whispy_push_strength;
-		float whispy_right_push_bounds_right;
-		float whispy_right_push_bounds_left;
-		float whispy_left_push_bounds_left;
-		float whispy_left_push_bounds_right;
-		float whispy_push_bounds_bottom;
-		float whispy_push_bounds_top;
+		f32 whispy_push_strength;
+		f32 whispy_right_push_bounds_right;
+		f32 whispy_right_push_bounds_left;
+		f32 whispy_left_push_bounds_left;
+		f32 whispy_left_push_bounds_right;
+		f32 whispy_push_bounds_bottom;
+		f32 whispy_push_bounds_top;
 		s32 whispy_blink_timer_min;
 		s32 whispy_blink_timer_max;
 	} dl;
