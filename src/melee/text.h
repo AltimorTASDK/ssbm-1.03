@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util/vector.h"
 #include <gctypes.h>
 
 enum class text_opcode {
@@ -38,3 +39,9 @@ struct Text {
 	char pad000[0x5C];
 	const char *data;
 };
+
+extern "C" {
+
+void Text_SetSubtextColor(Text *text, int subtext, const color_rgba &color);
+
+}

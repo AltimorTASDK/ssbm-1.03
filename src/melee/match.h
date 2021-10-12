@@ -71,7 +71,9 @@ struct PlayerInitData {
 };
 
 struct StartMeleeRules {
-	char pad000[0x0B];
+	char pad000[0x08];
+	u8 is_teams;
+	char pad009[0x0B - 0x09];
 	s8 item_frequency;
 	char pad00C[0x30 - 0x0C];
 	f32 damage_ratio;
@@ -83,9 +85,25 @@ struct StartMeleeData {
 	PlayerInitData players[6];
 };
 
+struct MatchExitData {
+	char pad000[0x0C];
+	MatchController match;
+};
+
+struct MatchInfo {
+	char pad000;
+	u8 pauser;
+	char pad002[0x24C - 0x002];
+	MatchController match;
+	char pad24C4[0x24C8 - 0x24C4];
+	StartMeleeRules rules;
+};
+
 extern "C" {
 	
-MatchController *GetLastMatchController();
+extern MatchExitData LastMatchData;
+
+MatchInfo *GetMatchInfo();
 
 bool MatchInfo_IsTeams();
 

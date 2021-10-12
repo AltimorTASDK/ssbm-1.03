@@ -2,11 +2,6 @@
 #include "melee/scene.h"
 #include <gctypes.h>
 
-struct MatchExitData {
-	char pad000[0x0C];
-	MatchController match;
-};
-
 extern "C" void orig_Scene_Match_Exit(SceneMinorData *data, u8 victory_screen, u8 sudden_death);
 extern "C" void hook_Scene_Match_Exit(SceneMinorData *data, u8 victory_screen, u8 sudden_death)
 {

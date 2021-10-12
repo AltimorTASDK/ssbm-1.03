@@ -99,8 +99,10 @@ hooks_start:
 .set UpdatePlayerStick,       PlayerThink_Input+0x1D0
 .set CheckScrollingRuleIndex, Menu_UpdateRuleDisplay+0x418
 .set ShowNameTagCheck,        NameTag_DisplayInGame+0x28
+.set CreateCSSNameText,       CSS_Setup+0x1180
 
 add_hook CheckScrollingRuleIndex
+add_hook CreateCSSNameText
 add_hook Interrupt_AS_Turn
 add_hook Interrupt_SpotDodge_OoS
 add_hook Interrupt_SquatRv
