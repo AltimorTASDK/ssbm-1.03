@@ -6,6 +6,8 @@
 #include "util/vector.h"
 #include <gctypes.h>
 
+struct PlayerBlockStats;
+
 enum CID {
 	CID_Mario,
 	CID_Fox,
@@ -41,6 +43,11 @@ enum CID {
 	CID_GigaBowser,
 	CID_Sandbag,
 	CID_Max
+};
+
+enum ActionStat {
+	ActionStat_LedgeGrabs   = 0x70,
+	ActionStat_Taunts       = 0x71
 };
 
 enum SlotKind {
@@ -261,6 +268,8 @@ HSD_GObj *PlayerBlock_GetSubCharGObj(s32 slot, s32 subchar);
 HSD_GObj *PlayerBlock_GetGObj(s32 slot);
 u8 PlayerBlock_GetTeam(s32 slot);
 u32 PlayerBlock_GetSlotType(s32 slot);
+PlayerBlockStats *PlayerBlock_GetStats(s32 slot);
+s32 PlayerBlockStats_GetActionStat(const PlayerBlockStats *stats, u32 index);
 
 void PlayerThink_Input(HSD_GObj *gobj);
 	

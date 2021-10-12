@@ -44,7 +44,7 @@ unsigned char *rle_decode(const unsigned char *data, size_t length)
 	const auto out_len = rle_decode(data, length, nullptr);
 
 	auto *out = new unsigned char[out_len];
-	rle_decode(data, length, out, nullptr);
+	rle_decode(data, length, out);
 
 	return out;
 }
