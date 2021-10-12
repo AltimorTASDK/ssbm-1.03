@@ -157,10 +157,10 @@ static void setup_random_icon(HSD_JObj *random_joint)
 	}
 }
 
-extern "C" void orig_SSS_Initialization(void *menu);
-extern "C" void hook_SSS_Initialization(void *menu)
+extern "C" void orig_SSS_Init(void *menu);
+extern "C" void hook_SSS_Init(void *menu)
 {
-	orig_SSS_Initialization(menu);
+	orig_SSS_Init(menu);
 	
 	// Create a matanimjoint to apply the top row of IconDouble to other types of icons. This
 	// has to be done because the top row's matanimjoint is the *2nd* child of the root.
