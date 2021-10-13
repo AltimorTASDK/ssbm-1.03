@@ -8583,8 +8583,8 @@
 8016ca68 00000180 8016ca68 0 Pause_IngameCheckPauseOnOff
 8016cbe8 000001b0 8016cbe8 0 Pause_CheckButtonsToUnpause
 8016cd98 000001b4 8016cd98 0 Timer_EveryFrame
-8016cf4c 00000094 8016cf4c 0 NoContestOrRetry_
-8016cfe0 0000034c 8016cfe0 0 fk_RelatedToPause
+8016cf4c 00000094 8016cf4c 0 Match_NoContestOrRetry
+8016cfe0 0000034c 8016cfe0 0 Match_HandlePause
 8016d32c 0000020c 8016d32c 0 zz_016d32c_
 8016d538 000000fc 8016d538 0 zz_016d538_
 8016d634 000001cc 8016d634 0 zz_016d634_
@@ -9230,6 +9230,7 @@
 801a4340 00000060 801a4340 0 MenuController_CheckSinglePlayer
 801a43a0 00000170 801a43a0 0 wP_RunMajorState
 801a4510 00000114 801a4510 0 Scene_Main
+801a45e8 0000003C 801a45e8 0 Scene_CheckPauseFlag
 801a4624 00000010 801a4624 0 MatchController_FreezeScreen_LoadBool
 801a4634 00000040 801a4634 0 Ab_PauseFreeze
 801a4674 00000044 801a4674 0 Ab_Pause_UnFreeze

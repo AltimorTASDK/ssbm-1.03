@@ -94,7 +94,8 @@ struct MatchExitData {
 struct MatchInfo {
 	char pad000;
 	u8 pauser;
-	char pad002[0x24C - 0x002];
+	u8 pause_timer;
+	char pad003[0x24C - 0x003];
 	MatchController match;
 	char pad24C4[0x24C8 - 0x24C4];
 	StartMeleeRules rules;
@@ -107,5 +108,7 @@ extern MatchExitData LastMatchData;
 MatchInfo *GetMatchInfo();
 
 bool MatchInfo_IsTeams();
+
+void Match_NoContestOrRetry(s32 unused, u32 result);
 
 }
