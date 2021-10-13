@@ -17,6 +17,7 @@ static bool won_last_match_teams(const MatchInfo *match_info, int port)
 		if (match.team_winners[i] == match.players[port].team)
 			return true;
 	}
+
 	return false;
 }
 
@@ -32,6 +33,7 @@ static bool won_last_match(const MatchInfo *match_info, int port)
 		if (match.winners[i] == port)
 			return true;
 	}
+
 	return false;
 }
 
