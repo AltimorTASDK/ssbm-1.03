@@ -8,6 +8,8 @@ extern "C" void CSS_Think();
 extern "C" void CSS_Setup();
 extern "C" void CSS_UpdatePortrait(u8 port);
 extern "C" void CSS_GObjCallback(u8 port);
+extern "C" void CreateKillScorePopup(u8 port);
+extern "C" void CreateSDScorePopup(u8 port);
 
 constexpr u32 NOP = 0x60000000;
 constexpr u32 BLR = 0x4E800020;
@@ -39,6 +41,9 @@ const auto patches = std::array {
 	std::pair { (char*)CSS_GObjCallback+0x2CC,   0x38000000u },
 	std::pair { (char*)CSS_GObjCallback+0x364,   0x38000000u },
 	std::pair { (char*)CSS_GObjCallback+0x3F8,   0x38000000u },
+	// Disable score popups
+	std::pair { (char*)CreateKillScorePopup,     BLR },
+	std::pair { (char*)CreateSDScorePopup,       BLR },
 };
 
 struct apply_patches {

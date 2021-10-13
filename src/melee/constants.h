@@ -17,6 +17,8 @@ struct PlayerConstants {
 	s32 spot_dodge_stick_frames;
 	f32 roll_stick_threshold;
 	s32 roll_stick_frames;
+	char pad324[0x5F0 - 0x324];
+	s32 idle_timer;
 };
 
 extern "C" PlayerConstants *plco;
