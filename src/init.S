@@ -113,6 +113,7 @@ add_hook Match_HandlePause
 add_hook Match_Init
 add_hook MatchController_UpdateTeamWinners
 add_hook MatchController_UpdateWinners
+add_hook Menu_CreateItemToggle
 add_hook Menu_CreatePortalDescriptionText
 add_hook Menu_CreateRuleDescriptionText
 add_hook Menu_SetupMainMenu
