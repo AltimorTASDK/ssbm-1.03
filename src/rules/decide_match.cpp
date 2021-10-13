@@ -86,10 +86,6 @@ static int get_player_scores(MatchController *match, score *scores)
 			.percent = player.percent
 		};
 		
-		// Custom match result
-		if (scores[count].violation)
-			match->result = MatchResult_RuleViolation;
-		
 		count++;
 	}
 	

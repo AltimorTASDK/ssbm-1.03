@@ -6,9 +6,7 @@ enum MatchResult {
 	MatchResult_Timeout       = 1,
 	MatchResult_Elimination   = 2,
 	MatchResult_LRAStart      = 7,
-	MatchResult_Retry         = 8,
-	// Custom
-	MatchResult_RuleViolation = 9
+	MatchResult_Retry         = 8
 };
 
 struct MatchPlayerData {
