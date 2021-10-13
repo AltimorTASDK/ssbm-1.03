@@ -16,7 +16,10 @@ enum Rule {
 };
 
 enum Mode {
-	Mode_Stock = 1
+	Mode_Time = 0,
+	Mode_Stock = 1,
+	Mode_Coin = 2,
+	Mode_Bonus = 3
 };
 
 struct GameRules {

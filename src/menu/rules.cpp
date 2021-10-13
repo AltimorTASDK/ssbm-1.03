@@ -1,4 +1,5 @@
 #include "hsd/archive.h"
+#include "hsd/dobj.h"
 #include "hsd/gobj.h"
 #include "hsd/jobj.h"
 #include "hsd/mobj.h"
@@ -7,6 +8,7 @@
 #include "melee/text.h"
 #include "resources/rules/ledge_grab_limit.tex.h"
 #include "resources/rules/air_time_limit.tex.h"
+#include "resources/rules/mode_values.tex.h"
 #include "rules/values.h"
 #include "util/compression.h"
 #include "util/melee/text_builder.h"
@@ -14,6 +16,9 @@
 
 // Matanim used to cycle through rule text
 extern "C" ArchiveModel MenMainCursorRl_Top;
+
+// Mode values
+extern "C" ArchiveModel MenMainCursorRl01_Top;
 
 extern "C" ArchiveModel MenMainNmRl_Top;
 
@@ -216,6 +221,10 @@ extern "C" HSD_GObj *hook_Menu_SetupRulesMenu(u32 entry_point)
 	const auto *matanim = MenMainCursorRl_Top.matanim_joint->child->child->next->matanim;
 	matanim->texanim->imagetbl[3]->img_ptr = rle_decode(ledge_grab_limit_tex_data);
 	matanim->texanim->imagetbl[4]->img_ptr = rle_decode(air_time_limit_tex_data);
+
+	// Replace mode value texture
+	MenMainCursorRl01_Top.joint->child->u.dobj->mobjdesc->texdesc->imagedesc->img_ptr =
+		rle_decode(mode_values_tex_data);
 	
 	// Replace rule value models
 	replace_counter_jobj(rules_data, Rule_LedgeGrabLimit);

@@ -1,8 +1,12 @@
 #pragma once
 
+#include "util/vector.h"
+
 struct HSD_AObjDesc;
+struct HSD_PEDesc;
 struct HSD_RenderAnim;
 struct HSD_TexAnim;
+struct HSD_TObjDesc;
 
 struct HSD_ChanAnim {
 	HSD_ChanAnim *next;
@@ -30,4 +34,21 @@ struct HSD_MatAnimJoint {
 	HSD_MatAnimJoint *child;
 	HSD_MatAnimJoint *next;
 	HSD_MatAnim *matanim;
+};
+
+struct HSD_Material {
+	color_rgba ambient;
+	color_rgba diffuse;
+	color_rgba specular;
+	f32 alpha;
+	f32 shininess;
+};
+
+struct HSD_MObjDesc {
+	char *class_name;
+	u32 rendermode;
+	HSD_TObjDesc *texdesc;
+	HSD_Material *mat;
+	void *renderdesc;
+	HSD_PEDesc *pedesc;
 };

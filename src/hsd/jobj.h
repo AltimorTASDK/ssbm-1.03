@@ -13,6 +13,7 @@ struct HSD_AObj;
 struct HSD_DObj;
 struct HSD_JObjDesc;
 struct HSD_RObj;
+struct HSD_RObjDesc;
 struct HSD_SList;
 struct HSD_Spline;
 
@@ -28,7 +29,7 @@ enum JObjFlag {
 
 struct HSD_JObj {
 	HSD_Obj base;
-	HSD_JObj *next; // Next bone with the same parent
+	HSD_JObj *next;
 	HSD_JObj *parent;
 	HSD_JObj *child;
 	u32 flags;
@@ -46,6 +47,23 @@ struct HSD_JObj {
 	HSD_AObj *aobj;
 	HSD_RObj *robj;
 	HSD_JObjDesc *desc;
+};
+
+struct HSD_JObjDesc {
+	char *class_name;
+	u32 flags;
+	HSD_JObjDesc *child;
+	HSD_JObjDesc *next;
+	union {
+		struct HSD_SList *ptcl;
+		struct HSD_DObjDesc *dobj;
+		struct HSD_Spline *spline;
+	} u;
+	vec4 rotation;
+	vec3 scale;
+	vec3 position;
+	matrix3x4 mtx;
+	HSD_RObjDesc *robjdesc;
 };
 
 extern "C" {
