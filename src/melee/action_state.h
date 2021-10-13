@@ -349,6 +349,7 @@ enum ActionState {
 
 extern "C" {
 
+void AS_012_Rebirth(HSD_GObj *gobj);
 void AS_020_Dash(HSD_GObj *gobj, int forward);
 void AS_029_Fall(HSD_GObj *gobj);
 void AS_041_SquatRv(HSD_GObj *gobj);
