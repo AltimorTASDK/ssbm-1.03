@@ -12,11 +12,13 @@ struct init_rules {
 		// Set default rules
 		auto *rules = GetGameRules();
 		rules->mode = Mode_Stock;
+		rules->time_limit = 0;
 		rules->stock_count = 4;
 		rules->handicap = 0; // LGL
 		rules->damage_ratio = 0; // ATL
 		rules->stock_time_limit = 6;
 		rules->friendly_fire = true;
+		rules->score_display = true;
 	}
 } init_rules;
 
