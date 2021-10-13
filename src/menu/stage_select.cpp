@@ -170,7 +170,7 @@ static void reset_striking(int port)
 		auto *icon = &StageSelectIcons[i];
 		if (is_legal_stage(icon->stage_id)) {
 			HSD_JObjClearFlagsAll(icon->jobj, HIDDEN);
-			icon->unlocked = 2;
+			icon->unlocked = UnlockType_Unlocked;
 		}
 	}
 }
@@ -183,7 +183,7 @@ static void strike_stage(int port)
 
 	// Don't allow striking the last visible stage
 	for (auto i = 0; i < 29; i++) {
-		if (i != SelectedStageIcon && StageSelectIcons[i].unlocked != 0)
+		if (i != SelectedStageIcon && StageSelectIcons[i].unlocked == UnlockType_Unlocked)
 			break;
 		else if (i == 28)
 			return;
@@ -192,7 +192,7 @@ static void strike_stage(int port)
 	// Strike stage
 	auto *icon = &StageSelectIcons[SelectedStageIcon];
 	HSD_JObjSetFlagsAll(icon->jobj, HIDDEN);
-	icon->unlocked = 0;
+	icon->unlocked = UnlockType_Hidden;
 	
 	SelectedStageIcon = Icon_None;
 }
@@ -202,7 +202,7 @@ extern "C" bool hook_Stage_IsValidRandomChoice(u16 index)
 	// Only select from visible stages
 	for (auto i = 0; i < 29; i++) {
 		const auto &icon = StageSelectIcons[i];
-		if (icon.stage_index == index && icon.unlocked != 2)
+		if (icon.stage_index == index && icon.unlocked != UnlockType_Unlocked)
 			return false;
 	}
 	
@@ -260,7 +260,7 @@ extern "C" void hook_SSS_Init(void *menu)
 		auto *icon = &StageSelectIcons[i];
 		if (!is_legal_stage(icon->stage_id)) {
 			HSD_JObjSetFlagsAll(icon->jobj, HIDDEN);
-			icon->unlocked = 0;
+			icon->unlocked = UnlockType_Hidden;
 		}
 	}
 
