@@ -8,9 +8,11 @@ ENTRY(_start);
 
 INCLUDE GALE01.ld
 
+PROVIDE(__LOAD_BASE__ = 0x817E1000);
+
 MEMORY
 {
-    load (rwx) : ORIGIN = 0x817E1000, LENGTH = 0x7000
+    load (rwx) : ORIGIN = __LOAD_BASE__, LENGTH = 0x7000
 }
 
 SECTIONS
