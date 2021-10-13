@@ -20,8 +20,8 @@ struct HSD_ImageDesc {
 	u16 height;
 	u32 format;
 	u32 mipmap;
-	f32 minLOD;
-	f32 maxLOD;
+	f32 min_lod;
+	f32 max_lod;
 };
 
 struct HSD_TexAnim {
