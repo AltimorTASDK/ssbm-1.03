@@ -19900,6 +19900,7 @@
 804d6bd0 00000000 804d6bd0 0 RulesMenuObject
 804d6c98 00000000 804d6c98 0 MnSlMapModels
 804d6cae 00000000 804d6cae 0 SelectedStageIcon
+804d6caf 00000000 804d6caf 0 StageLoadingState
 804d6cd0 00000000 804d6cd0 0 MnSlChr
 804d6d78 00000000 804d6d78 0 NameTagText
 804d782c 00000000 804d782c 0 plinkhigh_gobjs

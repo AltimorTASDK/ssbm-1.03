@@ -11,6 +11,7 @@
 // TODO: Not compatible with 20XX striking
 
 extern "C" u8 SelectedStageIcon;
+extern "C" u8 StageLoadingState;
 
 enum UnlockType {
 	UnlockType_Hidden,
@@ -212,6 +213,10 @@ extern "C" void orig_SSS_Think();
 extern "C" void hook_SSS_Think()
 {
 	orig_SSS_Think();
+	
+	// Don't allow striking after picking a stage
+	if (StageLoadingState != 0)
+		return;
 	
 	for (auto port = 0; port < 4; port++) {
 		const auto &pad = HSD_PadMasterStatus[port];
