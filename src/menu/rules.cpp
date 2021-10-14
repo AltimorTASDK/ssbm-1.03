@@ -219,12 +219,12 @@ extern "C" HSD_GObj *hook_Menu_SetupRulesMenu(u32 entry_point)
 
 	// Replace rule name textures
 	const auto *matanim = MenMainCursorRl_Top.matanim_joint->child->child->next->matanim;
-	matanim->texanim->imagetbl[3]->img_ptr = rle_decode(ledge_grab_limit_tex_data);
-	matanim->texanim->imagetbl[4]->img_ptr = rle_decode(air_time_limit_tex_data);
+	matanim->texanim->imagetbl[3]->img_ptr = decompress(ledge_grab_limit_tex_data);
+	matanim->texanim->imagetbl[4]->img_ptr = decompress(air_time_limit_tex_data);
 
 	// Replace mode value texture
 	MenMainCursorRl01_Top.joint->child->u.dobj->mobjdesc->texdesc->imagedesc->img_ptr =
-		rle_decode(mode_values_tex_data);
+		decompress(mode_values_tex_data);
 	
 	// Replace rule value models
 	replace_counter_jobj(rules_data, Rule_LedgeGrabLimit);

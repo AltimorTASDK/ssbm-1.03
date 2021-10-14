@@ -95,15 +95,15 @@ extern "C" void hook_Menu_SetupMainMenu(void *menu)
 	
 	// Replace portal textures
 	const auto *names = MenMainCursor_Top.matanim_joint->child->child->next->matanim;
-	names->texanim->imagetbl[11]->img_ptr = rle_decode(debug_menu_tex_data);
-	names->texanim->imagetbl[12]->img_ptr = rle_decode(controls_tex_data);
-	names->texanim->imagetbl[13]->img_ptr = rle_decode(manual_tex_data);
+	names->texanim->imagetbl[11]->img_ptr = decompress(debug_menu_tex_data);
+	names->texanim->imagetbl[12]->img_ptr = decompress(controls_tex_data);
+	names->texanim->imagetbl[13]->img_ptr = decompress(manual_tex_data);
 
 	// Replace preview textures
 	const auto *previews =
 		MenMainConTop_Top.matanim_joint->child->child->next->child->next->child->matanim;
 	previews->texanim->imagetbl[7]->height = 132;
-	previews->texanim->imagetbl[7]->img_ptr = rle_decode(controls_preview_tex_data);
+	previews->texanim->imagetbl[7]->img_ptr = decompress(controls_preview_tex_data);
 }
 
 extern "C" void orig_Menu_CreatePortalDescriptionText(MainMenuData *menu_data,

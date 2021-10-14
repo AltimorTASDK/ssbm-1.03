@@ -105,13 +105,15 @@ $(shell echo $(subst $(RESOURCE_DIR_IN), $(RESOURCE_DIR_OUT), $1) | sed -r "s/([
 endef
 
 define make_resource_rule
-$(call get_resource_out, $1): $1
+$(call get_resource_out, $1): $1 $(TOOLS)/compress_resource.py 
 	cp $$< $$@
+	python $(TOOLS)/compress_resource.py $$@ $$@
 endef
 
 define make_texture_rule
-$(call get_texture_out, $1): $1 $(TOOLS)/encode_texture.py
+$(call get_texture_out, $1): $1 $(TOOLS)/compress_resource.py $(TOOLS)/encode_texture.py
 	python $(TOOLS)/encode_texture.py $$< $$@
+	python $(TOOLS)/compress_resource.py $$@ $$@
 endef
 
 define make_header_rule
