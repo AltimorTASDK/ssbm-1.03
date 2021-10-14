@@ -6,13 +6,14 @@
 #include "hsd/tobj.h"
 #include "melee/rules.h"
 #include "melee/text.h"
-#include "resources/rules/ledge_grab_limit.tex.h"
-#include "resources/rules/air_time_limit.tex.h"
-#include "resources/rules/mode_values.tex.h"
 #include "rules/values.h"
 #include "util/compression.h"
 #include "util/melee/text_builder.h"
 #include <gctypes.h>
+
+#include "resources/rules/ledge_grab_limit.tex.h"
+#include "resources/rules/air_time_limit.tex.h"
+#include "resources/rules/mode_values.tex.h"
 
 // Matanim used to cycle through rule text
 extern "C" ArchiveModel MenMainCursorRl_Top;
@@ -21,9 +22,6 @@ extern "C" ArchiveModel MenMainCursorRl_Top;
 extern "C" ArchiveModel MenMainCursorRl01_Top;
 
 extern "C" ArchiveModel MenMainNmRl_Top;
-
-extern "C" u16 SelectedRuleIndex;
-extern "C" u8 SelectedRuleValue;
 
 extern "C" struct {
 	ArchiveModel *mode;

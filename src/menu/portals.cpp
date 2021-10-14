@@ -2,13 +2,14 @@
 #include "hsd/mobj.h"
 #include "hsd/tobj.h"
 #include "melee/text.h"
+#include "util/compression.h"
+#include "util/melee/text_builder.h"
+#include <gctypes.h>
+
 #include "resources/portals/controls.tex.h"
 #include "resources/portals/controls_preview.tex.h"
 #include "resources/portals/debug_menu.tex.h"
 #include "resources/portals/manual.tex.h"
-#include "util/compression.h"
-#include "util/melee/text_builder.h"
-#include <gctypes.h>
 
 enum MenuID {
 	Menu_VsMenu = 2
