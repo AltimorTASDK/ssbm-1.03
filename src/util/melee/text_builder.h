@@ -7,7 +7,7 @@
 
 namespace text_builder {
 
-template<char c>
+template<auto c>
 constexpr auto ascii_to_melee()
 {
 	if constexpr (c >= '0' && c <= '9')
@@ -24,6 +24,8 @@ constexpr auto ascii_to_melee()
 		return std::array { '\x20', '\xF3' };
 	else if constexpr (c == '-')
 		return std::array { '\x20', '\xFC' };
+	else if constexpr (c == u'é')
+		return std::array { '\x40', '\x00' };
 	else if constexpr (c == ' ')
 		return std::array { (char)text_opcode::space };
 }

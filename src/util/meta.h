@@ -9,16 +9,16 @@
 #include <utility>
 
 // Wrap string literals so they can be passed as template params
-template<size_t N>
+template<typename T, size_t N>
 struct string_literal {
 	static constexpr auto size = N;
 
-	constexpr string_literal(const char(&str)[N])
+	constexpr string_literal(const T (&str)[N])
 	{
 		std::copy_n(str, N, value);
 	}
 
-	char value[N];
+	T value[N];
 };
 
 template<typename T>
