@@ -32,12 +32,24 @@ extern "C" ArchiveModel MenMainConIs_Top;
 
 extern "C" HSD_JObj *Menu_GetItemToggle(ItemMenuData *data, u16 index);
 
-template<string_literal str>
+template<string_literal str, u16 scale = 138>
 static constexpr auto item_text()
 {
 	return array_cat(
-		text_builder::textbox<138, 138>(),
+		text_builder::textbox<scale, 138>(),
 		text_builder::ascii<str>(),
+		text_builder::end_textbox(),
+		text_builder::br());
+}
+
+template<string_literal str, u16 scale = 138>
+static constexpr auto item_text_fit()
+{
+	return array_cat(
+		text_builder::textbox<scale, 138>(),
+		text_builder::fit(),
+		text_builder::ascii<str>(),
+		text_builder::end_fit(),
 		text_builder::end_textbox(),
 		text_builder::br());
 }
@@ -61,6 +73,26 @@ constexpr auto text_left = text_builder::build(
 	item_text<"Jungle Japes">(),
 	item_text<"Kongo Jungle">(),
 	item_text<"Kongo Jungle N64">());
+
+constexpr auto text_right = text_builder::build(
+	text_builder::right(),
+	text_builder::kern(),
+	item_text<"Mach Rider">(),
+	item_text<"Metal Battle">(),
+	item_text<"Mother">(),
+	item_text<"Mother 2">(),
+	item_text<"Mushroom Kingdom", 126>(),
+	item_text<"Mushroom Kingdom II", 114>(),
+	item_text<"Mute City">(),
+	item_text<u"Poké Floats">(),
+	item_text<u"Pokémon Stadium", 134>(),
+	item_text<"Princess Peach's Castle", 102>(),
+	item_text<"Rainbow Cruise">(),
+	item_text<"Saria's Theme">(),
+	item_text<"Super Mario Bros. 3", 124>(),
+	item_text<"Venom">(),
+	item_text<"Yoshi's Island">(),
+	item_text<"Yoshi's Island N64">());
 
 extern "C" void orig_Menu_UpdateItemDisplay(HSD_GObj *gobj, bool index_changed, bool value_changed);
 extern "C" void hook_Menu_UpdateItemDisplay(HSD_GObj *gobj, bool index_changed, bool value_changed)
@@ -89,6 +121,7 @@ extern "C" void hook_Menu_SetupItemToggles(HSD_GObj *gobj)
 	
 	// Replace item names
 	data->text_left->data = text_left.data();
+	data->text_right->data = text_right.data();
 }
 
 static void apply_texture_mask(u8 *texture, const u8 *mask, int width, int height,

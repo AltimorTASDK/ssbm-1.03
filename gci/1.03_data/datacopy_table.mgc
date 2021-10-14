@@ -46,7 +46,7 @@ Format:
 # Compiled code
 80461834
 817e1000
-00007000
+00007800
 
 # End table
 00000000
@@ -69,7 +69,7 @@ Format:
 # Compiled code
 80465000
 817f1000
-00007000
+00007800
 
 # End table
 00000000
@@ -92,7 +92,7 @@ Format:
 # Compiled code
 80465000
 817f1000
-00007000
+00007800
 
 # End table
 00000000
