@@ -134,7 +134,7 @@ def main():
 
     in_path = sys.argv[1]
     out_path = sys.argv[2]
-    out_dir = os.path.dirname(out_path)
+    out_dir = os.path.dirname(os.path.abspath(out_path))
 
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
