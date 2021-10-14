@@ -1,7 +1,7 @@
 import os
 import struct
 import sys
-from itertools import takewhile
+from itertools import compress, takewhile
 
 def rle_encode(data):
     i = 0
@@ -49,17 +49,21 @@ def index_encode(data, bits, table):
         
     return out
 
-def compress(data):
+def compress_rle(data):
+    # 0 = not indexed
+    return bytearray(struct.pack(">H", 0)) + rle_encode(data)
+
+def compress_indexed(data):
     unique_bytes = [b for b in range(0x100) if b in data]
     index_size = len(unique_bytes)
     index_bits = (index_size - 1).bit_length()
     
     if index_bits == 8:
-        # 0 = not indexed
-        return struct.pack(">H", 0) + rle_encode(data)
+        # No point indexing
+        return None
         
     # 1 = indexed
-    indexed = struct.pack(">H", 1)
+    indexed = bytearray(struct.pack(">H", 1))
     
     # Uncompressed size
     indexed += struct.pack(">H", len(data))
@@ -75,6 +79,16 @@ def compress(data):
     # Indexed data
     indexed += rle_encode(index_encode(data, index_bits, unique_bytes))
     return indexed
+
+def compress(data):
+    # Choose best compression strategy
+    rle = compress_rle(data)
+    indexed = compress_indexed(data)
+
+    if indexed is None or len(rle) < len(indexed):
+        return rle
+    else:
+        return indexed 
 
 def main():
     if len(sys.argv) < 3:
