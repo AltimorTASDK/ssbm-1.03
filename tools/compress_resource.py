@@ -91,7 +91,7 @@ def main():
     
     compression_rate = (1 - len(compressed) / len(data)) * 100
     name = os.path.basename(out_path)
-    print(f"{name} compression rate: {compression_rate:.02f}")
+    print(f"{name} compression rate: {compression_rate:.02f}%")
         
     with open(out_path, "wb") as f:
         f.write(compressed)
