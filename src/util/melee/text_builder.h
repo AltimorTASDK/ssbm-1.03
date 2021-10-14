@@ -72,6 +72,16 @@ constexpr auto end_center()
 	return std::array { (char)text_opcode::reset_centered };
 };
 
+constexpr auto right()
+{
+	return std::array { (char)text_opcode::right_aligned };
+};
+
+constexpr auto end_right()
+{
+	return std::array { (char)text_opcode::reset_right_align };
+};
+
 constexpr auto fit()
 {
 	return std::array { (char)text_opcode::fitting };
