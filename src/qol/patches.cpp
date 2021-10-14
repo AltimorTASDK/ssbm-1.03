@@ -8,8 +8,11 @@ extern "C" void CSS_Think();
 extern "C" void CSS_Setup();
 extern "C" void CSS_UpdatePortrait(u8 port);
 extern "C" void CSS_GObjCallback(u8 port);
+
 extern "C" void CreateKillScorePopup(u8 port);
 extern "C" void CreateSDScorePopup(u8 port);
+
+extern "C" void DisplayCrashScreen(void *cpu_context);
 
 constexpr u32 NOP = 0x60000000;
 constexpr u32 BLR = 0x4E800020;
@@ -47,6 +50,9 @@ const auto patches = std::array {
 	// Remove in-game port tags (P1/P2 etc)
 	// li r3, 0
 	std::pair { (char*)PlayerBlock_ShouldDisplayPortTag+0x68, 0x38600000u },
+	// Skip crash screen input checks
+	// b +0x220
+	std::pair { (char*)DisplayCrashScreen+0x4C,               0x48000220u },
 };
 
 struct apply_patches {
