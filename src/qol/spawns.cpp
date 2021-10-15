@@ -43,10 +43,8 @@ extern "C" void hook_Stage_GetSpawnPoint(u32 port, vec3 *result)
 {
 	orig_Stage_GetSpawnPoint(port, result);
 	
-	const auto training = SceneMajor == Scene_Training;
-	
-	// No singleplayer except for training mode
-	if (IsSinglePlayerMode() && !training)
+	// No singleplayer
+	if (IsSinglePlayerMode())
 		return;
 	
 	// No P5/P6
