@@ -40,7 +40,7 @@ static bool won_last_match(const MatchInfo *match_info, int port)
 extern "C" void set_css_name_color(int port, Text *text)
 {
 	// Don't display in singleplayer modes
-	if (IsSinglePlayerMode() || SceneMajor == Scene_Training)
+	if (IsSinglePlayerMode())
 		return;
 	
 	const auto *match_info = GetMatchInfo();
