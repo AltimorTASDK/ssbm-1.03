@@ -44,7 +44,7 @@ extern "C" void hook_Stage_GetSpawnPoint(u32 port, vec3 *result)
 	orig_Stage_GetSpawnPoint(port, result);
 	
 	// No singleplayer
-	if (IsSinglePlayerMode())
+	if (IsSinglePlayerMode() && SceneMajor != Scene_Training)
 		return;
 	
 	// No P5/P6
