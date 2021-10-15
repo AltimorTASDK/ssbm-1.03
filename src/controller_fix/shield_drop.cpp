@@ -41,3 +41,9 @@ extern "C" bool hook_Interrupt_SpotDodge_OoS(HSD_GObj *gobj)
 {
 	return !should_suppress_spotdodge(gobj) && orig_Interrupt_SpotDodge_OoS(gobj);
 }
+
+extern "C" bool orig_Interrupt_SpotDodge(HSD_GObj *gobj);
+extern "C" bool hook_Interrupt_SpotDodge(HSD_GObj *gobj)
+{
+	return !should_suppress_spotdodge(gobj) && orig_Interrupt_SpotDodge(gobj);
+}
