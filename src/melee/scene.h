@@ -19,6 +19,12 @@ enum VsScene {
 	VsScene_Victory     = 4
 };
 
+enum PauseBit {
+	PauseBit_DevelopPause,
+	PauseBit_Pause,
+	PauseBit_TrainingMenu
+};
+
 using SceneProc = void(SceneMinorData*);
 
 struct SceneMinorData {

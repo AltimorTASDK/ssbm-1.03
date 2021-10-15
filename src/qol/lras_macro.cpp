@@ -6,7 +6,7 @@ static bool released_start = false;
 
 bool check_lras_macro()
 {
-	if  (!Scene_CheckPauseFlag(1)) {
+	if  (!Scene_CheckPauseFlag(PauseBit_Pause)) {
 		released_start = false;
 		return false;
 	} else if (released_start) {
@@ -17,8 +17,9 @@ bool check_lras_macro()
 	const auto port = match_info->pauser;
 	const auto &pad = HSD_PadMasterStatus[port];
 
-	if (!(pad.buttons & Button_Start)) {
+	if (!(pad.buttons & Button_Start) || (pad.buttons & (Button_X | Button_Y))) {
 		// Player must hold pause throughout LRAS delay
+		// Additionally, don't apply macro if X/Y is held to allow for X+Y+Start
 		released_start = true;
 		return false;
 	}
