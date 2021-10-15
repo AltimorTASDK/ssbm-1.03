@@ -1,4 +1,5 @@
 #include "melee/player.h"
+#include "melee/match.h"
 #include <gctypes.h>
 #include <utility>
 
@@ -50,6 +51,7 @@ const auto patches = std::array {
 	// Remove in-game port tags (P1/P2 etc)
 	// li r3, 0
 	std::pair { (char*)PlayerBlock_ShouldDisplayPortTag+0x68, 0x38600000u },
+	std::pair { (char*)MatchInfo_ShouldDisplayPortTag+0x10,   0x38600000u },
 	// Skip crash screen input checks
 	// b +0x220
 	std::pair { (char*)DisplayCrashScreen+0x4C,               0x48000220u },
