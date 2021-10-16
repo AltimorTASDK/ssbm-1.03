@@ -11,8 +11,14 @@ bool should_suppress_squatrv(const HSD_GObj *gobj)
 	if (player->input.stick.x == 0.f)
 		return false;
 
+#ifndef UCF
+	// Extend window to 2f to match 3f dbooc
+	if (player->input.stick_x_hold_time >= 2)
+		return false;
+#else
 	if (player->input.stick_x_hold_time >= 1)
 		return false;
+#endif
 		
 	// Must be rim coord (quarter circle motion)
 	if (!is_rim_coord(player->input.stick))
