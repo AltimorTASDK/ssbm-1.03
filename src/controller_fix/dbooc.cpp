@@ -3,8 +3,6 @@
 #include "melee/player.h"
 #include "util/melee/pad.h"
 
-#define DBOOC_3F
-
 bool should_suppress_squatrv(const HSD_GObj *gobj)
 {
 	const auto *player = gobj->get<Player>();
@@ -40,7 +38,7 @@ extern "C" bool hook_Interrupt_TurnOrDash(HSD_GObj *gobj)
 	if (orig_Interrupt_TurnOrDash(gobj))
 		return true;
 
-#ifdef DBOOC_3F
+#ifndef UCF
 	auto *player = gobj->get<Player>();
 
 	// DBOOC only
