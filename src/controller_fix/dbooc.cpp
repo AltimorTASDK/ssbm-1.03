@@ -1,5 +1,9 @@
+#include "melee/action_state.h"
+#include "melee/constants.h"
 #include "melee/player.h"
 #include "util/melee/pad.h"
+
+#define DBOOC_3F
 
 bool should_suppress_squatrv(const HSD_GObj *gobj)
 {
@@ -28,4 +32,31 @@ extern "C" bool orig_Interrupt_SquatRv(HSD_GObj *gobj);
 extern "C" bool hook_Interrupt_SquatRv(HSD_GObj *gobj)
 {
 	return !should_suppress_squatrv(gobj) && orig_Interrupt_SquatRv(gobj);
+}
+
+extern "C" bool orig_Interrupt_TurnOrDash(HSD_GObj *gobj);
+extern "C" bool hook_Interrupt_TurnOrDash(HSD_GObj *gobj)
+{
+	if (orig_Interrupt_TurnOrDash(gobj))
+		return true;
+
+#ifdef DBOOC_3F
+	auto *player = gobj->get<Player>();
+
+	// DBOOC only
+	if (player->action_state != AS_SquatWait)
+		return false;
+		
+	// Check xsmash back with 3f window
+	if (player->input.stick_x_hold_time >= 3)
+		return false;
+		
+	if (player->input.stick.x * -player->direction < plco->x_smash_threshold)
+		return false;
+		
+	AS_018_SmashTurn(gobj);
+	return true;
+#else
+	return false;
+#endif
 }
