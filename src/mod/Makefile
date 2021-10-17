@@ -1,7 +1,7 @@
 ELFFILE     := bin/mod.elf
 BINFILE     := bin/mod.bin
 
-OBJDIR   := obj)
+OBJDIR   := obj
 DEPDIR   := dep
 SOURCES  := src
 
