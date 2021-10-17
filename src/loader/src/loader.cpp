@@ -13,6 +13,11 @@ static void *workarea;
 
 static void read_callback(s32 chan, s32 result)
 {
+	if (result < 0) {
+		OSReport("Card read failed (%d)\n", result);
+		return;
+	}
+
 	// Unmount/free
 	CARD_Unmount(0);
 	HSD_Free(workarea);
@@ -37,7 +42,7 @@ static void attach_callback(s32 chan, s32 result)
 	}
 
 	if (s32 error = CARD_ReadAsync(&file, mod_init, stats.len, 0, read_callback); error < 0)
-		OSReport("CARD_Read failed (%d)\n", error);
+		OSReport("CARD_ReadAsync failed (%d)\n", error);
 }
 
 void _start()
