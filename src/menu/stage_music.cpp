@@ -2,6 +2,7 @@
 #include "hsd/jobj.h"
 #include "hsd/mobj.h"
 #include "hsd/tobj.h"
+#include "melee/stage.h"
 #include "melee/text.h"
 #include "util/compression.h"
 #include "util/math.h"
@@ -61,7 +62,7 @@ constexpr auto text_left = text_builder::build(
 	item_text<"Flat Zone">(),
 	item_text<"Great Bay">(),
 	item_text<"Green Greens">(),
-	item_text<"Hyrule Temple">(),
+	item_text<"Temple">(),
 	item_text<"Icicle Mountain">(),
 	item_text<"Jungle Japes">(),
 	item_text<"Kongo Jungle">(),
@@ -86,6 +87,41 @@ constexpr auto text_right = text_builder::build(
 	item_text<"Yoshi's Island">(),
 	item_text<"Yoshi's Island N64">(),
 	item_text<"Custom Music">());
+	
+constexpr int bgm_ids[] = {
+	2,
+	3,
+	97,
+	51,
+	6,
+	7,
+	31,
+	1,
+	30,
+	34,
+	35,
+	75,
+	40,
+	50,
+	33,
+	57,
+	
+	55,
+	80,
+	60,
+	61,
+	41,
+	43,
+	56,
+	65,
+	4,
+	66,
+	74,
+	77,
+	84,
+	95,
+	59
+};
 	
 static void set_toggle(ItemMenuData *data, u16 index, bool toggle)
 {
@@ -181,10 +217,13 @@ static void apply_texture_mask(u8 *texture, const u8 *mask, int width, int heigh
 		const auto y = block_y + offset_y;
 
 		// Check if in mask bounds
-		if (x >= mask_x && x < mask_x + mask_w &&
-		    y >= mask_y && y < mask_y + mask_h) {
-			texture[i] ^= mask[i];
-		}
+		if (x < mask_x || x >= mask_x + mask_w)
+			continue;
+
+		if (y < mask_y || y >= mask_y + mask_h)
+			continue;
+
+		texture[i] ^= mask[i];
 	}
 }
 
@@ -213,4 +252,22 @@ extern "C" HSD_GObj *hook_Menu_SetupItemMenu(u32 entry_point)
 	}
 
 	return orig_Menu_SetupItemMenu(entry_point);
+}
+
+extern "C" bool orig_Stage_GetBGM(u32 stage_id, u32 flags, u32 *result);
+extern "C" bool hook_Stage_GetBGM(u32 stage_id, u32 flags, u32 *result)
+{
+	int bgm_index = stage_id == Stage_BF  ? bgm_selection[5]
+	              : stage_id == Stage_DL  ? bgm_selection[4]
+	              : stage_id == Stage_FD  ? bgm_selection[3]
+	              : stage_id == Stage_FoD ? bgm_selection[2]
+	              : stage_id == Stage_PS  ? bgm_selection[1]
+	              : stage_id == Stage_YS  ? bgm_selection[0]
+	                                      : -1;
+					      
+	if (bgm_index == -1)
+		return orig_Stage_GetBGM(stage_id, flags, result);
+		
+	*result = bgm_ids[bgm_index];
+	return false;
 }
