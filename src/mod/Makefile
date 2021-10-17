@@ -25,6 +25,21 @@ $(BINFILE): $(ELFFILE)
 $(ELFFILE): $(OBJFILES) $(LINKSCRIPT) $(MELEELD) | resources clean_unused
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(CC) $(LDFLAGS) -T$(LINKSCRIPT) -T$(MELEELD) $(OBJFILES) -o $@
+
+$(OBJDIR)/%.c.o: %.c
+	@[ -d $(@D) ] || mkdir -p $(@D)
+	@[ -d $(subst $(OBJDIR), $(DEPDIR), $(@D)) ] || mkdir -p $(subst $(OBJDIR), $(DEPDIR), $(@D))
+	$(CC) -MMD -MP -MF $(patsubst $(OBJDIR)/%.o, $(DEPDIR)/%.d, $@) $(CFLAGS) $(INCLUDE) -c $< -o $@
+
+$(OBJDIR)/%.cpp.o: %.cpp
+	@[ -d $(@D) ] || mkdir -p $(@D)
+	@[ -d $(subst $(OBJDIR), $(DEPDIR), $(@D)) ] || mkdir -p $(subst $(OBJDIR), $(DEPDIR), $(@D))
+	$(CXX) -MMD -MP -MF $(patsubst $(OBJDIR)/%.o, $(DEPDIR)/%.d, $@) $(CXXFLAGS) $(INCLUDE) -c $< -o $@
+
+$(OBJDIR)/%.S.o: %.S
+	@[ -d $(@D) ] || mkdir -p $(@D)
+	@[ -d $(subst $(OBJDIR), $(DEPDIR), $(@D)) ] || mkdir -p $(subst $(OBJDIR), $(DEPDIR), $(@D))
+	$(AS) -mregnames -mgekko $^ -o $@
 	
 RESOURCE_DIR_IN  := resources
 RESOURCE_DIR_OUT := $(SOURCES)/resources

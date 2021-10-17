@@ -1,6 +1,7 @@
 bin/*
-obj/*
-dep/*
+src/*/bin/*
+src/*/obj/*
+src/*/dep/*
 output.map
 .vscode
 GALE01.ld

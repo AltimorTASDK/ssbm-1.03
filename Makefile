@@ -1,10 +1,10 @@
 DEVKITPATH=$(shell echo "$(DEVKITPRO)" | sed -e 's/^\([a-zA-Z]\):/\/\1/')
 PATH := $(DEVKITPATH)/devkitPPC/bin:$(DEVKITPATH)/tools/bin:$(PATH)
 
-AS  := powerpc-eabi-as
-CC  := powerpc-eabi-gcc
-CXX := powerpc-eabi-g++
-LD  := powerpc-eabi-ld
+export AS  := powerpc-eabi-as
+export CC  := powerpc-eabi-gcc
+export CXX := powerpc-eabi-g++
+export LD  := powerpc-eabi-ld
 
 export BINDIR    := $(abspath bin)
 export TOOLS     := $(abspath tools)
