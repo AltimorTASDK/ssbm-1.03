@@ -5,6 +5,8 @@ extern "C" void *HSD_MemAlloc(size_t size);
 extern "C" void HSD_Free(void *ptr);
 extern "C" void OSReport(const char *fmt, ...);
 
+extern "C" void _start() __attribute__((section(".init")));
+
 void *mod_init = (void*)0x817E1000;
 
 static void *workarea;
@@ -38,7 +40,7 @@ static void attach_callback(s32 chan, s32 result)
 		OSReport("CARD_Read failed (%d)\n", error);
 }
 
-__attribute__((section(".init"))) void init()
+void _start()
 {
 	workarea = HSD_MemAlloc(0xA000);
 	

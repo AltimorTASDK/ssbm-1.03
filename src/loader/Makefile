@@ -1,9 +1,9 @@
 ELFFILE     := $(GCIDIR)/1.03_data/loader.elf
 BINFILE     := $(GCIDIR)/1.03_data/loader.bin
 
-OBJDIR   := $(abspath obj)
-DEPDIR   := $(abspath dep)
-SOURCES  := $(abspath src)
+OBJDIR   := obj
+DEPDIR   := dep
+SOURCES  := src
 
 CFILES   := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.c'))
 CXXFILES := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.cpp'))

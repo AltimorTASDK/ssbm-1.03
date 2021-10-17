@@ -25,4 +25,4 @@ The save file has three main components:
 
 # Compiled code
 !loc 80461834
-!file "1.03_data/code.bin"
+!file "1.03_data/loader.bin"
