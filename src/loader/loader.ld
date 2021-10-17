@@ -6,8 +6,6 @@ OUTPUT_FORMAT(elf32-powerpc)
 OUTPUT_ARCH(powerpc:common);
 ENTRY(_start);
 
-INCLUDE GALE01.ld
-
 PROVIDE(__LOAD_BASE__ = 0x817E0800);
 
 MEMORY
