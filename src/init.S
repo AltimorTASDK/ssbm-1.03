@@ -98,7 +98,7 @@ hooks_start:
 .set UpdatePadButtons,        HSD_PadRenewMasterStatus+0x400
 .set UpdatePlayerStick,       PlayerThink_Input+0x1D0
 .set CheckScrollingRuleIndex, Menu_UpdateRuleDisplay+0x418
-.set ShowNameTagCheck,        NameTag_DisplayInGame+0x28
+.set ShowNameTagCheck,        NameTag_Think+0x28
 .set CreateCSSNameText,       CSS_Setup+0x1180
 .set CheckStockStealInput,    Match_CheckStockSteal+0xF8
 
