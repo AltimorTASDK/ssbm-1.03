@@ -4,7 +4,7 @@ dep/*
 output.map
 .vscode
 GALE01.ld
-gci/1.03_data/code.bin
-gci/1.03_data/code.elf
+gci/1.03_data/loader.bin
+gci/1.03_data/loader.elf
 gci/tmp_*
-src/resources
+src/mod/src/resources

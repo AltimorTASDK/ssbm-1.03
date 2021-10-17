@@ -52,7 +52,6 @@ const auto patches = std::array {
 	std::pair { (char*)CreateSDScorePopup,       BLR },
 	// Remove in-game port tags (P1/P2 etc)
 	std::pair { (char*)NameTag_Think+0x60,       NOP },
-	std::pair { (char*)NameTag_Think+0x70,       NOP },
 	std::pair { (char*)NameTag_Think+0x80,       NOP },
 	// li r3, 0
 	std::pair { (char*)NameTag_Think+0x88,       0x38600000u },

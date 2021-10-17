@@ -14,4 +14,7 @@ void OSReport(const char *fmt, ...);
 void *OSAllocFromHeap(int heap, size_t size);
 u64 __OSGetSystemTime();
 
+u32 OSDisableInterrupts();
+void OSRestoreInterrupts(u32 mask);
+
 }

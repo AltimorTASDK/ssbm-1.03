@@ -62,16 +62,15 @@ constexpr auto text_left = text_builder::build(
 	item_text<"Flat Zone">(),
 	item_text<"Great Bay">(),
 	item_text<"Green Greens">(),
-	item_text<"Temple">(),
 	item_text<"Icicle Mountain">(),
 	item_text<"Jungle Japes">(),
 	item_text<"Kongo Jungle">(),
-	item_text<"Kongo Jungle N64">());
+	item_text<"Kongo Jungle N64">(),
+	item_text<"Mach Rider">());
 
 constexpr auto text_right = text_builder::build(
 	text_builder::right(),
 	text_builder::kern(),
-	item_text<"Mach Rider">(),
 	item_text<"Metal Battle">(),
 	item_text<"Mother">(),
 	item_text<"Mother 2">(),
@@ -83,6 +82,7 @@ constexpr auto text_right = text_builder::build(
 	item_text<"Rainbow Cruise">(),
 	item_text<"Saria's Theme">(),
 	item_text<"Super Mario Bros. 3", 124>(),
+	item_text<"Temple">(),
 	item_text<"Venom">(),
 	item_text<"Yoshi's Island">(),
 	item_text<"Yoshi's Island N64">(),
@@ -100,13 +100,12 @@ constexpr int bgm_ids[] = {
 	30,
 	34,
 	35,
-	75,
 	40,
 	50,
 	33,
 	57,
-	
 	55,
+
 	80,
 	60,
 	61,
@@ -118,6 +117,7 @@ constexpr int bgm_ids[] = {
 	66,
 	74,
 	77,
+	75,
 	84,
 	95,
 	59
