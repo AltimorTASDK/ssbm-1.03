@@ -20,9 +20,16 @@ export INCLUDE  := -Isrc -I$(DEVKITPATH)/libogc/include
 
 export MELEELD  := $(abspath GALE01.ld)
 
+.PHONY: all
 all: $(MELEELD)
 	@cd src/loader && make
 	@cd src/mod    && make
 
 $(MELEELD): GALE01.map $(TOOLS)/map_to_linker_script.py
 	python $(TOOLS)/map_to_linker_script.py
+	
+.PHONY: clean
+clean:
+	rm -rf $(BINDIR)
+	@cd src/loader && make clean
+	@cd src/mod    && make clean

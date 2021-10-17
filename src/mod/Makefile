@@ -73,7 +73,7 @@ $(foreach resource, $(RESOURCES_OUT) $(TEXTURES_OUT), $(eval $(call make_header_
 
 .PHONY: clean
 clean:
-	rm -rf $(OBJDIR) $(DEPDIR) $(BINDIR) $(BINFILE) $(RESOURCE_DIR_OUT)
+	rm -rf $(OBJDIR) $(DEPDIR) $(ELFFILE) $(BINFILE) $(RESOURCE_DIR_OUT)
 
 # Remove unused obj/dep/resource files
 .PHONY: clean_unused

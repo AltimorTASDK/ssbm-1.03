@@ -69,7 +69,7 @@ $(OBJDIR)/%.S.o: %.S
 
 .PHONY: clean
 clean:
-	rm -rf $(OBJDIR) $(DEPDIR) $(BINDIR) $(BINFILE) $(RESOURCE_DIR_OUT)
+	rm -rf $(OBJDIR) $(DEPDIR) $(ELFFILE) $(BINFILE)
 
 # Remove unused obj/dep/resource files
 .PHONY: clean_unused
