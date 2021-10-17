@@ -18,6 +18,12 @@ DEPFILES := $(patsubst $(OBJDIR)/%.o, $(DEPDIR)/%.d, $(OBJFILES))
 
 LINKSCRIPT := mod.ld
 
+GCIFILE     := $(BINDIR)/ssbm-1.03.gci
+
+$(GCIFILE): $(BINFILE) $(TOOLS)/bin_to_gci.py
+	@[ -d $(@D) ] || mkdir -p $(@D)
+	python $(TOOLS)/bin_to_gci.py $< $@ "103Code"
+
 $(BINFILE): $(ELFFILE)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	powerpc-eabi-objcopy -O binary $< $@

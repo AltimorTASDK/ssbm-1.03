@@ -2,7 +2,7 @@ import struct
 import sys
 from datetime import datetime
 
-BLOCK_SIZE = 0x10000
+BLOCK_SIZE = 0x2000
 
 def gamecube_time():
     delta = datetime.today() - datetime(2000, 1, 1)
@@ -26,17 +26,24 @@ def write_gci_header(file, filename, block_count):
 
 def main():
     if len(sys.argv) < 3:
-        print("Usage: bin_to_gci.py <in> <out>", file=sys.stderr)
+        print("Usage: bin_to_gci.py <in> <out> <gci filename>", file=sys.stderr)
         sys.exit(1)
         
     in_path = sys.argv[1]
     out_path = sys.argv[2]
+    filename = sys.argv[3]
         
     with open(in_path, "rb") as f:
         data = f.read()
         
+    block_count = (len(data) + BLOCK_SIZE - 1) // BLOCK_SIZE
+    
+    # Pad to block size
+    data = data.ljust(block_count * BLOCK_SIZE, b"\x00")
+        
     with open(out_path, "wb") as f:
-        f.write(gci)
+        write_gci_header(f, filename.encode(), block_count)
+        f.write(data)
 
 if __name__ == "__main__":
     main()

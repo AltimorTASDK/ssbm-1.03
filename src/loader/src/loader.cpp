@@ -1,15 +1,20 @@
 #include <cstddef>
+#include <cstring>
 #include <ogc/card.h>
 
 extern "C" void *HSD_MemAlloc(size_t size);
 extern "C" void HSD_Free(void *ptr);
 extern "C" void OSReport(const char *fmt, ...);
+extern "C" void InitCardBuffers();
 
-extern "C" void _start() __attribute__((section(".init")));
+extern "C" void *CardWorkArea;
 
-void *mod_init = (void*)0x817E1000;
+static bool *loader_done;
+static void *mod_init = (void*)0x817E1000;
+static card_file file;
 
-static void *workarea;
+extern "C" char __BSS_START__;
+extern "C" char __BSS_SIZE__;
 
 static void read_callback(s32 chan, s32 result)
 {
@@ -17,19 +22,19 @@ static void read_callback(s32 chan, s32 result)
 		OSReport("Card read failed (%d)\n", result);
 		return;
 	}
-
-	// Unmount/free
-	CARD_Unmount(0);
-	HSD_Free(workarea);
 	
+	CARD_Unmount(0);
+
 	// Run mod init
 	OSReport("Running 1.03\n");
 	((void(*)())mod_init)();
+	
+	// Tell ace_exploit.mgc to continue
+	*loader_done = true;
 }
 
 static void attach_callback(s32 chan, s32 result)
 {
-	card_file file;
 	if (s32 error = CARD_Open(chan, "103Code", &file); error < 0) {
 		OSReport("CARD_Open failed (%d)\n", error);
 		return;
@@ -45,10 +50,18 @@ static void attach_callback(s32 chan, s32 result)
 		OSReport("CARD_ReadAsync failed (%d)\n", error);
 }
 
-void _start()
+extern "C" __attribute__((section(".init"))) void _start(bool *done)
 {
-	workarea = HSD_MemAlloc(0xA000);
+	OSReport("Running 1.03 loader\n");
 	
-	if (s32 error = CARD_MountAsync(0, workarea, nullptr, attach_callback); error < 0)
+	// Zero out the bussy
+	memset(&__BSS_START__, 0, (size_t)&__BSS_SIZE__);
+
+	loader_done = done;
+	*done = false;
+
+	InitCardBuffers();
+	
+	if (s32 error = CARD_MountAsync(0, CardWorkArea, nullptr, attach_callback); error < 0)
 		OSReport("CARD_MountAsync failed (%d)\n", error);
 }
