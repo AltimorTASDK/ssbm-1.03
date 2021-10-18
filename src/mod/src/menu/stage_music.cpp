@@ -126,6 +126,9 @@ constexpr int bgm_ids[] = {
 static void set_toggle(ItemMenuData *data, u16 index, bool toggle)
 {
 	data->toggles[index] = toggle;
+	
+	if (index == MenuSelectedIndex)
+		MenuSelectedValue = toggle;
 
 	auto *jobj = Menu_GetItemToggle(data, index);
 	auto *on_off_switch = HSD_JObjGetFromTreeByIndex(jobj, 2);
