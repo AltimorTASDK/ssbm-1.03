@@ -31,6 +31,10 @@ loader: $(MELEELD)
 mod: $(MELEELD)
 	+@cd src/mod && $(MAKE)
 
+.PHONY: resources
+resources: $(MELEELD)
+	+@cd src/mod && $(MAKE) resources
+
 $(MELEELD): GALE01.map $(TOOLS)/map_to_linker_script.py
 	python $(TOOLS)/map_to_linker_script.py
 	
