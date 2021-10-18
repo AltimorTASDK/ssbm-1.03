@@ -10,7 +10,7 @@ PROVIDE(__LOAD_BASE__ = 0x817E1000);
 
 MEMORY
 {
-    load (rwx) : ORIGIN = __LOAD_BASE__, LENGTH = 0x7800
+    load (rwx) : ORIGIN = __LOAD_BASE__, LENGTH = 0xB000
 }
 
 SECTIONS
