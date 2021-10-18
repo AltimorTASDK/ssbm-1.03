@@ -11,6 +11,7 @@ enum Rule {
 	Rule_AirTimeLimit    = 3,
 	Rule_StageSelection  = 4,
 	Rule_ItemSwitch      = 5,
+	Rule_StageMusic      = 5,
 	Rule_AdditionalRules = 6,
 	Rule_Max             = 7
 };

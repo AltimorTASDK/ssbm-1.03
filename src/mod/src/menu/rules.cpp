@@ -13,6 +13,7 @@
 
 #include "resources/rules/ledge_grab_limit.tex.h"
 #include "resources/rules/air_time_limit.tex.h"
+#include "resources/rules/stage_music.tex.h"
 #include "resources/rules/mode_values.tex.h"
 
 // Matanim used to cycle through rule text
@@ -83,6 +84,20 @@ constexpr auto atl_description = text_builder::build(
 	text_builder::br(),
 	text_builder::fit(),
 	text_builder::ascii<"a time-out.">(),
+	text_builder::end_fit(),
+	text_builder::end_textbox(),
+	text_builder::end_color());
+
+constexpr auto stage_music_description = text_builder::build(
+	text_builder::kern(),
+	text_builder::left(),
+	text_builder::color<170, 170, 170>(),
+	text_builder::textbox<179, 179>(),
+	text_builder::offset<0, -10>(),
+	text_builder::br(),
+	text_builder::unk06<0, 0>(),
+	text_builder::fit(),
+	text_builder::ascii<"Customize the stage music.">(),
 	text_builder::end_fit(),
 	text_builder::end_textbox(),
 	text_builder::end_color());
@@ -219,6 +234,7 @@ extern "C" HSD_GObj *hook_Menu_SetupRulesMenu(u32 entry_point)
 	const auto *matanim = MenMainCursorRl_Top.matanim_joint->child->child->next->matanim;
 	matanim->texanim->imagetbl[3]->img_ptr = decompress(ledge_grab_limit_tex_data);
 	matanim->texanim->imagetbl[4]->img_ptr = decompress(air_time_limit_tex_data);
+	matanim->texanim->imagetbl[6]->img_ptr = decompress(stage_music_tex_data);
 
 	// Replace mode value texture
 	MenMainCursorRl01_Top.joint->child->u.dobj->mobjdesc->texdesc->imagedesc->img_ptr =
@@ -255,4 +271,6 @@ extern "C" void hook_Menu_CreateRuleDescriptionText(RulesMenuData *rules_data, i
 		rules_data->description_text->data = lgl_description.data();
 	else if (rule == Rule_AirTimeLimit)
 		rules_data->description_text->data = atl_description.data();
+	else if (rule == Rule_StageMusic)
+		rules_data->description_text->data = stage_music_description.data();
 }
