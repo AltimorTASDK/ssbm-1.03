@@ -66,13 +66,7 @@ static void read_callback(s32 chan, s32 result)
 		panic("Card read failed (%d)\n", result);
 		return;
 	}
-	
-	CARD_Unmount(chan);
 
-	// Run mod init
-	OSReport("Running 1.03\n");
-	((void(*)())mod_init)();
-	
 	// Wake up the main thread
 	OSWakeupThread(&sleep_queue);
 }
@@ -122,5 +116,12 @@ extern "C" __attribute__((section(".init"))) void _start()
 		return;
 	}
 	
+	// Wait for read to complete
 	OSSleepThread(&sleep_queue);
+	
+	CARD_Unmount(0);
+
+	// Run mod init
+	OSReport("Running 1.03\n");
+	((void(*)())mod_init)();
 }
