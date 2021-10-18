@@ -55,10 +55,15 @@ extern "C" bool hook_Interrupt_TurnOrDash(HSD_GObj *gobj)
 	if (player->input.stick_x_hold_time >= 3)
 		return false;
 		
-	if (player->input.stick.x * -player->direction < plco->x_smash_threshold)
-		return false;
+	const auto forward_x = player->input.stick.x * player->direction;
 		
-	AS_018_SmashTurn(gobj);
+	if (forward_x >= plco->x_smash_threshold)
+		AS_020_Dash(gobj, true);
+	else if (-forward_x >= plco->x_smash_threshold)
+		AS_018_SmashTurn(gobj);
+	else
+		return false;
+
 	return true;
 #else
 	return false;
