@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <cmath>
 
 namespace math {
@@ -16,6 +17,22 @@ constexpr auto align_up(auto value, auto alignment)
 constexpr auto is_pow2(auto value)
 {
 	return value != 0 && (value & (value - 1)) == 0;
+}
+
+template<typename T>
+constexpr T clamp(T value, T min, T max)
+{
+	return std::max(min, std::min(value, max));
+}
+
+template<typename T>
+constexpr T mod(T value, T modulus)
+{
+	if (value >= 0)
+		return value % modulus;
+
+	// True modulo for negatives
+	return ((value % modulus) + modulus) % modulus;
 }
 
 template<typename T>

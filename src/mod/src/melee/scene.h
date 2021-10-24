@@ -44,5 +44,6 @@ extern u8 SceneMinor;
 bool IsSinglePlayerMode();
 void Scene_Exit();
 bool Scene_CheckPauseFlag(u32 flag);
+void *GetSceneExitData();
 
 }

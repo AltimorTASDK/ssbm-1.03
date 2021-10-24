@@ -1,5 +1,6 @@
 #include "melee/player.h"
 #include "melee/match.h"
+#include "util/patch_list.h"
 #include <gctypes.h>
 #include <utility>
 
@@ -15,10 +16,12 @@ extern "C" void CreateSDScorePopup(u8 port);
 
 extern "C" void NameTag_Think(HSD_GObj *gobj);
 
+extern "C" void VsMenu_Think(HSD_GObj *gobj);
+
 constexpr u32 NOP = 0x60000000;
 constexpr u32 BLR = 0x4E800020;
 
-const auto patches = std::array {
+const auto patches = patch_list {
 	// Enable cstick in develop mode
 	std::pair { (char*)PlayerThink_Input+0x188,  NOP },
 	// Enable cstick in singleplayer
@@ -53,12 +56,7 @@ const auto patches = std::array {
 	std::pair { (char*)NameTag_Think+0x80,       NOP },
 	// li r3, 0
 	std::pair { (char*)NameTag_Think+0x88,       0x38600000u },
+	// Replace tournament melee with debug menu
+	// li r0, 6
+	std::pair { (char*)VsMenu_Think+0xA4,        0x38000006u },
 };
-
-struct apply_patches {
-	apply_patches()
-	{
-		for (const auto &patch : patches)
-			*(u32*)patch.first = patch.second;
-	}
-} apply_patches;

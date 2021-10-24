@@ -36,8 +36,11 @@ enum class text_opcode {
 };
 
 struct Text {
-	char pad000[0x5C];
+	char pad000[0x4D];
+	u8 hidden;
+	char pad04E[0x5C - 0x4E];
 	const char *data;
+	char pad060[0xA0 - 0x60];
 };
 
 extern "C" {

@@ -14,10 +14,14 @@
 #include "resources/rules/ledge_grab_limit.tex.h"
 #include "resources/rules/air_time_limit.tex.h"
 #include "resources/rules/stage_music.tex.h"
+#include "resources/rules/stage_music_header.tex.h"
 #include "resources/rules/mode_values.tex.h"
 
-// Matanim used to cycle through rule text
+// Rule name text
 extern "C" ArchiveModel MenMainCursorRl_Top;
+
+// Menu frame
+extern "C" ArchiveModel MenMainPanel_Top;
 
 // Mode values
 extern "C" ArchiveModel MenMainCursorRl01_Top;
@@ -33,7 +37,7 @@ extern "C" struct {
 } MenuRuleValueModels;
 
 struct RulesMenuData {
-	u8 match_type_major;
+	u8 menu_type;
 	u8 selected;
 	u8 mode;
 	u8 time_limit;
@@ -231,10 +235,14 @@ extern "C" HSD_GObj *hook_Menu_SetupRulesMenu(u32 entry_point)
 	auto *rules_data = menu_obj->get<RulesMenuData>();
 
 	// Replace rule name textures
-	const auto *matanim = MenMainCursorRl_Top.matanim_joint->child->child->next->matanim;
-	matanim->texanim->imagetbl[3]->img_ptr = decompress(ledge_grab_limit_tex_data);
-	matanim->texanim->imagetbl[4]->img_ptr = decompress(air_time_limit_tex_data);
-	matanim->texanim->imagetbl[6]->img_ptr = decompress(stage_music_tex_data);
+	const auto *rule_names = MenMainCursorRl_Top.matanim_joint->child->child->next->matanim;
+	rule_names->texanim->imagetbl[3]->img_ptr = decompress(ledge_grab_limit_tex_data);
+	rule_names->texanim->imagetbl[4]->img_ptr = decompress(air_time_limit_tex_data);
+	rule_names->texanim->imagetbl[6]->img_ptr = decompress(stage_music_tex_data);
+
+	// Replace menu headers
+	const auto *panel = MenMainPanel_Top.matanim_joint->child->next->next->child->next->matanim;
+	panel->texanim->imagetbl[2]->img_ptr = decompress(stage_music_header_tex_data);
 
 	// Replace mode value texture
 	MenMainCursorRl01_Top.joint->child->u.dobj->mobjdesc->texdesc->imagedesc->img_ptr =

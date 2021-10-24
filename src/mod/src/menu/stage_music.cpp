@@ -2,6 +2,8 @@
 #include "hsd/jobj.h"
 #include "hsd/mobj.h"
 #include "hsd/tobj.h"
+#include "melee/menu.h"
+#include "melee/music.h"
 #include "melee/stage.h"
 #include "melee/text.h"
 #include "util/compression.h"
@@ -15,7 +17,7 @@
 #include "resources/music/music_stages_mask.tex.h"
 
 struct ItemMenuData {
-	u8 match_type_major;
+	u8 menu_type;
 	u8 selected;
 	u8 toggles[31];
 	union {
@@ -29,14 +31,9 @@ struct ItemMenuData {
 	Text *text_right;
 };
 
-extern "C" u16 MenuSelectedIndex;
-extern "C" u8 MenuSelectedValue;
-
 extern "C" ArchiveModel MenMainConIs_Top;
 
-extern "C" HSD_JObj *Menu_GetItemToggle(ItemMenuData *data, u16 index);
-
-int bgm_selection[6] = { -1, -1, -1, -1, -1, -1 };
+extern "C" HSD_JObj *Menu_GetItemToggle(ItemMenuData *data, u8 index);
 
 template<string_literal str, u16 scale = 138>
 static constexpr auto item_text()
@@ -87,43 +84,46 @@ constexpr auto text_right = text_builder::build(
 	item_text<"Yoshi's Island">(),
 	item_text<"Yoshi's Island N64">(),
 	item_text<"Custom Music">());
-	
-constexpr int bgm_ids[] = {
-	2,
-	3,
-	97,
-	51,
-	6,
-	7,
-	31,
-	1,
-	30,
-	34,
-	35,
-	40,
-	50,
-	33,
-	57,
-	55,
 
-	80,
-	60,
-	61,
-	41,
-	43,
-	56,
-	65,
-	4,
-	66,
-	74,
-	77,
-	75,
-	84,
-	95,
-	59
+constexpr int bgm_ids[] = {
+	BGM_BalloonFight,
+	BGM_BigBlue,
+	BGM_Brinstar,
+	BGM_BrinstarDepths,
+	BGM_Corneria,
+	BGM_DrMario,
+	BGM_Earthbound,
+	BGM_FireEmblem,
+	BGM_FlatZone,
+	BGM_GreatBay,
+	BGM_GreenGreens,
+	BGM_IcicleMountain,
+	BGM_JungleJapes,
+	BGM_KongoJungle,
+	BGM_KongoJungleN64,
+	BGM_MachRider,
+
+	BGM_MetalBattle,
+	BGM_Mother,
+	BGM_Mother2,
+	BGM_MushroomKingdom,
+	BGM_MushroomKingdomII,
+	BGM_MuteCity,
+	BGM_PokeFloats,
+	BGM_PrincessPeachsCastle,
+	BGM_RainbowCruise,
+	BGM_SariasTheme,
+	BGM_SuperMarioBros3,
+	BGM_Temple,
+	BGM_Venom,
+	BGM_YoshisIsland,
+	BGM_YoshisIslandN64,
+	BGM_CustomMusic
 };
 	
-static void set_toggle(ItemMenuData *data, u16 index, bool toggle)
+static int bgm_selection[6] = { -1, -1, -1, -1, -1, -1 };
+	
+static void set_toggle(ItemMenuData *data, u8 index, bool toggle)
 {
 	data->toggles[index] = toggle;
 	
@@ -132,19 +132,14 @@ static void set_toggle(ItemMenuData *data, u16 index, bool toggle)
 
 	auto *jobj = Menu_GetItemToggle(data, index);
 	auto *on_off_switch = HSD_JObjGetFromTreeByIndex(jobj, 2);
-
-	if (toggle)
-		HSD_JObjReqAnimAll(on_off_switch, 1.f);
-	else
-		HSD_JObjReqAnimAll(on_off_switch, 0.f);
-
+	HSD_JObjReqAnimAll(on_off_switch, toggle ? 1.f : 0.f);
 	HSD_JObjAnimAll(on_off_switch);
 }
 
 static void change_stage(ItemMenuData *data, u8 stage)
 {
 	// Copy selection for stage
-	for (u16 i = 0; i < 31; i++)
+	for (u8 i = 0; i < 31; i++)
 		set_toggle(data, i, i == bgm_selection[stage]);
 }
 
@@ -161,7 +156,7 @@ extern "C" void hook_Menu_UpdateItemDisplay(HSD_GObj *gobj, bool index_changed, 
 	}
 
 	// Hide selection indicator
-	auto *jobj = Menu_GetItemToggle(data, MenuSelectedIndex);
+	auto *jobj = Menu_GetItemToggle(data, (u8)MenuSelectedIndex);
 	HSD_JObjSetFlagsAll(HSD_JObjGetFromTreeByIndex(jobj, 4), HIDDEN);
 	
 	if (!value_changed)
@@ -172,7 +167,7 @@ extern "C" void hook_Menu_UpdateItemDisplay(HSD_GObj *gobj, bool index_changed, 
 	else
 		bgm_selection[data->selected_stage] = -1;
 		
-	for (u16 i = 0; i < 31; i++) {
+	for (u8 i = 0; i < 31; i++) {
 		// Disable all other songs
 		if (i != MenuSelectedIndex)
 			set_toggle(data, i, false);
@@ -186,7 +181,7 @@ extern "C" void hook_Menu_SetupItemToggles(HSD_GObj *gobj)
 
 	auto *data = gobj->get<ItemMenuData>();
 
-	for (u16 i = 0; i < 31; i++) {
+	for (u8 i = 0; i < 31; i++) {
 		auto *jobj = Menu_GetItemToggle(data, i);
 		// Hide item image
 		HSD_JObjSetFlagsAll(HSD_JObjGetFromTreeByIndex(jobj, 7), HIDDEN);
