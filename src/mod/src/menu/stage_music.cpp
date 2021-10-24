@@ -9,6 +9,7 @@
 #include "util/compression.h"
 #include "util/math.h"
 #include "util/meta.h"
+#include "util/patch_list.h"
 #include "util/melee/text_builder.h"
 #include <cstring>
 #include <gctypes.h>
@@ -20,10 +21,7 @@ struct ItemMenuData {
 	u8 menu_type;
 	u8 selected;
 	u8 toggles[31];
-	union {
-		u8 item_frequency;
-		u8 selected_stage;
-	};
+	u8 selected_stage;
 	char pad022;
 	u8 state;
 	HSD_JObj *jobj_tree[7];
@@ -33,6 +31,7 @@ struct ItemMenuData {
 
 extern "C" ArchiveModel MenMainConIs_Top;
 
+extern "C" HSD_GObj *Menu_SetupItemMenu(u32 entry_point);
 extern "C" HSD_JObj *Menu_GetItemToggle(ItemMenuData *data, u8 index);
 
 template<string_literal str, u16 scale = 138>
@@ -122,6 +121,33 @@ constexpr int bgm_ids[] = {
 };
 	
 static int bgm_selection[6] = { -1, -1, -1, -1, -1, -1 };
+
+const auto patches = patch_list {
+	// Start cursor on BF
+	// li r3, 5
+	std::pair { (char*)Menu_SetupItemMenu+0x154, 0x38600005u }
+};
+
+static int get_selected_bgm_id(ItemMenuData *data, u8 stage)
+{
+	const auto bgm = bgm_selection[stage];
+	if (bgm != -1)
+		return bgm_ids[bgm];
+		
+	return (int[]) {
+		BGM_YoshisStory,
+		BGM_PokemonStadium,
+		BGM_FountainOfDreams,
+		BGM_FinalDestination,
+		BGM_DreamLandN64,
+		BGM_Battlefield
+	}[stage];
+}
+
+static void play_selected_bgm(ItemMenuData *data, u8 stage)
+{
+	PlayBGM(get_selected_bgm_id(data, stage));
+}
 	
 static void set_toggle(ItemMenuData *data, u8 index, bool toggle)
 {
@@ -141,6 +167,8 @@ static void change_stage(ItemMenuData *data, u8 stage)
 	// Copy selection for stage
 	for (u8 i = 0; i < 31; i++)
 		set_toggle(data, i, i == bgm_selection[stage]);
+		
+	play_selected_bgm(data, stage);
 }
 
 extern "C" void orig_Menu_UpdateItemDisplay(HSD_GObj *gobj, bool index_changed, bool value_changed);
@@ -172,6 +200,8 @@ extern "C" void hook_Menu_UpdateItemDisplay(HSD_GObj *gobj, bool index_changed, 
 		if (i != MenuSelectedIndex)
 			set_toggle(data, i, false);
 	}
+
+	play_selected_bgm(data, data->selected_stage);
 }
 
 extern "C" void orig_Menu_SetupItemToggles(HSD_GObj *gobj);
@@ -250,6 +280,16 @@ extern "C" HSD_GObj *hook_Menu_SetupItemMenu(u32 entry_point)
 	}
 
 	return orig_Menu_SetupItemMenu(entry_point);
+}
+
+extern "C" void orig_Menu_ExitToRulesMenu();
+extern "C" void hook_Menu_ExitToRulesMenu()
+{
+	// Restore menu music
+	if (MenuType == MenuType_StageMusic)
+		PlayBGM(Menu_GetBGM());
+	
+	orig_Menu_ExitToRulesMenu();
 }
 
 extern "C" bool orig_Stage_GetBGM(u32 stage_id, u32 flags, u32 *result);

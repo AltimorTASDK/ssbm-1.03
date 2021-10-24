@@ -23,7 +23,15 @@ enum MenuSFX {
 	MenuSFX_Denied    = 3
 };
 
+enum MenuType {
+	MenuType_ItemSwitch = 16,
+	MenuType_StageMusic = 16
+};
+
 extern "C" {
+
+extern u8 MenuType;
+extern u8 MenuTypePrevious;
 
 extern u16 MenuSelectedIndex;
 extern u8 MenuSelectedValue;

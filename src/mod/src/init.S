@@ -118,6 +118,7 @@ add_hook MatchController_UpdateTeamWinners
 add_hook MatchController_UpdateWinners
 add_hook Menu_CreatePortalDescriptionText
 add_hook Menu_CreateRuleDescriptionText
+add_hook Menu_ExitToRulesMenu
 add_hook Menu_GetBGM
 add_hook Menu_RandomStageMenuInput
 add_hook Menu_RandomStageMenuScroll
