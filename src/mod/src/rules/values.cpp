@@ -17,6 +17,7 @@ struct init_rules {
 		rules->stock_count = 4;
 		rules->handicap = 0; // LGL
 		rules->damage_ratio = 0; // ATL
+		rules->stage_selection_mode = 0;
 		rules->stock_time_limit = 6;
 		rules->friendly_fire = true;
 	}

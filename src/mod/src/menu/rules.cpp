@@ -28,7 +28,7 @@ struct RulesMenuData {
 	u8 time_limit;
 	u8 handicap;
 	u8 damage_ratio;
-	u8 pad007;
+	u8 stage_selection_mode;
 	u8 pad008;
 	u8 stock_count;
 	u8 state;
@@ -42,7 +42,7 @@ struct RulesMenuData {
 	struct {
 		HSD_JObj *tree[9];
 	} value_jobj_trees[Rule_Max];
-	 Text *description_text;
+	Text *description_text;
 };
 
 // Rule name text
