@@ -4,18 +4,46 @@
 #include "hsd/jobj.h"
 #include "hsd/mobj.h"
 #include "hsd/tobj.h"
+#include "melee/menu.h"
 #include "melee/rules.h"
 #include "melee/text.h"
 #include "rules/values.h"
 #include "util/compression.h"
+#include "util/patch_list.h"
 #include "util/melee/text_builder.h"
 #include <gctypes.h>
 
 #include "resources/rules/ledge_grab_limit.tex.h"
 #include "resources/rules/air_time_limit.tex.h"
+#include "resources/rules/menu_music.tex.h"
+#include "resources/rules/menu_music_header.tex.h"
 #include "resources/rules/stage_music.tex.h"
 #include "resources/rules/stage_music_header.tex.h"
 #include "resources/rules/mode_values.tex.h"
+
+struct RulesMenuData {
+	u8 menu_type;
+	u8 selected;
+	u8 mode;
+	u8 time_limit;
+	u8 handicap;
+	u8 damage_ratio;
+	u8 pad007;
+	u8 pad008;
+	u8 stock_count;
+	u8 state;
+	u8 pad00B;
+	struct {
+		HSD_JObj *root1;
+		HSD_JObj *root2;
+		HSD_JObj *root3;
+		HSD_JObj *rules[Rule_Max];
+	} jobj_tree;
+	struct {
+		HSD_JObj *tree[9];
+	} value_jobj_trees[Rule_Max];
+	 Text *description_text;
+};
 
 // Rule name text
 extern "C" ArchiveModel MenMainCursorRl_Top;
@@ -36,29 +64,8 @@ extern "C" struct {
 	ArchiveModel *stage_selection;
 } MenuRuleValueModels;
 
-struct RulesMenuData {
-	u8 menu_type;
-	u8 selected;
-	u8 mode;
-	u8 time_limit;
-	u8 handicap;
-	u8 damage_ratio;
-	u8 pad007;
-	u8 pad008;
-	u8 stock_count;
-	u8 submenu;
-	u8 pad00B;
-	struct {
-		HSD_JObj *root1;
-		HSD_JObj *root2;
-		HSD_JObj *root3;
-		HSD_JObj *rules[Rule_Max];
-	} jobj_tree;
-	struct {
-		HSD_JObj *tree[9];
-	} value_jobj_trees[Rule_Max];
-	 Text *description_text;
-};
+extern "C" void Menu_UpdateRuleDisplay(HSD_GObj *gobj, bool index_changed, bool value_changed);
+extern "C" void Menu_RulesMenuInput(HSD_GObj *gobj);
 
 constexpr auto lgl_description = text_builder::build(
 	text_builder::kern(),
@@ -92,6 +99,20 @@ constexpr auto atl_description = text_builder::build(
 	text_builder::end_textbox(),
 	text_builder::end_color());
 
+constexpr auto menu_music_description = text_builder::build(
+	text_builder::kern(),
+	text_builder::left(),
+	text_builder::color<170, 170, 170>(),
+	text_builder::textbox<179, 179>(),
+	text_builder::offset<0, -10>(),
+	text_builder::br(),
+	text_builder::unk06<0, 0>(),
+	text_builder::fit(),
+	text_builder::ascii<"Customize the menu music.">(),
+	text_builder::end_fit(),
+	text_builder::end_textbox(),
+	text_builder::end_color());
+
 constexpr auto stage_music_description = text_builder::build(
 	text_builder::kern(),
 	text_builder::left(),
@@ -105,6 +126,38 @@ constexpr auto stage_music_description = text_builder::build(
 	text_builder::end_fit(),
 	text_builder::end_textbox(),
 	text_builder::end_color());
+	
+const auto patches = patch_list {
+	// Hide left/right arrows for menu music when selected
+	// cmplwi r24, 4
+	std::pair { (char*)Menu_UpdateRuleDisplay+0x2B8, 0x28180004u },
+	// bge 0x44
+	std::pair { (char*)Menu_UpdateRuleDisplay+0x2BC, 0x40800044u },
+
+	// Display submenu arrow for menu music when selected
+	// subi r0, r24, 4
+	std::pair { (char*)Menu_UpdateRuleDisplay+0x364, 0x3818FFFCu },
+	// cmplwi r0, 2
+	std::pair { (char*)Menu_UpdateRuleDisplay+0x36C, 0x28000002u },
+
+	// Use submenu anim frames for menu music
+	// subi r0, r25, 4
+	std::pair { (char*)Menu_UpdateRuleDisplay+0x484, 0x3819FFFCu },
+	// cmplwi r0, 2
+	std::pair { (char*)Menu_UpdateRuleDisplay+0x488, 0x28000002u },
+
+	// Allow pressing A on menu music
+	// cmplwi r0, 4
+	std::pair { (char*)Menu_RulesMenuInput+0x54,     0x28000004u },
+	// bge 0xC
+	std::pair { (char*)Menu_RulesMenuInput+0x58,     0x4080000Cu },
+
+	// Don't allow scrolling through menu music values
+	// cmplwi r5, 4
+	std::pair { (char*)Menu_RulesMenuInput+0x420,    0x28050005u },
+	// bge 0x20C
+	std::pair { (char*)Menu_RulesMenuInput+0x424,    0x4080020Cu },
+};
 
 static void replace_value_jobj(HSD_JObj *parent, HSD_JObj **jobj_tree)
 {
@@ -228,21 +281,38 @@ static void update_atl_value(HSD_GObj *menu_obj, u32 value)
 	update_value_digit(jobj_tree[6], seconds % 10);
 }
 
-extern "C" HSD_GObj *orig_Menu_SetupRulesMenu(u32 entry_point);
-extern "C" HSD_GObj *hook_Menu_SetupRulesMenu(u32 entry_point)
+static void hide_rule_value(RulesMenuData *rules_data, int index)
 {
-	auto *menu_obj = orig_Menu_SetupRulesMenu(entry_point);
+	auto *cursor = rules_data->jobj_tree.rules[index]->child;
+	
+	// Hide value background + arrows
+	for (auto *jobj : HSD_JObjGetFromTreeByIndices<6, 13>(cursor))
+		HSD_JObjSetFlagsAll(jobj, HIDDEN);
+
+	// Hide value
+	HSD_JObjSetFlagsAll(cursor->next, HIDDEN);
+}
+
+extern "C" HSD_GObj *orig_Menu_SetupRulesMenu(u32 state);
+extern "C" HSD_GObj *hook_Menu_SetupRulesMenu(u32 state)
+{
+	auto *menu_obj = orig_Menu_SetupRulesMenu(state);
 	auto *rules_data = menu_obj->get<RulesMenuData>();
 
 	// Replace rule name textures
 	const auto *rule_names = MenMainCursorRl_Top.matanim_joint->child->child->next->matanim;
 	rule_names->texanim->imagetbl[3]->img_ptr = decompress(ledge_grab_limit_tex_data);
 	rule_names->texanim->imagetbl[4]->img_ptr = decompress(air_time_limit_tex_data);
+	rule_names->texanim->imagetbl[5]->img_ptr = decompress(menu_music_tex_data);
 	rule_names->texanim->imagetbl[6]->img_ptr = decompress(stage_music_tex_data);
 
-	// Replace menu headers
-	const auto *panel = MenMainPanel_Top.matanim_joint->child->next->next->child->next->matanim;
-	panel->texanim->imagetbl[2]->img_ptr = decompress(stage_music_header_tex_data);
+	// Replace menu header names
+	const auto *name1 = MenMainPanel_Top.matanim_joint->child->next->next->child->next->matanim;
+	name1->texanim->imagetbl[2]->img_ptr = decompress(stage_music_header_tex_data);
+
+	const auto *name2 = MenMainPanel_Top.joint->child->next->next->child->next->next;
+	name2->u.dobj->mobjdesc->texdesc->imagedesc->img_ptr =
+		decompress(menu_music_header_tex_data);
 
 	// Replace mode value texture
 	MenMainCursorRl01_Top.joint->child->u.dobj->mobjdesc->texdesc->imagedesc->img_ptr =
@@ -256,7 +326,22 @@ extern "C" HSD_GObj *hook_Menu_SetupRulesMenu(u32 entry_point)
 	update_lgl_value(menu_obj, rules_data->handicap);
 	update_atl_value(menu_obj, rules_data->damage_ratio);
 	
+	hide_rule_value(rules_data, Rule_MenuMusic);
+	
 	return menu_obj;
+}
+
+extern "C" void orig_Menu_RulesMenuInput(HSD_GObj *gobj);
+extern "C" void hook_Menu_RulesMenuInput(HSD_GObj *gobj)
+{
+	orig_Menu_RulesMenuInput(gobj);
+
+	if (MenuSelectedIndex != Rule_MenuMusic || !(MenuButtons & MenuButton_A))
+		return;
+		
+	// Open menu music
+	Menu_CreateRandomStageMenu();
+	GObj_Free(gobj);
 }
 
 extern "C" void orig_Menu_UpdateRuleValue(HSD_GObj *menu_obj, HSD_JObj *jobj, u8 index, u32 value);
@@ -274,11 +359,13 @@ extern "C" void orig_Menu_CreateRuleDescriptionText(RulesMenuData *rules_data, i
 extern "C" void hook_Menu_CreateRuleDescriptionText(RulesMenuData *rules_data, int rule, int value)
 {
 	orig_Menu_CreateRuleDescriptionText(rules_data, rule, value);
-	
+
 	if (rule == Rule_LedgeGrabLimit)
 		rules_data->description_text->data = lgl_description.data();
 	else if (rule == Rule_AirTimeLimit)
 		rules_data->description_text->data = atl_description.data();
+	else if (rule == Rule_MenuMusic)
+		rules_data->description_text->data = menu_music_description.data();
 	else if (rule == Rule_StageMusic)
 		rules_data->description_text->data = stage_music_description.data();
 }

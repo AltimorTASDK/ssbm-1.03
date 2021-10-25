@@ -77,7 +77,7 @@ static bool is_legal_stage(int id)
 
 static void random_icon_proc(HSD_GObj *gobj)
 {
-	auto *jobj = (HSD_JObj*)gobj->hsd_obj;
+	auto *jobj = gobj->get_hsd_obj<HSD_JObj>();
 
 	// Update matrix with constraint, then set USER_DEF_MTX so position can be adjusted
 	jobj->flags &= ~USER_DEF_MTX;
@@ -92,7 +92,7 @@ static void random_icon_proc(HSD_GObj *gobj)
 
 static void stage_icon_proc(HSD_GObj *gobj)
 {
-	auto *jobj = (HSD_JObj*)gobj->hsd_obj;
+	auto *jobj = gobj->get_hsd_obj<HSD_JObj>();
 
 	// Update matrix with constraint, then set USER_DEF_MTX so position can be adjusted
 	jobj->flags &= ~USER_DEF_MTX;
@@ -145,7 +145,7 @@ static void setup_random_icon(HSD_JObj *random_joint)
 		if (gobj->obj_kind != GOBJ_KIND_JOBJ)
 			continue;
 			
-		auto *jobj = (HSD_JObj*)gobj->hsd_obj;
+		auto *jobj = gobj->get_hsd_obj<HSD_JObj>();
 		if (jobj == nullptr)
 			continue;
 
@@ -197,6 +197,7 @@ static void strike_stage(int port)
 	SelectedStageIcon = Icon_None;
 }
 
+extern "C" bool orig_Stage_IsValidRandomChoice(u16 index);
 extern "C" bool hook_Stage_IsValidRandomChoice(u16 index)
 {
 	// Only select from visible stages

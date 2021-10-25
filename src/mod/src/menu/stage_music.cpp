@@ -125,7 +125,7 @@ static int bgm_selection[6] = { -1, -1, -1, -1, -1, -1 };
 const auto patches = patch_list {
 	// Start cursor on BF
 	// li r3, 5
-	std::pair { (char*)Menu_SetupItemMenu+0x154, 0x38600005u }
+	std::pair { (char*)Menu_SetupItemMenu+0x154, 0x38600005u },
 };
 
 static int get_selected_bgm_id(ItemMenuData *data, u8 stage)
@@ -146,6 +146,9 @@ static int get_selected_bgm_id(ItemMenuData *data, u8 stage)
 
 static void play_selected_bgm(ItemMenuData *data, u8 stage)
 {
+	// Restart BGM even if it's the same as the menu music
+	CurrentBGMPath[0] = '\0';
+
 	PlayBGM(get_selected_bgm_id(data, stage));
 }
 	
@@ -255,8 +258,8 @@ static void apply_texture_mask(u8 *texture, const u8 *mask, int width, int heigh
 	}
 }
 
-extern "C" HSD_GObj *orig_Menu_SetupItemMenu(u32 entry_point);
-extern "C" HSD_GObj *hook_Menu_SetupItemMenu(u32 entry_point)
+extern "C" HSD_GObj *orig_Menu_SetupItemMenu(u32 state);
+extern "C" HSD_GObj *hook_Menu_SetupItemMenu(u32 state)
 {
 	// Replace item frequency toggle textures
 	const auto *matanim = MenMainConIs_Top.matanim_joint->child->child->next->matanim->next;
@@ -279,15 +282,19 @@ extern "C" HSD_GObj *hook_Menu_SetupItemMenu(u32 entry_point)
 		matanim->texanim->imagetbl[i]->img_ptr = texture;
 	}
 
-	return orig_Menu_SetupItemMenu(entry_point);
+	return orig_Menu_SetupItemMenu(state);
 }
 
 extern "C" void orig_Menu_ExitToRulesMenu();
 extern "C" void hook_Menu_ExitToRulesMenu()
 {
 	// Restore menu music
-	if (MenuType == MenuType_StageMusic)
+	if (MenuType == MenuType_StageMusic) {
+		// Restart BGM even if it's the same as the stage music
+		CurrentBGMPath[0] = '\0';
+
 		PlayBGM(Menu_GetBGM());
+	}
 	
 	orig_Menu_ExitToRulesMenu();
 }

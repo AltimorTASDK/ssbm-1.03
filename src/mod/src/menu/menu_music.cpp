@@ -2,6 +2,7 @@
 #include "hsd/jobj.h"
 #include "melee/menu.h"
 #include "melee/music.h"
+#include "melee/rules.h"
 #include "melee/text.h"
 #include "util/math.h"
 #include "util/meta.h"
@@ -309,6 +310,17 @@ extern "C" void hook_Menu_RandomStageMenuInput(HSD_GObj *gobj)
 	}
 
 	orig_Menu_RandomStageMenuInput(gobj);
+}
+
+extern "C" void orig_Menu_CreateExtraRulesMenu();
+extern "C" void hook_Menu_CreateExtraRulesMenu()
+{
+	if (MenuType != MenuType_MenuMusic)
+		return orig_Menu_CreateExtraRulesMenu();
+
+	// Exit back to the rules menu if this is menu music
+	Menu_ExitToRulesMenu();
+	MenuSelectedIndex = Rule_MenuMusic;
 }
 
 extern "C" void hook_Menu_RandomStageMenuScroll(RandomStageMenuData *data, u32 buttons)

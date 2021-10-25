@@ -27,6 +27,15 @@ enum JObjFlag {
 	USER_DEF_MTX = (1 << 23)
 };
 
+enum AnimFlag {
+	AnimFlag_JObj = 0x001,
+	AnimFlag_MObj = 0x004,
+	AnimFlag_PObj = 0x008,
+	AnimFlag_TObj = 0x010,
+	AnimFlag_RObj = 0x080,
+	AnimFlag_All  = 0x7FF
+};
+
 struct HSD_JObj {
 	HSD_Obj base;
 	HSD_JObj *next;
@@ -66,6 +75,12 @@ struct HSD_JObjDesc {
 	HSD_RObjDesc *robjdesc;
 };
 
+struct HSD_AnimLoop {
+	f32 start;
+	f32 end;
+	f32 loop;
+};
+
 extern "C" {
 	
 HSD_JObj *HSD_JObjLoadJoint(const HSD_JObjDesc *desc);
@@ -73,8 +88,11 @@ HSD_JObj *HSD_JObjLoadJoint(const HSD_JObjDesc *desc);
 void HSD_JObjAddAnimAll(HSD_JObj *jobj, const HSD_AnimJoint *animjoint,
 			const HSD_MatAnimJoint *matanim_joint,
 			const HSD_ShapeAnimJoint *shapeanim_joint);
+f32 HSD_JObjGetAnimFrame(HSD_JObj *jobj);
 void HSD_JObjReqAnimAll(HSD_JObj *jobj, f32 frame);
+void HSD_JObjReqAnimAllByFlags(HSD_JObj *jobj, f32 frame, u32 flags);
 void HSD_JObjAnimAll(HSD_JObj *jobj);
+f32 HSD_JObjLoopAnim(HSD_JObj *jobj, const HSD_AnimLoop &loop);
 
 void HSD_JObjAddChild(HSD_JObj *jobj, HSD_JObj *child);
 void HSD_JObjRemove(HSD_JObj *jobj);
@@ -110,6 +128,16 @@ inline void HSD_JObjGetTree(const HSD_JObj *jobj, HSD_JObj **out_list)
 		return std::array { (u16)I... };
 	});
 	HSD_JObjGetFromTreeByIndices(jobj, out_list, indices.data(), N);
+}
+
+// Helper function to get from tree with variadic indices
+template<u16 ...indices>
+inline auto HSD_JObjGetFromTreeByIndices(const HSD_JObj *jobj)
+{
+	const auto index_array = std::array { indices... };
+	std::array<HSD_JObj*, sizeof...(indices)> result;
+	HSD_JObjGetFromTreeByIndices(jobj, result.data(), index_array.data(), index_array.size());
+	return result;
 }
 
 inline HSD_JObj *HSD_JObjFromArchiveModel(const ArchiveModel *model)

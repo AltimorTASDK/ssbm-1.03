@@ -1,12 +1,17 @@
 #pragma once
 
+#include "hsd/object.h"
 #include "util/vector.h"
 
+struct HSD_AObj;
 struct HSD_AObjDesc;
 struct HSD_PEDesc;
 struct HSD_RenderAnim;
 struct HSD_TexAnim;
+struct HSD_TObj;
 struct HSD_TObjDesc;
+struct HSD_TExpTevDesc;
+struct HSD_TExp;
 
 struct HSD_ChanAnim {
 	HSD_ChanAnim *next;
@@ -42,6 +47,21 @@ struct HSD_Material {
 	color_rgba specular;
 	f32 alpha;
 	f32 shininess;
+};
+
+struct HSD_MObj {
+	HSD_Class base;
+	u32 rendermode;
+	HSD_TObj *tobj;
+	HSD_Material *mat;
+	HSD_PEDesc *pedesc;
+	HSD_AObj *aobj;
+	HSD_TExpTevDesc *tevdesc;
+	HSD_TExp *texp;
+	HSD_TObj *tobj_toon;
+	HSD_TObj *tobj_gradation;
+	HSD_TObj *tobj_backlight;
+	f32 z_offset;
 };
 
 struct HSD_MObjDesc {

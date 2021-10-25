@@ -14,9 +14,9 @@ enum ObjType {
 };
 
 enum ObjMask {
-	ObjMask_DObj = 0x4,
-	ObjMask_JObj = 0x20,
-	ObjMask_MObj = 0x80,
+	ObjMask_DObj = 0x004,
+	ObjMask_JObj = 0x020,
+	ObjMask_MObj = 0x080,
 	ObjMask_PObj = 0x100,
 	ObjMask_RObj = 0x200,
 	ObjMask_TObj = 0x400

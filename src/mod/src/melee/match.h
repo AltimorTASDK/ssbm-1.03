@@ -74,7 +74,8 @@ struct StartMeleeRules {
 	u8 is_teams;
 	char pad009[0x0B - 0x09];
 	s8 item_frequency;
-	char pad00C[0x30 - 0x0C];
+	s8 sd_penalty;
+	char pad00D[0x30 - 0x0D];
 	f32 damage_ratio;
 	char pad034[0x60 - 0x34];
 };

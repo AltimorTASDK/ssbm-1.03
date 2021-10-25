@@ -42,6 +42,18 @@ struct HSD_GObj {
 	void *pad0034;
 
 	template<typename T>
+	T *get_hsd_obj()
+	{
+		return static_cast<T*>(hsd_obj);
+	}
+	
+	template<typename T>
+	const T *get_hsd_obj() const
+	{
+		return static_cast<const T*>(hsd_obj);
+	}
+
+	template<typename T>
 	T *get()
 	{
 		return static_cast<T*>(data);
@@ -59,6 +71,7 @@ extern "C" {
 extern HSD_GObj **plinkhigh_gobjs;
 
 HSD_GObj *GObj_Create(u8 obj_class, u8 p_link, u8 prio);
+void GObj_Free(HSD_GObj *gobj);
 void GObj_InitKindObj(HSD_GObj *gobj, s8 obj_kind, void *obj_ptr);
 void GObj_SetupGXLink(HSD_GObj *gobj, GObjRenderCallback *render_cb, u8 gx_link, u8 priority);
 void GObj_CreateProcWithCallback(HSD_GObj *gobj, GObjProcCallback *cb, u8 s_prio);
