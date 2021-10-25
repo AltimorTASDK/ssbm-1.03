@@ -244,7 +244,7 @@ extern "C" void hook_SSS_Init(void *menu)
 	
 	const auto *matanim_special = MnSlMapModels->IconSpecial.matanim_joint;
 	
-	// Get stage icon position joints starting root of Position model
+	// Get stage icon position joints starting at root of Position model
 	const auto *position_jobj = StageSelectIcons[Icon_BF].jobj->robj->u.jobj->parent;
 	HSD_JObj *icon_joints[7];
 	HSD_JObjGetTree<7>(position_jobj, icon_joints);
