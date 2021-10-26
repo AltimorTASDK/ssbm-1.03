@@ -1,4 +1,5 @@
 #include "hsd/archive.h"
+#include "hsd/gobj.h"
 #include "hsd/mobj.h"
 #include "hsd/tobj.h"
 #include "melee/text.h"
@@ -88,11 +89,11 @@ constexpr auto manual_description = text_builder::build(
 	text_builder::end_fit(),
 	text_builder::end_textbox(),
 	text_builder::end_color());
-
-extern "C" void orig_Menu_SetupMainMenu(void *menu);
-extern "C" void hook_Menu_SetupMainMenu(void *menu)
+	
+extern "C" void orig_MainMenu_Init(void *menu);
+extern "C" void hook_MainMenu_Init(void *menu)
 {
-	orig_Menu_SetupMainMenu(menu);
+	orig_MainMenu_Init(menu);
 	
 	// Replace portal textures
 	const auto *names = MenMainCursor_Top.matanim_joint->child->child->next->matanim;

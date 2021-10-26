@@ -112,6 +112,7 @@ add_hook Interrupt_SpotDodge_OoS
 add_hook Interrupt_SquatRv
 add_hook Interrupt_TurnOrDash
 add_hook LoadPlCo
+add_hook MainMenu_Init
 add_hook Match_HandlePause
 add_hook Match_Init
 add_hook MatchController_UpdateTeamWinners
@@ -128,7 +129,6 @@ add_hook Menu_RulesMenuInput
 add_hook Menu_SetupExtraRulesMenu
 add_hook Menu_SetupItemMenu
 add_hook Menu_SetupItemToggles
-add_hook Menu_SetupMainMenu
 add_hook Menu_SetupRulesMenu
 add_hook Menu_SetupRandomStageMenu
 add_hook Menu_SetupRandomStageToggles

@@ -23,7 +23,7 @@ extern "C" double CSSAnimStartFrame;
 constexpr u32 NOP = 0x60000000;
 constexpr u32 BLR = 0x4E800020;
 
-const auto patches = patch_list {
+static const auto patches = patch_list {
 	// Enable cstick in develop mode
 	std::pair { (char*)PlayerThink_Input+0x188,  NOP },
 	// Enable cstick in singleplayer

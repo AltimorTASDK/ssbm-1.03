@@ -2,12 +2,14 @@
 #include "hsd/dobj.h"
 #include "hsd/gobj.h"
 #include "hsd/jobj.h"
+#include "hsd/memory.h"
 #include "hsd/mobj.h"
 #include "hsd/tobj.h"
 #include "melee/menu.h"
 #include "melee/rules.h"
 #include "melee/text.h"
 #include "util/compression.h"
+#include "util/mempool.h"
 #include "util/patch_list.h"
 #include "util/melee/text_builder.h"
 #include <gctypes.h>
@@ -93,38 +95,52 @@ constexpr auto ucf_fix_description = text_builder::build(
 	text_builder::end_fit(),
 	text_builder::end_textbox(),
 	text_builder::end_color());
+	
+static mempool pool;
 
-const auto patches = patch_list {
+static const auto patches = patch_list {
 	// Swap text for pause and friendly fire
-	std::pair { (char*)&ExtraRuleTextAnimFrames[ExtraRule_Pause].unselected,        24.f },
-	std::pair { (char*)&ExtraRuleTextAnimFrames[ExtraRule_Pause].selected,          25.f },
-	std::pair { (char*)&ExtraRuleTextAnimFrames[ExtraRule_FriendlyFire].unselected, 22.f },
-	std::pair { (char*)&ExtraRuleTextAnimFrames[ExtraRule_FriendlyFire].selected,   23.f },
+	std::pair { &ExtraRuleTextAnimFrames[ExtraRule_Pause].unselected,        24.f },
+	std::pair { &ExtraRuleTextAnimFrames[ExtraRule_Pause].selected,          25.f },
+	std::pair { &ExtraRuleTextAnimFrames[ExtraRule_FriendlyFire].unselected, 22.f },
+	std::pair { &ExtraRuleTextAnimFrames[ExtraRule_FriendlyFire].selected,   23.f },
 
 	// Swap description for pause and friendly fire
-	std::pair { (char*)&ExtraRuleDescriptions[ExtraRule_Pause].values[0],           (u8)0x3A },
-	std::pair { (char*)&ExtraRuleDescriptions[ExtraRule_Pause].values[1],           (u8)0x3B },
+	std::pair { &ExtraRuleDescriptions[ExtraRule_Pause].values[0],           (u8)0x3A },
+	std::pair { &ExtraRuleDescriptions[ExtraRule_Pause].values[1],           (u8)0x3B },
 };
+
+static void pool_free(void *data)
+{
+	HSD_Free(data); // Default free gobj data
+	pool.dec_ref();
+}
 
 extern "C" HSD_GObj *orig_Menu_SetupExtraRulesMenu(u8 state);
 extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 {
-	auto *menu_obj = orig_Menu_SetupExtraRulesMenu(state);
-	auto *data = menu_obj->get<ExtraRulesMenuData>();
+	auto *gobj = orig_Menu_SetupExtraRulesMenu(state);
+	auto *data = gobj->get<ExtraRulesMenuData>();
+
+	// Free assets on menu exit
+	gobj->user_data_remove_func = pool_free;
+	
+	if (pool.inc_ref() != 0)
+		return gobj;
 
 	// Replace rule name textures
 	const auto *rule_names = MenMainCursorRl_Top.matanim_joint->child->child->next->matanim;
-	rule_names->texanim->imagetbl[9]->img_ptr = decompress(controller_fix_tex_data);
+	rule_names->texanim->imagetbl[9]->img_ptr = pool.add(decompress(controller_fix_tex_data));
 	
 	// Replace controller fix value texture
 	auto *controller_fix_values = data->value_jobj_trees[ExtraRule_ControllerFix].tree[1];
 	auto **controller_fix_image = &controller_fix_values->u.dobj->mobj->tobj->imagedesc;
-	auto *new_desc = new HSD_ImageDesc;
+	auto *new_desc = pool.add(new HSD_ImageDesc);
 	*new_desc = **controller_fix_image;
-	new_desc->img_ptr = decompress(controller_fix_values_tex_data);
+	new_desc->img_ptr = pool.add(decompress(controller_fix_values_tex_data));
 	*controller_fix_image = new_desc;
 		
-	return menu_obj;
+	return gobj;
 }
 
 extern "C" void orig_Menu_UpdateExtraRuleDescriptionText(HSD_GObj *gobj,

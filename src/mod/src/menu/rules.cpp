@@ -2,6 +2,7 @@
 #include "hsd/dobj.h"
 #include "hsd/gobj.h"
 #include "hsd/jobj.h"
+#include "hsd/memory.h"
 #include "hsd/mobj.h"
 #include "hsd/tobj.h"
 #include "melee/menu.h"
@@ -9,6 +10,7 @@
 #include "melee/text.h"
 #include "rules/values.h"
 #include "util/compression.h"
+#include "util/mempool.h"
 #include "util/patch_list.h"
 #include "util/melee/text_builder.h"
 #include <gctypes.h>
@@ -133,7 +135,9 @@ constexpr auto stage_music_description = text_builder::build(
 	text_builder::end_textbox(),
 	text_builder::end_color());
 	
-const auto patches = patch_list {
+static mempool pool;
+	
+static const auto patches = patch_list {
 	// Hide left/right arrows for menu music when selected
 	// cmplwi r24, 4
 	std::pair { (char*)Menu_UpdateRuleDisplay+0x2B8, 0x28180004u },
@@ -247,9 +251,9 @@ static void show_counter_value(HSD_JObj **jobj_tree, bool show)
 		HSD_JObjSetFlagsAll(jobj_tree[4], HIDDEN);
 }
 
-static void update_lgl_value(HSD_GObj *menu_obj, u32 value)
+static void update_lgl_value(HSD_GObj *gobj, u32 value)
 {
-	auto *data = menu_obj->get<RulesMenuData>();
+	auto *data = gobj->get<RulesMenuData>();
 	auto **jobj_tree = data->value_jobj_trees[Rule_LedgeGrabLimit].tree;
 	
 	if (value == 0) {
@@ -265,9 +269,9 @@ static void update_lgl_value(HSD_GObj *menu_obj, u32 value)
 	update_value_digit(jobj_tree[8], time % 10);
 }
 
-static void update_atl_value(HSD_GObj *menu_obj, u32 value)
+static void update_atl_value(HSD_GObj *gobj, u32 value)
 {
-	auto *data = menu_obj->get<RulesMenuData>();
+	auto *data = gobj->get<RulesMenuData>();
 	auto **jobj_tree = data->value_jobj_trees[Rule_AirTimeLimit].tree;
 
 	if (value == 0) {
@@ -299,42 +303,54 @@ static void hide_rule_value(RulesMenuData *data, int index)
 	HSD_JObjSetFlagsAll(cursor->next, HIDDEN);
 }
 
+static void pool_free(void *data)
+{
+	HSD_Free(data); // Default free gobj data
+	pool.dec_ref();
+}
+
 extern "C" HSD_GObj *orig_Menu_SetupRulesMenu(u8 state);
 extern "C" HSD_GObj *hook_Menu_SetupRulesMenu(u8 state)
 {
-	auto *menu_obj = orig_Menu_SetupRulesMenu(state);
-	auto *data = menu_obj->get<RulesMenuData>();
-
-	// Replace rule name textures
-	const auto *rule_names = MenMainCursorRl_Top.matanim_joint->child->child->next->matanim;
-	rule_names->texanim->imagetbl[3]->img_ptr = decompress(ledge_grab_limit_tex_data);
-	rule_names->texanim->imagetbl[4]->img_ptr = decompress(air_time_limit_tex_data);
-	rule_names->texanim->imagetbl[5]->img_ptr = decompress(menu_music_tex_data);
-	rule_names->texanim->imagetbl[6]->img_ptr = decompress(stage_music_tex_data);
-
-	// Replace menu header names
-	const auto *name1 = MenMainPanel_Top.matanim_joint->child->next->next->child->next->matanim;
-	name1->texanim->imagetbl[2]->img_ptr = decompress(stage_music_header_tex_data);
-
-	const auto *name2 = MenMainPanel_Top.joint->child->next->next->child->next->next;
-	name2->u.dobj->mobjdesc->texdesc->imagedesc->img_ptr =
-		decompress(menu_music_header_tex_data);
-
-	// Replace mode value texture
-	MenMainCursorRl01_Top.joint->child->u.dobj->mobjdesc->texdesc->imagedesc->img_ptr =
-		decompress(mode_values_tex_data);
+	auto *gobj = orig_Menu_SetupRulesMenu(state);
+	auto *data = gobj->get<RulesMenuData>();
 	
 	// Replace rule value models
 	replace_counter_jobj(data, Rule_LedgeGrabLimit);
 	replace_timer_jobj(data, Rule_AirTimeLimit);
 	
 	// Display initial values
-	update_lgl_value(menu_obj, data->ledge_grab_limit);
-	update_atl_value(menu_obj, data->air_time_limit);
+	update_lgl_value(gobj, data->ledge_grab_limit);
+	update_atl_value(gobj, data->air_time_limit);
 	
 	hide_rule_value(data, Rule_MenuMusic);
+
+	// Free assets on menu exit
+	gobj->user_data_remove_func = pool_free;
 	
-	return menu_obj;
+	if (pool.inc_ref() != 0)
+		return gobj;
+
+	// Replace rule name textures
+	const auto *rule_names = MenMainCursorRl_Top.matanim_joint->child->child->next->matanim;
+	rule_names->texanim->imagetbl[3]->img_ptr = pool.add(decompress(ledge_grab_limit_tex_data));
+	rule_names->texanim->imagetbl[4]->img_ptr = pool.add(decompress(air_time_limit_tex_data));
+	rule_names->texanim->imagetbl[5]->img_ptr = pool.add(decompress(menu_music_tex_data));
+	rule_names->texanim->imagetbl[6]->img_ptr = pool.add(decompress(stage_music_tex_data));
+
+	// Replace menu header names
+	const auto *name1 = MenMainPanel_Top.matanim_joint->child->next->next->child->next->matanim;
+	name1->texanim->imagetbl[2]->img_ptr = pool.add(decompress(stage_music_header_tex_data));
+
+	const auto *name2 = MenMainPanel_Top.joint->child->next->next->child->next->next;
+	name2->u.dobj->mobjdesc->texdesc->imagedesc->img_ptr =
+		pool.add(decompress(menu_music_header_tex_data));
+
+	// Replace mode value texture
+	MenMainCursorRl01_Top.joint->child->u.dobj->mobjdesc->texdesc->imagedesc->img_ptr =
+		pool.add(decompress(mode_values_tex_data));
+	
+	return gobj;
 }
 
 extern "C" void orig_Menu_RulesMenuInput(HSD_GObj *gobj);
@@ -350,15 +366,15 @@ extern "C" void hook_Menu_RulesMenuInput(HSD_GObj *gobj)
 	GObj_Free(gobj);
 }
 
-extern "C" void orig_Menu_UpdateRuleValue(HSD_GObj *menu_obj, HSD_JObj *jobj, u8 index, u32 value);
-extern "C" void hook_Menu_UpdateRuleValue(HSD_GObj *menu_obj, HSD_JObj *jobj, u8 index, u32 value)
+extern "C" void orig_Menu_UpdateRuleValue(HSD_GObj *gobj, HSD_JObj *jobj, u8 index, u32 value);
+extern "C" void hook_Menu_UpdateRuleValue(HSD_GObj *gobj, HSD_JObj *jobj, u8 index, u32 value)
 {
 	if (index == Rule_LedgeGrabLimit)
-		update_lgl_value(menu_obj, value);
+		update_lgl_value(gobj, value);
 	else if (index == Rule_AirTimeLimit)
-		update_atl_value(menu_obj, value);
+		update_atl_value(gobj, value);
 	else
-		orig_Menu_UpdateRuleValue(menu_obj, jobj, index, value);
+		orig_Menu_UpdateRuleValue(gobj, jobj, index, value);
 }
 
 extern "C" void orig_Menu_CreateRuleDescriptionText(RulesMenuData *data, int rule, int value);

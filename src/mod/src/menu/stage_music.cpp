@@ -1,5 +1,6 @@
 #include "hsd/gobj.h"
 #include "hsd/jobj.h"
+#include "hsd/memory.h"
 #include "hsd/mobj.h"
 #include "hsd/tobj.h"
 #include "melee/menu.h"
@@ -8,6 +9,7 @@
 #include "melee/text.h"
 #include "util/compression.h"
 #include "util/math.h"
+#include "util/mempool.h"
 #include "util/meta.h"
 #include "util/patch_list.h"
 #include "util/melee/text_builder.h"
@@ -119,10 +121,12 @@ constexpr int bgm_ids[] = {
 	BGM_YoshisIslandN64,
 	BGM_CustomMusic
 };
+
+static mempool pool;
 	
 static int bgm_selection[6] = { -1, -1, -1, -1, -1, -1 };
 
-const auto patches = patch_list {
+static const auto patches = patch_list {
 	// Start cursor on BF
 	// li r3, 5
 	std::pair { (char*)Menu_SetupItemMenu+0x154, 0x38600005u },
@@ -258,9 +262,23 @@ static void apply_texture_mask(u8 *texture, const u8 *mask, int width, int heigh
 	}
 }
 
+static void pool_free(void *data)
+{
+	HSD_Free(data); // Default free gobj data
+	pool.dec_ref();
+}
+
 extern "C" HSD_GObj *orig_Menu_SetupItemMenu(u32 state);
 extern "C" HSD_GObj *hook_Menu_SetupItemMenu(u32 state)
 {
+	auto *gobj = orig_Menu_SetupItemMenu(state);
+
+	// Free assets on menu exit
+	gobj->user_data_remove_func = pool_free;
+	
+	if (pool.inc_ref() != 0)
+		return gobj;
+
 	// Replace item frequency toggle textures
 	const auto *matanim = MenMainConIs_Top.matanim_joint->child->child->next->matanim->next;
 
@@ -270,19 +288,22 @@ extern "C" HSD_GObj *hook_Menu_SetupItemMenu(u32 state)
 	constexpr auto tex_size = tex_width * tex_height / 2;
 	constexpr auto mask_width = tex_width / 6;
 
-	const auto *base = decompress(music_stages_tex_data);
-	const auto *mask = decompress(music_stages_mask_tex_data);
+	const auto *base = pool.add(decompress(music_stages_tex_data));
+	const auto *mask = pool.add(decompress(music_stages_mask_tex_data));
 	
 	for (auto i = 0; i < 6; i++) {
-		auto *texture = new u8[tex_size];
+		auto *texture = pool.add(new u8[tex_size]);
 		memcpy(texture, base, tex_size);
 		apply_texture_mask(texture, mask, tex_width, tex_height,
 		                   mask_width * i, 0, mask_width, tex_height);
 
 		matanim->texanim->imagetbl[i]->img_ptr = texture;
 	}
-
-	return orig_Menu_SetupItemMenu(state);
+	
+	delete base;
+	delete mask;
+	
+	return gobj;
 }
 
 extern "C" void orig_Menu_ExitToRulesMenu();

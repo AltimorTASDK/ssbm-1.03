@@ -1,6 +1,7 @@
 #include "hsd/cobj.h"
 #include "hsd/gobj.h"
 #include "hsd/jobj.h"
+#include "hsd/memory.h"
 #include "hsd/video.h"
 #include "melee/menu.h"
 #include "melee/music.h"
@@ -10,6 +11,7 @@
 #include "util/compression.h"
 #include "util/math.h"
 #include "util/matrix.h"
+#include "util/mempool.h"
 #include "util/meta.h"
 #include "util/patch_list.h"
 #include "util/draw/render.h"
@@ -159,10 +161,16 @@ constexpr auto bgm_count = std::extent_v<decltype(bgm_ids)>;
 constexpr auto max_page_size = 30;
 constexpr auto page_count = (bgm_count + max_page_size - 1) / max_page_size;
 
+static mempool pool;
+
+// L/R trigger textures
+static texture texture_l;
+static texture texture_r;
+
 static int menu_bgm = -1;
 static u16 selected_index[page_count] = { 0 };
 
-const auto patches = patch_list {
+static const auto patches = patch_list {
 	// Expand the menu data struct to allow an extra Text pointer
 	// li r3, 0xB8
 	std::pair { (char*)Menu_SetupRandomStageMenu+0xB4,     0x386000B8u },
@@ -291,9 +299,6 @@ extern "C" void hook_Menu_SetupRandomStageToggles(RandomStageMenuData *data)
 	set_page(data, 0);
 }
 
-texture texture_l;
-texture texture_r;
-
 static void menu_music_gx(HSD_GObj *gobj, u32 pass)
 {
 	GObj_GXProcDisplay(gobj, pass);
@@ -306,29 +311,31 @@ static void menu_music_gx(HSD_GObj *gobj, u32 pass)
 	// Must have finished transition animation
 	if (data->state != MenuState_Idle)
 		return;
-
-	auto &rs = render_state::get();
-	rs.reset_3d();
-
-	static auto initialized = false;
-	
-	if (!initialized) {
-		texture_l.init(decompress(trigger_l_tex_data), 64, 32, GX_TF_IA4);
-		texture_r.init(decompress(trigger_r_tex_data), 64, 32, GX_TF_IA4);
-		initialized = true;
-	}
 	
 	constexpr auto color_active   = color_rgba(255, 255, 255, 255);
 	constexpr auto color_inactive = color_rgba(255, 255, 255, 96);
 	
 	const auto &color_l = data->page != 0              ? color_active : color_inactive;
 	const auto &color_r = data->page != page_count - 1 ? color_active : color_inactive;
+	
+	constexpr auto offset_l = vec3(-2.5f, 7.625f, 17.f);
+	constexpr auto offset_r = offset_l * vec3(-1, 1, 1);
+	constexpr auto size = vec2(1.f, -.5f) * 2.f;
 
-	rs.fill_rect(vec3(-2.5f, -11.5f, 17.f), vec2(3.f, -1.5f), color_l, texture_l,
+	auto &rs = render_state::get();
+	rs.reset_3d();
+
+	rs.fill_rect(offset_l, size, color_l, texture_l,
 	             uv_coord::zero, uv_coord::one, align::center);
 
-	rs.fill_rect(vec3(2.5f, -11.5f, 17.f), vec2(3.f, -1.5f), color_r, texture_r,
+	rs.fill_rect(offset_r, size, color_r, texture_r,
 	             uv_coord::zero, uv_coord::one, align::center);
+}
+
+static void pool_free(void *data)
+{
+	HSD_Free(data); // Default free gobj data
+	pool.dec_ref();
 }
 
 extern "C" HSD_GObj *orig_Menu_SetupRandomStageMenu(u8 state);
@@ -336,15 +343,24 @@ extern "C" HSD_GObj *hook_Menu_SetupRandomStageMenu(u8 state)
 {
 	auto *gobj = orig_Menu_SetupRandomStageMenu(state);
 	
+	// Set new GX proc
+	gobj->render_cb = menu_music_gx;
+	
 	for (auto i = 0u; i < page_count; i++)
 		selected_index[i] = 0;
 	
 	// Initialize new field
 	auto *data = gobj->get<RandomStageMenuData>();
 	data->page = 0;
+
+	// Free assets on menu exit
+	gobj->user_data_remove_func = pool_free;
 	
-	// Set new GX proc
-	gobj->render_cb = menu_music_gx;
+	if (pool.inc_ref() != 0)
+		return gobj;
+
+	texture_l.init(pool.add(decompress(trigger_l_tex_data)), 32, 16, GX_TF_IA4);
+	texture_r.init(pool.add(decompress(trigger_r_tex_data)), 32, 16, GX_TF_IA4);
 	
 	return gobj;
 }
