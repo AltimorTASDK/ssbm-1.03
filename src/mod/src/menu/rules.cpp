@@ -312,6 +312,10 @@ static void pool_free(void *data)
 extern "C" HSD_GObj *orig_Menu_SetupRulesMenu(u8 state);
 extern "C" HSD_GObj *hook_Menu_SetupRulesMenu(u8 state)
 {
+	// Handle coming back to rules from menu music
+	if (MenuTypePrevious == MenuType_MenuMusic)
+		MenuSelectedIndex = Rule_MenuMusic;
+
 	auto *gobj = orig_Menu_SetupRulesMenu(state);
 	auto *data = gobj->get<RulesMenuData>();
 	

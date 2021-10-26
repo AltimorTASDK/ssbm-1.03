@@ -390,8 +390,6 @@ extern "C" void hook_Menu_CreateExtraRulesMenu()
 
 	// Exit back to the rules menu if this is menu music
 	Menu_ExitToRulesMenu();
-	MenuSelectedIndex = Rule_MenuMusic;
-	MenuSelectedValue = 0;
 }
 
 extern "C" void hook_Menu_RandomStageMenuScroll(RandomStageMenuData *data, u32 buttons)
