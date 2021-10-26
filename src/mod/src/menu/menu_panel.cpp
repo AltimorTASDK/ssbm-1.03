@@ -45,11 +45,18 @@ extern "C" void orig_Menu_MenuPanelThink(HSD_GObj *gobj);
 extern "C" void hook_Menu_MenuPanelThink(HSD_GObj *gobj)
 {
 	const auto *data = gobj->get<MenuPanelData>();
-
+	
 	if (!is_in_menu_music(data))
 		return orig_Menu_MenuPanelThink(gobj);
 		
-	const auto first_frame = data->menu_type != MenuType_ItemSwitch;
+	bool first_frame;
+	if (data->menu_type != MenuType_ItemSwitch)
+		first_frame = MenuType == MenuType_MenuMusic; // First enter frame
+	else if (MenuType != MenuType_MenuMusic)
+		first_frame = data->state != MenuPanelState_Exit; // First exit frame
+	else
+		first_frame = false;
+
 	auto *jobj = gobj->get_hsd_obj<HSD_JObj>();
 	
 	// Grid background for random stage/menu music
@@ -66,6 +73,10 @@ extern "C" void hook_Menu_MenuPanelThink(HSD_GObj *gobj)
 	} else {
 		// Using item switch exit from data->menu_type_previous
 		orig_Menu_MenuPanelThink(gobj);
+		
+		// Don't interfere with returning to rules menu idle anim
+		if (data->state == MenuPanelState_Idle)
+			return;
 	}
 	
 	const auto &ss_anim = MenuPanelAnimTable[MenuType_MenuMusic];
