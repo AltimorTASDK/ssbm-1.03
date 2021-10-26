@@ -296,9 +296,9 @@ template<typename T>
 struct color_rgba_base {
 	static constexpr vec_impl<color_rgba_base> white = []() {
 		constexpr auto max =
-			std::is_same_v<T, f32>  ? 1.f :
+			std::is_same_v<T, f32> ? 1.f :
 			std::is_same_v<T, f64> ? 1.0 :
-			                            255;
+			                         255;
 
 		return vec_impl<color_rgba_base>(max, max, max, max);
 	}();
