@@ -23,7 +23,7 @@ public:
 			}())...);
 		}));
 	
-	static constexpr matrix identity = scale<1>;
+	static constexpr matrix identity = scale<(T)1>;
 
 	T elems[N * M];
 
