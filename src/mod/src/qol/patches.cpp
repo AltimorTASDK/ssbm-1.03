@@ -18,6 +18,8 @@ extern "C" void NameTag_Think(HSD_GObj *gobj);
 
 extern "C" void VsMenu_Think(HSD_GObj *gobj);
 
+extern "C" double CSSAnimStartFrame;
+
 constexpr u32 NOP = 0x60000000;
 constexpr u32 BLR = 0x4E800020;
 
@@ -59,4 +61,7 @@ const auto patches = patch_list {
 	// Replace tournament melee with debug menu
 	// li r0, 6
 	std::pair { (char*)VsMenu_Think+0xA4,        0x38000006u },
+	
+	// Clone characters slide out from behind CSS
+	std::pair { (char*)&CSSAnimStartFrame,       0.0 },
 };
