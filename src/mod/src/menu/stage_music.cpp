@@ -327,12 +327,12 @@ extern "C" bool hook_Stage_GetBGM(u32 stage_id, u32 flags, u32 *result)
 	CurrentBGMPath[0] = '\0';
 
 	auto bgm_index = stage_id == Stage_BF  ? bgm_selection[5]
-	              : stage_id == Stage_DL  ? bgm_selection[4]
-	              : stage_id == Stage_FD  ? bgm_selection[3]
-	              : stage_id == Stage_FoD ? bgm_selection[2]
-	              : stage_id == Stage_PS  ? bgm_selection[1]
-	              : stage_id == Stage_YS  ? bgm_selection[0]
-	                                      : -1;
+	               : stage_id == Stage_DL  ? bgm_selection[4]
+	               : stage_id == Stage_FD  ? bgm_selection[3]
+	               : stage_id == Stage_FoD ? bgm_selection[2]
+	               : stage_id == Stage_PS  ? bgm_selection[1]
+	               : stage_id == Stage_YS  ? bgm_selection[0]
+	                                       : -1;
 					      
 	if (bgm_index == -1)
 		return orig_Stage_GetBGM(stage_id, flags, result);
