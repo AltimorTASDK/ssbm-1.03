@@ -14,11 +14,17 @@ constexpr auto air_time_limit_values = std::array {
 inline int get_ledge_grab_limit()
 {
 	const auto *rules = GetGameRules();
-	return ledge_grab_limit_values[rules->handicap];
+	return ledge_grab_limit_values[rules->ledge_grab_limit];
 }
 
 inline int get_air_time_limit()
 {
 	const auto *rules = GetGameRules();
-	return air_time_limit_values[rules->damage_ratio];
+	return air_time_limit_values[rules->air_time_limit];
+}
+
+inline ucf_type get_ucf_type()
+{
+	const auto *rules = GetGameRules();
+	return rules->controller_fix;
 }

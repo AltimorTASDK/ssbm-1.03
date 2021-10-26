@@ -26,8 +26,14 @@ struct RulesMenuData {
 	u8 selected;
 	u8 mode;
 	u8 time_limit;
-	u8 handicap;
-	u8 damage_ratio;
+	union {
+		u8 handicap;
+		u8 ledge_grab_limit;
+	};
+	union {
+		u8 damage_ratio;
+		u8 air_time_limit;
+	};
 	u8 stage_selection_mode;
 	u8 pad008;
 	u8 stock_count;
@@ -177,10 +183,10 @@ static void replace_value_jobj(HSD_JObj *parent, HSD_JObj **jobj_tree)
 	HSD_JObjAddChild(parent, value_jobj);
 }
 
-static void replace_counter_jobj(RulesMenuData *rules_data, int index)
+static void replace_counter_jobj(RulesMenuData *data, int index)
 {
-	auto *parent = rules_data->jobj_tree.rules[index];
-	auto **jobj_tree = rules_data->value_jobj_trees[index].tree;
+	auto *parent = data->jobj_tree.rules[index];
+	auto **jobj_tree = data->value_jobj_trees[index].tree;
 	replace_value_jobj(parent, jobj_tree);
 
 	// Hide ":"
@@ -191,10 +197,10 @@ static void replace_counter_jobj(RulesMenuData *rules_data, int index)
 	HSD_JObjAddChild(jobj_tree[8], HSD_JObjFromArchiveModel(&MenMainNmRl_Top));
 }
 
-static void replace_timer_jobj(RulesMenuData *rules_data, int index)
+static void replace_timer_jobj(RulesMenuData *data, int index)
 {
-	auto *parent = rules_data->jobj_tree.rules[index];
-	auto **jobj_tree = rules_data->value_jobj_trees[index].tree;
+	auto *parent = data->jobj_tree.rules[index];
+	auto **jobj_tree = data->value_jobj_trees[index].tree;
 	replace_value_jobj(parent, jobj_tree);
 
 	// Minutes
@@ -243,8 +249,8 @@ static void show_counter_value(HSD_JObj **jobj_tree, bool show)
 
 static void update_lgl_value(HSD_GObj *menu_obj, u32 value)
 {
-	auto *rules_data = menu_obj->get<RulesMenuData>();
-	auto **jobj_tree = rules_data->value_jobj_trees[Rule_LedgeGrabLimit].tree;
+	auto *data = menu_obj->get<RulesMenuData>();
+	auto **jobj_tree = data->value_jobj_trees[Rule_LedgeGrabLimit].tree;
 	
 	if (value == 0) {
 		show_counter_value(jobj_tree, false);
@@ -261,8 +267,8 @@ static void update_lgl_value(HSD_GObj *menu_obj, u32 value)
 
 static void update_atl_value(HSD_GObj *menu_obj, u32 value)
 {
-	auto *rules_data = menu_obj->get<RulesMenuData>();
-	auto **jobj_tree = rules_data->value_jobj_trees[Rule_AirTimeLimit].tree;
+	auto *data = menu_obj->get<RulesMenuData>();
+	auto **jobj_tree = data->value_jobj_trees[Rule_AirTimeLimit].tree;
 
 	if (value == 0) {
 		show_timer_value(jobj_tree, false);
@@ -281,9 +287,9 @@ static void update_atl_value(HSD_GObj *menu_obj, u32 value)
 	update_value_digit(jobj_tree[6], seconds % 10);
 }
 
-static void hide_rule_value(RulesMenuData *rules_data, int index)
+static void hide_rule_value(RulesMenuData *data, int index)
 {
-	auto *cursor = rules_data->jobj_tree.rules[index]->child;
+	auto *cursor = data->jobj_tree.rules[index]->child;
 	
 	// Hide value background + arrows
 	for (auto *jobj : HSD_JObjGetFromTreeByIndices<6, 13>(cursor))
@@ -293,11 +299,11 @@ static void hide_rule_value(RulesMenuData *rules_data, int index)
 	HSD_JObjSetFlagsAll(cursor->next, HIDDEN);
 }
 
-extern "C" HSD_GObj *orig_Menu_SetupRulesMenu(u32 state);
-extern "C" HSD_GObj *hook_Menu_SetupRulesMenu(u32 state)
+extern "C" HSD_GObj *orig_Menu_SetupRulesMenu(u8 state);
+extern "C" HSD_GObj *hook_Menu_SetupRulesMenu(u8 state)
 {
 	auto *menu_obj = orig_Menu_SetupRulesMenu(state);
-	auto *rules_data = menu_obj->get<RulesMenuData>();
+	auto *data = menu_obj->get<RulesMenuData>();
 
 	// Replace rule name textures
 	const auto *rule_names = MenMainCursorRl_Top.matanim_joint->child->child->next->matanim;
@@ -319,14 +325,14 @@ extern "C" HSD_GObj *hook_Menu_SetupRulesMenu(u32 state)
 		decompress(mode_values_tex_data);
 	
 	// Replace rule value models
-	replace_counter_jobj(rules_data, Rule_LedgeGrabLimit);
-	replace_timer_jobj(rules_data, Rule_AirTimeLimit);
+	replace_counter_jobj(data, Rule_LedgeGrabLimit);
+	replace_timer_jobj(data, Rule_AirTimeLimit);
 	
 	// Display initial values
-	update_lgl_value(menu_obj, rules_data->handicap);
-	update_atl_value(menu_obj, rules_data->damage_ratio);
+	update_lgl_value(menu_obj, data->ledge_grab_limit);
+	update_atl_value(menu_obj, data->air_time_limit);
 	
-	hide_rule_value(rules_data, Rule_MenuMusic);
+	hide_rule_value(data, Rule_MenuMusic);
 	
 	return menu_obj;
 }
@@ -355,17 +361,17 @@ extern "C" void hook_Menu_UpdateRuleValue(HSD_GObj *menu_obj, HSD_JObj *jobj, u8
 		orig_Menu_UpdateRuleValue(menu_obj, jobj, index, value);
 }
 
-extern "C" void orig_Menu_CreateRuleDescriptionText(RulesMenuData *rules_data, int rule, int value);
-extern "C" void hook_Menu_CreateRuleDescriptionText(RulesMenuData *rules_data, int rule, int value)
+extern "C" void orig_Menu_CreateRuleDescriptionText(RulesMenuData *data, int rule, int value);
+extern "C" void hook_Menu_CreateRuleDescriptionText(RulesMenuData *data, int rule, int value)
 {
-	orig_Menu_CreateRuleDescriptionText(rules_data, rule, value);
+	orig_Menu_CreateRuleDescriptionText(data, rule, value);
+	
+	auto *text = data->description_text;
 
-	if (rule == Rule_LedgeGrabLimit)
-		rules_data->description_text->data = lgl_description.data();
-	else if (rule == Rule_AirTimeLimit)
-		rules_data->description_text->data = atl_description.data();
-	else if (rule == Rule_MenuMusic)
-		rules_data->description_text->data = menu_music_description.data();
-	else if (rule == Rule_StageMusic)
-		rules_data->description_text->data = stage_music_description.data();
+	switch (rule) {
+	case Rule_LedgeGrabLimit: text->data = lgl_description.data(); break;
+	case Rule_AirTimeLimit:   text->data = atl_description.data(); break;
+	case Rule_MenuMusic:      text->data = menu_music_description.data(); break;
+	case Rule_StageMusic:     text->data = stage_music_description.data(); break;
+	}
 }

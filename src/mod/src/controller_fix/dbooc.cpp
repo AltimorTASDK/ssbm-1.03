@@ -1,24 +1,23 @@
 #include "melee/action_state.h"
 #include "melee/constants.h"
 #include "melee/player.h"
+#include "rules/values.h"
 #include "util/melee/pad.h"
 
 bool should_suppress_squatrv(const HSD_GObj *gobj)
 {
 	const auto *player = gobj->get<Player>();
+	
+	if (get_ucf_type() == ucf_type::ucf)
+		return false;
 
-	// Must be outside deadzone for exactly 1f (intending to dash on next frame)
+	// Must be outside deadzone for 1-2f (intending to dash on next frame)
 	if (player->input.stick.x == 0.f)
 		return false;
 
-#ifndef UCF
 	// Extend window to 2f to match 3f dbooc
 	if (player->input.stick_x_hold_time >= 2)
 		return false;
-#else
-	if (player->input.stick_x_hold_time >= 1)
-		return false;
-#endif
 		
 	// Must be rim coord (quarter circle motion)
 	if (!is_rim_coord(player->input.stick))
@@ -43,8 +42,10 @@ extern "C" bool hook_Interrupt_TurnOrDash(HSD_GObj *gobj)
 {
 	if (orig_Interrupt_TurnOrDash(gobj))
 		return true;
+	
+	if (get_ucf_type() == ucf_type::ucf)
+		return false;
 
-#ifndef UCF
 	auto *player = gobj->get<Player>();
 
 	// DBOOC only
@@ -65,7 +66,4 @@ extern "C" bool hook_Interrupt_TurnOrDash(HSD_GObj *gobj)
 		return false;
 
 	return true;
-#else
-	return false;
-#endif
 }

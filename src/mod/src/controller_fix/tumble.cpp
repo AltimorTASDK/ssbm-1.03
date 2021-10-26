@@ -1,6 +1,7 @@
 #include "melee/action_state.h"
 #include "melee/constants.h"
 #include "melee/player.h"
+#include "rules/values.h"
 #include "util/melee/pad.h"
 #include <cmath>
 
@@ -23,11 +24,9 @@ static bool should_wiggle_out(HSD_GObj *gobj)
 	if (std::abs(player->input.last_stick.x) >= plco->tumble_wiggle_threshold)
 		return false;
 		
-#ifdef UCF
-	// Hardware value comparison
-	if (!check_ucf_xsmash(player))
+	// Hardware value comparison (UCF)
+	if (get_ucf_type() == ucf_type::ucf && !check_ucf_xsmash(player))
 		return false;
-#endif
 		
 	return true;
 }

@@ -2,6 +2,11 @@
 
 #include <gctypes.h>
 
+enum class ucf_type : u8 {
+	hax = 0,
+	ucf = 1
+};
+
 enum Rule {
 	Rule_Mode            = 0,
 	Rule_StockCount      = 1,
@@ -17,6 +22,21 @@ enum Rule {
 	Rule_Max             = 7
 };
 
+enum ExtraRule {
+	ExtraRule_StockMatchTimeLimit = 0,
+	// Pause is moved up a row
+	ExtraRule_Pause               = 1,
+	ExtraRule_FriendlyFire        = 2,
+	ExtraRule_ControllerFix       = 2,
+	ExtraRule_ScoreDisplay        = 3,
+	ExtraRule_LowLatency          = 3,
+	ExtraRule_SelfDestructs       = 4,
+	ExtraRule_Widescreen          = 4,
+	ExtraRule_RandomStage         = 5,
+	ExtraRule_OldStageSelect      = 5,
+	ExtraRule_Max                 = 6
+};
+
 enum Mode {
 	Mode_Time = 0,
 	Mode_Stock = 1,
@@ -29,14 +49,30 @@ struct GameRules {
 	u8 mode;
 	u8 time_limit;
 	u8 stock_count;
-	u8 handicap;
-	u8 damage_ratio;
+	union {
+		u8 handicap;
+		u8 ledge_grab_limit;
+	};
+	union {
+		u8 damage_ratio;
+		u8 air_time_limit;
+	};
 	u8 stage_selection_mode;
 	u8 stock_time_limit;
-	u8 friendly_fire;
+	// Pause is moved up a row
 	u8 pause;
-	u8 score_display;
-	u8 sd_penalty;
+	union {
+		u8 friendly_fire;
+		ucf_type controller_fix;
+	};
+	union {
+		u8 score_display;
+		u8 low_latency;
+	};
+	union {
+		u8 sd_penalty;
+		u8 widescreen;
+	};
 };
 
 extern "C" {

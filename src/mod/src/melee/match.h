@@ -70,14 +70,56 @@ struct PlayerInitData {
 };
 
 struct StartMeleeRules {
-	char pad000[0x08];
+	struct {
+		u8 flags1_80 : 1;
+		u8 flags1_40 : 1;
+		u8 flags1_20 : 1;
+		u8 flags1_10 : 1;
+		u8 flags1_08 : 1;
+		u8 flags1_04 : 1;
+		u8 timer_enabled : 1;
+		u8 flags1_01 : 1;
+	};
+	struct {
+		u8 flags2_80 : 1;
+		u8 flags2_40 : 1;
+		u8 flags2_20 : 1;
+		u8 flags2_10 : 1;
+		u8 flags2_08 : 1;
+		u8 flags2_04 : 1;
+		u8 flags2_02 : 1;
+		u8 friendly_fire : 1;
+	};
+	struct {
+		u8 flags3_80 : 1;
+		u8 flags3_40 : 1;
+		u8 flags3_20 : 1;
+		u8 flags3_10 : 1;
+		u8 pause_disabled : 1;
+		u8 flags3_04 : 1;
+		u8 flags3_02 : 1;
+		u8 flags3_01 : 1;
+	};
+	struct {
+		u8 score_display : 1;
+		u8 flags4_40 : 1;
+		u8 flags4_20 : 1;
+		u8 flags4_10 : 1;
+		u8 flags4_08 : 1;
+		u8 flags4_04 : 1;
+		u8 flags4_02 : 1;
+		u8 flags4_01 : 1;
+	};
+	char pad004[0x08 - 0x04];
 	u8 is_teams;
 	char pad009[0x0B - 0x09];
 	s8 item_frequency;
 	s8 sd_penalty;
-	char pad00D[0x30 - 0x0D];
+	s32 time_limit;
+	char pad014[0x30 - 0x14];
 	f32 damage_ratio;
-	char pad034[0x60 - 0x34];
+	f32 game_speed;
+	char pad038[0x60 - 0x38];
 };
 
 struct StartMeleeData {

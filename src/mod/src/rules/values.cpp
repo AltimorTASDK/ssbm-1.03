@@ -15,19 +15,25 @@ struct init_rules {
 		rules->mode = Mode_Stock;
 		rules->time_limit = 0;
 		rules->stock_count = 4;
-		rules->handicap = 0; // LGL
-		rules->damage_ratio = 0; // ATL
+		rules->ledge_grab_limit = 0; // LGL
+		rules->air_time_limit = 0; // ATL
 		rules->stage_selection_mode = 0;
 		rules->stock_time_limit = 6;
-		rules->friendly_fire = true;
+		rules->pause = true;
+		rules->controller_fix = ucf_type::hax;
 	}
 } init_rules;
 
 extern "C" void orig_Match_Init(StartMeleeData *data);
 extern "C" void hook_Match_Init(StartMeleeData *data)
 {
+	// Pause and friendly fire are swapped, so set it ourselves
+	data->rules.pause_disabled = !GetGameRules()->pause;
+
 	data->rules.damage_ratio = 1.f;
 	data->rules.item_frequency = -1;
+	data->rules.friendly_fire = true;
+	data->rules.score_display = false;
 	data->rules.sd_penalty = -2;
 	
 	for (auto i = 0; i < 6; i++) {
