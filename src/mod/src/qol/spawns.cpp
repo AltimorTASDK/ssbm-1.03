@@ -2,6 +2,7 @@
 #include "melee/player.h"
 #include "melee/scene.h"
 #include "melee/stage.h"
+#include "menu/stage_select.h"
 #include "util/melee/ports.h"
 #include <gctypes.h>
 
@@ -15,8 +16,7 @@ constexpr vec2 dl_spawns[]  = { { -46.6000f, 37.2215f }, { 47.3891f, 37.3215f },
 constexpr vec2 fd_spawns[]  = { { -60.0000f, 10.0000f }, { 60.0000f, 10.0000f },
                                 { -20.0000f, 10.0000f }, { 20.0000f, 10.0000f } };
 
-// Modified to account for neutral platform heights (vanilla Y 21 & 27)
-constexpr vec2 fod_spawns[] = { { -41.2500f, 25.0000f }, { 41.2500f, 23.0000f },
+constexpr vec2 fod_spawns[] = { { -41.2500f, 21.0000f }, { 41.2500f, 27.0000f },
                                 { -41.2500f,  5.0000f }, { 41.2500f,  5.0000f } };
 
 constexpr vec2 ps_spawns[]  = { { -40.0000f, 32.0000f }, { 40.0000f, 32.0000f },
@@ -62,5 +62,13 @@ extern "C" void hook_Stage_GetSpawnPoint(u32 port, vec3 *result)
 	if (spawn_index != -1) {
 		result->x = spawns[spawn_index].x;
 		result->y = spawns[spawn_index].y;
+		
+		// Adjust spawns for platform heights if using modded FoD
+		if (Stage_GetID() == Stage_FoD && !use_og_stage_select) {
+			if (spawn_index == 0)
+				result->y += 4.f;
+			else if (spawn_index == 1)
+				result->y -= 4.f;
+		}
 	}
 }

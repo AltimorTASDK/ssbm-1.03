@@ -200,6 +200,22 @@ constexpr auto widescreen_descriptions = std::array {
 	widescreen_off_description.data(),
 	widescreen_on_description.data()
 };
+
+constexpr auto oss_description = text_builder::build(
+	text_builder::kern(),
+	text_builder::left(),
+	text_builder::color<170, 170, 170>(),
+	text_builder::textbox<179, 179>(),
+	text_builder::unk06<0, 0>(),
+	text_builder::fit(),
+	text_builder::ascii<"Open the original stage select screen">(),
+	text_builder::end_fit(),
+	text_builder::br(),
+	text_builder::fit(),
+	text_builder::ascii<"and play without stage modifications.">(),
+	text_builder::end_fit(),
+	text_builder::end_textbox(),
+	text_builder::end_color());
 	
 static mempool pool;
 
@@ -293,8 +309,9 @@ extern "C" void hook_Menu_UpdateExtraRuleDescriptionText(HSD_GObj *gobj,
 	const auto value = MenuSelectedValue;
 
 	switch (index) {
-	case ExtraRule_ControllerFix: text->data = ucf_type_descriptions[value]; break;
-	case ExtraRule_Latency:       text->data = latency_descriptions[value]; break;
-	case ExtraRule_Widescreen:    text->data = widescreen_descriptions[value]; break;
+	case ExtraRule_ControllerFix:  text->data = ucf_type_descriptions[value]; break;
+	case ExtraRule_Latency:        text->data = latency_descriptions[value]; break;
+	case ExtraRule_Widescreen:     text->data = widescreen_descriptions[value]; break;
+	case ExtraRule_OldStageSelect: text->data = oss_description.data(); break;
 	}
 }
