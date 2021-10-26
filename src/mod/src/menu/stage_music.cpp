@@ -323,7 +323,10 @@ extern "C" void hook_Menu_ExitToRulesMenu()
 extern "C" bool orig_Stage_GetBGM(u32 stage_id, u32 flags, u32 *result);
 extern "C" bool hook_Stage_GetBGM(u32 stage_id, u32 flags, u32 *result)
 {
-	int bgm_index = stage_id == Stage_BF  ? bgm_selection[5]
+	// Restart BGM even if it's the same as the menu music
+	CurrentBGMPath[0] = '\0';
+
+	auto bgm_index = stage_id == Stage_BF  ? bgm_selection[5]
 	              : stage_id == Stage_DL  ? bgm_selection[4]
 	              : stage_id == Stage_FD  ? bgm_selection[3]
 	              : stage_id == Stage_FoD ? bgm_selection[2]
@@ -333,9 +336,6 @@ extern "C" bool hook_Stage_GetBGM(u32 stage_id, u32 flags, u32 *result)
 					      
 	if (bgm_index == -1)
 		return orig_Stage_GetBGM(stage_id, flags, result);
-
-	// Restart BGM even if it's the same as the menu music
-	CurrentBGMPath[0] = '\0';
 		
 	*result = bgm_ids[bgm_index];
 	return false;
