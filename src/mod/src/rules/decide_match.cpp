@@ -32,30 +32,21 @@ static bool atl_violated(const MatchPlayerData &player)
 
 static bool is_score_better(const score &a, const score &b)
 {
-	if (!a.violation && b.violation)
-		return true;
+	if (a.violation && !b.violation)
+		return false;
 
-	if (a.stocks > b.stocks)
-		return true;
+	if (a.stocks < b.stocks)
+		return false;
 	
-	if (a.percent < b.percent)
-		return true;
+	if (a.percent > b.percent)
+		return false;
 		
-	return false;
+	return true;
 }
 
 static bool is_score_equal(const score &a, const score &b)
 {
-	if (a.violation != b.violation)
-		return false;
-
-	if (a.stocks != b.stocks)
-		return false;
-	
-	if (a.percent != b.percent)
-		return false;
-		
-	return true;
+	return a.violation == b.violation && a.stocks == b.stocks && a.percent == b.percent;
 }
 
 static score add_score(const score &a, const score &b)
