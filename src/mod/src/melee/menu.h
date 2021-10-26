@@ -23,6 +23,14 @@ enum MenuSFX {
 	MenuSFX_Denied    = 3
 };
 
+enum MenuState {
+	MenuState_Idle      = 0,
+	MenuState_EnterTo   = 1,
+	MenuState_ExitFrom  = 2,
+	MenuState_ExitTo    = 3,
+	MenuState_EnterFrom = 4
+};
+
 enum MenuType {
 	MenuType_Rules = 13,
 	MenuType_ExtraRules = 15,

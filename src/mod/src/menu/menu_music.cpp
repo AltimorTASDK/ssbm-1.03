@@ -1,16 +1,27 @@
+#include "hsd/cobj.h"
 #include "hsd/gobj.h"
 #include "hsd/jobj.h"
+#include "hsd/video.h"
 #include "melee/menu.h"
 #include "melee/music.h"
 #include "melee/rules.h"
 #include "melee/text.h"
+#include "os/gx.h"
+#include "util/compression.h"
 #include "util/math.h"
+#include "util/matrix.h"
 #include "util/meta.h"
 #include "util/patch_list.h"
+#include "util/draw/render.h"
+#include "util/draw/texture.h"
 #include "util/melee/text_builder.h"
 #include <algorithm>
 #include <gctypes.h>
 #include <type_traits>
+#include <ogc/gx.h>
+
+#include "resources/music/trigger_l.tex.h"
+#include "resources/music/trigger_r.tex.h"
 
 struct RandomStageMenuData {
 	u8 menu_type;
@@ -280,6 +291,46 @@ extern "C" void hook_Menu_SetupRandomStageToggles(RandomStageMenuData *data)
 	set_page(data, 0);
 }
 
+texture texture_l;
+texture texture_r;
+
+static void menu_music_gx(HSD_GObj *gobj, u32 pass)
+{
+	GObj_GXProcDisplay(gobj, pass);
+	
+	if (pass != HSD_RP_BOTTOMHALF)
+		return;
+
+	const auto *data = gobj->get<RandomStageMenuData>();
+	
+	// Must have finished transition animation
+	if (data->state != MenuState_Idle)
+		return;
+
+	auto &rs = render_state::get();
+	rs.reset_3d();
+
+	static auto initialized = false;
+	
+	if (!initialized) {
+		texture_l.init(decompress(trigger_l_tex_data), 64, 32, GX_TF_IA4);
+		texture_r.init(decompress(trigger_r_tex_data), 64, 32, GX_TF_IA4);
+		initialized = true;
+	}
+	
+	constexpr auto color_active   = color_rgba(255, 255, 255, 255);
+	constexpr auto color_inactive = color_rgba(255, 255, 255, 96);
+	
+	const auto &color_l = data->page != 0              ? color_active : color_inactive;
+	const auto &color_r = data->page != page_count - 1 ? color_active : color_inactive;
+
+	rs.fill_rect(vec3(-2.5f, -11.5f, 17.f), vec2(3.f, -1.5f), color_l, texture_l,
+	             uv_coord::zero, uv_coord::one, align::center);
+
+	rs.fill_rect(vec3(2.5f, -11.5f, 17.f), vec2(3.f, -1.5f), color_r, texture_r,
+	             uv_coord::zero, uv_coord::one, align::center);
+}
+
 extern "C" HSD_GObj *orig_Menu_SetupRandomStageMenu(u8 state);
 extern "C" HSD_GObj *hook_Menu_SetupRandomStageMenu(u8 state)
 {
@@ -291,6 +342,9 @@ extern "C" HSD_GObj *hook_Menu_SetupRandomStageMenu(u8 state)
 	// Initialize new field
 	auto *data = gobj->get<RandomStageMenuData>();
 	data->page = 0;
+	
+	// Set new GX proc
+	gobj->render_cb = menu_music_gx;
 	
 	return gobj;
 }
