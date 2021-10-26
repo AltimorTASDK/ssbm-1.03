@@ -8,6 +8,7 @@ struct HSD_CObj;
 extern "C" {
 
 HSD_CObj *HSD_CObjGetCurrent();
-void HSD_CObjGetViewingMtx(HSD_CObj *cobj, Mtx *out);
+bool HSD_CObjSetCurrent(HSD_CObj *cobj);
+void HSD_CObjGetViewingMtx(const HSD_CObj *cobj, Mtx *out);
 
 }
