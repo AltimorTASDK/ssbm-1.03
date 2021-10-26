@@ -62,6 +62,8 @@ static const auto patches = patch_list {
 	// li r0, 6
 	std::pair { (char*)VsMenu_Think+0xA4,        0x38000006u },
 	
+#if 0
 	// Clone characters slide out from behind CSS
 	std::pair { (char*)&CSSAnimStartFrame,       0.0 },
+#endif
 };
