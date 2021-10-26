@@ -288,8 +288,8 @@ extern "C" HSD_GObj *hook_Menu_SetupItemMenu(u32 state)
 	constexpr auto tex_size = tex_width * tex_height / 2;
 	constexpr auto mask_width = tex_width / 6;
 
-	const auto *base = pool.add(decompress(music_stages_tex_data));
-	const auto *mask = pool.add(decompress(music_stages_mask_tex_data));
+	const auto *base = decompress(music_stages_tex_data);
+	const auto *mask = decompress(music_stages_mask_tex_data);
 	
 	for (auto i = 0; i < 6; i++) {
 		auto *texture = pool.add(new u8[tex_size]);
@@ -333,6 +333,9 @@ extern "C" bool hook_Stage_GetBGM(u32 stage_id, u32 flags, u32 *result)
 					      
 	if (bgm_index == -1)
 		return orig_Stage_GetBGM(stage_id, flags, result);
+
+	// Restart BGM even if it's the same as the menu music
+	CurrentBGMPath[0] = '\0';
 		
 	*result = bgm_ids[bgm_index];
 	return false;
