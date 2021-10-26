@@ -28,7 +28,7 @@ $(BINFILE): $(ELFFILE)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	powerpc-eabi-objcopy -O binary $< $@
 
-$(ELFFILE): $(OBJFILES) $(LINKSCRIPT) $(MELEELD) | resources clean_unused
+$(ELFFILE): $(OBJFILES) $(LINKSCRIPT) $(MELEELD) resources | clean_unused
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(CC) $(LDFLAGS) -T$(LINKSCRIPT) -T$(MELEELD) $(OBJFILES) -o $@
 
@@ -85,7 +85,7 @@ TEXTURES_OUT := $(foreach texture, $(TEXTURES), $(call get_texture_out, $(textur
 TEXTURES_H_OUT := $(foreach out, $(TEXTURES_OUT), $(out).h)
 
 .PHONY: resources
-resources: $(RESOURCES_OUT) $(RESOURCES_H_OUT) $(TEXTURES_OUT) $(TEXTURES_H_OUT)
+resources: $(RESOURCES_H_OUT) $(TEXTURES_H_OUT)
 
 $(foreach resource, $(RESOURCES), $(eval $(call make_resource_rule, $(resource))))
 $(foreach texture, $(TEXTURES), $(eval $(call make_texture_rule, $(texture))))
