@@ -51,6 +51,7 @@ extern u8 MenuSelectedValue;
 
 extern u32 MenuButtons;
 
+void Menu_ExitToMinorScene(u8 scene);
 u32 Menu_GetButtons(u32 index);
 void Menu_PlaySFX(s32 sfx);
 

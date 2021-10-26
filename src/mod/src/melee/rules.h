@@ -7,6 +7,12 @@ enum class ucf_type : u8 {
 	ucf = 1
 };
 
+enum class latency_mode : u8 {
+	normal = 0,
+	lcd = 1,
+	lightning = 2
+};
+
 enum Rule {
 	Rule_Mode            = 0,
 	Rule_StockCount      = 1,
@@ -29,7 +35,7 @@ enum ExtraRule {
 	ExtraRule_FriendlyFire        = 2,
 	ExtraRule_ControllerFix       = 2,
 	ExtraRule_ScoreDisplay        = 3,
-	ExtraRule_LowLatency          = 3,
+	ExtraRule_Latency             = 3,
 	ExtraRule_SelfDestructs       = 4,
 	ExtraRule_Widescreen          = 4,
 	ExtraRule_RandomStage         = 5,
@@ -67,7 +73,7 @@ struct GameRules {
 	};
 	union {
 		u8 score_display;
-		u8 low_latency;
+		latency_mode latency;
 	};
 	union {
 		u8 sd_penalty;
@@ -80,7 +86,7 @@ extern "C" {
 extern struct {
 	u8 min;
 	u8 max;
-} RuleValueBounds[7];
+} RuleValueBounds[7], ExtraRuleValueBounds[7];
 
 GameRules *GetGameRules();
 

@@ -24,6 +24,10 @@ constexpr auto ascii_to_melee()
 		return std::array { '\x20', '\xEC' };
 	else if constexpr (c == '\'')
 		return std::array { '\x20', '\xF3' };
+	else if constexpr (c == '(')
+		return std::array { '\x20', '\xF5' };
+	else if constexpr (c == ')')
+		return std::array { '\x20', '\xF6' };
 	else if constexpr (c == '-')
 		return std::array { '\x20', '\xFC' };
 	else if constexpr (c == u'é')

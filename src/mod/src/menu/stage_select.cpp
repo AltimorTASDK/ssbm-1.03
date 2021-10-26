@@ -6,6 +6,8 @@
 #include "hsd/robj.h"
 #include "melee/stage.h"
 #include "util/vector.h"
+#include <algorithm>
+#include <array>
 #include <gctypes.h>
 
 // TODO: Not compatible with 20XX striking
@@ -27,7 +29,8 @@ enum IconID {
 	Icon_FD     = 25,
 	Icon_DL     = 26,
 	Icon_Random = 29,
-	Icon_None   = 30
+	Icon_None   = 30,
+	Icon_Max    = 30
 };
 
 struct StageSelectIcon {
@@ -58,7 +61,12 @@ extern "C" struct {
 	
 constexpr auto ICON_SCALE = 1.f;
 
-extern "C" StageSelectIcon StageSelectIcons[29];
+extern "C" StageSelectIcon StageSelectIcons[Icon_Max];
+
+// Back up select region/select box size
+static auto og_ss_icons = std::to_array(StageSelectIcons);
+
+bool use_og_stage_select;
 
 static bool is_legal_stage(int id)
 {
@@ -168,7 +176,7 @@ static void reset_striking(int port)
 	// Show all legal stages
 	for (auto i = 0; i < 29; i++) {
 		auto *icon = &StageSelectIcons[i];
-		if (is_legal_stage(icon->stage_id)) {
+		if (is_legal_stage(icon->stage_id) || use_og_stage_select) {
 			HSD_JObjClearFlagsAll(icon->jobj, HIDDEN);
 			icon->unlocked = UnlockType_Unlocked;
 		}
@@ -229,9 +237,24 @@ extern "C" void hook_SSS_Think()
 	}
 }
 
+extern "C" void orig_CSS_Init(void *menu);
+extern "C" void hook_CSS_Init(void *menu)
+{
+	// Reset original stage select flag when re-entering CSS
+	use_og_stage_select = false;
+	
+	orig_CSS_Init(menu);
+}
+
 extern "C" void orig_SSS_Init(void *menu);
 extern "C" void hook_SSS_Init(void *menu)
 {
+	if (use_og_stage_select) {
+		// Restore old icon select boxes
+		std::copy(og_ss_icons.begin(), og_ss_icons.end(), StageSelectIcons);
+		return orig_SSS_Init(menu);
+	}
+
 	orig_SSS_Init(menu);
 	
 	// Create a matanimjoint to apply the top row of IconDouble to other types of icons. This

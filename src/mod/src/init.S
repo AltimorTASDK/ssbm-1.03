@@ -105,6 +105,7 @@ hooks_start:
 add_hook CheckScrollingRuleIndex
 add_hook CheckStockStealInput
 add_hook CreateCSSNameText
+add_hook CSS_Init
 add_hook HUD_GetStockIconPosition
 add_hook Interrupt_AS_Turn
 add_hook Interrupt_SpotDodge
@@ -119,6 +120,7 @@ add_hook MatchController_UpdateTeamWinners
 add_hook MatchController_UpdateWinners
 add_hook Menu_CreateExtraRulesMenu
 add_hook Menu_CreatePortalDescriptionText
+add_hook Menu_CreateRandomStageMenu
 add_hook Menu_CreateRuleDescriptionText
 add_hook Menu_ExitToRulesMenu
 add_hook Menu_GetBGM

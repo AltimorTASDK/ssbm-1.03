@@ -9,6 +9,9 @@ struct init_rules {
 		RuleValueBounds[Rule_Mode]           = { 0, Mode_Stock };
 		RuleValueBounds[Rule_LedgeGrabLimit] = { 0, ledge_grab_limit_values.size() - 1 };
 		RuleValueBounds[Rule_AirTimeLimit]   = { 0, air_time_limit_values.size() - 1 };
+
+		ExtraRuleValueBounds[ExtraRule_Latency]    = { 0, (u8)latency_mode::lightning };
+		ExtraRuleValueBounds[ExtraRule_Widescreen] = { 0, 1 };
 		
 		// Set default rules
 		auto *rules = GetGameRules();
@@ -21,6 +24,8 @@ struct init_rules {
 		rules->stock_time_limit = 6;
 		rules->pause = true;
 		rules->controller_fix = ucf_type::hax;
+		rules->latency = latency_mode::normal;
+		rules->widescreen = false;
 	}
 } init_rules;
 

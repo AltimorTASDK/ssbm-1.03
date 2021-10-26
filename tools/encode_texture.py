@@ -7,6 +7,7 @@ from itertools import product
 
 GX_TF_I4     = 0
 GX_TF_IA4    = 2
+GX_TF_RGB565 = 4
 GX_TF_RGB5A3 = 5
 GX_TF_RGBA8  = 6
 
@@ -16,10 +17,11 @@ BLUE  = 2
 ALPHA = 3
 
 FORMAT_DICT = {
-    'i4': GX_TF_I4,
-    'ia4': GX_TF_IA4,
+    'i4':     GX_TF_I4,
+    'ia4':    GX_TF_IA4,
+    'rgb565': GX_TF_RGB565,
     'rgb5a3': GX_TF_RGB5A3,
-    'rgba8': GX_TF_RGBA8
+    'rgba8':  GX_TF_RGBA8
 }
 
 def block_range(x, y, step=(1, 1)):
@@ -56,6 +58,25 @@ def encode_ia4(out_file, get_pixel, width, height):
             red   = get_pixel(x, y, RED)   >> 4
             alpha = get_pixel(x, y, ALPHA) >> 4
             out_file.write(bytes([(alpha << 4) | red]))
+
+def encode_rgb565(out_file, get_pixel, width, height):
+    """
+    Write 4x4 pixel blocks of format:
+    RRRRRGGGGGGBBBBB
+    """
+    BLOCK_SIZE = (4, 4)
+
+    for block_x, block_y in block_range(width, height, BLOCK_SIZE):
+        for offset_x, offset_y in block_range(*BLOCK_SIZE):
+            x = block_x + offset_x
+            y = block_y + offset_y
+
+            red   = get_pixel(x, y, RED)   >> 3
+            green = get_pixel(x, y, GREEN) >> 2
+            blue  = get_pixel(x, y, BLUE)  >> 3
+            value = (red << 11) | (green << 5) | blue
+
+            out_file.write(bytes([value >> 8, value & 0xFF]))
 
 def encode_rgb5a3(out_file, get_pixel, width, height):
     """
@@ -122,6 +143,7 @@ def encode_png(in_path, out_path, fmt):
         { # Call corresponding encoding function
             GX_TF_I4:     encode_i4,
             GX_TF_IA4:    encode_ia4,
+            GX_TF_RGB565: encode_rgb565,
             GX_TF_RGB5A3: encode_rgb5a3,
             GX_TF_RGBA8:  encode_rgba8
         }[fmt](out_file, get_pixel, width, height)
