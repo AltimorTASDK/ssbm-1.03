@@ -18,6 +18,8 @@ struct OSThreadQueue {
 };
 
 extern "C" {
+	
+void TRK_flush_cache(const void *start, u32 size);
 
 void OSReport(const char *fmt, ...);
 
@@ -40,6 +42,7 @@ extern void *CardWorkArea;
 static void *mod_init = (void*)0x817D1000;
 
 static card_file file;
+static card_stat stats;
 static OSThreadQueue sleep_queue;
 
 extern "C" char __BSS_START__;
@@ -78,7 +81,6 @@ static void attach_callback(s32 chan, s32 result)
 		return;
 	}
 
-	card_stat stats;
 	if (s32 error = CARD_GetStatus(chan, file.filenum, &stats); error < 0) {
 		panic("CARD_GetStatus failed (%d)\n", error);
 		return;
@@ -97,7 +99,7 @@ static void patch_crash_screen()
 	auto *patch_location = (char*)DisplayCrashScreen+0x4C;
 	*(u32*)patch_location = 0x48000220u;
 
-	__builtin___clear_cache(patch_location, patch_location + 4);
+	TRK_flush_cache(patch_location, 4);
 }
 
 extern "C" __attribute__((section(".init"))) void _start()
@@ -120,6 +122,8 @@ extern "C" __attribute__((section(".init"))) void _start()
 	OSSleepThread(&sleep_queue);
 	
 	CARD_Unmount(0);
+
+	TRK_flush_cache(mod_init, stats.len);
 
 	// Run mod init
 	OSReport("Running 1.03\n");
