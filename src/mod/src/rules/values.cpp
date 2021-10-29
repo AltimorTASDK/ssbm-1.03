@@ -1,4 +1,5 @@
 #include "melee/match.h"
+#include "melee/player.h"
 #include "melee/rules.h"
 #include "rules/values.h"
 
@@ -29,11 +30,28 @@ struct init_rules {
 	}
 } init_rules;
 
+static bool is_singleplayer(const StartMeleeData *data)
+{
+	auto count = 0;
+	for (auto i = 0; i < 6; i++) {
+		if (data->players[i].slot_type != SlotType_None && ++count > 1)
+			return false;
+	}
+	return true;
+}
+
 extern "C" void orig_Match_Init(StartMeleeData *data);
 extern "C" void hook_Match_Init(StartMeleeData *data)
 {
-	// Pause and friendly fire are swapped, so set it ourselves
-	data->rules.pause_disabled = !GetGameRules()->pause;
+	if (is_singleplayer(data)) {
+		// Force infinite time match + pause
+		data->rules.is_stock_match = false;
+		data->rules.timer_enabled = false;
+		data->rules.pause_disabled = false;
+	} else {
+		// Pause and friendly fire are swapped, so set it ourselves
+		data->rules.pause_disabled = !GetGameRules()->pause;
+	}
 
 	data->rules.damage_ratio = 1.f;
 	data->rules.item_frequency = -1;
