@@ -32,6 +32,7 @@ enum MenuState {
 };
 
 enum MenuType {
+	MenuType_VsMode = 2,
 	MenuType_Rules = 13,
 	MenuType_ExtraRules = 15,
 	MenuType_ItemSwitch = 16,

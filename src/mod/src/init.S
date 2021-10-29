@@ -106,6 +106,7 @@ add_hook CheckScrollingRuleIndex
 add_hook CheckStockStealInput
 add_hook CreateCSSNameText
 add_hook CSS_Init
+add_hook DebugMenu_Exit
 add_hook HSD_ResetScene
 add_hook HUD_GetStockIconPosition
 add_hook Interrupt_AS_Turn
@@ -114,6 +115,7 @@ add_hook Interrupt_SpotDodge_OoS
 add_hook Interrupt_SquatRv
 add_hook Interrupt_TurnOrDash
 add_hook LoadPlCo
+add_hook MainMenu_Enter
 add_hook MainMenu_Init
 add_hook Match_HandlePause
 add_hook Match_Init

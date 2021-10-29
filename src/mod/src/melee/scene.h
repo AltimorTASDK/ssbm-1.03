@@ -7,8 +7,10 @@ struct SceneMinorData;
 enum Scene {
 	Scene_Menu         = 1,
 	Scene_VsMode       = 2,
-	Scene_Tournament   = 0x1B,
-	Scene_Training     = 0x1C
+	Scene_DebugMenu    = 6,
+	Scene_Tournament   = 27,
+	Scene_Training     = 28,
+	Scene_Boot         = 40
 };
 
 enum VsScene {
@@ -39,11 +41,14 @@ struct SceneMinorData {
 extern "C" {
 
 extern u8 SceneMajor;
+extern u8 SceneMajorPrevious;
 extern u8 SceneMinor;
+extern u8 SceneMinorPrevious;
 
 bool IsSinglePlayerMode();
 void Scene_Exit();
 bool Scene_CheckPauseFlag(u32 flag);
+void Scene_SetMajorPending(u8 scene);
 void *GetSceneExitData();
 
 }
