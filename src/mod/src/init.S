@@ -114,7 +114,6 @@ add_hook Interrupt_SpotDodge
 add_hook Interrupt_SpotDodge_OoS
 add_hook Interrupt_SquatRv
 add_hook Interrupt_TurnOrDash
-add_hook LoadPlCo
 add_hook MainMenu_Enter
 add_hook MainMenu_Init
 add_hook Match_HandlePause
