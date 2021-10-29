@@ -288,7 +288,6 @@ extern "C" void hook_Menu_CreateRandomStageMenu()
 		
 	// Go to stage select if coming from extra rules
 	use_og_stage_select = true;
-	pool.dec_ref();
 	Menu_ExitToMinorScene(VsScene_SSS);
 }
 

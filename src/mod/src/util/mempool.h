@@ -1,5 +1,7 @@
 #pragma once
 
+#include <list>
+
 class mempool {
 	struct allocation {
 		allocation *next;
@@ -8,8 +10,22 @@ class mempool {
 	};
 
 public:
+	static mempool *pool_list_head;
+
+	mempool *prev = nullptr;
+	mempool *next = nullptr;
+
 	allocation *head = nullptr;
 	int ref_count = 0;
+	
+	// Forcibly free all mem pools (on scene change)
+	static void free_all()
+	{
+		while (pool_list_head != nullptr) {
+			pool_list_head->ref_count = 0;
+			pool_list_head->free();
+		}
+	}
 
 	// Returns old ref count
 	int inc_ref()
@@ -47,6 +63,12 @@ private:
 	void init()
 	{
 		head = nullptr;
+
+		next = pool_list_head;
+		pool_list_head = this;
+
+		if (next != nullptr)
+			next->prev = this;
 	}
 
 	void free()
@@ -59,5 +81,12 @@ private:
 			delete entry;
 			entry = next;
 		}
+
+		// Unlink
+		if (prev != nullptr)
+			prev->next = next;
+			
+		if (pool_list_head == this)
+			pool_list_head = next;
 	}
 };

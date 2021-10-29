@@ -57,13 +57,17 @@ struct MatchController {
 };
 
 struct PlayerInitData {
-	char pad000[0x04];
+	u8 character_kind;
+	u8 slot_type;
+	u8 stocks;
+	u8 color;
 	u8 port;
 	s8 spawnpoint;
 	u8 spawn_direction;
-	char pad007;
+	u8 subcolor;
 	u8 handicap;
-	char pad009[0x18 - 0x09];
+	u8 team;
+	char pad00A[0x18 - 0x0A];
 	f32 offense_ratio;
 	f32 defense_ratio;
 	char pad020[0x24 - 0x20];
@@ -73,12 +77,12 @@ struct StartMeleeRules {
 	struct {
 		u8 flags1_80 : 1;
 		u8 flags1_40 : 1;
-		u8 flags1_20 : 1;
+		u8 is_stock_match : 1;
 		u8 flags1_10 : 1;
 		u8 flags1_08 : 1;
 		u8 flags1_04 : 1;
 		u8 timer_enabled : 1;
-		u8 flags1_01 : 1;
+		u8 count_up : 1;
 	};
 	struct {
 		u8 flags2_80 : 1;
