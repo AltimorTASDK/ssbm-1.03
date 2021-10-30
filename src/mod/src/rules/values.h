@@ -28,3 +28,9 @@ inline ucf_type get_ucf_type()
 	const auto *rules = GetGameRules();
 	return rules->controller_fix;
 }
+
+inline bool is_widescreen()
+{
+	const auto *rules = GetGameRules();
+	return rules->widescreen;
+}

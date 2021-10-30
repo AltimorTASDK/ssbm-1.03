@@ -104,6 +104,7 @@ hooks_start:
 
 add_hook CheckScrollingRuleIndex
 add_hook CheckStockStealInput
+add_hook CObjLoad
 add_hook CreateCSSNameText
 add_hook CSS_Init
 add_hook DebugMenu_Exit
@@ -126,6 +127,7 @@ add_hook Menu_CreateRandomStageMenu
 add_hook Menu_CreateRuleDescriptionText
 add_hook Menu_ExitToRulesMenu
 add_hook Menu_GetBGM
+add_hook Menu_ItemMenuInput
 add_hook Menu_MenuPanelThink
 add_hook Menu_RandomStageMenuInput
 add_hook Menu_RandomStageMenuScroll
@@ -155,5 +157,6 @@ add_hook Stage_YoshisStory_ShyGuyUpdate
 add_hook TumbleWiggleCheck
 add_hook UpdatePadButtons
 add_hook UpdatePlayerStick
+add_hook WorldToScreen
 
 hooks_end:
