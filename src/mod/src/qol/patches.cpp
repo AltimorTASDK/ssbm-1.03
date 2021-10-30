@@ -1,3 +1,4 @@
+#include "hsd/gobj.h"
 #include "melee/player.h"
 #include "melee/match.h"
 #include "util/patch_list.h"
@@ -8,6 +9,7 @@ extern "C" void Camera_CStickControl();
 
 extern "C" void CSS_Think();
 extern "C" void CSS_Setup();
+extern "C" void CSS_Input(HSD_GObj *gobj);
 extern "C" void CSS_UpdatePortrait(u8 port);
 extern "C" void CSS_GObjCallback(u8 port);
 
@@ -33,6 +35,9 @@ static const auto patches = patch_list {
 	// Close CSS port on unplug
 	// li r6, 3
 	std::pair { (char*)CSS_Think+0x35C,          0x38C00003u },
+	// Allow starting one player matches from the CSS
+	// cmpwi r4, 1
+	std::pair { (char*)CSS_Input+0x120,          0x2C040001u },
 	// Disable handicap display in CSS
 	// li r0, 0
 	std::pair { (char*)CSS_Setup+0x256C,         0x38000000u },
