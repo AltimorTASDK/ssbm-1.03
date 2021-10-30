@@ -33,6 +33,8 @@ struct ItemMenuData {
 
 extern "C" ArchiveModel MenMainConIs_Top;
 
+extern "C" HSD_GObj *ItemMenuGObj;
+
 extern "C" HSD_GObj *Menu_SetupItemMenu(u32 entry_point);
 extern "C" HSD_JObj *Menu_GetItemToggle(ItemMenuData *data, u8 index);
 
@@ -304,6 +306,47 @@ extern "C" HSD_GObj *hook_Menu_SetupItemMenu(u32 state)
 	delete mask;
 	
 	return gobj;
+}
+
+extern "C" void orig_Menu_ItemMenuInput(HSD_GObj *gobj);
+extern "C" void hook_Menu_ItemMenuInput(HSD_GObj *gobj)
+{
+	orig_Menu_ItemMenuInput(gobj);
+	
+	const auto buttons = Menu_GetButtons(4);
+	auto *data = ItemMenuGObj->get<ItemMenuData>();
+
+	// Allow cycling through stages with L/R
+	if (buttons & MenuButton_L)
+		data->selected_stage = (u8)mod((int)data->selected_stage + 1, 6);
+	else if (buttons & MenuButton_R)
+		data->selected_stage = (u8)mod((int)data->selected_stage - 1, 6);
+	else
+		return;
+		
+	change_stage(data, data->selected_stage);
+		
+	if (MenuSelectedIndex >= 31) {
+		MenuSelectedValue = data->selected_stage;
+		hook_Menu_UpdateItemDisplay(ItemMenuGObj, false, true);
+		return;
+	}
+		
+	// Force the stage selection to update
+	const auto old_index = MenuSelectedIndex;
+	const auto old_value = MenuSelectedValue;
+	const auto old_selected = data->selected;
+
+	MenuSelectedIndex = 31;
+	MenuSelectedValue = data->selected_stage;
+	hook_Menu_UpdateItemDisplay(ItemMenuGObj, true, true);
+
+	MenuSelectedIndex = old_index;
+	MenuSelectedValue = old_value;
+	data->selected = 31;
+	hook_Menu_UpdateItemDisplay(ItemMenuGObj, true, false);
+	
+	data->selected = old_selected;
 }
 
 extern "C" void orig_Menu_ExitToRulesMenu();
