@@ -164,7 +164,7 @@ static const auto patches = patch_list {
 
 	// Don't allow scrolling through menu music values
 	// cmplwi r5, 4
-	std::pair { (char*)Menu_RulesMenuInput+0x420,    0x28050005u },
+	std::pair { (char*)Menu_RulesMenuInput+0x420,    0x28050004u },
 	// bge 0x20C
 	std::pair { (char*)Menu_RulesMenuInput+0x424,    0x4080020Cu },
 };
