@@ -2,6 +2,12 @@
 
 #include <gctypes.h>
 
+enum class pause_type : u8 {
+	on = 0,
+	off = 1,
+	automatic = 2
+};
+
 enum class ucf_type : u8 {
 	hax = 0,
 	ucf = 1
@@ -66,7 +72,7 @@ struct GameRules {
 	u8 stage_selection_mode;
 	u8 stock_time_limit;
 	// Pause is moved up a row
-	u8 pause;
+	pause_type pause;
 	union {
 		u8 friendly_fire;
 		ucf_type controller_fix;

@@ -17,6 +17,7 @@
 #include <gctypes.h>
 #include <ogc/gx.h>
 
+#include "resources/rules/pause_values.tex.h"
 #include "resources/rules/controller_fix.tex.h"
 #include "resources/rules/controller_fix_values.tex.h"
 #include "resources/rules/latency.tex.h"
@@ -58,6 +59,9 @@ struct ExtraRulesMenuData {
 
 // Rule name text
 extern "C" ArchiveModel MenMainCursorRl_Top;
+
+// Vanilla handicap values
+extern "C" ArchiveModel MenMainCursorRl03_Top;
 
 // Controller fix values
 extern "C" ArchiveModel MenMainCursorTr03_Top;
@@ -133,11 +137,11 @@ constexpr auto latency_lcd_description = text_builder::build(
 	text_builder::textbox<179, 179>(),
 	text_builder::unk06<0, 0>(),
 	text_builder::fit(),
-	text_builder::ascii<"Reduce visual latency by half">(),
+	text_builder::ascii<"Reduce visual latency by half a">(),
 	text_builder::end_fit(),
 	text_builder::br(),
 	text_builder::fit(),
-	text_builder::ascii<"a frame. Recommended for LCDs.">(),
+	text_builder::ascii<"frame. Recommended for LCDs.">(),
 	text_builder::end_fit(),
 	text_builder::end_textbox(),
 	text_builder::end_color());
@@ -149,11 +153,11 @@ constexpr auto latency_lightning_description = text_builder::build(
 	text_builder::textbox<179, 179>(),
 	text_builder::unk06<0, 0>(),
 	text_builder::fit(),
-	text_builder::ascii<"Reduce visual latency by one">(),
+	text_builder::ascii<"Reduce visual latency by as">(),
 	text_builder::end_fit(),
 	text_builder::br(),
 	text_builder::fit(),
-	text_builder::ascii<"frame.">(),
+	text_builder::ascii<"much as possible.">(),
 	text_builder::end_fit(),
 	text_builder::end_textbox(),
 	text_builder::end_color());
@@ -216,6 +220,22 @@ constexpr auto oss_description = text_builder::build(
 	text_builder::end_fit(),
 	text_builder::end_textbox(),
 	text_builder::end_color());
+
+constexpr auto pause_auto_description = text_builder::build(
+	text_builder::kern(),
+	text_builder::left(),
+	text_builder::color<170, 170, 170>(),
+	text_builder::textbox<179, 179>(),
+	text_builder::unk06<0, 0>(),
+	text_builder::fit(),
+	text_builder::ascii<"Players will not be able to">(),
+	text_builder::end_fit(),
+	text_builder::br(),
+	text_builder::fit(),
+	text_builder::ascii<"pause during 4-stock matches.">(),
+	text_builder::end_fit(),
+	text_builder::end_textbox(),
+	text_builder::end_color());
 	
 static mempool pool;
 
@@ -227,8 +247,18 @@ static const auto patches = patch_list {
 	std::pair { &ExtraRuleTextAnimFrames[ExtraRule_FriendlyFire].selected,   23.f },
 
 	// Swap description for pause and friendly fire
-	std::pair { &ExtraRuleDescriptions[ExtraRule_Pause].values[0],           (u8)0x3A },
-	std::pair { &ExtraRuleDescriptions[ExtraRule_Pause].values[1],           (u8)0x3B },
+	// Also swap descriptions between on/off because they're reordered
+	std::pair { &ExtraRuleDescriptions[ExtraRule_Pause].values[0],           (u8)0x3B },
+	std::pair { &ExtraRuleDescriptions[ExtraRule_Pause].values[1],           (u8)0x3A },
+
+	// Use vanilla handicap values for pause
+	// addi r16, r5, MenMainCursorRl03_Top@l
+	std::pair { (char*)Menu_SetupExtraRulesMenu+0x30C,
+	            0x3A050000 | ((u32)&MenMainCursorRl03_Top & 0xFFFF) },
+
+	// Apply 3-value model to index 1
+	// beq 0x3C
+	std::pair { (char*)Menu_SetupExtraRulesMenu+0x560,                       0x4182003Cu },
 
 	// Apply 3-value model to index 3 instead of 4
 	// cmpwi r27, 3
@@ -270,12 +300,9 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 	rule_names->texanim->imagetbl[13]->img_ptr = pool.add(decompress(og_stage_select_tex_data));
 	
 	// Replace rule value textures
+	replace_toggle_texture(data, ExtraRule_Pause, pause_values_tex_data);
 	replace_toggle_texture(data, ExtraRule_ControllerFix, controller_fix_values_tex_data);
 	replace_toggle_texture(data, ExtraRule_Latency, latency_values_tex_data);
-
-	// poggerga
-	auto *latency_tobj = data->value_jobj_trees[ExtraRule_Latency].tree[1]->u.dobj->mobj->tobj;
-	latency_tobj->imagedesc->format = GX_TF_RGB565;
 		
 	return gobj;
 }
@@ -306,6 +333,11 @@ extern "C" void hook_Menu_UpdateExtraRuleDescriptionText(HSD_GObj *gobj,
 	
 	const auto index = MenuSelectedIndex;
 	const auto value = MenuSelectedValue;
+	
+	if (index == ExtraRule_Pause && value == (u8)pause_type::automatic) {
+		text->data = pause_auto_description.data();
+		return;
+	}
 
 	switch (index) {
 	case ExtraRule_ControllerFix:  text->data = ucf_type_descriptions[value]; break;
