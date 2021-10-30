@@ -53,6 +53,10 @@ extern "C" u32 hook_DebugMenu_Exit(u32 arg)
 struct set_debug_language {
 	set_debug_language()
 	{
+		// 20XX
+		if (DebugMenuEntries[DebugEntry_Language].value == nullptr)
+			return;
+			
 		// Set default debug menu language to game language
 		*DebugMenuEntries[DebugEntry_Language].value = IsLanguageUS();
 	}
