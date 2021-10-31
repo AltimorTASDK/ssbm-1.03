@@ -85,8 +85,7 @@ private:
 		// Unlink
 		if (prev != nullptr)
 			prev->next = next;
-			
-		if (pool_list_head == this)
+		else if (pool_list_head == this)
 			pool_list_head = next;
 	}
 };
