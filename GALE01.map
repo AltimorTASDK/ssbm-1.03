@@ -19886,6 +19886,9 @@
 803ed2e8 00000000 803ed2e8 0 ExtraRuleValueBounds
 803f06d0 00000000 803f06d0 0 StageSelectIcons
 803fa4e0 00000000 803fa4e0 0 DebugMenuEntries
+80431fa0 00000000 80431fa0 0 default_hsd_heap_arena_lo
+80431fa4 00000000 80431fa4 0 default_hsd_heap_arena_hi
+80431fb0 00000000 80431fb0 0 hsd_heap_list
 80432a68 00000000 80432a68 0 CardWorkArea
 80452c68 00000000 80452c68 0 MainCamera
 8045bf28 00000000 8045bf28 0 CharacterUnlockMask

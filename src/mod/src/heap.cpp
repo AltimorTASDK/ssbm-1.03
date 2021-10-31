@@ -1,24 +1,9 @@
+#include "os/heap.h"
+#include "hsd/heap.h"
 #include <gctypes.h>
-#include "os/os.h"
-
-struct OSHeapChunk {
-	OSHeapChunk *prev;
-	OSHeapChunk *next;
-	s32 size;
-};
-
-struct OSHeap {
-	s32 size;
-	OSHeapChunk *free_list;
-	OSHeapChunk *reserved_list;
-};
 
 extern "C" char __LOAD_BASE__;
 constexpr void *load_base = &__LOAD_BASE__;
-
-extern "C" OSHeap *HeapList;
-extern "C" s32 MaxHeapCount;
-extern "C" void *hsd_heap_arena_hi;
 
 void fix_heap(OSHeap *heap)
 {
@@ -39,7 +24,7 @@ void fix_heap(OSHeap *heap)
 				chunk->next->prev = chunk->prev;
 				
 			break;
-		} else if (chunk_end >= load_base) {
+		} else if (chunk_end > load_base) {
 			// Chunk is partially within code space, reduce size
 			chunk->size = (s32)load_base - (s32)chunk;
 		}
@@ -59,5 +44,15 @@ struct manage_heaps {
 		
 		if (hsd_heap_arena_hi > load_base)
 			hsd_heap_arena_hi = load_base;
+
+		if (default_hsd_heap_arena_hi > load_base)
+			default_hsd_heap_arena_hi = load_base;
+
+		for (auto i = 0; i < 6; i++) {
+			auto *heap = &hsd_heap_list[i];
+			auto *heap_end = (char*)heap->start + heap->size;
+			if (heap_end > load_base)
+				heap->size = (u32)load_base - (u32)heap->start;
+		}
 	}
 } manage_heaps;
