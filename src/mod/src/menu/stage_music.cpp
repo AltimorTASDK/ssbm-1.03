@@ -85,8 +85,7 @@ constexpr auto text_right = text_builder::build(
 	item_text<"Temple">(),
 	item_text<"Venom">(),
 	item_text<"Yoshi's Island">(),
-	item_text<"Yoshi's Island N64">(),
-	item_text<"Custom Music">());
+	item_text<"Yoshi's Island N64">());
 
 constexpr int bgm_ids[] = {
 	BGM_BalloonFight,

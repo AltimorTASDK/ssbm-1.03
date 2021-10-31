@@ -98,9 +98,7 @@ constexpr auto bgm_text = std::make_tuple(
 
 	stage_text<"All-Star Intro">(),
 	stage_text<"Targets!">(),
-	stage_text<"Trophy">(),
-
-	stage_text<"Custom Music">());
+	stage_text<"Trophy">());
 
 constexpr auto bgm_text_data = for_range<sizeof_tuple<decltype(bgm_text)>>([]<size_t ...I>() {
 		return std::array { (std::get<I>(bgm_text).data())... };
