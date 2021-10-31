@@ -152,8 +152,8 @@ extern "C" void hook_TrainingMenu_Think()
 		}
 	}
 	
-	auto *text = TrainingMenu.item_text;
-	text->trans.x /= aspect_ratio_factor;
+	// Move item text to accomodate stretched viewport
+	TrainingMenu.item_text->trans.x /= aspect_ratio_factor;
 }
 
 extern "C" void orig_NameTag_SetupForPlayer(u32 port);
