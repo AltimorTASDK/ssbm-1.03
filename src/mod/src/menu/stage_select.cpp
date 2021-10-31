@@ -5,6 +5,7 @@
 #include "hsd/pad.h"
 #include "hsd/robj.h"
 #include "melee/stage.h"
+#include "rules/values.h"
 #include "util/vector.h"
 #include <algorithm>
 #include <array>
@@ -249,13 +250,20 @@ extern "C" void hook_CSS_Init(void *menu)
 extern "C" void orig_SSS_Init(void *menu);
 extern "C" void hook_SSS_Init(void *menu)
 {
-	if (use_og_stage_select) {
-		// Restore old icon select boxes
+	// Restore old icon select boxes for OSS
+	if (use_og_stage_select)
 		std::copy(og_ss_icons.begin(), og_ss_icons.end(), StageSelectIcons);
-		return orig_SSS_Init(menu);
-	}
 
 	orig_SSS_Init(menu);
+	
+	if (is_widescreen()) {
+		// Shift the dark overlay towards the camera so it covers the whole screen
+		MnSlMapModels->NowLoading.joint->position.z += 32.f;
+		MnSlMapModels->NowLoading.joint->child->position.z -= 32.f;
+	}
+
+	if (use_og_stage_select)
+		return;
 	
 	// Create a matanimjoint to apply the top row of IconDouble to other types of icons. This
 	// has to be done because the top row's matanimjoint is the *2nd* child of the root.
