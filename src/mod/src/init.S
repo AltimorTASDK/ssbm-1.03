@@ -155,6 +155,7 @@ add_hook Stage_GetSpawnPoint
 add_hook Stage_IsValidRandomChoice
 add_hook Stage_PokemonStadium_TransformationDecide
 add_hook Stage_YoshisStory_ShyGuyUpdate
+add_hook TrainingMenu_Think
 add_hook TumbleWiggleCheck
 add_hook UpdatePadButtons
 add_hook UpdatePlayerStick

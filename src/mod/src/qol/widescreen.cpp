@@ -9,6 +9,13 @@
 #include <cmath>
 #include <gctypes.h>
 
+enum TrainingMenuJoint {
+	TrainingMenuJoint_ItemText = 1,
+	TrainingMenuJoint_Banner = 2,
+	TrainingMenuJoint_RightPanel = 3,
+	TrainingMenuJoint_LeftPanel = 22
+};
+
 struct OffScreenBubbleData {
 	HSD_GObj *gobj;
 	HSD_JObj *jobj;
@@ -29,6 +36,8 @@ struct TrainingMenuData {
 };
 
 extern "C" HSD_CObjDesc ScreenFlashCObjDesc;
+
+extern "C" TrainingMenuData TrainingMenu;
 
 constexpr auto aspect_ratio_vanilla = 913.f / 750.f;
 constexpr auto aspect_ratio_factor = 320.f / 219.f;
@@ -90,5 +99,36 @@ extern "C" void hook_OffScreenBubble_GetPosition(OffScreenBubbleData *data,
 		out->x = std::copysign(bound_x, scaled.x);
 		out->y = clamp(out->x * ratio, -bound_y, bound_y);
 		data->direction = scaled.x > 0.f ? 4 : 2;
+	}
+}
+
+extern "C" void orig_TrainingMenu_Think();
+extern "C" void hook_TrainingMenu_Think()
+{
+	orig_TrainingMenu_Think();
+	
+	if (!is_widescreen())
+		return;
+
+	// Calc offset based on the X coord at the edge of the camera
+	constexpr auto screen_edge = 64.f * (float)tan(deg_to_rad(41.539f / 2.f)) * (73.f / 60.f);
+	constexpr auto offset = screen_edge * (aspect_ratio_factor - 1.f);
+
+	for (auto i = 0; i < 39; i++) {
+		auto *jobj = TrainingMenu.jobj_tree[i];
+
+		// Recalc matrices so offsets propagate
+		HSD_JObjSetupMatrix(jobj);
+
+		switch (i) {
+		case TrainingMenuJoint_ItemText:
+		case TrainingMenuJoint_Banner:
+		case TrainingMenuJoint_LeftPanel:
+			jobj->mtx.get<0, 3>() -= offset;
+			break;
+		case TrainingMenuJoint_RightPanel:
+			jobj->mtx.get<0, 3>() += offset;
+			break;
+		}
 	}
 }
