@@ -68,7 +68,7 @@ struct HSD_JObjDesc {
 		struct HSD_DObjDesc *dobj;
 		struct HSD_Spline *spline;
 	} u;
-	vec4 rotation;
+	vec3 rotation;
 	vec3 scale;
 	vec3 position;
 	matrix3x4 mtx;
