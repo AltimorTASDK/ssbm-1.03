@@ -142,6 +142,7 @@ add_hook Menu_UpdateExtraRuleDescriptionText
 add_hook Menu_UpdateItemDisplay
 add_hook Menu_UpdateRandomStageDisplay
 add_hook Menu_UpdateRuleValue
+add_hook OffScreenBubble_GetPosition
 add_hook Scene_Match_Exit
 add_hook ShowNameTagCheck
 add_hook SSS_Init
