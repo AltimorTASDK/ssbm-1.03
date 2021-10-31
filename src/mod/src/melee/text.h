@@ -36,14 +36,22 @@ enum class text_opcode {
 };
 
 struct Text {
-	char pad000[0x4D];
+	vec3 trans;
+	vec2 aspect;
+	char pad014[0x34 - 0x14];
+	vec2 default_scale;
+	char pad03C[0x4D - 0x3C];
 	u8 hidden;
 	char pad04E[0x5C - 0x4E];
 	const char *data;
-	char pad060[0xA0 - 0x60];
+	char pad060[0x80 - 0x60];
+	vec2 scale;
+	char pad088[0xA0 - 0x88];
 };
 
 extern "C" {
+	
+extern Text *NameTagText;
 
 void Text_SetSubtextColor(Text *text, int subtext, const color_rgba &color);
 

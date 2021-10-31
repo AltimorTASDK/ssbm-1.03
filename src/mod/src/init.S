@@ -104,6 +104,7 @@ hooks_start:
 
 add_hook CheckScrollingRuleIndex
 add_hook CheckStockStealInput
+add_hook CmSubject_WorldToScreen
 add_hook CObjLoad
 add_hook CreateCSSNameText
 add_hook CSS_Init
@@ -142,6 +143,7 @@ add_hook Menu_UpdateExtraRuleDescriptionText
 add_hook Menu_UpdateItemDisplay
 add_hook Menu_UpdateRandomStageDisplay
 add_hook Menu_UpdateRuleValue
+add_hook NameTag_SetupForPlayer
 add_hook OffScreenBubble_GetPosition
 add_hook Scene_Match_Exit
 add_hook ShowNameTagCheck
@@ -155,10 +157,11 @@ add_hook Stage_GetSpawnPoint
 add_hook Stage_IsValidRandomChoice
 add_hook Stage_PokemonStadium_TransformationDecide
 add_hook Stage_YoshisStory_ShyGuyUpdate
+add_hook Text_UpdateSubtextSize
+add_hook TrainingMenu_Create
 add_hook TrainingMenu_Think
 add_hook TumbleWiggleCheck
 add_hook UpdatePadButtons
 add_hook UpdatePlayerStick
-add_hook WorldToScreen
 
 hooks_end:

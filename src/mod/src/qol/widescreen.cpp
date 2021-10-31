@@ -3,6 +3,7 @@
 #include "hsd/jobj.h"
 #include "hsd/tobj.h"
 #include "melee/camera.h"
+#include "melee/text.h"
 #include "rules/values.h"
 #include "util/math.h"
 #include "util/vector.h"
@@ -32,10 +33,19 @@ struct TrainingMenuData {
 	HSD_GObj *gobj;
 	HSD_JObj *jobj_tree[39];
 	s32 anim_frames[39];
-	char pad1E0[0x200 - 0x1E0];
+	s32 speed;
+	s32 item;
+	s32 cpu_count;
+	s32 cpu_action;
+	s32 cpu_damage;
+	s32 pad1F4;
+	s32 camera_type;
+	Text *item_text;
 };
 
 extern "C" HSD_CObjDesc ScreenFlashCObjDesc;
+
+extern "C" HSD_GObj *NameTagGObjs[6];
 
 extern "C" TrainingMenuData TrainingMenu;
 
@@ -58,18 +68,18 @@ extern "C" int hook_CObjLoad(HSD_CObj *cobj, HSD_CObjDesc *desc)
 	return result;
 }
 
-extern "C" bool orig_WorldToScreen(const vec3 &in, vec2 *out);
-extern "C" bool hook_WorldToScreen(const vec3 &in, vec2 *out)
+extern "C" bool orig_CmSubject_WorldToScreen(const CmSubject *subject, vec2 *out);
+extern "C" bool hook_CmSubject_WorldToScreen(const CmSubject *subject, vec2 *out)
 {
 	auto *cobj = MainCamera.gobj->get_hsd_obj<HSD_CObj>();
 	
 	// Perform off screen check with the original aspect ratio
 	const auto old_aspect = cobj->perspective.aspect;
 	cobj->perspective.aspect = aspect_ratio_vanilla;
-	const auto on_screen = orig_WorldToScreen(in, out);
+	const auto on_screen = orig_CmSubject_WorldToScreen(subject, out);
 	cobj->perspective.aspect = old_aspect;
 
-	orig_WorldToScreen(in, out);
+	orig_CmSubject_WorldToScreen(subject, out);
 	return on_screen;
 }
 
@@ -99,6 +109,16 @@ extern "C" void hook_OffScreenBubble_GetPosition(OffScreenBubbleData *data,
 		out->x = std::copysign(bound_x, scaled.x);
 		out->y = clamp(out->x * ratio, -bound_y, bound_y);
 		data->direction = scaled.x > 0.f ? 4 : 2;
+	}
+}
+extern "C" void orig_TrainingMenu_Create();
+extern "C" void hook_TrainingMenu_Create()
+{
+	orig_TrainingMenu_Create();
+	
+	if (is_widescreen()) {
+		TrainingMenu.item_text->aspect.x /= aspect_ratio_factor;
+		TrainingMenu.item_text->default_scale.x /= aspect_ratio_factor;
 	}
 }
 
@@ -131,4 +151,27 @@ extern "C" void hook_TrainingMenu_Think()
 			break;
 		}
 	}
+	
+	auto *text = TrainingMenu.item_text;
+	text->trans.x /= aspect_ratio_factor;
+}
+
+extern "C" void orig_NameTag_SetupForPlayer(u32 port);
+extern "C" void hook_NameTag_SetupForPlayer(u32 port)
+{
+	orig_NameTag_SetupForPlayer(port);
+	
+	// Scale nametag background
+	if (is_widescreen())
+		NameTagGObjs[port]->get_hsd_obj<HSD_JObj>()->scale.x /= aspect_ratio_factor;
+}
+
+extern "C" void orig_Text_UpdateSubtextSize(Text *text, int subtext, float x, float y);
+extern "C" void hook_Text_UpdateSubtextSize(Text *text, int subtext, float x, float y)
+{
+	// Scale nametags
+	if (is_widescreen() && text == NameTagText)
+		x /= aspect_ratio_factor;
+
+	orig_Text_UpdateSubtextSize(text, subtext, x, y);
 }
