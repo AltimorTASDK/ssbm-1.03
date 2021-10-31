@@ -146,3 +146,25 @@ inline HSD_JObj *HSD_JObjFromArchiveModel(const ArchiveModel *model)
 	HSD_JObjAddAnimAll(jobj, model->animjoint, model->matanim_joint, model->shapeanim_joint);
 	return jobj;
 }
+
+// Invoke callable with every jobj in the tree
+inline void HSD_JObjWalkTree(HSD_JObj *jobj, auto &&callable)
+{
+	while (true) {
+		callable(jobj);
+		
+		if (jobj->child != nullptr) {
+			jobj = jobj->child;
+			continue;
+		}
+
+		// Go back up and to the right
+		while (jobj->next == nullptr) {
+			jobj = jobj->parent;
+			if (jobj == nullptr)
+				return;
+		}
+		
+		jobj = jobj->next;
+	}
+}
