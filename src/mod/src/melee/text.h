@@ -49,6 +49,25 @@ struct Text {
 	char pad088[0xA0 - 0x88];
 };
 
+struct DevText {
+	u16 x;
+	u16 y;
+	u8 w;
+	u8 h;
+	u8 cursor_x;
+	u8 cursor_y;
+	vec2 scale;
+	u32 bg_color;
+	u32 text_colors[4];
+	u8 id;
+	u8 line_width;
+	u8 flags;
+	u8 current_color;
+	char *buf;
+	DevText *prev;
+	DevText *next;
+};
+
 extern "C" {
 	
 extern Text *NameTagText;

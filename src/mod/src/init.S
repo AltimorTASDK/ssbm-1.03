@@ -109,6 +109,7 @@ add_hook CObjLoad
 add_hook CreateCSSNameText
 add_hook CSS_Init
 add_hook DebugMenu_Exit
+add_hook DevelopText_Draw
 add_hook HSD_ResetScene
 add_hook HUD_GetStockIconPosition
 add_hook Interrupt_AS_Turn

@@ -175,3 +175,16 @@ extern "C" void hook_Text_UpdateSubtextSize(Text *text, int subtext, float x, fl
 
 	orig_Text_UpdateSubtextSize(text, subtext, x, y);
 }
+
+extern "C" void orig_DevelopText_Draw(DevText *text);
+extern "C" void hook_DevelopText_Draw(DevText *text)
+{
+	if (!is_widescreen())
+		return orig_DevelopText_Draw(text);
+
+	// Scale develop text
+	const auto old_scale_x = text->scale.x;
+	text->scale.x /= aspect_ratio_factor;
+	orig_DevelopText_Draw(text);
+	text->scale.x = old_scale_x;
+}
