@@ -88,5 +88,8 @@ private:
 			prev->next = next;
 		else if (pool_list_head == this)
 			pool_list_head = next;
+			
+		if (next != nullptr)
+			next->prev = prev;
 	}
 };
