@@ -64,6 +64,7 @@ private:
 	{
 		head = nullptr;
 
+		prev = nullptr;
 		next = pool_list_head;
 		pool_list_head = this;
 
