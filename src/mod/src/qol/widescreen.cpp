@@ -32,7 +32,7 @@ struct TrainingMenuData {
 	HSD_GObj *gobj;
 	HSD_JObj *jobj_tree[39];
 	s32 anim_frames[39];
-	char pad1E0[0x204 - 0x1E0];
+	char pad1E0[0x200 - 0x1E0];
 };
 
 extern "C" HSD_CObjDesc ScreenFlashCObjDesc;
