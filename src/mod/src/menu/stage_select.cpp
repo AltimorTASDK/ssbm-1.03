@@ -1,4 +1,5 @@
 #include "hsd/aobj.h"
+#include "hsd/archive.h"
 #include "hsd/gobj.h"
 #include "hsd/jobj.h"
 #include "hsd/mobj.h"

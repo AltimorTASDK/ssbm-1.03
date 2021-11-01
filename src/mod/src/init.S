@@ -111,6 +111,7 @@ add_hook CmSubject_WorldToScreen
 add_hook CObjLoad
 add_hook CreateCSSNameText
 add_hook CSS_Init
+add_hook CSS_Setup
 add_hook DebugMenu_Exit
 add_hook DevelopText_Draw
 add_hook HSD_ResetScene

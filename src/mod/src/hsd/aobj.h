@@ -1,8 +1,10 @@
 #pragma once
 
+#include "hsd/object.h"
 #include <gctypes.h>
 
-struct HSD_AObj;
+struct HSD_FObj;
+struct HSD_FObjDesc;
 
 enum ObjType {
 	ObjType_DObj = 3,
@@ -39,6 +41,23 @@ enum CbType {
 	CbType_AObj_Obj_Type_Float,
 	CbType_AObj_Obj_Type_Ptr,
 	CbType_AObj_Obj_Type_Int,
+};
+
+struct HSD_AObj {
+	u32 flags;
+	f32 curr_frame;
+	f32 rewind_frame;
+	f32 end_frame;
+	f32 framerate;
+	HSD_FObj *fobj;
+	HSD_Obj *hsd_obj;
+};
+
+struct HSD_AObjDesc {
+	u32 flags;
+	f32 end_frame;
+	HSD_FObjDesc *fobjdesc;
+	u32 obj_id;
 };
 
 extern "C" {
