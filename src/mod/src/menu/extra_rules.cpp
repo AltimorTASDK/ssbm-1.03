@@ -66,6 +66,9 @@ extern "C" ArchiveModel MenMainCursorRl03_Top;
 // Controller fix values
 extern "C" ArchiveModel MenMainCursorTr03_Top;
 
+// "Ready to start" banner animation frame
+extern "C" u8 CSSReadyFrames;
+
 extern "C" struct {
 	f32 unselected;
 	f32 selected;
@@ -294,6 +297,22 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 	replace_toggle_texture(data, ExtraRule_Latency, latency_values_tex_data);
 		
 	return gobj;
+}
+
+extern "C" void orig_Menu_ExtraRulesMenuInput(HSD_GObj *gobj);
+extern "C" void hook_Menu_ExtraRulesMenuInput(HSD_GObj *gobj)
+{
+	const auto buttons = Menu_GetButtonsHelper(4);
+
+	if ((buttons & MenuButton_A) && MenuSelectedIndex == ExtraRule_OldStageSelect) {
+		// Check for attempting to enter the OSS with 0 players
+		if (CSSReadyFrames == 0) {
+			Menu_PlaySFX(MenuSFX_Denied);
+			return;
+		}
+	}
+	
+	orig_Menu_ExtraRulesMenuInput(gobj);
 }
 
 extern "C" void orig_Menu_CreateRandomStageMenu();
