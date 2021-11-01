@@ -94,6 +94,7 @@ extern "C" void hook_OffScreenBubble_GetPosition(OffScreenBubbleData *data,
 	else
 		orig_OffScreenBubble_GetPosition(data, in, out);
 }
+
 extern "C" void orig_TrainingMenu_Create();
 extern "C" void hook_TrainingMenu_Create()
 {
