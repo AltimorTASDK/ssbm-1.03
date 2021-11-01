@@ -138,6 +138,7 @@ add_hook Menu_RulesMenuInput
 add_hook Menu_SetupExtraRulesMenu
 add_hook Menu_SetupItemMenu
 add_hook Menu_SetupItemToggles
+add_hook Menu_SetupMainMenu
 add_hook Menu_SetupRulesMenu
 add_hook Menu_SetupRandomStageMenu
 add_hook Menu_SetupRandomStageToggles

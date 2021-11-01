@@ -1,7 +1,9 @@
 #include "hsd/archive.h"
 #include "hsd/gobj.h"
+#include "hsd/jobj.h"
 #include "hsd/mobj.h"
 #include "hsd/tobj.h"
+#include "melee/menu.h"
 #include "melee/text.h"
 #include "util/compression.h"
 #include "util/melee/text_builder.h"
@@ -22,7 +24,10 @@ enum VsMenuPortalID {
 };
 
 struct MainMenuData {
-	char pad000[0xAC];
+	u8 menu_type;
+	u8 selected;
+	u8 state;
+	HSD_JObj *jobj_tree[42];
 	Text *description_text;
 };
 
@@ -104,20 +109,33 @@ extern "C" void hook_MainMenu_Init(void *menu)
 	previews->texanim->imagetbl[7]->img_ptr = decompress(controls_preview_tex_data);
 }
 
-extern "C" void orig_Menu_CreatePortalDescriptionText(MainMenuData *menu_data,
-                                                      u32 menu_type, u32 portal_id);
-extern "C" void hook_Menu_CreatePortalDescriptionText(MainMenuData *menu_data,
-                                                      u32 menu_type, u32 portal_id)
+static void update_portal_description(MainMenuData *data, u32 menu_type, u32 index)
 {
-	orig_Menu_CreatePortalDescriptionText(menu_data, menu_id, portal_id);
-
-	if (menu_type != MenuType_VsMenu)
+	if (menu_type != MenuType_VsMode)
 		return;
 	
-	if (portal_id == VsMenu_DebugMenu)
-		menu_data->description_text->data = debug_menu_description.data();
-	else if (portal_id == VsMenu_Controls)
-		menu_data->description_text->data = controls_description.data();
-	else if (portal_id == VsMenu_Manual)
-		menu_data->description_text->data = manual_description.data();
+	if (index == VsMenu_DebugMenu)
+		data->description_text->data = debug_menu_description.data();
+	else if (index == VsMenu_Controls)
+		data->description_text->data = controls_description.data();
+	else if (index == VsMenu_Manual)
+		data->description_text->data = manual_description.data();
+}
+
+extern "C" HSD_GObj *orig_Menu_SetupMainMenu(u8 state);
+extern "C" HSD_GObj *hook_Menu_SetupMainMenu(u8 state)
+{
+	auto *gobj = orig_Menu_SetupMainMenu(state);
+	auto *data = gobj->get<MainMenuData>();
+
+	update_portal_description(data, data->menu_type, data->selected);
+	
+	return gobj;
+}
+
+extern "C" void orig_Menu_CreatePortalDescriptionText(MainMenuData *data, u32 menu_type, u32 index);
+extern "C" void hook_Menu_CreatePortalDescriptionText(MainMenuData *data, u32 menu_type, u32 index)
+{
+	orig_Menu_CreatePortalDescriptionText(data, menu_type, index);
+	update_portal_description(data, menu_type, index);
 }
