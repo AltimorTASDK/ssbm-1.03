@@ -40,7 +40,7 @@ extern "C" struct {
 	ArchiveModel Portrait;
 } *MnSlChrModels;
 
-extern "C" u8 CSSMatchStarted;
+extern "C" u8 CSSPendingSceneChange;
 extern "C" u8 CSSPortCount;
 extern "C" CSSPlayerData *CSSPlayers[4];
 
@@ -72,7 +72,7 @@ extern "C" void hook_CSS_PlayerThink(HSD_GObj *gobj)
 	orig_CSS_PlayerThink(gobj);
 
 	// Slot types get changed on match start, ignore
-	if (CSSMatchStarted)
+	if (CSSPendingSceneChange)
 		return;
 	
 	const auto *data = gobj->get<CSSPlayerData>();
