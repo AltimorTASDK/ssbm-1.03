@@ -12,10 +12,6 @@
 #include "resources/portals/debug_menu.tex.h"
 #include "resources/portals/manual.tex.h"
 
-enum MenuID {
-	Menu_VsMenu = 2
-};
-
 enum VsMenuPortalID {
 	VsMenu_TournamentMelee = 1,
 	VsMenu_DebugMenu = 1,
@@ -109,13 +105,13 @@ extern "C" void hook_MainMenu_Init(void *menu)
 }
 
 extern "C" void orig_Menu_CreatePortalDescriptionText(MainMenuData *menu_data,
-                                                      u32 menu_id, u32 portal_id);
+                                                      u32 menu_type, u32 portal_id);
 extern "C" void hook_Menu_CreatePortalDescriptionText(MainMenuData *menu_data,
-                                                      u32 menu_id, u32 portal_id)
+                                                      u32 menu_type, u32 portal_id)
 {
 	orig_Menu_CreatePortalDescriptionText(menu_data, menu_id, portal_id);
 
-	if (menu_id != Menu_VsMenu)
+	if (menu_type != MenuType_VsMenu)
 		return;
 	
 	if (portal_id == VsMenu_DebugMenu)
