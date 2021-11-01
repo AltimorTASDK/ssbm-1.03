@@ -19,6 +19,12 @@ constexpr auto is_pow2(auto value)
 	return value != 0 && (value & (value - 1)) == 0;
 }
 
+constexpr auto bit_swap(auto value, auto i, auto j, int count = 1)
+{
+	const auto x = ((value >> i) ^ (value >> j)) & ((1 << count) - 1);
+	return value ^ ((x << i) | (x << j));
+}
+
 template<typename T>
 constexpr T clamp(T value, T min, T max)
 {
