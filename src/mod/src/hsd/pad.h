@@ -6,19 +6,19 @@
 constexpr auto PAD_QNUM = 5;
 
 enum Button {
-	Button_DPadLeft = 1,
-	Button_DPadRight = 2,
-	Button_DPadDown = 4,
-	Button_DPadUp = 8,
-	Button_Z = 0x10,
-	Button_R = 0x20,
-	Button_L = 0x40,
-	Button_A = 0x100,
-	Button_B = 0x200,
-	Button_X = 0x400,
-	Button_Y = 0x800,
-	Button_Start = 0x1000,
-	Button_AnalogLR = 0x80000000
+	Button_DPadLeft  = 0x00000001,
+	Button_DPadRight = 0x00000002,
+	Button_DPadDown  = 0x00000004,
+	Button_DPadUp    = 0x00000008,
+	Button_Z         = 0x00000010,
+	Button_R         = 0x00000020,
+	Button_L         = 0x00000040,
+	Button_A         = 0x00000100,
+	Button_B         = 0x00000200,
+	Button_X         = 0x00000400,
+	Button_Y         = 0x00000800,
+	Button_Start     = 0x00001000,
+	Button_AnalogLR  = 0x80000000
 };
 
 struct PADStatus {
