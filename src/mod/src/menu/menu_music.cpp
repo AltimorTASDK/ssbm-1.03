@@ -364,7 +364,7 @@ extern "C" HSD_GObj *hook_Menu_SetupRandomStageMenu(u8 state)
 extern "C" void orig_Menu_RandomStageMenuInput(HSD_GObj *gobj);
 extern "C" void hook_Menu_RandomStageMenuInput(HSD_GObj *gobj)
 {
-	const auto buttons = Menu_GetButtons(4);
+	const auto buttons = Menu_GetButtonsHelper(4);
 	auto *data = RandomStageMenuGObj->get<RandomStageMenuData>();
 
 	if (buttons & MenuButton_L) {

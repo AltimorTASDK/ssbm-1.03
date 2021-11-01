@@ -311,7 +311,7 @@ extern "C" void hook_Menu_ItemMenuInput(HSD_GObj *gobj)
 {
 	orig_Menu_ItemMenuInput(gobj);
 	
-	const auto buttons = Menu_GetButtons(4);
+	const auto buttons = Menu_GetButtonsHelper(4);
 	auto *data = ItemMenuGObj->get<ItemMenuData>();
 
 	// Allow cycling through stages with L/R

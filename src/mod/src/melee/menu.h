@@ -43,6 +43,8 @@ enum MenuType {
 };
 
 extern "C" {
+	
+extern u16 MenuInputCooldown;
 
 extern u8 MenuType;
 extern u8 MenuTypePrevious;
@@ -59,4 +61,13 @@ void Menu_PlaySFX(s32 sfx);
 void Menu_ExitToRulesMenu();
 void Menu_CreateRandomStageMenu();
 
+}
+
+// Call Menu_GetButtons without affecting the input cooldown
+inline u32 Menu_GetButtonsHelper(u32 index)
+{
+	const auto cooldown = MenuInputCooldown;
+	const auto buttons = Menu_GetButtons(index);
+	MenuInputCooldown = cooldown;
+	return buttons;
 }
