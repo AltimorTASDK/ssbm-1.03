@@ -78,9 +78,7 @@ struct StartMeleeRules {
 		u8 flags1_80 : 1;
 		u8 flags1_40 : 1;
 		u8 is_stock_match : 1;
-		u8 flags1_10 : 1;
-		u8 flags1_08 : 1;
-		u8 flags1_04 : 1;
+		u8 max_players : 3;
 		u8 timer_enabled : 1;
 		u8 count_up : 1;
 	};
