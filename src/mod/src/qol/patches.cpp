@@ -33,8 +33,11 @@ static const auto patches = patch_list {
 	// Disable cstick camera control
 	std::pair { (char*)Camera_CStickControl,     BLR },
 	// Close CSS port on unplug
-	// li r6, 3
+	// li r6, SlotType_None
 	std::pair { (char*)CSS_PlayerThink+0x35C,    0x38C00003u },
+	// Allow setting any port to HMN at CSS
+	// li r3, SlotType_Human
+	std::pair { (char*)CSS_PlayerThink+0x183C,   0x38600000u },
 	// Disable handicap display in CSS
 	// li r0, 0
 	std::pair { (char*)CSS_Setup+0x256C,         0x38000000u },
@@ -66,7 +69,6 @@ static const auto patches = patch_list {
 	// Replace tournament melee with debug menu
 	// li r0, 6
 	std::pair { (char*)VsMenu_Think+0xA4,        0x38000006u },
-	
 #if 0
 	// Clone characters slide out from behind CSS
 	std::pair { (char*)&CSSAnimStartFrame,       0.0 },
