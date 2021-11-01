@@ -390,9 +390,9 @@ extern "C" void hook_Menu_CreateExtraRulesMenu()
 
 extern "C" void hook_Menu_RandomStageMenuScroll(RandomStageMenuData *data, u32 buttons)
 {
-	constexpr auto row_count = 15;
-	int row = MenuSelectedIndex % row_count;
-	int col = MenuSelectedIndex / row_count;
+	constexpr auto max_row_count = 15;
+	int row = MenuSelectedIndex % max_row_count;
+	int col = MenuSelectedIndex / max_row_count;
 
 	if (buttons & MenuButton_Up)
 		row--;
@@ -404,12 +404,13 @@ extern "C" void hook_Menu_RandomStageMenuScroll(RandomStageMenuData *data, u32 b
 		col++;
 
 	const auto page_size = get_page_size(data->page);
-	const auto col_count = (page_size + row_count - 1) / row_count;
+	const auto row_count = std::min(page_size, max_row_count);
+	const auto col_count = (page_size + max_row_count - 1) / max_row_count;
 		
 	col = clamp(col, 0, col_count - 1);
 	row = mod(row, row_count);
 
-	MenuSelectedIndex = (u16)std::min(col * row_count + row, get_page_size(data->page) - 1);
+	MenuSelectedIndex = (u16)std::min(col * max_row_count + row, get_page_size(data->page) - 1);
 	MenuSelectedValue = data->toggles[MenuSelectedIndex];
 
 	selected_index[data->page] = MenuSelectedIndex;
