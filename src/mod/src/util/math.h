@@ -10,7 +10,8 @@ constexpr auto tau = pi * 2;
 
 constexpr auto align_up(auto value, auto alignment)
 {
-	return (((value + alignment - 1) % alignment) + alignment) % alignment;
+	const auto biased = value + alignment - 1;
+	return biased - ((biased % alignment) + alignment) % alignment;
 }
 
 constexpr auto is_pow2(auto value)
