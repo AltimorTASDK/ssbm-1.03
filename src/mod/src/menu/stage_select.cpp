@@ -176,7 +176,7 @@ static void setup_random_icon(HSD_JObj *random_joint)
 static void reset_striking(int port)
 {
 	// Show all legal stages
-	for (auto i = 0; i < 29; i++) {
+	for (auto i = 0; i < Icon_Random; i++) {
 		auto *icon = &StageSelectIcons[i];
 		if (is_legal_stage(icon->stage_id) || use_og_stage_select) {
 			HSD_JObjClearFlagsAll(icon->jobj, HIDDEN);
@@ -192,7 +192,7 @@ static void strike_stage(int port)
 		return;
 
 	// Don't allow striking the last visible stage
-	for (auto i = 0; i < 29; i++) {
+	for (auto i = 0; i < Icon_Random; i++) {
 		if (i != SelectedStageIcon && StageSelectIcons[i].unlocked == UnlockType_Unlocked)
 			break;
 		else if (i == 28)
@@ -211,7 +211,7 @@ extern "C" bool orig_Stage_IsValidRandomChoice(u16 index);
 extern "C" bool hook_Stage_IsValidRandomChoice(u16 index)
 {
 	// Only select from visible stages
-	for (auto i = 0; i < 29; i++) {
+	for (auto i = 0; i < Icon_Random; i++) {
 		const auto &icon = StageSelectIcons[i];
 		if (icon.stage_index == index && icon.unlocked != UnlockType_Unlocked)
 			return false;
@@ -280,7 +280,7 @@ extern "C" void hook_SSS_Init(void *menu)
 	setup_icon(&StageSelectIcons[Icon_YS],  icon_joints[6], &matanim_double_top_row, 6.f);
 
 	// Hide non-legal stages
-	for (auto i = 0; i < 29; i++) {
+	for (auto i = 0; i < Icon_Random; i++) {
 		auto *icon = &StageSelectIcons[i];
 		if (!is_legal_stage(icon->stage_id)) {
 			HSD_JObjSetFlagsAll(icon->jobj, HIDDEN);
