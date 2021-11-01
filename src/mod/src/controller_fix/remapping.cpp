@@ -5,8 +5,8 @@
 #include <numeric>
 #include <gctypes.h>
 
-// X/Y + L/R/Z for 1 second at CSS
-constexpr auto remap_hold_time = 60;
+// X/Y + Z for 1 second at CSS
+constexpr auto REMAP_HOLD_TIME = 60;
 
 u8 jump_bit[4] = { 0 };
 int remap_timer[4] = { 0 };
@@ -39,7 +39,7 @@ void configure_remap(int port)
 		return;
 	}
 	
-	if (++remap_timer[port] < remap_hold_time)
+	if (++remap_timer[port] < REMAP_HOLD_TIME)
 		return;
 		
 	// Successfully remapped
