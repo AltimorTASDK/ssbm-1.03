@@ -88,28 +88,11 @@ extern "C" void orig_OffScreenBubble_GetPosition(OffScreenBubbleData *data,
 extern "C" void hook_OffScreenBubble_GetPosition(OffScreenBubbleData *data,
                                                  const vec2 &in, vec2 *out)
 {
-	if (!is_widescreen())
-		return orig_OffScreenBubble_GetPosition(data, in, out);
-		
-	constexpr auto bound_x = 320.f - 67.3f;
-	constexpr auto bound_y = 240.f - 77.3f;
-	constexpr auto bound_ratio = bound_y / bound_x;
-	
 	// Scale squashed X coord to match true aspect ratio
-	const auto scaled = vec2 { in.x * aspect_ratio_factor, in.y };
-	
-	const auto ratio = scaled.y / scaled.x;
-	if (ratio > bound_ratio || ratio < -bound_ratio) {
-		// Top/bottom edges
-		out->y = std::copysign(bound_y, scaled.y);
-		out->x = clamp(out->y / ratio, -bound_x, bound_x);
-		data->direction = scaled.y > 0.f ? 1 : 3;
-	} else {
-		// Left/right edges
-		out->x = std::copysign(bound_x, scaled.x);
-		out->y = clamp(out->x * ratio, -bound_y, bound_y);
-		data->direction = scaled.x > 0.f ? 4 : 2;
-	}
+	if (is_widescreen())
+		orig_OffScreenBubble_GetPosition(data, in * vec2(aspect_ratio_factor, 1.f), out);
+	else
+		orig_OffScreenBubble_GetPosition(data, in, out);
 }
 extern "C" void orig_TrainingMenu_Create();
 extern "C" void hook_TrainingMenu_Create()
