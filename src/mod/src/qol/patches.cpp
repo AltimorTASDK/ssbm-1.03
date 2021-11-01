@@ -38,6 +38,9 @@ static const auto patches = patch_list {
 	// Allow setting any port to HMN at CSS
 	// li r3, SlotType_Human
 	std::pair { (char*)CSS_PlayerThink+0x183C,   0x38600000u },
+	// Apply random CPU character when opening fake HMN port
+	// cmpwi r3, SlotType_Human
+	std::pair { (char*)CSS_PlayerThink+0x1864,   0x28030000u },
 	// Disable handicap display in CSS
 	// li r0, 0
 	std::pair { (char*)CSS_Setup+0x256C,         0x38000000u },
