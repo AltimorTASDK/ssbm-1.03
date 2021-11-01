@@ -6,6 +6,7 @@
 #include "hsd/tobj.h"
 #include "melee/match.h"
 #include "melee/player.h"
+#include "melee/scene.h"
 #include "menu/stage_select.h"
 #include "util/vector.h"
 #include "util/melee/fobj_builder.h"
@@ -39,6 +40,7 @@ extern "C" struct {
 	ArchiveModel Portrait;
 } *MnSlChrModels;
 
+extern "C" u8 CSSMatchStarted;
 extern "C" u8 CSSPortCount;
 extern "C" CSSPlayerData *CSSPlayers[4];
 
@@ -68,6 +70,10 @@ extern "C" void orig_CSS_PlayerThink(HSD_GObj *gobj);
 extern "C" void hook_CSS_PlayerThink(HSD_GObj *gobj)
 {
 	orig_CSS_PlayerThink(gobj);
+
+	// Slot types get changed on match start, ignore
+	if (CSSMatchStarted)
+		return;
 	
 	const auto *data = gobj->get<CSSPlayerData>();
 	old_slot_type[data->port] = data->slot_type;
@@ -79,8 +85,11 @@ extern "C" void hook_CSS_Init(void *menu)
 	// Reset original stage select flag when re-entering CSS
 	use_og_stage_select = false;
 	
-	for (auto i = 0; i < CSSPortCount; i++)
-		old_slot_type[i] = SlotType_Unspecified;
+	// Forget slot types on entry from main menu
+	if (SceneMinorPrevious == 0) {
+		for (auto i = 0; i < 4; i++)
+			old_slot_type[i] = SlotType_Unspecified;
+	}
 	
 	orig_CSS_Init(menu);
 }
@@ -100,8 +109,10 @@ extern "C" void hook_CSS_Setup()
 #endif
 	
 	// Remove KO stars
-	for (auto i = 0; i < 6; i++)
-		CSSData->ko_stars[i] = 0;
+	if (CSSData->ko_stars != nullptr) {
+		for (auto i = 0; i < 6; i++)
+			CSSData->ko_stars[i] = 0;
+	}
 
 	orig_CSS_Setup();
 
