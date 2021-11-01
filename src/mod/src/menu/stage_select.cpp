@@ -239,15 +239,6 @@ extern "C" void hook_SSS_Think()
 	}
 }
 
-extern "C" void orig_CSS_Init(void *menu);
-extern "C" void hook_CSS_Init(void *menu)
-{
-	// Reset original stage select flag when re-entering CSS
-	use_og_stage_select = false;
-	
-	orig_CSS_Init(menu);
-}
-
 extern "C" void orig_SSS_Init(void *menu);
 extern "C" void hook_SSS_Init(void *menu)
 {

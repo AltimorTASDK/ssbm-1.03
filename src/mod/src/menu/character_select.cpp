@@ -2,12 +2,23 @@
 #include "hsd/archive.h"
 #include "hsd/fobj.h"
 #include "hsd/mobj.h"
+#include "hsd/pad.h"
 #include "hsd/tobj.h"
 #include "melee/match.h"
+#include "melee/player.h"
+#include "menu/stage_select.h"
 #include "util/vector.h"
 #include "util/melee/fobj_builder.h"
 
 #include "os/os.h"
+
+struct CSSPlayerData {
+	HSD_GObj *gobj;
+	u8 port;
+	u8 slot_type;
+	char pad006[0x0C - 0x06];
+	vec2 position;
+};
 
 extern "C" struct {
 	char pad000[0x04];
@@ -27,6 +38,9 @@ extern "C" struct {
 	ArchiveModel SingleOptions;
 	ArchiveModel Portrait;
 } *MnSlChrModels;
+
+extern "C" u8 CSSPortCount;
+extern "C" CSSPlayerData *CSSPlayers[4];
 
 #if 0
 template<u8 a, u8 b>
@@ -48,6 +62,29 @@ constexpr auto track_g = make_color_track<color1.g, color2.g>();
 constexpr auto track_b = make_color_track<color1.b, color2.b>();
 #endif
 
+static u8 old_slot_type[4];
+
+extern "C" void orig_CSS_PlayerThink(HSD_GObj *gobj);
+extern "C" void hook_CSS_PlayerThink(HSD_GObj *gobj)
+{
+	orig_CSS_PlayerThink(gobj);
+	
+	const auto *data = gobj->get<CSSPlayerData>();
+	old_slot_type[data->port] = data->slot_type;
+}
+
+extern "C" void orig_CSS_Init(void *menu);
+extern "C" void hook_CSS_Init(void *menu)
+{
+	// Reset original stage select flag when re-entering CSS
+	use_og_stage_select = false;
+	
+	for (auto i = 0; i < CSSPortCount; i++)
+		old_slot_type[i] = SlotType_Unspecified;
+	
+	orig_CSS_Init(menu);
+}
+
 extern "C" void orig_CSS_Setup();
 extern "C" void hook_CSS_Setup()
 {
@@ -67,4 +104,7 @@ extern "C" void hook_CSS_Setup()
 		CSSData->ko_stars[i] = 0;
 
 	orig_CSS_Setup();
+
+	for (auto i = 0; i < CSSPortCount; i++)
+		CSSPlayers[i]->slot_type = old_slot_type[i];
 }

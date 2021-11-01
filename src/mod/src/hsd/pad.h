@@ -93,6 +93,7 @@ struct HSD_PadStatus {
 extern "C" {
 
 extern HSD_PadStatus HSD_PadMasterStatus[4];
+extern HSD_PadStatus HSD_PadCopyStatus[4];
 extern PadLibData HSD_PadLibData;
 
 void HSD_PadRumble(u32 port, s32 id1, s32 id2, s32 duration);
