@@ -131,6 +131,7 @@ add_hook Menu_CreatePortalDescriptionText
 add_hook Menu_CreateRandomStageMenu
 add_hook Menu_CreateRuleDescriptionText
 add_hook Menu_ExitToRulesMenu
+add_hook Menu_ExtraRulesMenuInput
 add_hook Menu_GetBGM
 add_hook Menu_ItemMenuInput
 add_hook Menu_MenuPanelThink
