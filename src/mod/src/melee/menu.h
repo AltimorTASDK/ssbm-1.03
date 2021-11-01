@@ -39,6 +39,7 @@ enum MenuType {
 	MenuType_StageMusic = 16,
 	MenuType_RandomStage = 17,
 	MenuType_MenuMusic = 17,
+	MenuType_NameEntry = 18,
 	MenuType_Max = 34
 };
 
@@ -60,6 +61,7 @@ void Menu_PlaySFX(s32 sfx);
 
 void Menu_ExitToRulesMenu();
 void Menu_CreateRandomStageMenu();
+void Menu_MainMenuTransition(u32 menu_type, u16 index, u8 state);
 
 }
 
