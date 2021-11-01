@@ -119,8 +119,7 @@ constexpr int bgm_ids[] = {
 	BGM_Temple,
 	BGM_Venom,
 	BGM_YoshisIsland,
-	BGM_YoshisIslandN64,
-	BGM_CustomMusic
+	BGM_YoshisIslandN64
 };
 
 static mempool pool;

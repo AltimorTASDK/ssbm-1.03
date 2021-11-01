@@ -50,9 +50,7 @@ enum BGM {
 	// Additional menu only music
 	BGM_AllStarIntro         = 0,
 	BGM_Targets              = 83,
-	BGM_Trophy               = 53,
-
-	BGM_CustomMusic          = 420
+	BGM_Trophy               = 53
 };
 
 extern "C" {

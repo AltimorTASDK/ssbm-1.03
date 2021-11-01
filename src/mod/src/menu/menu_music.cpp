@@ -150,9 +150,7 @@ constexpr int bgm_ids[] = {
 	// Additional menu only music
 	BGM_AllStarIntro,
 	BGM_Targets,
-	BGM_Trophy,
-
-	BGM_CustomMusic
+	BGM_Trophy
 };
 
 constexpr auto bgm_count = std::extent_v<decltype(bgm_ids)>;
