@@ -3,10 +3,18 @@
 #include "hsd/fobj.h"
 #include "hsd/mobj.h"
 #include "hsd/tobj.h"
+#include "melee/match.h"
 #include "util/vector.h"
 #include "util/melee/fobj_builder.h"
 
 #include "os/os.h"
+
+extern "C" struct {
+	char pad000[0x04];
+	u8 *ko_stars;
+	char pad008[0x10 - 0x08];
+	StartMeleeData data;
+} *CSSData;
 
 extern "C" struct {
 	ArchiveModel Background;
@@ -54,6 +62,10 @@ extern "C" void hook_CSS_Setup()
 	fobj_r->ad = track_r.data();
 	fobj_g->ad = track_g.data();
 	fobj_b->ad = track_b.data();
+	
+	// Remove KO stars
+	for (auto i = 0; i < 6; i++)
+		CSSData->ko_stars[i] = 0;
 
 	orig_CSS_Setup();
 }
