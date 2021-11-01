@@ -7,7 +7,7 @@
 
 extern "C" void Camera_CStickControl();
 
-extern "C" void CSS_Think();
+extern "C" void CSS_PlayerThink(HSD_GObj *gobj);
 extern "C" void CSS_Setup();
 extern "C" void CSS_ReadyThink(HSD_GObj *gobj);
 extern "C" void CSS_UpdatePortrait(u8 port);
@@ -34,10 +34,7 @@ static const auto patches = patch_list {
 	std::pair { (char*)Camera_CStickControl,     BLR },
 	// Close CSS port on unplug
 	// li r6, 3
-	std::pair { (char*)CSS_Think+0x35C,          0x38C00003u },
-	// Allow starting one player matches from the CSS
-	// cmpwi r4, 1
-	std::pair { (char*)CSS_ReadyThink+0x120,     0x2C040001u },
+	std::pair { (char*)CSS_PlayerThink+0x35C,    0x38C00003u },
 	// Disable handicap display in CSS
 	// li r0, 0
 	std::pair { (char*)CSS_Setup+0x256C,         0x38000000u },
