@@ -10,8 +10,7 @@ constexpr auto tau = pi * 2;
 
 constexpr auto align_up(auto value, auto alignment)
 {
-	// Powers of 2 only
-	return (value + alignment - 1) & ~(alignment - 1);
+	return (((value + alignment - 1) % alignment) + alignment) % alignment;
 }
 
 constexpr auto is_pow2(auto value)
