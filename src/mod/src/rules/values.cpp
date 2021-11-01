@@ -11,7 +11,6 @@ struct init_rules {
 		RuleValueBounds[Rule_LedgeGrabLimit] = { 0, ledge_grab_limit_values.size() - 1 };
 		RuleValueBounds[Rule_AirTimeLimit]   = { 0, air_time_limit_values.size() - 1 };
 
-		ExtraRuleValueBounds[ExtraRule_Pause]      = { 0, (u8)pause_type::automatic };
 		ExtraRuleValueBounds[ExtraRule_Latency]    = { 0, (u8)latency_mode::lightning };
 		ExtraRuleValueBounds[ExtraRule_Widescreen] = { 0, 1 };
 		
@@ -24,7 +23,7 @@ struct init_rules {
 		rules->air_time_limit = 0; // ATL
 		rules->stage_selection_mode = 0;
 		rules->stock_time_limit = 6;
-		rules->pause = pause_type::on;
+		rules->pause = false;
 		rules->controller_fix = ucf_type::hax;
 		rules->latency = latency_mode::normal;
 		rules->widescreen = false;
@@ -43,14 +42,7 @@ static bool is_singleplayer(const StartMeleeData *data)
 
 static bool is_pause_disabled(const StartMeleeData *data)
 {
-	switch (GetGameRules()->pause) {
-	case pause_type::on:
-		return false;
-	case pause_type::off:
-		return true;
-	case pause_type::automatic:
-		return data->rules.is_stock_match && data->players[0].stocks == 4;
-	}
+	return !GetGameRules()->pause && data->rules.is_stock_match && data->players[0].stocks == 4;
 }
 
 extern "C" void orig_Match_Init(StartMeleeData *data);

@@ -247,18 +247,7 @@ static const auto patches = patch_list {
 	std::pair { &ExtraRuleTextAnimFrames[ExtraRule_FriendlyFire].selected,   23.f },
 
 	// Swap description for pause and friendly fire
-	// Also swap descriptions between on/off because they're reordered
-	std::pair { &ExtraRuleDescriptions[ExtraRule_Pause].values[0],           (u8)0x3B },
-	std::pair { &ExtraRuleDescriptions[ExtraRule_Pause].values[1],           (u8)0x3A },
-
-	// Use vanilla handicap values for pause
-	// addi r16, r5, MenMainCursorRl03_Top@l
-	std::pair { (char*)Menu_SetupExtraRulesMenu+0x30C,
-	            0x3A050000 | ((u32)&MenMainCursorRl03_Top & 0xFFFF) },
-
-	// Apply 3-value model to index 1
-	// beq 0x3C
-	std::pair { (char*)Menu_SetupExtraRulesMenu+0x560,                       0x4182003Cu },
+	std::pair { &ExtraRuleDescriptions[ExtraRule_Pause].values[1],           (u8)0x3B },
 
 	// Apply 3-value model to index 3 instead of 4
 	// cmpwi r27, 3
@@ -294,7 +283,7 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 
 	// Replace rule name textures
 	const auto *rule_names = MenMainCursorRl_Top.matanim_joint->child->child->next->matanim;
-	rule_names->texanim->imagetbl[9]->img_ptr = pool.add(decompress(controller_fix_tex_data));
+	rule_names->texanim->imagetbl[ 9]->img_ptr = pool.add(decompress(controller_fix_tex_data));
 	rule_names->texanim->imagetbl[11]->img_ptr = pool.add(decompress(latency_tex_data));
 	rule_names->texanim->imagetbl[12]->img_ptr = pool.add(decompress(widescreen_tex_data));
 	rule_names->texanim->imagetbl[13]->img_ptr = pool.add(decompress(og_stage_select_tex_data));
@@ -334,7 +323,7 @@ extern "C" void hook_Menu_UpdateExtraRuleDescriptionText(HSD_GObj *gobj,
 	const auto index = MenuSelectedIndex;
 	const auto value = MenuSelectedValue;
 	
-	if (index == ExtraRule_Pause && value == (u8)pause_type::automatic) {
+	if (index == ExtraRule_Pause && !value) {
 		text->data = pause_auto_description.data();
 		return;
 	}
