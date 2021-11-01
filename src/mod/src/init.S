@@ -102,6 +102,7 @@ hooks_start:
 .set CreateCSSNameText,       CSS_Setup+0x1180
 .set CheckStockStealInput,    Match_CheckStockSteal+0xF8
 
+add_hook Bubble_GetPosition
 add_hook CheckScrollingRuleIndex
 add_hook CheckStockStealInput
 add_hook CmSubject_WorldToScreen
@@ -145,7 +146,6 @@ add_hook Menu_UpdateItemDisplay
 add_hook Menu_UpdateRandomStageDisplay
 add_hook Menu_UpdateRuleValue
 add_hook NameTag_SetupForPlayer
-add_hook OffScreenBubble_GetPosition
 add_hook Scene_Match_Exit
 add_hook ShowNameTagCheck
 add_hook SSS_Init

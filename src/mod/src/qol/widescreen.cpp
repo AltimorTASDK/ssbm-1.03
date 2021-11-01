@@ -17,7 +17,7 @@ enum TrainingMenuJoint {
 	TrainingMenuJoint_LeftPanel = 22
 };
 
-struct OffScreenBubbleData {
+struct BubbleData {
 	HSD_GObj *gobj;
 	HSD_JObj *jobj;
 	HSD_ImageDesc *imagedesc;
@@ -83,16 +83,14 @@ extern "C" bool hook_CmSubject_WorldToScreen(const CmSubject *subject, vec2 *out
 	return on_screen;
 }
 
-extern "C" void orig_OffScreenBubble_GetPosition(OffScreenBubbleData *data,
-                                                 const vec2 &in, vec2 *out);
-extern "C" void hook_OffScreenBubble_GetPosition(OffScreenBubbleData *data,
-                                                 const vec2 &in, vec2 *out)
+extern "C" void orig_Bubble_GetPosition(BubbleData *data, const vec2 &in, vec2 *out);
+extern "C" void hook_Bubble_GetPosition(BubbleData *data, const vec2 &in, vec2 *out)
 {
 	// Scale squashed X coord to match true aspect ratio
 	if (is_widescreen())
-		orig_OffScreenBubble_GetPosition(data, in * vec2(aspect_ratio_factor, 1.f), out);
+		orig_Bubble_GetPosition(data, in * vec2(aspect_ratio_factor, 1.f), out);
 	else
-		orig_OffScreenBubble_GetPosition(data, in, out);
+		orig_Bubble_GetPosition(data, in, out);
 }
 
 extern "C" void orig_TrainingMenu_Create();
