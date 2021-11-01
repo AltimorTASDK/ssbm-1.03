@@ -34,7 +34,8 @@ constexpr auto make_fobj_track()
 	constexpr auto a_f32 = (f32)a / 255.f;
 	constexpr auto b_f32 = (f32)b / 255.f;
 	
-	return fobj_builder<HSD_A_FRAC_U16, 32768>::write_keys<HSD_A_OP_LIN,
+	return fobj_builder<HSD_A_FRAC_U16, 32768>::write_keys<
+		HSD_A_OP_LIN,
 		fobj_key { a_f32, 10 },
 		fobj_key { a_f32, 15 },
 		fobj_key { b_f32, 15 },
