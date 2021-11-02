@@ -23,8 +23,34 @@ extern "C" void orig_Stage_Fountain_UpdateReflection(HSD_GObj *gobj);
 extern "C" void hook_Stage_Fountain_UpdateReflection(HSD_GObj *gobj)
 {
 	// Disable reflection in teams
-	if (!GetMatchInfo()->match.is_teams)
+	if (!GetMatchInfo()->match.is_teams) {
 		orig_Stage_Fountain_UpdateReflection(gobj);
+		return;
+	}
+
+#if 0
+	// Needs to invert eye pos/interest Y value like original code
+
+	// Update texture matrix
+	auto *cobj = MainCamera.gobj->get_hsd_obj<HSD_CObj>();
+	const auto inv_fov_tan = 1.f / std::tan(deg_to_rad(cobj->perspective.fov / 2.f));
+	const auto aspect = cobj->perspective.aspect;
+	const auto x_scale = inv_fov_tan * aspect * .49f;
+	const auto y_scale = inv_fov_tan * -.49f;
+	const auto z_scale = -.5f;
+
+	const auto proj_matrix = matrix3x3 {
+		x_scale, 0.f,     z_scale,
+		0.f,     y_scale, z_scale,
+		0.f,     0.f,     -1.f
+	};
+
+	matrix3x4 view_matrix;
+	HSD_CObjGetViewingMtx(cobj, view_matrix.as_multidimensional());
+
+	auto *data = gobj->get<FountainReflectionData>();
+	data->texture_matrix = proj_matrix * view_matrix;
+#endif
 }
 
 extern "C" HSD_GObj *orig_Stage_Fountain_CreateReflection();
