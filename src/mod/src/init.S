@@ -101,10 +101,12 @@ hooks_start:
 .set ShowNameTagCheck,        NameTag_Think+0x28
 .set CreateCSSNameText,       CSS_Setup+0x1180
 .set CheckCSSPlayerCount,     CSS_ReadyThink+0x124
+.set CheckIsCPUPuck,          CSS_PlayerThink+0x1CF4
 .set CheckStockStealInput,    Match_CheckStockSteal+0xF8
 
 add_hook Bubble_GetPosition
 add_hook CheckCSSPlayerCount
+add_hook CheckIsCPUPuck
 add_hook CheckScrollingRuleIndex
 add_hook CheckStockStealInput
 add_hook CmSubject_WorldToScreen
@@ -158,7 +160,9 @@ add_hook SSS_Init
 add_hook SSS_Think
 add_hook Stage_Dreamland_WhispyUpdate
 add_hook Stage_FinalDestination_BackgroundUpdate
-add_hook Stage_Fountain_Init
+add_hook Stage_Fountain_CreateReflection
+add_hook Stage_Fountain_SetupModel
+add_hook Stage_Fountain_UpdateReflection
 add_hook Stage_GetBGM
 add_hook Stage_GetSpawnPoint
 add_hook Stage_IsValidRandomChoice

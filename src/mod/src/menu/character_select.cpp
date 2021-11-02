@@ -11,13 +11,29 @@
 #include "util/vector.h"
 #include "util/melee/fobj_builder.h"
 
-#include "os/os.h"
+enum CSSPlayerState {
+	CSSPlayerState_Disabled = 0,
+	CSSPlayerState_HoldingPuck = 1,
+	CSSPlayerState_Idle = 2,
+	CSSPlayerState_Unplugged = 3
+};
 
 struct CSSPlayerData {
 	HSD_GObj *gobj;
 	u8 port;
-	u8 slot_type;
-	char pad006[0x0C - 0x06];
+	u8 state;
+	u8 held_puck;
+	u16 pad008;
+	u16 exit_timer;
+	vec2 position;
+};
+
+struct CSSPuckData {
+	u32 character;
+	u8 pad004;
+	u8 held_by;
+	u8 pad006;
+	u8 pad007;
 	vec2 position;
 };
 
@@ -43,6 +59,11 @@ extern "C" struct {
 extern "C" u8 CSSPendingSceneChange;
 extern "C" u8 CSSPortCount;
 extern "C" CSSPlayerData *CSSPlayers[4];
+extern "C" CSSPuckData *CSSPucks[4];
+
+extern "C" bool CSS_DropPuck(u8 index);
+
+static bool is_unplugged[4];
 
 #if 0
 template<u8 a, u8 b>
@@ -64,19 +85,36 @@ constexpr auto track_g = make_color_track<color1.g, color2.g>();
 constexpr auto track_b = make_color_track<color1.b, color2.b>();
 #endif
 
-static u8 old_slot_type[4];
+extern "C" bool check_is_cpu_puck(u8 port)
+{
+	// Allow anyone to move pucks of fake HMN ports
+	return CSSPlayers[port]->state == CSSPlayerState_Unplugged;
+}
 
 extern "C" void orig_CSS_PlayerThink(HSD_GObj *gobj);
 extern "C" void hook_CSS_PlayerThink(HSD_GObj *gobj)
 {
 	orig_CSS_PlayerThink(gobj);
 
-	// Slot types get changed on match start, ignore
-	if (CSSPendingSceneChange)
+	// Player states get changed on match start, ignore
+	if (CSSPendingSceneChange != 0)
 		return;
 	
-	const auto *data = gobj->get<CSSPlayerData>();
-	old_slot_type[data->port] = data->slot_type;
+	auto *data = gobj->get<CSSPlayerData>();
+
+	is_unplugged[data->port] = data->state == CSSPlayerState_Unplugged;
+
+	if (data->state != CSSPlayerState_HoldingPuck)
+		return;
+	
+	// Drop fake HMN puck if a real player plugs in
+	const auto puck = data->held_puck;
+
+	if (puck >= 4 || puck == data->port || CSSPlayers[puck]->state == CSSPlayerState_Unplugged)
+		return;
+
+	CSS_DropPuck(puck);
+	data->state = CSSPlayerState_Idle;
 }
 
 extern "C" void orig_CSS_Init(void *menu);
@@ -85,10 +123,10 @@ extern "C" void hook_CSS_Init(void *menu)
 	// Reset original stage select flag when re-entering CSS
 	use_og_stage_select = false;
 	
-	// Forget slot types on entry from main menu
+	// Forget unplugged state on entry from main menu
 	if (SceneMinorPrevious == 0) {
 		for (auto i = 0; i < 4; i++)
-			old_slot_type[i] = SlotType_Unspecified;
+			is_unplugged[i] = false;
 	}
 	
 	orig_CSS_Init(menu);
@@ -116,6 +154,9 @@ extern "C" void hook_CSS_Setup()
 
 	orig_CSS_Setup();
 
-	for (auto i = 0; i < CSSPortCount; i++)
-		CSSPlayers[i]->slot_type = old_slot_type[i];
+	// Don't consider fake HMN ports freshly unplugged when entering the CSS
+	for (auto i = 0; i < CSSPortCount; i++) {
+		if (is_unplugged[i])
+			CSSPlayers[i]->state = CSSPlayerState_Unplugged;
+	}
 }
