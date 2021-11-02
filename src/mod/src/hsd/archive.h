@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util/meta.h"
 #include <gctypes.h>
 
 struct HSD_JObjDesc;
@@ -51,5 +52,19 @@ struct ArchiveModel {
 	HSD_ShapeAnimJoint *shapeanim_joint;
 };
 
+extern "C" {
+
 // Loaded archive pointers
-extern "C" HSD_Archive *MnSlChr;
+extern HSD_Archive *MnSlChr;
+
+HSD_Archive *HSD_ArchiveLoad(const char *path);
+HSD_Archive *HSD_ArchiveLoadAndGetSymbols(const char *path, ...);
+void *HSD_ArchiveGetSymbol(const HSD_Archive *archive, const char *symbol);
+void *HSD_ArchiveGetSymbols(const HSD_Archive *archive, ...);
+
+}
+
+template<string_literal ...symbol>
+inline auto HSD_ArchiveLoadAndGetSymbols(const char *path)
+{
+}
