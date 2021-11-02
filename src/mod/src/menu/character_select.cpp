@@ -37,6 +37,22 @@ struct CSSPuckData {
 	vec2 position;
 };
 
+struct CSSPort {
+	char pad000[0x09];
+	u8 picked_character;
+	u8 team;
+	u8 slot_type;
+	u8 pad00C;
+	u8 color;
+	u8 character_icon;
+	u8 last_character_icon;
+	char pad010[0x14 - 0x10];
+	f32 port_bounds_x_min;
+	f32 port_bounds_x_max;
+	f32 team_bounds_x_min;
+	f32 team_bounds_x_max;
+};
+
 extern "C" struct {
 	char pad000[0x04];
 	u8 *ko_stars;
@@ -60,6 +76,7 @@ extern "C" u8 CSSPendingSceneChange;
 extern "C" u8 CSSPortCount;
 extern "C" CSSPlayerData *CSSPlayers[4];
 extern "C" CSSPuckData *CSSPucks[4];
+extern "C" CSSPort CSSPorts[4];
 
 extern "C" bool CSS_DropPuck(u8 index);
 
@@ -110,7 +127,13 @@ extern "C" void hook_CSS_PlayerThink(HSD_GObj *gobj)
 	// Drop fake HMN puck if a real player plugs in
 	const auto puck = data->held_puck;
 
-	if (puck >= 4 || puck == data->port || CSSPlayers[puck]->state == CSSPlayerState_Unplugged)
+	if (puck >= 4 || puck == data->port)
+		return;
+		
+	if (CSSPlayers[puck]->state == CSSPlayerState_Unplugged)
+		return;
+		
+	if (CSSPorts[puck].slot_type != SlotType_Human)
 		return;
 
 	CSS_DropPuck(puck);
