@@ -1,3 +1,4 @@
+#include "hsd/aobj.h"
 #include "hsd/cobj.h"
 #include "hsd/dobj.h"
 #include "hsd/gobj.h"
@@ -65,11 +66,8 @@ extern "C" void hook_Stage_Fountain_SetupModel(HSD_GObj *gobj)
 	if (!GetMatchInfo()->match.is_teams)
 		return;
 		
-	// Disable stage animations in teams
-	auto *jobj = gobj->get_hsd_obj<HSD_JObj>();
-	HSD_JObjRemoveAnimAll(jobj);
-	
 	// Enable shadows on water with reflections disabled
+	auto *jobj = gobj->get_hsd_obj<HSD_JObj>();
 	auto *water_jobj = HSD_JObjGetFromTreeByIndex(jobj->child, 9);
 	water_jobj->u.dobj->mobj->rendermode |= RENDER_SHADOW;
 }

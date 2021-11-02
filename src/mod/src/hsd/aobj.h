@@ -64,7 +64,7 @@ extern "C" {
 
 // Walks through AObj tree of an object containing AObjs, invoking callbacks for AObjs attached to
 // objects matching obj_mask. May take a single vararg to pass to callback depending on cb_type.
-void HSD_AObjWalkTree(void *obj, u32 obj_type, u32 obj_mask, auto *callback, u32 cb_type, auto arg);
+void HSD_AObjWalkTree(void *obj, u32 obj_type, u32 obj_mask, auto *callback, u32 cb_type, ...);
 
 void HSD_AObjStopAnim(HSD_AObj *aobj, void *obj, void (*callback)());
 
