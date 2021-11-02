@@ -48,12 +48,12 @@ constexpr T copysign_int(T value, T sign)
 	return (value + mask) ^ mask;
 }
 
-constexpr auto deg_to_rad(auto x)
+constexpr float deg_to_rad(float x)
 {
 	return x * math::pi / 180.f;
 }
 
-constexpr auto rad_to_deg(auto x)
+constexpr float rad_to_deg(float x)
 {
 	return x * 180.f / math::pi;
 }

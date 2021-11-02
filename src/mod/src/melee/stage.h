@@ -12,6 +12,11 @@ enum StageID {
 	Stage_FD  = 32
 };
 
+struct StageIDPair {
+	u32 stkind;
+	u32 grkind;
+};
+
 union StageParams {
 	struct {
 		f32 left_plat_height;
@@ -41,9 +46,22 @@ struct StageObject {
 	s32 push_timer;
 };
 
+struct StageData {
+	char pad000[0x6A8];
+	void *itemdata;
+	void *coll_data;
+	void *ground_params;
+	void *ald_yaku_all;
+	void *map_ptcl;
+	void *map_texg;
+	StageParams *parameters;
+	void *map_plit;
+};
+
 extern "C" {
 	
 extern u16 StageIndexToID[29];
+extern StageData Stage;
 
 StageParams *Stage_GetParameters();
 void Stage_GetSpawnPoint(u32 slot, vec3 *spawn);

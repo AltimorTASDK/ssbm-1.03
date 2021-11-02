@@ -57,7 +57,7 @@ extern "C" {
 HSD_CObj *HSD_CObjGetCurrent();
 bool HSD_CObjSetCurrent(HSD_CObj *cobj);
 void HSD_CObjGetScissor(const HSD_CObj *cobj, u16 *scissor);
-void HSD_CObjGetViewingMtx(const HSD_CObj *cobj, Mtx *out);
+void HSD_CObjGetViewingMtx(const HSD_CObj *cobj, Mtx out);
 
 void HSD_CObjTransform(HSD_CObj *cobj, const vec3 &in, vec3 *out, bool recalc_mtx);
 

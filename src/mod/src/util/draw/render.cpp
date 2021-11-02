@@ -131,11 +131,9 @@ void render_state::reset_3d()
 {
 	reset();
 
-	//HSD_CObjSetCurrent(HSD_CObjGetCurrent());
-	
 	Mtx view_matrix;
 	const auto *cobj = HSD_CObjGetCurrent();
-	HSD_CObjGetViewingMtx(cobj, &view_matrix);
+	HSD_CObjGetViewingMtx(cobj, view_matrix);
 	GX_LoadPosMtxImm(view_matrix, GX_PNMTX0);
 	
 	set_scissor(0, 0, 640, 480);

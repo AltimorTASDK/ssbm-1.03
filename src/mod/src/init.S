@@ -161,12 +161,14 @@ add_hook SSS_Think
 add_hook Stage_Dreamland_WhispyUpdate
 add_hook Stage_FinalDestination_BackgroundUpdate
 add_hook Stage_Fountain_CreateReflection
+add_hook Stage_Fountain_CreateStars
 add_hook Stage_Fountain_SetupModel
 add_hook Stage_Fountain_UpdateReflection
 add_hook Stage_GetBGM
 add_hook Stage_GetSpawnPoint
 add_hook Stage_IsValidRandomChoice
 add_hook Stage_PokemonStadium_TransformationDecide
+add_hook Stage_Setup
 add_hook Stage_YoshisStory_ShyGuyUpdate
 add_hook Text_UpdateSubtextSize
 add_hook TrainingMenu_Create

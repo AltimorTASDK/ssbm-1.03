@@ -13,6 +13,10 @@ struct HSD_TObjDesc;
 struct HSD_TExpTevDesc;
 struct HSD_TExp;
 
+enum RenderMode {
+	RENDER_SHADOW = (1 << 26)
+};
+
 struct HSD_ChanAnim {
 	HSD_ChanAnim *next;
 	HSD_AObjDesc *aobjdesc;

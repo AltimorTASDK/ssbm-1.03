@@ -158,6 +158,7 @@ public:
 	}
 };
 
+using matrix3x3 = matrix<float, 3, 3>;
 using matrix3x4 = matrix<float, 3, 4>;
 using matrix4x4 = matrix<float, 4, 4>;
 
@@ -166,9 +167,10 @@ constexpr matrix4x4 ortho_projection(
 	float l, float r,
 	float n, float f)
 {
-	return matrix4x4(
+	return matrix4x4 {
 		2.f / (r - l), 0.f,            0.f,           -(r + l) / (r - l),
 		0.f,           2.f / (t - b),  0.f,           -(t + b) / (t - b),
 		0.f,           0.f,           -2.f / (f - n), -(f + n) / (f - n),
-		0.f,           0.f,            0.f,            1.f);
+		0.f,           0.f,            0.f,            1.f
+	};
 }
