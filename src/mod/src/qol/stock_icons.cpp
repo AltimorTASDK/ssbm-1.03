@@ -15,7 +15,7 @@ extern "C" const vec3 &hook_HUD_GetStockIconPosition(u32 port)
 	if (sorted == -1)
 		return orig_HUD_GetStockIconPosition(port);
 		
-	if (MatchInfo_IsTeams()) {
+	if (MatchInfo_IsTeams() && !is_1v1()) {
 		// Display each team together
 		const auto team = sorted % 2;
 		const auto index = sorted / 2;

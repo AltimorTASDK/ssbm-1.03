@@ -74,10 +74,25 @@ static int get_doubles_index(u32 port)
 	return result;
 }
 
+bool is_1v1()
+{
+	auto count = 0;
+
+	for (u32 i = 0; i < 4; i++) {
+		if (PlayerBlock_GetSlotType(i) == SlotType_None)
+			continue;
+	}
+	
+	if (count != 2)
+		return -1;
+
+	return true;
+}
+
 // Returns -1 if not 1v1/2v2
 int get_sorted_port_index(u32 port)
 {
-	if (MatchInfo_IsTeams() && SceneMajor != Scene_Training)
+	if (MatchInfo_IsTeams() && SceneMajor != Scene_Training && !is_1v1())
 		return get_doubles_index(port);
 	else
 		return get_singles_index(port);
