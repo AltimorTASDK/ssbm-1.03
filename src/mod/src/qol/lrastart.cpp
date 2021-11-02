@@ -4,6 +4,16 @@
 
 static bool released_start = false;
 
+extern "C" u32 get_debug_pause_buttons()
+{
+	// Check all ports
+	u32 buttons = 0;
+	for (auto i = 0; i < 4; i++)
+		buttons |= HSD_PadCopyStatus[i].buttons;
+	
+	return buttons;
+}
+
 bool check_lras_macro()
 {
 	if  (!Scene_CheckPauseFlag(PauseBit_Pause)) {
