@@ -6,13 +6,14 @@
 #include "hsd/lobj.h"
 #include "hsd/archive.h"
 #include "melee/menu.h"
+#include "melee/music.h"
 
 struct TournamentModels {
 	ArchiveModelScene *option;
 	ArchiveModelScene *selection;
 	ArchiveModelScene *footer;
 	ArchiveModelScene *arrows;
-	ArchiveModelScene *player_entry;
+	ArchiveModelScene *panel;
 	ArchiveModelScene *background;
 };
 
@@ -21,8 +22,6 @@ using scene_type = ArchiveScene<TournamentModels>;
 static HSD_Archive *GmTou1p;
 static HSD_Archive *MnExtAll;
 static scene_type *scene;
-
-static int background_frame = 0;
 
 static void create_camera()
 {
@@ -81,12 +80,12 @@ static HSD_GObj *create_model(ArchiveModelScene *model,
 
 static void update_background(HSD_GObj *gobj)
 {
-	auto *jobj = gobj->get_hsd_obj<HSD_JObj>();
-	HSD_JObjReqAnimAll(jobj, (f32)background_frame);
-	HSD_JObjAnimAll(jobj);
-	
-	// Loop animation
-	background_frame = (background_frame + 1) % 801;
+	HSD_JObjLoopAnim(gobj->get_hsd_obj<HSD_JObj>(), { 0, 800, JOBJ_LOOP_NONE });
+}
+
+static void update_panel(HSD_GObj *gobj)
+{
+	HSD_JObjLoopAnim(gobj->get_hsd_obj<HSD_JObj>(), { 0, 39, JOBJ_LOOP_NONE });
 }
 
 static void create_menu()
@@ -95,8 +94,7 @@ static void create_menu()
 	create_lights();
 	create_fog();
 	create_model(scene->models->background, false, true, 0, 0.f, update_background);
-	
-	background_frame = 0;
+	create_model(scene->models->panel,      false, true, 0, 0.f, update_panel);
 }
 
 static void Controls_Think()
@@ -109,6 +107,8 @@ static void Controls_Init(void *enter_data)
 	MnExtAll = HSD_ArchiveLoad("MnExtAll");
 	scene = HSD_ArchiveGetSymbol<scene_type>(GmTou1p, "ScGamTour_scene_data");
 	create_menu();
+	
+	PlayBGM(Menu_GetBGM());
 }
 
 static void Controls_Free(void *exit_data)

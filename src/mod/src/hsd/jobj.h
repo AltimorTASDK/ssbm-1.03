@@ -21,6 +21,8 @@ struct HSD_AnimJoint;
 struct HSD_MatAnimJoint;
 struct HSD_ShapeAnimJoint;
 
+constexpr auto JOBJ_LOOP_NONE = -.1f;
+
 enum JObjFlag {
 	HIDDEN       = (1 << 4),
 	MTX_DIRTY    = (1 << 6),
