@@ -7,6 +7,7 @@
 #include "hsd/archive.h"
 #include "melee/menu.h"
 #include "melee/music.h"
+#include "util/math.h"
 
 enum class menu_option {
 	z_jump,
@@ -19,7 +20,8 @@ enum class menu_option {
 	ok,
 	reset,
 	
-	toggle_count = tap_jump + 1
+	max_toggle = tap_jump + 1,
+	max = reset + 1
 };
 
 struct TournamentModels {
@@ -155,7 +157,7 @@ static void update_selection(HSD_GObj *gobj)
 	auto *jobj = gobj->get_hsd_obj<HSD_JObj>();
 	HSD_JObjLoopAnim(jobj, { 0, 100, 0 });
 
-	if (menu_state.selected >= (int)menu_option::toggle_count) {
+	if (menu_state.selected >= (int)menu_option::max_toggle) {
 		HSD_JObjSetFlagsAll(jobj, HIDDEN);
 		return;
 	}
@@ -166,7 +168,7 @@ static void update_selection(HSD_GObj *gobj)
 
 static void create_toggles()
 {
-	for (auto index = 0; index < (int)menu_option::toggle_count; index++) {
+	for (auto index = 0; index < (int)menu_option::max_toggle; index++) {
 		const auto position = calc_toggle_y_position(index);
 
 		auto *arrows = create_model(scene->models->arrows, update_arrows);
@@ -204,7 +206,14 @@ static void create_menu()
 
 static void Controls_Think()
 {
-	Menu_GetButtons(PORT_ALL);
+	const auto buttons = Menu_GetButtons(PORT_ALL);
+	
+	if (buttons & MenuButton_Down)
+		menu_state.selected++;
+	else if (buttons & MenuButton_Up)
+		menu_state.selected--;
+		
+	menu_state.selected = mod(menu_state.selected, (int)menu_option::max_toggle);
 }
 
 static void Controls_Init(void *enter_data)
