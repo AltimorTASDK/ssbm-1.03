@@ -4,6 +4,7 @@
 #include "util/meta.h"
 #include <gctypes.h>
 #include <numeric>
+#include <type_traits>
 
 struct fobj_key {
 	f32 value;
@@ -13,12 +14,19 @@ struct fobj_key {
 template<u8 format, u32 scale>
 class fobj_builder {
 	template<auto value>
+	static constexpr auto unsigned_cast()
+	{
+		return static_cast<std::make_unsigned_t<decltype(value)>>(value);
+	}
+
+	template<auto value>
 	static constexpr auto pack()
 	{
-		constexpr auto low = value & 0x7F;
+		constexpr auto uvalue = unsigned_cast<value>();
+		constexpr auto low = uvalue & 0x7F;
 
-		if constexpr (value >= 128)
-			return array_cat(std::array { (u8)(low | 0x80) }, pack<(value >> 7)>());
+		if constexpr (uvalue >= 128)
+			return array_cat(std::array { (u8)(low | 0x80) }, pack<(uvalue >> 7)>());
 		else
 			return std::array { (u8)low };
 	}
@@ -26,8 +34,10 @@ class fobj_builder {
 	template<auto byte_count, auto value>
 	static constexpr auto write_int()
 	{
+		constexpr auto uvalue = unsigned_cast<value>();
+
 		return for_range<byte_count>([&]<size_t ...I>() {
-			return std::array { (u8)(value >> (I * 8))... };
+			return std::array { (u8)(uvalue >> (I * 8))... };
 		});
 	}
 
