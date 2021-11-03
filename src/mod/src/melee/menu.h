@@ -31,6 +31,11 @@ enum MenuState {
 	MenuState_EnterFrom = 4
 };
 
+enum MenuID {
+	MenuID_Tournament = 36,
+	MenuID_None = 45
+};
+
 enum MenuType {
 	MenuType_VsMode = 2,
 	MenuType_Rules = 13,
@@ -41,6 +46,14 @@ enum MenuType {
 	MenuType_MenuMusic = 17,
 	MenuType_NameEntry = 18,
 	MenuType_Max = 34
+};
+
+struct MenuCallbacks {
+	u8 id;
+	void(*think)();
+	void(*enter)(void *enter_data);
+	void(*exit)(void *exit_data);
+	void *pad010;
 };
 
 extern "C" {
@@ -54,6 +67,8 @@ extern u16 MenuSelectedIndex;
 extern u8 MenuSelectedValue;
 
 extern u32 MenuButtons;
+
+MenuCallbacks *Menu_GetCallbacks(u8 id);
 
 void Menu_ExitToMinorScene(u8 scene);
 u32 Menu_GetButtons(u32 index);

@@ -297,7 +297,7 @@ extern "C" void hook_Menu_SetupRandomStageToggles(RandomStageMenuData *data)
 
 static void menu_music_gx(HSD_GObj *gobj, u32 pass)
 {
-	GObj_GXProcDisplay(gobj, pass);
+	GObj_GXProcJoint(gobj, pass);
 	
 	if (pass != HSD_RP_BOTTOMHALF)
 		return;

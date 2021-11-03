@@ -84,7 +84,7 @@ extern "C" void hook_MainMenu_Enter(SceneMinorData *minor)
 	
 	// Go back to debug menu portal when returning from debug menu
 	if (SceneMajorPrevious == Scene_DebugMenu) {
-		auto *data = (MainMenuEnterData*)minor->enter_data;
+		auto *data = (MainMenuEnterData*)minor->data.enter_data;
 		data->menu_type = MenuType_VsMode;
 		data->selected = 1;
 	}

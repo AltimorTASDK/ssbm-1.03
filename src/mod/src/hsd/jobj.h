@@ -83,11 +83,12 @@ struct HSD_AnimLoop {
 
 extern "C" {
 	
-HSD_JObj *HSD_JObjLoadJoint(const HSD_JObjDesc *desc);
+HSD_JObj *HSD_JObjLoadDesc(const HSD_JObjDesc *desc);
 
 void HSD_JObjAddAnimAll(HSD_JObj *jobj, const HSD_AnimJoint *animjoint,
 			const HSD_MatAnimJoint *matanim_joint,
 			const HSD_ShapeAnimJoint *shapeanim_joint);
+void HSD_JObjAddSceneAnimByIndex(HSD_JObj *jobj, const ArchiveModelScene *model, u32 index);
 void HSD_JObjRemoveAnimAll(HSD_JObj *jobj);
 f32 HSD_JObjGetAnimFrame(HSD_JObj *jobj);
 void HSD_JObjReqAnimAll(HSD_JObj *jobj, f32 frame);
@@ -143,7 +144,7 @@ inline auto HSD_JObjGetFromTreeByIndices(const HSD_JObj *jobj)
 
 inline HSD_JObj *HSD_JObjFromArchiveModel(const ArchiveModel *model)
 {
-	auto *jobj = HSD_JObjLoadJoint(model->joint);
+	auto *jobj = HSD_JObjLoadDesc(model->joint);
 	HSD_JObjAddAnimAll(jobj, model->animjoint, model->matanim_joint, model->shapeanim_joint);
 	return jobj;
 }

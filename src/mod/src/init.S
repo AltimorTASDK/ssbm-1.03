@@ -104,6 +104,7 @@ hooks_start:
 .set CheckIsCPUPuck,          CSS_PlayerThink+0x1CF4
 .set CheckStockStealInput,    Match_CheckStockSteal+0xF8
 .set GetDebugMenuButtons,     DebugMenu_Input+0x1C
+.set EnterSpecialMelee,       VsMenu_Think+0xBC
 
 add_hook Bubble_GetPosition
 add_hook CheckCSSPlayerCount
@@ -118,6 +119,7 @@ add_hook CSS_PlayerThink
 add_hook CSS_Setup
 add_hook DebugMenu_Exit
 add_hook DevelopText_Draw
+add_hook EnterSpecialMelee
 add_hook GetDebugMenuButtons
 add_hook HSD_ResetScene
 add_hook HUD_GetStockIconPosition

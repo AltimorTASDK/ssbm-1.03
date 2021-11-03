@@ -121,9 +121,9 @@ static void setup_icon(StageSelectIcon *icon, HSD_JObj *constraint,
 
 	// Make new icon GObj with IconLarge jobj
 	auto *gobj = GObj_Create(4, 5, 0x80);
-	auto *jobj = HSD_JObjLoadJoint(model.joint);
+	auto *jobj = HSD_JObjLoadDesc(model.joint);
 	GObj_InitKindObj(gobj, GOBJ_KIND_JOBJ, jobj);
-	GObj_SetupGXLink(gobj, GObj_GXProcDisplay, 4, 0x83);
+	GObj_SetupGXLink(gobj, GObj_GXProcJoint, GOBJ_GXLINK_MENU_TOP, 0x83);
 	GObj_CreateProcWithCallback(gobj, stage_icon_proc, 3);
 	
 	// Set anims with given matanim_joint and frame

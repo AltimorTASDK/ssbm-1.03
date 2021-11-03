@@ -29,13 +29,17 @@ enum PauseBit {
 
 using SceneProc = void(SceneMinorData*);
 
+struct SceneDataPointers {
+	u8 menu_id;
+	void *enter_data;
+	void *exit_data;
+};
+
 struct SceneMinorData {
 	u8 id;
 	SceneProc *enter;
 	SceneProc *exit;
-	u32 pad00C;
-	void *enter_data;
-	void *exit_data;
+	SceneDataPointers data;
 };
 
 extern "C" {
@@ -49,6 +53,6 @@ bool IsSinglePlayerMode();
 void Scene_Exit();
 bool Scene_CheckPauseFlag(u32 flag);
 void Scene_SetMajorPending(u8 scene);
-void *GetSceneExitData();
+void *Scene_GetExitData();
 
 }

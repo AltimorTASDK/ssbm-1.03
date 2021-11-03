@@ -54,6 +54,8 @@ struct HSD_CObj {
 
 extern "C" {
 
+HSD_CObj *HSD_CObjLoadDesc(HSD_CObjDesc *desc);
+
 HSD_CObj *HSD_CObjGetCurrent();
 bool HSD_CObjSetCurrent(HSD_CObj *cobj);
 void HSD_CObjGetScissor(const HSD_CObj *cobj, u16 *scissor);

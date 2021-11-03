@@ -7,8 +7,37 @@ struct HSD_GObj;
 using GObjRenderCallback = void(HSD_GObj *gobj, u32 pass);
 using GObjProcCallback = void(HSD_GObj *gobj);
 
+enum GObjGXLink {
+	GOBJ_GXLINK_NONE     = -1,
+	GOBJ_GXLINK_FOG      = 0,
+	GOBJ_GXLINK_LIGHT    = 1,
+	GOBJ_GXLINK_MENU_BG  = 2,
+	GOBJ_GXLINK_MENU_FG  = 3,
+	GOBJ_GXLINK_MENU_TOP = 4
+};
+
+enum GObjPLink {
+	GOBJ_PLINK_STAGE       = 5,
+	GOBJ_PLINK_PLAYER      = 8,
+	GOBJ_PLINK_ITEM        = 9,
+	GOBJ_PLINK_UI          = 15,
+	GOBJ_PLINK_MENU_CAMERA = 18,
+	GOBJ_PLINK_MENU_SCENE  = 26
+};
+
+enum GObjClass {
+	GOBJ_CLASS_FOG    = 10,
+	GOBJ_CLASS_LIGHT  = 11,
+	GOBJ_CLASS_UI     = 14,
+	GOBJ_CLASS_CAMERA = 19
+};
+
 enum GObjKind {
-	GOBJ_KIND_JOBJ = 3
+	GOBJ_KIND_SOBJ   = 0,
+	GOBJ_KIND_LIGHT  = 1,
+	GOBJ_KIND_CAMERA = 2,
+	GOBJ_KIND_JOBJ   = 3,
+	GOBJ_KIND_FOG    = 4
 };
 
 struct HSD_GObjProc {
@@ -74,10 +103,15 @@ HSD_GObj *GObj_Create(u8 obj_class, u8 p_link, u8 prio);
 void GObj_Free(HSD_GObj *gobj);
 void GObj_InitKindObj(HSD_GObj *gobj, s8 obj_kind, void *obj_ptr);
 void GObj_SetupGXLink(HSD_GObj *gobj, GObjRenderCallback *render_cb, u8 gx_link, u8 priority);
+void GObj_SetupCameraGXLink(HSD_GObj *gobj, GObjRenderCallback *render_cb, u8 priority);
 void GObj_CreateProcWithCallback(HSD_GObj *gobj, GObjProcCallback *cb, u8 s_prio);
 void GObj_ProcRemove(HSD_GObjProc *proc);
 
 void GObj_ProcAnimate(HSD_GObj *gobj);
-void GObj_GXProcDisplay(HSD_GObj *gobj, u32 pass);
+
+void GObj_GXProcLight(HSD_GObj *gobj, u32 pass);
+void GObj_GXProcJoint(HSD_GObj *gobj, u32 pass);
+void GObj_GXProcFog(HSD_GObj *gobj, u32 pass);
+void GObj_GXProcCamera(HSD_GObj *gobj, u32 pass);
 
 }

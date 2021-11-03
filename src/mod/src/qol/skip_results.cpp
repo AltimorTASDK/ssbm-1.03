@@ -34,6 +34,6 @@ extern "C" void orig_Scene_Match_Exit(SceneMinorData *data, u8 victory_screen, u
 extern "C" void hook_Scene_Match_Exit(SceneMinorData *data, u8 victory_screen, u8 sudden_death)
 {
 	// Override next scene and remove sudden death
-	const auto next_scene = get_next_scene((MatchExitData*)data->exit_data);
+	const auto next_scene = get_next_scene((MatchExitData*)data->data.exit_data);
 	orig_Scene_Match_Exit(data, next_scene, next_scene);
 }

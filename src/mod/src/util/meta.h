@@ -8,18 +8,8 @@
 #include <type_traits>
 #include <utility>
 
-// Wrap string literals so they can be passed as template params
-template<typename T, size_t N>
-struct string_literal {
-	static constexpr auto size = N;
-
-	constexpr string_literal(const T (&str)[N])
-	{
-		std::copy_n(str, N, value);
-	}
-
-	T value[N];
-};
+template<typename T, size_t size>
+using c_array_t = T[size];
 
 template<typename T>
 constexpr auto is_void = std::is_same_v<T, void>;
@@ -200,6 +190,14 @@ constexpr auto zip(auto &&...tuples)
 	}
 }
 
+// Given a tuple of tuples, unpack the values of all contained tuples into a single continuous tuple
+constexpr auto chain(auto &&tuple)
+{
+	return std::apply([](auto &&...tuples) {
+		return std::tuple_cat(tuples...);
+	}, tuple);
+}
+
 // Use std::apply with multiple argument tuples, returning a tuple of results.
 // void results are omitted from the tuple. If no results are returned,
 // this function returns void.
@@ -247,3 +245,25 @@ constexpr auto array_cat(const std::array<T, sizes> &...arrays)
 	detail::array_cat_impl(0, result, arrays...);
 	return result;
 }
+
+// Wrap string literals so they can be passed as template params
+template<typename T, size_t ...N>
+struct string_literal {
+	static constexpr auto size = ((N - 1) + ... + 1);
+
+	constexpr string_literal(const c_array_t<T, N> &...strings)
+	{
+		if constexpr(sizeof...(N) == 1) {
+			std::copy_n(strings..., size, value);
+		} else {
+			std::copy_n(array_cat(for_range<N - 1>([&]<size_t ...I>(const auto &str) {
+				if constexpr (sizeof...(I) != 0)
+					return std::array { str[I]... };
+				else
+					return std::array<T, 0>();
+			}, strings)..., std::array { T { 0 } }).begin(), size, value);
+		}
+	}
+
+	T value[size];
+};
