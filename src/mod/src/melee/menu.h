@@ -86,7 +86,7 @@ void Menu_MainMenuTransition(u32 menu_type, u16 index, u8 state);
 inline u32 Menu_GetButtonsHelper(u32 port)
 {
 	const auto cooldown = MenuInputCooldown;
-	const auto buttons = Menu_GetButtons(index);
+	const auto buttons = Menu_GetButtons(port);
 	MenuInputCooldown = cooldown;
 	return buttons;
 }
