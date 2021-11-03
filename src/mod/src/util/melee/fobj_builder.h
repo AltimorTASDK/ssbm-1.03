@@ -45,7 +45,7 @@ class fobj_builder {
 	static constexpr auto write_float()
 	{
 		if constexpr (format == HSD_A_FRAC_FLOAT) {
-			constexpr auto bits = std::bit_cast<u32, f32>(value);
+			constexpr auto bits = std::bit_cast<u32>(value);
 			return write_int<4, bits>();
 		} else {
 			constexpr auto scaled = (s32)std::round(value * scale);

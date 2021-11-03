@@ -103,6 +103,7 @@ void HSD_JObjRemove(HSD_JObj *jobj);
 void HSD_JObjRemoveAll(HSD_JObj *jobj);
 
 void HSD_JObjSetupMatrix(HSD_JObj *jobj);
+void HSD_JObjSetMtxDirty(HSD_JObj *jobj);
 
 void HSD_JObjAddConstraintPos(HSD_JObj *jobj, HSD_JObj *constraint);
 

@@ -8,6 +8,26 @@
 #include "melee/menu.h"
 #include "melee/music.h"
 
+enum class menu_option {
+	z_jump,
+	perfect_wavedash,
+	c_up,
+	c_horizontal,
+	c_down,
+	tap_jump,
+
+	ok,
+	reset,
+	
+	toggle_count = tap_jump + 1
+};
+
+enum class arrow_state {
+	none,
+	left,
+	right
+};
+
 struct TournamentModels {
 	ArchiveModelScene *option;
 	ArchiveModelScene *selection;
@@ -22,6 +42,19 @@ using scene_type = ArchiveScene<TournamentModels>;
 static HSD_Archive *GmTou1p;
 static HSD_Archive *MnExtAll;
 static scene_type *scene;
+
+static struct {
+	int selected;
+	arrow_state arrow_states[(size_t)menu_option::toggle_count];
+	
+	void reset()
+	{
+		selected = 0;
+
+		for (auto i = 0; i < (int)menu_option::toggle_count; i++)
+			arrow_states[i] = arrow_state::none;
+	}
+} menu_state;
 
 static void create_camera()
 {
@@ -53,9 +86,9 @@ static void create_fog()
 	GObj_SetupGXLink(gobj, GObj_GXProcFog, GOBJ_GXLINK_FOG, 0);
 }
 
-static HSD_GObj *create_model(ArchiveModelScene *model,
-                              bool hidden, bool animated, u32 anim_index, f32 anim_frame,
-                              GObjProcCallback callback,
+static HSD_GObj *create_model(ArchiveModelScene *model, GObjProcCallback callback,
+                              bool hidden = false, bool animated = true,
+                              u32 anim_index = 0, f32 anim_frame = 0.f,
                               u8 plink = GOBJ_PLINK_MENU_SCENE, u8 gx_link = GOBJ_GXLINK_MENU_BG)
 {
 	auto *gobj = GObj_Create(GOBJ_CLASS_UI, plink, 0);
@@ -78,14 +111,85 @@ static HSD_GObj *create_model(ArchiveModelScene *model,
 	return gobj;
 }
 
+static float calc_toggle_y_position(int index)
+{
+	return 11.5f - index * 3.5f;
+}
+
+static void set_y_position(HSD_GObj *gobj, float y)
+{
+	auto *jobj = gobj->get_hsd_obj<HSD_JObj>();
+	jobj->position.y = y;
+	HSD_JObjSetMtxDirty(jobj);
+}
+
+static void update_arrows(HSD_GObj *gobj)
+{
+	const auto index = gobj->get_primitive<int>();
+	const auto state = menu_state.arrow_states[index];
+
+	auto *jobj = gobj->get_hsd_obj<HSD_JObj>();
+	auto *left_arrow = jobj->child;
+	auto *right_arrow = left_arrow->next;
+	
+	HSD_JObjReqAnimAll(left_arrow,  state == arrow_state::left  ? 1.f : 0.f);
+	HSD_JObjReqAnimAll(right_arrow, state == arrow_state::right ? 1.f : 0.f);
+	HSD_JObjAnimAll(jobj);
+
+	menu_state.arrow_states[index] = arrow_state::none;
+}
+
+static void update_option(HSD_GObj *gobj)
+{
+	const auto index = gobj->get_primitive<int>();
+
+	auto *jobj = gobj->get_hsd_obj<HSD_JObj>();
+	
+	if (index == menu_state.selected) {
+		HSD_JObjLoopAnim(jobj, { 10, 20, 10 });
+	} else {
+		HSD_JObjReqAnimAll(jobj, 0.f);
+		HSD_JObjAnimAll(jobj);
+	}
+}
+
+static void update_selection(HSD_GObj *gobj)
+{
+	auto *jobj = gobj->get_hsd_obj<HSD_JObj>();
+	HSD_JObjLoopAnim(jobj, { 0, 100, 0 });
+
+	if (menu_state.selected >= (int)menu_option::toggle_count) {
+		HSD_JObjSetFlagsAll(jobj, HIDDEN);
+		return;
+	}
+
+	HSD_JObjClearFlagsAll(jobj, HIDDEN);
+	set_y_position(gobj, calc_toggle_y_position(menu_state.selected));
+}
+
+static void create_toggles()
+{
+	for (auto index = 0; index < (int)menu_option::toggle_count; index++) {
+		const auto position = calc_toggle_y_position(index);
+
+		auto *arrows = create_model(scene->models->arrows, update_arrows);
+		arrows->set_primitive(index);
+		set_y_position(arrows, position);
+
+		auto *option = create_model(scene->models->option, update_option);
+		option->set_primitive(index);
+		set_y_position(option, position);
+	}
+}
+
 static void update_background(HSD_GObj *gobj)
 {
-	HSD_JObjLoopAnim(gobj->get_hsd_obj<HSD_JObj>(), { 0, 800, JOBJ_LOOP_NONE });
+	HSD_JObjLoopAnim(gobj->get_hsd_obj<HSD_JObj>(), { 0, 801, 0 });
 }
 
 static void update_panel(HSD_GObj *gobj)
 {
-	HSD_JObjLoopAnim(gobj->get_hsd_obj<HSD_JObj>(), { 0, 39, JOBJ_LOOP_NONE });
+	HSD_JObjLoopAnim(gobj->get_hsd_obj<HSD_JObj>(), { 0, 40, 10 });
 }
 
 static void create_menu()
@@ -93,8 +197,12 @@ static void create_menu()
 	create_camera();
 	create_lights();
 	create_fog();
-	create_model(scene->models->background, false, true, 0, 0.f, update_background);
-	create_model(scene->models->panel,      false, true, 0, 0.f, update_panel);
+	create_model(scene->models->background, update_background);
+	create_model(scene->models->panel, update_panel);
+	create_model(scene->models->selection, update_selection);
+	create_toggles();
+	
+	menu_state.reset();
 }
 
 static void Controls_Think()
@@ -106,6 +214,7 @@ static void Controls_Init(void *enter_data)
 	GmTou1p = HSD_ArchiveLoad("GmTou1p");
 	MnExtAll = HSD_ArchiveLoad("MnExtAll");
 	scene = HSD_ArchiveGetSymbol<scene_type>(GmTou1p, "ScGamTour_scene_data");
+
 	create_menu();
 	
 	PlayBGM(Menu_GetBGM());

@@ -1,6 +1,8 @@
 #pragma once
 
+#include <bit>
 #include <gctypes.h>
+#include <type_traits>
 
 struct HSD_GObj;
 
@@ -92,6 +94,18 @@ struct HSD_GObj {
 	const T *get() const
 	{
 		return static_cast<const T*>(data);
+	}
+
+	template<typename T>
+	const T get_primitive() const requires std::is_arithmetic_v<T>
+	{
+		return std::bit_cast<T>(data);
+	}
+
+	template<typename T>
+	const void set_primitive(T value) requires std::is_arithmetic_v<T>
+	{
+		data = std::bit_cast<void*>(data);
 	}
 };
 
