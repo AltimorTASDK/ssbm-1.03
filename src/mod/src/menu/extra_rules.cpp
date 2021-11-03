@@ -302,7 +302,7 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 extern "C" void orig_Menu_ExtraRulesMenuInput(HSD_GObj *gobj);
 extern "C" void hook_Menu_ExtraRulesMenuInput(HSD_GObj *gobj)
 {
-	const auto buttons = Menu_GetButtonsHelper(4);
+	const auto buttons = Menu_GetButtonsHelper(PORT_ALL);
 
 	if ((buttons & MenuButton_A) && MenuSelectedIndex == ExtraRule_OldStageSelect) {
 		// Check for attempting to enter the OSS with 0 players

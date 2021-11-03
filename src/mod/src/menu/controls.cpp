@@ -204,6 +204,7 @@ static void create_menu()
 
 static void Controls_Think()
 {
+	Menu_GetButtons(PORT_ALL);
 }
 
 static void Controls_Init(void *enter_data)

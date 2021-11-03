@@ -2,6 +2,8 @@
 
 #include <gctypes.h>
 
+constexpr auto PORT_ALL = 4;
+
 enum MenuButton {
 	MenuButton_Up    = 0x001,
 	MenuButton_Down  = 0x002,
@@ -71,7 +73,7 @@ extern u32 MenuButtons;
 MenuCallbacks *Menu_GetCallbacks(u8 id);
 
 void Menu_ExitToMinorScene(u8 scene);
-u32 Menu_GetButtons(u32 index);
+u32 Menu_GetButtons(u32 port);
 void Menu_PlaySFX(s32 sfx);
 
 void Menu_ExitToRulesMenu();
@@ -81,7 +83,7 @@ void Menu_MainMenuTransition(u32 menu_type, u16 index, u8 state);
 }
 
 // Call Menu_GetButtons without affecting the input cooldown
-inline u32 Menu_GetButtonsHelper(u32 index)
+inline u32 Menu_GetButtonsHelper(u32 port)
 {
 	const auto cooldown = MenuInputCooldown;
 	const auto buttons = Menu_GetButtons(index);
