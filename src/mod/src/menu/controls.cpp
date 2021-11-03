@@ -22,12 +22,6 @@ enum class menu_option {
 	toggle_count = tap_jump + 1
 };
 
-enum class arrow_state {
-	none,
-	left,
-	right
-};
-
 struct TournamentModels {
 	ArchiveModelScene *option;
 	ArchiveModelScene *selection;
@@ -45,14 +39,14 @@ static scene_type *scene;
 
 static struct {
 	int selected;
-	arrow_state arrow_states[(size_t)menu_option::toggle_count];
+	bool scrolled_left;
+	bool scrolled_right;
 	
 	void reset()
 	{
 		selected = 0;
-
-		for (auto i = 0; i < (int)menu_option::toggle_count; i++)
-			arrow_states[i] = arrow_state::none;
+		scrolled_left = false;
+		scrolled_right = false;
 	}
 } menu_state;
 
@@ -126,17 +120,21 @@ static void set_y_position(HSD_GObj *gobj, float y)
 static void update_arrows(HSD_GObj *gobj)
 {
 	const auto index = gobj->get_primitive<int>();
-	const auto state = menu_state.arrow_states[index];
-
 	auto *jobj = gobj->get_hsd_obj<HSD_JObj>();
 	auto *left_arrow = jobj->child;
 	auto *right_arrow = left_arrow->next;
-	
-	HSD_JObjReqAnimAll(left_arrow,  state == arrow_state::left  ? 1.f : 0.f);
-	HSD_JObjReqAnimAll(right_arrow, state == arrow_state::right ? 1.f : 0.f);
-	HSD_JObjAnimAll(jobj);
 
-	menu_state.arrow_states[index] = arrow_state::none;
+	if (index == menu_state.selected) {
+		HSD_JObjReqAnimAll(left_arrow,  menu_state.scrolled_left  ? 1.f : 0.f);
+		HSD_JObjReqAnimAll(right_arrow, menu_state.scrolled_right ? 1.f : 0.f);
+		menu_state.scrolled_left = false;
+		menu_state.scrolled_right = false;
+	} else {
+		HSD_JObjReqAnimAll(left_arrow, 0.f);
+		HSD_JObjReqAnimAll(right_arrow, 0.f);
+	}
+	
+	HSD_JObjAnimAll(jobj);
 }
 
 static void update_option(HSD_GObj *gobj)
