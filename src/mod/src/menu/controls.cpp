@@ -113,7 +113,7 @@ static HSD_GObj *create_model(ArchiveModelScene *model, GObjProcCallback callbac
 
 static float calc_toggle_y_position(int index)
 {
-	return 11.5f - index * 3.5f;
+	return 11.5f - (float)index * 3.5f;
 }
 
 static void set_y_position(HSD_GObj *gobj, float y)
@@ -142,7 +142,6 @@ static void update_arrows(HSD_GObj *gobj)
 static void update_option(HSD_GObj *gobj)
 {
 	const auto index = gobj->get_primitive<int>();
-
 	auto *jobj = gobj->get_hsd_obj<HSD_JObj>();
 	
 	if (index == menu_state.selected) {

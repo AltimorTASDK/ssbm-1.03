@@ -97,7 +97,7 @@ struct HSD_GObj {
 	}
 
 	template<typename T>
-	const T get_primitive() const requires std::is_arithmetic_v<T>
+	T get_primitive() const requires std::is_arithmetic_v<T>
 	{
 		return std::bit_cast<T>(data);
 	}
@@ -105,7 +105,7 @@ struct HSD_GObj {
 	template<typename T>
 	const void set_primitive(T value) requires std::is_arithmetic_v<T>
 	{
-		data = std::bit_cast<void*>(data);
+		data = std::bit_cast<void*>(value);
 	}
 };
 
