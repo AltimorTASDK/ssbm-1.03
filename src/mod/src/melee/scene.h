@@ -9,6 +9,7 @@ enum Scene {
 	Scene_VsMode       = 2,
 	Scene_DebugMenu    = 6,
 	Scene_Tournament   = 27,
+	Scene_Controls     = 27,
 	Scene_Training     = 28,
 	Scene_Boot         = 40
 };

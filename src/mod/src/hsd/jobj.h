@@ -145,6 +145,18 @@ inline auto HSD_JObjGetFromTreeByIndices(const HSD_JObj *jobj)
 	return result;
 }
 
+// Helper function to get tuple from tree for structured binding
+template<u16 ...indices>
+inline auto HSD_JObjGetFromTreeTuple(const HSD_JObj *jobj)
+{
+	const auto index_array = std::array { indices... };
+	std::array<HSD_JObj*, sizeof...(indices)> result;
+	HSD_JObjGetFromTreeByIndices(jobj, result.data(), index_array.data(), index_array.size());
+	return for_range<sizeof...(indices)>([&]<size_t ...I>() {
+		return std::make_tuple(result[I]...);
+	});
+}
+
 inline HSD_JObj *HSD_JObjFromArchiveModel(const ArchiveModel *model)
 {
 	auto *jobj = HSD_JObjLoadDesc(model->joint);

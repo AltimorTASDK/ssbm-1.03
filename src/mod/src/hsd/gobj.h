@@ -28,6 +28,10 @@ enum GObjPLink {
 };
 
 enum GObjClass {
+	GOBJ_CLASS_STAGE  = 3,
+	GOBJ_CLASS_PLAYER = 4,
+	GOBJ_CLASS_ITEM   = 6,
+	GOBJ_CLASS_TEXT   = 9,
 	GOBJ_CLASS_FOG    = 10,
 	GOBJ_CLASS_LIGHT  = 11,
 	GOBJ_CLASS_UI     = 14,

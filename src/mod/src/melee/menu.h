@@ -19,8 +19,8 @@ enum MenuButton {
 };
 
 enum MenuSFX {
-	MenuSFX_Enter     = 0,
-	MenuSFX_Exit      = 1,
+	MenuSFX_Exit      = 0,
+	MenuSFX_Enter     = 1,
 	MenuSFX_Activated = 2,
 	MenuSFX_Denied    = 3
 };
@@ -35,7 +35,8 @@ enum MenuState {
 
 enum MenuID {
 	MenuID_Tournament = 36,
-	MenuID_None = 45
+	MenuID_Controls   = 36,
+	MenuID_None       = 45
 };
 
 enum MenuType {
