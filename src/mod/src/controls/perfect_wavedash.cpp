@@ -7,8 +7,7 @@
 extern "C" float orig_Player_GetAirdodgeAngle(Player *player);
 extern "C" float hook_Player_GetAirdodgeAngle(Player *player)
 {
-	const auto &config = controller_configs[player->port];
-	if (Player_IsCPU(player) || !config.perfect_wavedash)
+	if (!get_player_config(player).perfect_wavedash)
 		return orig_Player_GetAirdodgeAngle(player);
 		
 	const auto &pad = get_input<0>(player->port);

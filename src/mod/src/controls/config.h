@@ -1,5 +1,6 @@
 #pragma once
 
+#include "melee/player.h"
 #include <gctypes.h>
 
 enum class cstick_type {
@@ -8,27 +9,27 @@ enum class cstick_type {
 };
 
 struct controller_config {
-	u8 z_jump_bit;
-	bool perfect_wavedash;
-	cstick_type c_up;
-	cstick_type c_horizontal;
-	cstick_type c_down;
-	bool tap_jump;
+	inline static auto defaults = controller_config();
 	
-	controller_config()
-	{
-		reset();
-	}
+	u8 z_jump_bit             = 0;
+	bool perfect_wavedash     = false;
+	cstick_type c_up          = cstick_type::smash;
+	cstick_type c_horizontal  = cstick_type::smash;
+	cstick_type c_down        = cstick_type::smash;
+	bool tap_jump             = true;
 	
 	void reset()
 	{
-		z_jump_bit = 0;
-		perfect_wavedash = false;
-		c_up = cstick_type::smash;
-		c_horizontal = cstick_type::smash;
-		c_down = cstick_type::smash;
-		tap_jump = true;
+		*this = defaults;
 	}
 };
 
 inline controller_config controller_configs[4];
+
+inline const controller_config &get_player_config(Player *player)
+{
+	if (!Player_IsCPU(player))
+		return controller_configs[player->port];
+	else
+		return controller_config::defaults;
+}
