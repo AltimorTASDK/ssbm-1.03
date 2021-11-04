@@ -158,6 +158,7 @@ add_hook Menu_UpdateItemDisplay
 add_hook Menu_UpdateRandomStageDisplay
 add_hook Menu_UpdateRuleValue
 add_hook NameTag_SetupForPlayer
+add_hook Player_GetAirdodgeAngle
 add_hook Scene_Match_Exit
 add_hook ShowNameTagCheck
 add_hook SSS_Init

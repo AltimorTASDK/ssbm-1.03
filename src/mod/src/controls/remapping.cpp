@@ -1,3 +1,4 @@
+#include "controls/config.h"
 #include "hsd/archive.h"
 #include "hsd/pad.h"
 #include "util/melee/pad.h"
@@ -8,27 +9,32 @@
 // X/Y + Z for 1 second at CSS
 constexpr auto REMAP_HOLD_TIME = 60;
 
-u8 jump_bit[4] = { 0 };
 int remap_timer[4] = { 0 };
 
 void apply_remap(int port)
 {
-	if (jump_bit[port] == 0)
+	const auto &config = controller_configs[port];
+	
+	if (config.z_jump_bit == 0)
 		return;
 		
 	// Swap X/Y bit with Z bit
 	auto *status = &HSD_PadMasterStatus[port];
-	status->buttons = bit_swap(status->buttons, jump_bit[port], __builtin_ctz(Button_Z));
+	status->buttons = bit_swap(status->buttons, config.z_jump_bit, __builtin_ctz(Button_Z));
 }
 
 void configure_remap(int port)
 {
 	// In CSS if MnSlChr.dat is loaded
-	if (MnSlChr == nullptr)
+	if (MnSlChr == nullptr) {
+		remap_timer[port] = 0;
 		return;
+	}
 		
+	auto *config = &controller_configs[port];
+	
 	// Check if already remapped
-	if (jump_bit[port] != 0)
+	if (config->z_jump_bit != 0)
 		return;
 
 	const auto buttons = HSD_PadMasterStatus[port].buttons;
@@ -44,7 +50,7 @@ void configure_remap(int port)
 		
 	// Successfully remapped
 	remap_timer[port] = 0;
-	jump_bit[port] = (u8)__builtin_ctz(buttons & (Button_X | Button_Y));
+	config->z_jump_bit = (u8)__builtin_ctz(buttons & (Button_X | Button_Y));
 
 	HSD_PadRumble(port, 0, 0, 60);
 }
@@ -52,9 +58,9 @@ void configure_remap(int port)
 extern "C" void process_remapping(int port);
 extern "C" void process_remapping(int port)
 {
-	// Reset if unplugged
+	// Reset config if unplugged
 	if (HSD_PadMasterStatus[port].err != 0) {
-		jump_bit[port] = 0;
+		controller_configs[port].reset();
 		remap_timer[port] = 0;
 		return;
 	}

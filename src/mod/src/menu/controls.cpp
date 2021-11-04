@@ -166,9 +166,11 @@ static struct {
 			toggles[index].left_arrow_timer = 0;
 			toggles[index].right_arrow_timer = 0;
 		}
+		
+		load_config();
 	}
 	
-	auto *get_toggle(menu_option index)
+	auto *get_toggle(option index)
 	{
 		return &toggles[std::to_underlying(index)];
 	}
@@ -240,6 +242,7 @@ static struct {
 			redo();
 		} else if (selected == option::ok) {
 			Menu_PlaySFX(MenuSFX_Activate);
+			save_config();
 			exit();
 		}
 	}
@@ -275,13 +278,65 @@ static struct {
 		toggles[index].right_arrow_timer = 5;
 		update_value_text(index);
 	}
-	
-	void update_config()
+
+	void load_config()
 	{
 		auto *config = &controller_configs[port];
-		config->z_jump_bit = std::array {
-			0, __builtin_ctz(Button_X), __builtin_ctz(Button_Y)
+		
+		get_toggle(option::z_jump)->value =
+			config->z_jump_bit == __builtin_ctz(Button_X) ? 1 :
+			config->z_jump_bit == __builtin_ctz(Button_Y) ? 2 : 0;
+
+		get_toggle(option::perfect_wavedash)->value =
+			config->perfect_wavedash ? 1 : 0;
+
+		get_toggle(option::c_up)->value =
+			config->c_up         == cstick_type::tilt ? 1 : 0;
+
+		get_toggle(option::c_horizontal)->value =
+			config->c_horizontal == cstick_type::tilt ? 1 : 0;
+
+		get_toggle(option::c_down)->value =
+			config->c_down       == cstick_type::tilt ? 1 : 0;
+
+		get_toggle(option::tap_jump)->value =
+			config->tap_jump ? 0 : 1;
+	}
+	
+	void save_config()
+	{
+		auto *config = &controller_configs[port];
+
+		config->z_jump_bit = (u8)std::array {
+			0,
+			__builtin_ctz(Button_X),
+			__builtin_ctz(Button_Y)
 		}[get_toggle(option::z_jump)->value];
+
+		config->perfect_wavedash = std::array {
+			false,
+			true
+		}[get_toggle(option::perfect_wavedash)->value];
+
+		config->c_up = std::array {
+			cstick_type::smash,
+			cstick_type::tilt
+		}[get_toggle(option::c_up)->value];
+
+		config->c_horizontal = std::array {
+			cstick_type::smash,
+			cstick_type::tilt
+		}[get_toggle(option::c_horizontal)->value];
+
+		config->c_down = std::array {
+			cstick_type::smash,
+			cstick_type::tilt
+		}[get_toggle(option::c_down)->value];
+
+		config->tap_jump = std::array {
+			true,
+			false
+		}[get_toggle(option::tap_jump)->value];
 	}
 } menu_state;
 
