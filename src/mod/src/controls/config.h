@@ -9,7 +9,7 @@ enum class cstick_type {
 };
 
 struct controller_config {
-	inline static auto defaults = controller_config();
+	static controller_config defaults;
 	
 	u8 z_jump_bit             = 0;
 	bool perfect_wavedash     = false;
@@ -23,6 +23,8 @@ struct controller_config {
 		*this = defaults;
 	}
 };
+
+inline controller_config controller_config::defaults = {};
 
 inline controller_config controller_configs[4];
 
