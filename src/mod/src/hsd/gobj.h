@@ -100,14 +100,14 @@ struct HSD_GObj {
 		return static_cast<const T*>(data);
 	}
 
-	template<typename T>
-	T get_primitive() const requires std::is_arithmetic_v<T>
+	template<typename T> requires std::is_arithmetic_v<T> || std::is_scoped_enum_v<T>
+	T get_primitive() const
 	{
 		return std::bit_cast<T>(data);
 	}
 
-	template<typename T>
-	const void set_primitive(T value) requires std::is_arithmetic_v<T>
+	template<typename T> requires std::is_arithmetic_v<T> || std::is_scoped_enum_v<T>
+	const void set_primitive(T value)
 	{
 		data = std::bit_cast<void*>(value);
 	}

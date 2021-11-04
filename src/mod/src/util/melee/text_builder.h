@@ -20,8 +20,12 @@ constexpr auto ascii_to_melee()
 		return std::array { '\x20', '\xE6' };
 	else if constexpr (c == '.')
 		return std::array { '\x20', '\xE7' };
+	else if constexpr (c == '?')
+		return std::array { '\x20', '\xEB' };
 	else if constexpr (c == '!')
 		return std::array { '\x20', '\xEC' };
+	else if constexpr (c == '/')
+		return std::array { '\x20', '\xF0' };
 	else if constexpr (c == '\'')
 		return std::array { '\x20', '\xF3' };
 	else if constexpr (c == '(')
@@ -119,6 +123,12 @@ constexpr auto offset()
 	return std::array { (char)text_opcode::offset,
 			    (char)(x >> 8), (char)(x & 0xFF),
 			    (char)(y >> 8), (char)(y & 0xFF) };
+};
+
+template<u16 a>
+constexpr auto unk05()
+{
+	return std::array { (char)text_opcode::unknown_05, (char)(a >> 8), (char)(a & 0xFF) };
 };
 
 template<u16 a, u16 b>

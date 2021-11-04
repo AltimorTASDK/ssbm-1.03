@@ -5,23 +5,24 @@
 constexpr auto PORT_ALL = 4;
 
 enum MenuButton {
-	MenuButton_Up    = 0x001,
-	MenuButton_Down  = 0x002,
-	MenuButton_Left  = 0x004,
-	MenuButton_Right = 0x008,
-	MenuButton_B     = 0x020,
-	MenuButton_L     = 0x040,
-	MenuButton_R     = 0x080,
-	MenuButton_Start = 0x100,
-	MenuButton_A     = 0x200,
-	MenuButton_X     = 0x400,
-	MenuButton_Y     = 0x800
+	MenuButton_Up      = 0x001,
+	MenuButton_Down    = 0x002,
+	MenuButton_Left    = 0x004,
+	MenuButton_Right   = 0x008,
+	MenuButton_Confirm = 0x010,
+	MenuButton_B       = 0x020,
+	MenuButton_L       = 0x040,
+	MenuButton_R       = 0x080,
+	MenuButton_Start   = 0x100,
+	MenuButton_A       = 0x200,
+	MenuButton_X       = 0x400,
+	MenuButton_Y       = 0x800
 };
 
 enum MenuSFX {
-	MenuSFX_Exit      = 0,
-	MenuSFX_Enter     = 1,
-	MenuSFX_Activated = 2,
+	MenuSFX_Back      = 0,
+	MenuSFX_Activate     = 1,
+	MenuSFX_Scroll    = 2,
 	MenuSFX_Denied    = 3
 };
 

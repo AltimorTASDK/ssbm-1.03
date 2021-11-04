@@ -4,6 +4,9 @@
 
 .global hook_EnterSpecialMelee
 hook_EnterSpecialMelee:
+        # Store who pressed A
+        bl      store_controls_menu_port
+
         # Exit to tournament mode (controls menu)
         bl      Scene_GetExitData
         li      r0, Scene_Tournament

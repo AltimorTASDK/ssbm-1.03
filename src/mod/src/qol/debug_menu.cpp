@@ -75,7 +75,7 @@ extern "C" u32 hook_DebugMenu_Exit(u32 arg)
 {
 	// Exit back to VS menu
 	if (arg == 0) {
-		Menu_PlaySFX(MenuSFX_Exit);
+		Menu_PlaySFX(MenuSFX_Back);
 		Scene_SetMajorPending(Scene_Menu);
 		Scene_Exit();
 	}

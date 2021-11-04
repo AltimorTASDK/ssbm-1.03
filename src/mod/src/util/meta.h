@@ -267,3 +267,54 @@ struct string_literal {
 
 	T value[size];
 };
+
+// Wrap a list of arbitrarily sized std::arrays as an array of raw pointers
+template<typename ...component_types>
+class multi_array {
+	using tuple_type = std::add_const_t<std::tuple<component_types...>>;
+	using data_type = decltype(std::get<0>(std::declval<tuple_type>()).data());
+	using array_type = std::array<data_type, sizeof_tuple<tuple_type>>;
+
+	const std::array<size_t, sizeof...(component_types)> sizes;
+	const tuple_type tuple;
+	const array_type array;
+
+public:
+	constexpr multi_array(multi_array<component_types...> &&other) :
+		sizes(std::move(other.sizes)),
+		tuple(std::move(other.tuple)),
+		array(for_range<sizeof...(component_types)>([&]<size_t ...I>() {
+			return std::array { std::get<I>(tuple).data()... };
+		}))
+	{
+	}
+
+	constexpr multi_array(component_types &&...components) :
+		sizes { components.size()... },
+		tuple(std::forward_as_tuple(std::move(components)...)),
+		array(for_range<sizeof...(components)>([&]<size_t ...I>() {
+			return std::array { std::get<I>(tuple).data()... };
+		}))
+	{
+	}
+
+	constexpr size_t size() const
+	{
+		return sizeof...(component_types);
+	}
+
+	constexpr size_t size(size_t index) const
+	{
+		return sizes[index];
+	}
+
+	constexpr const data_type *data() const
+	{
+		return array.data();
+	}
+
+	constexpr data_type operator[](size_t index) const
+	{
+		return array[index];
+	}
+};

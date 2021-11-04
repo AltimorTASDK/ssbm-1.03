@@ -369,10 +369,10 @@ extern "C" void hook_Menu_RandomStageMenuInput(HSD_GObj *gobj)
 
 	if (buttons & MenuButton_L) {
 		set_page(data, clamp(data->page - 1, 0, (int)page_count - 1));
-		Menu_PlaySFX(MenuSFX_Activated);
+		Menu_PlaySFX(MenuSFX_Scroll);
 	} else if (buttons & MenuButton_R) {
 		set_page(data, clamp(data->page + 1, 0, (int)page_count - 1));
-		Menu_PlaySFX(MenuSFX_Activated);
+		Menu_PlaySFX(MenuSFX_Scroll);
 	}
 
 	orig_Menu_RandomStageMenuInput(gobj);

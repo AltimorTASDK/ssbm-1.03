@@ -1,19 +1,24 @@
+#include "controls/config.h"
 #include "hsd/archive.h"
 #include "hsd/cobj.h"
 #include "hsd/fog.h"
 #include "hsd/gobj.h"
 #include "hsd/jobj.h"
 #include "hsd/lobj.h"
-#include "hsd/archive.h"
+#include "hsd/pad.h"
 #include "melee/menu.h"
 #include "melee/music.h"
 #include "melee/scene.h"
 #include "melee/text.h"
+#include "util/enum_math.h"
 #include "util/math.h"
 #include "util/melee/text_builder.h"
+#include <type_traits>
 
-enum class menu_option {
-	z_jump,
+enum class option {
+	min,
+	
+	z_jump = min,
 	perfect_wavedash,
 	c_up,
 	c_horizontal,
@@ -39,88 +44,10 @@ struct TournamentModels {
 
 using scene_type = ArchiveScene<TournamentModels>;
 
-static HSD_Archive *GmTou1p;
-static HSD_Archive *MnExtAll;
-static scene_type *scene;
-static int canvas;
-
-static struct {
-	int selected;
-	int left_arrow_timer;
-	int right_arrow_timer;
-	int footer_timer;
-	
-	Text *label_text[(int)menu_option::max_toggle];
-	Text *value_text[(int)menu_option::max_toggle];
-	
-	void reset()
-	{
-		selected = 0;
-		left_arrow_timer = 0;
-		right_arrow_timer = 0;
-		footer_timer = 0;
-	}
-	
-	void exit()
-	{
-		Menu_PlaySFX(MenuSFX_Exit);
-		Scene_SetMajorPending(Scene_Menu);
-		Scene_Exit();
-	}
-
-	void scroll_up()
-	{
-		if (selected == 0)
-			selected = (int)menu_option::ok;
-		else if (selected >= (int)menu_option::max_toggle)
-			selected = (int)menu_option::max_toggle - 1;
-		else
-			selected--;
-	}
-	
-	void scroll_down()
-	{
-		if (selected >= (int)menu_option::max_toggle)
-			selected = 0;
-		else
-			selected++;
-	}
-
-	void pressed_a()
-	{
-		if (selected == (int)menu_option::redo)
-			Menu_PlaySFX(MenuSFX_Activated);
-		else if (selected == (int)menu_option::ok) {
-			Menu_PlaySFX(MenuSFX_Activated);
-			exit();
-		}
-	}
-
-	void pressed_left()
-	{
-		if (selected >= (int)menu_option::max_toggle) {
-			selected = clamp(selected - 1, (int)menu_option::max_toggle,
-			                               (int)menu_option::max - 1);
-		} else if (selected != (int)menu_option::ok) {
-			left_arrow_timer = 5;
-			Menu_PlaySFX(MenuSFX_Activated);
-		}
-	}
-
-	void pressed_right()
-	{
-		if (selected == (int)menu_option::ok) {
-			selected = clamp(selected + 1, (int)menu_option::max_toggle,
-			                               (int)menu_option::max - 1);
-		} else if (selected != (int)menu_option::redo) {
-			right_arrow_timer = 5;
-			Menu_PlaySFX(MenuSFX_Activated);
-		}
-	}
-} menu_state;
+constexpr auto toggle_count = std::to_underlying(option::max_toggle);
 
 template<string_literal str, u16 scale_x, u16 scale_y>
-static constexpr auto make_text()
+static consteval auto make_text()
 {
 	return text_builder::build(
 		text_builder::kern(),
@@ -132,28 +59,231 @@ static constexpr auto make_text()
 }
 
 template<string_literal str, u16 scale_x = 153>
-static constexpr auto make_label_text()
+static consteval auto make_label_text()
 {
 	return make_text<str, scale_x, 163>();
 }
 
 template<string_literal str, u16 scale_x = 153>
-static constexpr auto make_value_text()
+static consteval auto make_value_text()
 {
 	return make_text<str, scale_x, 153>();
 }
 
-const auto label_text = std::make_tuple(
+template<string_literal str, u16 scale_x = 225>
+static consteval auto make_description_text()
+{
+	return text_builder::build(
+		text_builder::unk05<10>(),
+		text_builder::textbox<scale_x, 202>(),
+		text_builder::center(),
+		text_builder::kern(),
+		text_builder::fit(),
+		text_builder::ascii<str>(),
+		text_builder::end_fit(),
+		text_builder::end_textbox());
+}
+
+constexpr auto label_text_data = multi_array {
 	make_label_text<"Z Jump">(),
 	make_label_text<"Perfect Wavedash", 134>(),
 	make_label_text<"C-Stick Up">(),
 	make_label_text<"C-Stick Horizontal", 124>(),
 	make_label_text<"C-Stick Down">(),
-	make_label_text<"Tap Jump">());
+	make_label_text<"Tap Jump">()
+};
 
-constexpr auto label_text_data = for_range<sizeof_tuple<decltype(label_text)>>([]<size_t ...I>() {
-		return std::array { (std::get<I>(label_text).data())... };
-	});
+constexpr auto description_text_data = multi_array {
+	make_description_text<"Jump with the Z button.">(),
+	make_description_text<"Wavedash perfectly.">(),
+	make_description_text<"Customize the C-stick.">(),
+	make_description_text<"Customize the C-stick.">(),
+	make_description_text<"Customize the C-stick.">(),
+	make_description_text<"Toggle tap jump.">(),
+	make_description_text<"Is this correct?">(),
+	make_description_text<"Is this correct?">()
+};
+
+constexpr auto value_text_data = multi_array {
+	multi_array {
+		make_value_text<"Off">(),
+		make_value_text<"Swap X/Z">(),
+		make_value_text<"Swap Y/Z">()
+	},
+	multi_array {
+		make_value_text<"Off">(),
+		make_value_text<"On">()
+	},
+	multi_array {
+		make_value_text<"Smash">(),
+		make_value_text<"Tilt">()
+	},
+	multi_array {
+		make_value_text<"Smash">(),
+		make_value_text<"Tilt">()
+	},
+	multi_array {
+		make_value_text<"Smash">(),
+		make_value_text<"Tilt">()
+	},
+	multi_array {
+		make_value_text<"On">(),
+		make_value_text<"Off">()
+	}
+};
+
+constexpr auto value_counts = for_range<toggle_count>([]<size_t ...I>() {
+	return std::array { (int)value_text_data.size(I)... };
+});
+
+static HSD_Archive *GmTou1p;
+static HSD_Archive *MnExtAll;
+static scene_type *scene;
+static int canvas;
+
+static struct {
+	u8 port;
+	option selected;
+	int left_arrow_timer;
+	int right_arrow_timer;
+	int footer_timer;
+	Text *description_text;
+	
+	struct {
+		int value;
+		Text *label_text;
+		Text *value_text;
+		int left_arrow_timer;
+		int right_arrow_timer;
+	} toggles[toggle_count];
+	
+	void init()
+	{
+		selected = option::min;
+		footer_timer = 0;
+
+		for (auto index = 0; index < std::to_underlying(option::max_toggle); index++) {
+			toggles[index].left_arrow_timer = 0;
+			toggles[index].right_arrow_timer = 0;
+		}
+	}
+	
+	auto *get_toggle(menu_option index)
+	{
+		return &toggles[std::to_underlying(index)];
+	}
+	
+	void update_value_text(int index)
+	{
+		toggles[index].value_text->data = value_text_data[index][toggles[index].value];
+	}
+	
+	void update_description()
+	{
+		description_text->data = description_text_data[std::to_underlying(selected)];
+	}
+	
+	void set_selected(option value)
+	{
+		selected = value;
+		update_description();
+	}
+	
+	void exit()
+	{
+		Scene_SetMajorPending(Scene_Menu);
+		Scene_Exit();
+	}
+
+	void redo()
+	{
+		for (auto index = 0; index < std::to_underlying(option::max_toggle); index++) {
+			toggles[index].value = 0;
+			update_value_text(index);
+		}
+		
+		set_selected(option::min);
+	}
+
+	void scroll_up()
+	{
+		if (selected == option::min)
+			set_selected(option::ok);
+		else if (selected >= option::max_toggle)
+			set_selected(option::max_toggle - 1);
+		else
+			set_selected(selected - 1);
+
+		Menu_PlaySFX(MenuSFX_Scroll);
+	}
+	
+	void scroll_down()
+	{
+		if (selected >= option::max_toggle)
+			set_selected(option::min);
+		else
+			set_selected(selected + 1);
+
+		Menu_PlaySFX(MenuSFX_Scroll);
+	}
+
+	void pressed_start()
+	{
+		Menu_PlaySFX(MenuSFX_Scroll);
+		set_selected(option::ok);
+	}
+
+	void pressed_a()
+	{
+		if (selected == option::redo) {
+			Menu_PlaySFX(MenuSFX_Back);
+			redo();
+		} else if (selected == option::ok) {
+			Menu_PlaySFX(MenuSFX_Activate);
+			exit();
+		}
+	}
+	
+	void scroll_left()
+	{
+		Menu_PlaySFX(MenuSFX_Scroll);
+
+		if (selected >= option::max_toggle) {
+			selected = clamp(selected - 1, option::max_toggle,
+			                               option::max - 1);
+			return;
+		}
+
+		const auto index = std::to_underlying(selected);
+		toggles[index].value = mod(toggles[index].value - 1, value_counts[index]);
+		toggles[index].left_arrow_timer = 5;
+		update_value_text(index);
+	}
+
+	void scroll_right()
+	{
+		Menu_PlaySFX(MenuSFX_Scroll);
+
+		if (selected >= option::max_toggle) {
+			selected = clamp(selected + 1, option::max_toggle,
+			                               option::max - 1);
+			return;
+		}
+
+		const auto index = std::to_underlying(selected);
+		toggles[index].value = mod(toggles[index].value + 1, value_counts[index]);
+		toggles[index].right_arrow_timer = 5;
+		update_value_text(index);
+	}
+	
+	void update_config()
+	{
+		auto *config = &controller_configs[port];
+		config->z_jump_bit = std::array {
+			0, __builtin_ctz(Button_X), __builtin_ctz(Button_Y)
+		}[get_toggle(option::z_jump)->value];
+	}
+} menu_state;
 
 static void create_camera()
 {
@@ -210,7 +340,7 @@ static HSD_GObj *create_model(ArchiveModelScene *model, GObjProcCallback callbac
 	return gobj;
 }
 
-static float calc_toggle_y_position(int index)
+static float calc_toggle_y_position(option index)
 {
 	return 11.5f - (float)index * 3.5f;
 }
@@ -224,29 +354,24 @@ static void set_y_position(HSD_GObj *gobj, float y)
 
 static void update_arrows(HSD_GObj *gobj)
 {
-	const auto index = gobj->get_primitive<int>();
+	const auto index = gobj->get_primitive<option>();
+	auto *toggle = &menu_state.toggles[std::to_underlying(index)];
 	auto *jobj = gobj->get_hsd_obj<HSD_JObj>();
 	auto *left_arrow = jobj->child;
 	auto *right_arrow = left_arrow->next;
-	
-	if (index != menu_state.selected) {
-		HSD_JObjReqAnimAll(jobj, 0.f);
-		HSD_JObjAnimAll(jobj);
-		return;
-	}
 
-	if (menu_state.left_arrow_timer == 0) {
+	if (toggle->left_arrow_timer == 0) {
 		HSD_JObjReqAnimAll(left_arrow, 0.f);
 	} else {
 		HSD_JObjReqAnimAll(left_arrow, 1.f);
-		menu_state.left_arrow_timer--;
+		toggle->left_arrow_timer--;
 	}
 
-	if (menu_state.right_arrow_timer == 0) {
+	if (toggle->right_arrow_timer == 0) {
 		HSD_JObjReqAnimAll(right_arrow, 0.f);
 	} else {
 		HSD_JObjReqAnimAll(right_arrow, 1.f);
-		menu_state.right_arrow_timer--;
+		toggle->right_arrow_timer--;
 	}
 
 	HSD_JObjAnimAll(jobj);
@@ -254,7 +379,7 @@ static void update_arrows(HSD_GObj *gobj)
 
 static void update_option(HSD_GObj *gobj)
 {
-	const auto index = gobj->get_primitive<int>();
+	const auto index = gobj->get_primitive<option>();
 	auto *jobj = gobj->get_hsd_obj<HSD_JObj>();
 	
 	if (index == menu_state.selected) {
@@ -270,7 +395,7 @@ static void update_selection(HSD_GObj *gobj)
 	auto *jobj = gobj->get_hsd_obj<HSD_JObj>();
 	HSD_JObjLoopAnim(jobj, { 0, 100, 0 });
 
-	if (menu_state.selected >= (int)menu_option::max_toggle) {
+	if (menu_state.selected >= option::max_toggle) {
 		HSD_JObjSetFlagsAll(jobj, HIDDEN);
 		return;
 	}
@@ -281,7 +406,7 @@ static void update_selection(HSD_GObj *gobj)
 
 static void create_toggles()
 {
-	for (auto index = 0; index < (int)menu_option::max_toggle; index++) {
+	for (auto index = option::min; index < option::max_toggle; index++) {
 		const auto position = calc_toggle_y_position(index);
 
 		auto *arrows = create_model(scene->models->arrows, update_arrows);
@@ -299,9 +424,9 @@ static void update_footer(HSD_GObj *gobj)
 	auto *jobj = gobj->get_hsd_obj<HSD_JObj>();
 	auto [redo, ok] = HSD_JObjGetFromTreeTuple<1, 5>(jobj);
 	
-	float flash_frame = (float)menu_state.footer_timer;
-	HSD_JObjReqAnimAll(ok,   menu_state.selected == (int)menu_option::ok   ? flash_frame : 0);
-	HSD_JObjReqAnimAll(redo, menu_state.selected == (int)menu_option::redo ? flash_frame : 0);
+	const auto flash_frame = (float)menu_state.footer_timer;
+	HSD_JObjReqAnimAll(ok,   menu_state.selected == option::ok   ? flash_frame : 0);
+	HSD_JObjReqAnimAll(redo, menu_state.selected == option::redo ? flash_frame : 0);
 	HSD_JObjAnimAll(ok);
 	HSD_JObjAnimAll(redo);
 	
@@ -328,20 +453,28 @@ static void create_text()
 {
 	canvas = Text_CreateCanvas(0, nullptr, GOBJ_CLASS_TEXT, GOBJ_PLINK_MENU_CAMERA, 0,
 	                           GOBJ_GXLINK_MENU_FG, 0, 19);
+
+	menu_state.description_text = Text_Create(0, canvas, 124.5f, 45, 0, 391, 30);
+	Text_SetFromSIS(menu_state.description_text, 0);
+	menu_state.update_description();
 				   
-	for (auto index = 0; index < (int)menu_option::max_toggle; index++) {
+	for (auto index = 0; index < std::to_underlying(option::max_toggle); index++) {
 		const auto y_pos = 113.f + (float)index * 35.7f;
-		menu_state.label_text[index] = Text_Create(0, canvas, 123, y_pos, 0, 360, 40);
-		menu_state.value_text[index] = Text_Create(0, canvas, 343, y_pos, 0, 360, 40);
-		Text_SetFromSIS(menu_state.label_text[index], 0);
-		Text_SetFromSIS(menu_state.value_text[index], 0);
-		menu_state.label_text[index]->data = label_text_data[index];
+		auto *toggle = &menu_state.toggles[index];
+
+		toggle->label_text = Text_Create(0, canvas, 123, y_pos, 0, 360, 40);
+		Text_SetFromSIS(toggle->label_text, 0);
+		toggle->label_text->data = label_text_data[index];
+
+		toggle->value_text = Text_Create(0, canvas, 343, y_pos, 0, 360, 40);
+		Text_SetFromSIS(toggle->value_text, 0);
+		menu_state.update_value_text(index);
 	}
 }
 
 static void update_background(HSD_GObj *gobj)
 {
-	HSD_JObjLoopAnim(gobj->get_hsd_obj<HSD_JObj>(), { 0, 801, 0 });
+	HSD_JObjLoopAnim(gobj->get_hsd_obj<HSD_JObj>(), { 0, 800, 0 });
 }
 
 static void update_panel(HSD_GObj *gobj)
@@ -351,6 +484,8 @@ static void update_panel(HSD_GObj *gobj)
 
 static void create_menu()
 {
+	menu_state.init();
+
 	create_camera();
 	create_lights();
 	create_fog();
@@ -360,16 +495,22 @@ static void create_menu()
 	create_toggles();
 	create_footer();
 	create_text();
-	
-	menu_state.reset();
 }
 
 static void Controls_Think()
 {
-	const auto buttons = Menu_GetButtons(PORT_ALL);
+	const auto buttons = Menu_GetButtons(menu_state.port);
 
-	if (buttons & MenuButton_B) {
+	// Exit menu on B press or unplug
+	if (HSD_PadCopyStatus[menu_state.port].err != 0 || (buttons & MenuButton_B)) {
+		Menu_PlaySFX(MenuSFX_Back);
 		menu_state.exit();
+		return;
+	}
+
+	// Use start on toggles to jump to OK
+	if (menu_state.selected < option::max_toggle && (buttons & MenuButton_Start)) {
+		menu_state.pressed_start();
 		return;
 	}
 
@@ -380,12 +521,12 @@ static void Controls_Think()
 		menu_state.scroll_down();
 
 	if (buttons & MenuButton_Left)
-		menu_state.pressed_left();
+		menu_state.scroll_left();
 
 	if (buttons & MenuButton_Right)
-		menu_state.pressed_right();
+		menu_state.scroll_right();
 
-	if (buttons & MenuButton_A)
+	if (buttons & MenuButton_Confirm)
 		menu_state.pressed_a();
 }
 
@@ -405,6 +546,21 @@ static void Controls_Free(void *exit_data)
 	HSD_ArchiveFree(GmTou1p);
 	HSD_ArchiveFree(MnExtAll);
 	Text_FreeAll();
+}
+
+extern "C" void store_controls_menu_port()
+{
+	MenuInputCooldown = 0;
+	
+	// Remember who entered the Controls menu
+	for (u8 i = 0; i < 4; i++) {
+		if (Menu_GetButtons(i) & MenuButton_Confirm) {
+			menu_state.port = i;
+			break;
+		}
+	}
+
+	MenuInputCooldown = 5;
 }
 
 struct set_menu_callbacks {
