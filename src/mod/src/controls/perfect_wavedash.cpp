@@ -12,8 +12,8 @@ extern "C" float hook_Player_GetAirdodgeAngle(Player *player)
 		
 	const auto &pad = get_input<0>(player->port);
 
-	// Perfect WD if the X axis is >= 80 and the Y axis is in the deadzone
-	if (std::abs(pad.stick.x) < STICK_MAX || std::abs(pad.stick.y) > DEADZONE)
+	// Perfect WD if the X axis is >= 64 (.8000) and the Y axis is in the deadzone
+	if (std::abs(pad.stick.x) < 64 || std::abs(pad.stick.y) > DEADZONE)
 		return orig_Player_GetAirdodgeAngle(player);
 		
 	constexpr auto perfect_x = .9500f;
