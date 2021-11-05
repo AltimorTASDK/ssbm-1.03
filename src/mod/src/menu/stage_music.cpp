@@ -138,7 +138,7 @@ static int get_selected_bgm_id(ItemMenuData *data, u8 stage)
 	if (bgm != -1)
 		return bgm_ids[bgm];
 		
-	return (int[]) {
+	return std::array {
 		BGM_YoshisStory,
 		BGM_PokemonStadium,
 		BGM_FountainOfDreams,
