@@ -3,6 +3,8 @@
 #include "util/vector.h"
 #include <gctypes.h>
 
+struct HSD_GObj;
+
 enum class text_opcode {
 	end = 0x00,
 	reset = 0x01,
@@ -82,5 +84,19 @@ Text *Text_Create(u32 sis_id, s32 canvas_id,
 
 void Text_SetFromSIS(Text *text, u32 id);
 void Text_SetSubtextColor(Text *text, int subtext, const color_rgba &color);
+
+DevText *DevelopText_Create(u8 id, u16 x, u16 y, s32 width, s32 height, char *buf);
+void DevelopText_Show(HSD_GObj *unused, DevText *text);
+
+void DevelopText_HideBackground(DevText *text);
+void DevelopText_HideCursor(DevText *text);
+void DevelopText_SetBGColor(DevText *text, const color_rgba &color);
+void DevelopText_SetTextColor(DevText *text, const color_rgba &color);
+void DevelopText_SetScale(DevText *text, float x, float y);
+
+void DevelopText_Erase(DevText *text);
+void DevelopText_SetCursor(DevText *text, s32 x, s32 y);
+void DevelopText_Printf(DevText *text, const char *fmt, ...);
+void DevelopText_Print(DevText *text, const char *buf);
 
 }

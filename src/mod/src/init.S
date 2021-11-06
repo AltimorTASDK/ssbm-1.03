@@ -118,7 +118,6 @@ hooks_start:
 .set CheckJab3Input,          Interrupt_Jab3+0x3C
 .set CheckRapidJabInput,      Interrupt_RapidJab+0x18
 .set CheckFTiltAngle,         AS_053_056_FTilt+0x34
-.set SceneLoopStart,          Scene_RunLoop+0x68
 
 add_hook Bubble_GetPosition
 add_hook CheckCSSPlayerCount
@@ -211,9 +210,13 @@ add_hook TrainingMenu_Think
 add_hook TumbleWiggleCheck
 add_hook UpdatePadButtons
 add_hook UpdatePlayerStick
-# PDF
+# Latency debugging
 add_hook PadFetchCallback
 add_hook HSD_PerfSetStartTime
-add_hook SceneLoopStart
+add_hook HSD_VIWaitXFBDrawEnable
+add_hook HSD_VIPreRetraceCB
+add_hook DevelopText_Setup
+# PDF
+add_hook UpdatePadFetchRate
 
 hooks_end:
