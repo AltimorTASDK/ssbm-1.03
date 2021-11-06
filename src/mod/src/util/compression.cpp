@@ -1,3 +1,4 @@
+#include "os/os.h"
 #include "util/compression.h"
 #include <cstddef>
 #include <cstring>
@@ -57,6 +58,8 @@ u8 *rle_decode(const rle_data *data)
 		}
 	}
 	
+	DCFlushRange(out, out_len);
+	
 	return out;
 }
 
@@ -93,6 +96,8 @@ u8 *index_decode(const index_header *index)
 	}
 	
 	delete[] in;
+	
+	DCFlushRange(out, out_len);
 	
 	return out;
 }

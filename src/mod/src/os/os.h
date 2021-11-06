@@ -13,4 +13,6 @@ u64 OSGetTime();
 u32 OSDisableInterrupts();
 void OSRestoreInterrupts(u32 mask);
 
+void DCFlushRange(void *address, u32 size);
+
 }
