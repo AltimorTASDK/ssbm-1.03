@@ -28,7 +28,7 @@ inline controller_config controller_config::defaults = {};
 
 inline controller_config controller_configs[4];
 
-inline const controller_config &get_player_config(Player *player)
+inline const controller_config &get_player_config(const Player *player)
 {
 	if (!Player_IsCPU(player))
 		return controller_configs[player->port];

@@ -4,6 +4,7 @@
 #include "hsd/tobj.h"
 #include "melee/camera.h"
 #include "melee/text.h"
+#include "qol/widescreen.h"
 #include "rules/values.h"
 #include "util/math.h"
 #include "util/vector.h"
@@ -48,10 +49,6 @@ extern "C" HSD_CObjDesc ScreenFlashCObjDesc;
 extern "C" HSD_GObj *NameTagGObjs[6];
 
 extern "C" TrainingMenuData TrainingMenu;
-
-constexpr auto aspect_ratio_vanilla = 913.f / 750.f;
-constexpr auto aspect_ratio_factor = 320.f / 219.f;
-constexpr auto aspect_ratio_wide = aspect_ratio_vanilla * aspect_ratio_factor;
 
 extern "C" int orig_CObjLoad(HSD_CObj *cobj, HSD_CObjDesc *desc);
 extern "C" int hook_CObjLoad(HSD_CObj *cobj, HSD_CObjDesc *desc)

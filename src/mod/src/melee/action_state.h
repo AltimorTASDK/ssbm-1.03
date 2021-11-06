@@ -349,9 +349,13 @@ enum ActionState {
 
 extern "C" {
 
+bool Interrupt_HammerJump(HSD_GObj *gobj);
+bool Interrupt_Jump(HSD_GObj *gobj);
+
 void AS_012_Rebirth(HSD_GObj *gobj);
 void AS_018_SmashTurn(HSD_GObj *gobj);
 void AS_020_Dash(HSD_GObj *gobj, bool forward);
+void AS_024_KneeBend(HSD_GObj *gobj, u32 jump_type);
 void AS_029_Fall(HSD_GObj *gobj);
 void AS_041_SquatRv(HSD_GObj *gobj);
 

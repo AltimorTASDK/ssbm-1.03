@@ -275,7 +275,7 @@ bool PlayerBlock_ShouldDisplayPortTag(s32 slot);
 PlayerBlockStats *PlayerBlock_GetStats(s32 slot);
 s32 PlayerBlockStats_GetActionStat(const PlayerBlockStats *stats, u32 index);
 
-bool Player_IsCPU(Player *player);
+bool Player_IsCPU(const Player *player);
 
 void PlayerThink_Input(HSD_GObj *gobj);
 	
