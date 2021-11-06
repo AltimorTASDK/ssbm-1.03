@@ -3,6 +3,7 @@
 #include "hsd/video.h"
 #include "melee/text.h"
 #include "os/os.h"
+#include "os/thread.h"
 #include "os/vi.h"
 #include <gctypes.h>
 
@@ -23,12 +24,16 @@ static u64 fetch_interval;
 
 static u64 frame_time;
 static u32 frame_line;
+static u32 frame_retrace_count;
 static u64 frame_poll_time;
 static u64 frame_fetch_time;
 
 static u64 frame_interval;
 static u32 frame_end_line;
 
+static bool xfb_miss;
+static OSThreadQueue xfb_miss_thread_queue;
+static OSThreadQueue half_vb_thread_queue;
 static u32 efb_copy_retrace_count;
 static u32 efb_copy_line;
 static u64 efb_copy_poll_time[3];
@@ -54,8 +59,12 @@ static void pad_sample_callback()
 	last_poll_line = current_poll_line;
 	poll_time = current_poll_time;
 	
-	if (index == 0)
+	if (index == 0) {
 		PadFetchCallback();
+		OSWakeupThread(&xfb_miss_thread_queue);
+	} else if (index == 1) {
+		OSWakeupThread(&half_vb_thread_queue);
+	}
 }
 
 extern "C" void orig_PadFetchCallback();
@@ -72,8 +81,10 @@ extern "C" void hook_PadFetchCallback()
 
 extern "C" void first_engine_frame()
 {
+	OSSleepThread(&half_vb_thread_queue);
 	frame_time = OSGetTime();
 	frame_line = VIGetCurrentLine();
+	frame_retrace_count = VIGetRetraceCount();
 	frame_poll_time = poll_time_queue[HSD_PadLibData.qread];
 	frame_fetch_time = fetch_time_queue[HSD_PadLibData.qread];
 }
@@ -89,27 +100,34 @@ extern "C" void hook_HSD_PerfSetTotalTime()
 extern "C" void orig_HSD_VICopyXFBASync(u32 pass);
 extern "C" void hook_HSD_VICopyXFBASync(u32 pass)
 {
+	const auto irq_enable = OSDisableInterrupts();
+
+	if (VIGetRetraceCount() == frame_retrace_count) {
+		// Artifically induce VB if not on LCD/LOW
+		VIWaitForRetrace();
+
+		if (xfb_miss) {
+			// Skip until the next frame so another XFB is free
+			xfb_miss = false;
+			return;
+		}
+	}
+
+	OSRestoreInterrupts(irq_enable);
+
 	orig_HSD_VICopyXFBASync(pass);
 }
 
 extern "C" s32 orig_HSD_VIWaitXFBDrawEnable();
 extern "C" s32 hook_HSD_VIWaitXFBDrawEnable()
 {
-#if 0
-	const auto irq_mask = OSDisableInterrupts();
-	const auto retrace_count = VIGetRetraceCount();
-
-	if (retrace_count == efb_copy_retrace_count)
-		VIWaitForRetrace();
-	
-	efb_copy_retrace_count = retrace_count + 1;
-	OSRestoreInterrupts(irq_mask);
-#endif
-	
 	const auto xfb = orig_HSD_VIWaitXFBDrawEnable();
+	
 	if (xfb != -1) {
 		efb_copy_poll_time[xfb] = frame_poll_time;
 		efb_copy_line = VIGetCurrentLine();
+	} else {
+		xfb_miss = true;
 	}
 
 	return xfb;

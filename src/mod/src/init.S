@@ -221,6 +221,5 @@ add_hook DevelopText_Setup
 add_hook HSD_VICopyXFBASync
 # PDF
 add_hook UpdatePadFetchRate
-#add_hook VIRetraceHandler
 
 hooks_end:

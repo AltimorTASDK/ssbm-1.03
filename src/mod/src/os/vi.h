@@ -29,5 +29,6 @@ extern "C" {
 u32 VIGetCurrentLine();
 u32 VIGetRetraceCount();
 void VIWaitForRetrace();
+void VISetNextFrameBuffer(void *buffer);
 
 }
