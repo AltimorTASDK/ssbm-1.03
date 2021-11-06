@@ -384,7 +384,7 @@ static HSD_GObj *create_model(ArchiveModelScene *model, GObjProcCallback callbac
 	GObj_SetupGXLink(gobj, GObj_GXProcJoint, gx_link, 0);
 	
 	if (callback != nullptr)
-		GObj_CreateProcWithCallback(gobj, callback, 0);
+		GObj_AddProc(gobj, callback, 0);
 		
 	if (animated) {
 		HSD_JObjAddSceneAnimByIndex(jobj, model, anim_index);
