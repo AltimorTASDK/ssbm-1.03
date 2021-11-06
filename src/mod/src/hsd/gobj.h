@@ -122,7 +122,7 @@ void GObj_Free(HSD_GObj *gobj);
 void GObj_InitKindObj(HSD_GObj *gobj, s8 obj_kind, void *obj_ptr);
 void GObj_SetupGXLink(HSD_GObj *gobj, GObjRenderCallback *render_cb, u8 gx_link, u8 priority);
 void GObj_SetupCameraGXLink(HSD_GObj *gobj, GObjRenderCallback *render_cb, u8 priority);
-void GObj_AddProc(HSD_GObj *gobj, GObjProcCallback *cb, u8 s_prio);
+HSD_GObjProc *GObj_AddProc(HSD_GObj *gobj, GObjProcCallback *cb, u8 s_prio);
 void GObj_ProcRemove(HSD_GObjProc *proc);
 
 void GObj_ProcAnimate(HSD_GObj *gobj);
