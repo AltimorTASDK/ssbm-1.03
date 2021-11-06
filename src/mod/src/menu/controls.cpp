@@ -6,10 +6,13 @@
 #include "hsd/jobj.h"
 #include "hsd/lobj.h"
 #include "hsd/pad.h"
+#include "hsd/wobj.h"
 #include "melee/menu.h"
 #include "melee/music.h"
 #include "melee/scene.h"
 #include "melee/text.h"
+#include "qol/widescreen.h"
+#include "rules/values.h"
 #include "util/enum_math.h"
 #include "util/math.h"
 #include "util/melee/text_builder.h"
@@ -506,7 +509,48 @@ static void create_footer()
 
 static void create_text()
 {
-	canvas = Text_CreateCanvas(0, nullptr, GOBJ_CLASS_TEXT, GOBJ_PLINK_MENU_CAMERA, 0,
+	static constinit auto canvas_eye      = HSD_WObjDesc { .pos = { 0, 0, 1 } };
+	static constinit auto canvas_interest = HSD_WObjDesc { .pos = { 0, 0, 0 } };
+	
+	static constinit auto canvas_cobjdesc = HSD_CObjDesc {
+		.projection_type = ProjType_Ortho,
+		.viewport_right  = 640,
+		.viewport_bottom = 480,
+		.scissor_right   = 640,
+		.scissor_bottom  = 480,
+		.eye_position    = &canvas_eye,
+		.interest        = &canvas_interest,
+		.far             = 65535,
+		.ortho = {
+			.bottom  = -480,
+			.right   = 640
+		}
+	};
+
+	static constinit auto canvas_cobjdesc_wide = HSD_CObjDesc {
+		.projection_type = ProjType_Ortho,
+		.viewport_right  = 640,
+		.viewport_bottom = 480,
+		.scissor_right   = 640,
+		.scissor_bottom  = 480,
+		.eye_position    = &canvas_eye,
+		.interest        = &canvas_interest,
+		.far             = 65535,
+		.ortho = {
+			.bottom  = -480,
+			.left    = ortho_left_wide,
+			.right   = ortho_right_wide,
+		}
+	};
+	
+	auto *canvas_gobj = GObj_Create(GOBJ_CLASS_TEXT, GOBJ_PLINK_MENU_CAMERA, 0);
+	auto *canvas_cobj = HSD_CObjLoadDesc(is_widescreen() ? &canvas_cobjdesc_wide
+	                                                     : &canvas_cobjdesc);
+	GObj_InitKindObj(canvas_gobj, GOBJ_KIND_CAMERA, canvas_cobj);
+	GObj_SetupCameraGXLink(canvas_gobj, GObj_GXProcCamera, 19);
+	canvas_gobj->gxlink_prios = 1 << GOBJ_GXLINK_MENU_FG;
+	
+	canvas = Text_CreateCanvas(0, canvas_gobj, GOBJ_CLASS_TEXT, GOBJ_PLINK_MENU_CAMERA, 0,
 	                           GOBJ_GXLINK_MENU_FG, 0, 19);
 
 	menu_state.description_text = Text_Create(0, canvas, 124.5f, 45, 0, 391, 30);

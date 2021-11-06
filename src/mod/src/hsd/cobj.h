@@ -13,7 +13,7 @@ enum ProjType {
 
 struct HSD_AObj;
 struct HSD_WObj;
-struct HSD_CObjDesc;
+struct HSD_WObjDesc;
 
 struct HSD_CObj {
 	HSD_Obj base;
@@ -52,9 +52,41 @@ struct HSD_CObj {
 	matrix3x4 *proj_mtx;
 };
 
+struct HSD_CObjDesc {
+	const char *class_name;
+	u16 flags;
+	u16 projection_type;
+	u16 viewport_left;
+	u16 viewport_right;
+	u16 viewport_top;
+	u16 viewport_bottom;
+	u16 scissor_left;
+	u16 scissor_right;
+	u16 scissor_top;
+	u16 scissor_bottom;
+	const HSD_WObjDesc *eye_position;
+	const HSD_WObjDesc *interest;
+	f32 roll;
+	const vec3 *up;
+	f32 near;
+	f32 far;
+	union {
+		struct {
+			f32 fov;
+			f32 aspect;
+		} perspective;
+		struct {
+			f32 top;
+			f32 bottom;
+			f32 left;
+			f32 right;
+		} frustum, ortho;
+	};
+};
+
 extern "C" {
 
-HSD_CObj *HSD_CObjLoadDesc(HSD_CObjDesc *desc);
+HSD_CObj *HSD_CObjLoadDesc(const HSD_CObjDesc *desc);
 
 HSD_CObj *HSD_CObjGetCurrent();
 bool HSD_CObjSetCurrent(HSD_CObj *cobj);
