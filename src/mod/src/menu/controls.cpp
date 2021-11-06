@@ -507,7 +507,7 @@ static void create_footer()
 	HSD_JObjSetMtxDirty(redo);
 }
 
-static void create_text()
+static void create_text_canvas()
 {
 	static constinit auto canvas_eye      = HSD_WObjDesc { .pos = { 0, 0, 1 } };
 	static constinit auto canvas_interest = HSD_WObjDesc { .pos = { 0, 0, 0 } };
@@ -552,7 +552,10 @@ static void create_text()
 	
 	canvas = Text_CreateCanvas(0, canvas_gobj, GOBJ_CLASS_TEXT, GOBJ_PLINK_MENU_CAMERA, 0,
 	                           GOBJ_GXLINK_MENU_FG, 0, 19);
+}
 
+static void create_text()
+{
 	menu_state.description_text = Text_Create(0, canvas, 124.5f, 45, 0, 391, 30);
 	Text_SetFromSIS(menu_state.description_text, 0);
 	menu_state.update_description();
@@ -593,6 +596,7 @@ static void create_menu()
 	create_model(scene->models->selection, update_selection);
 	create_toggles();
 	create_footer();
+	create_text_canvas();
 	create_text();
 }
 
