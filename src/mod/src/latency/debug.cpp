@@ -7,7 +7,7 @@
 #include <gctypes.h>
 
 constexpr auto TEXT_WIDTH = 24;
-constexpr auto TEXT_HEIGHT = 12;
+constexpr auto TEXT_HEIGHT = 13;
 
 static u32 last_poll_line;
 static u32 poll_line[2];
@@ -29,7 +29,9 @@ static u64 frame_fetch_time;
 static u64 frame_interval;
 static u32 frame_end_line;
 
-static u64 draw_poll_time[3];
+static u32 efb_copy_retrace_count;
+static u32 efb_copy_line;
+static u64 efb_copy_poll_time[3];
 
 static u64 retrace_time;
 static u64 retrace_poll_time;
@@ -38,6 +40,7 @@ static DevText *text;
 static char text_buf[TEXT_WIDTH * TEXT_HEIGHT * 2];
 
 extern "C" void *PADSetSamplingCallback(void(*callback)());
+extern "C" void PadFetchCallback();
 
 static void pad_sample_callback()
 {
@@ -50,6 +53,9 @@ static void pad_sample_callback()
 
 	last_poll_line = current_poll_line;
 	poll_time = current_poll_time;
+	
+	if (index == 0)
+		PadFetchCallback();
 }
 
 extern "C" void orig_PadFetchCallback();
@@ -64,14 +70,12 @@ extern "C" void hook_PadFetchCallback()
 	orig_PadFetchCallback();
 }
 
-extern "C" void orig_HSD_PerfSetStartTime();
-extern "C" void hook_HSD_PerfSetStartTime()
+extern "C" void first_engine_frame()
 {
 	frame_time = OSGetTime();
 	frame_line = VIGetCurrentLine();
 	frame_poll_time = poll_time_queue[HSD_PadLibData.qread];
 	frame_fetch_time = fetch_time_queue[HSD_PadLibData.qread];
-	orig_HSD_PerfSetStartTime();
 }
 
 extern "C" void orig_HSD_PerfSetTotalTime();
@@ -91,9 +95,22 @@ extern "C" void hook_HSD_VICopyXFBASync(u32 pass)
 extern "C" s32 orig_HSD_VIWaitXFBDrawEnable();
 extern "C" s32 hook_HSD_VIWaitXFBDrawEnable()
 {
+#if 0
+	const auto irq_mask = OSDisableInterrupts();
+	const auto retrace_count = VIGetRetraceCount();
+
+	if (retrace_count == efb_copy_retrace_count)
+		VIWaitForRetrace();
+	
+	efb_copy_retrace_count = retrace_count + 1;
+	OSRestoreInterrupts(irq_mask);
+#endif
+	
 	const auto xfb = orig_HSD_VIWaitXFBDrawEnable();
-	if (xfb != -1)
-		draw_poll_time[xfb] = frame_poll_time;
+	if (xfb != -1) {
+		efb_copy_poll_time[xfb] = frame_poll_time;
+		efb_copy_line = VIGetCurrentLine();
+	}
 
 	return xfb;
 }
@@ -109,12 +126,13 @@ extern "C" void hook_HSD_VIPreRetraceCB(u32 retrace_count)
 		return;
 	
 	retrace_time = OSGetTime();
-	retrace_poll_time = draw_poll_time[xfb];
+	retrace_poll_time = efb_copy_poll_time[xfb];
 }
 
 static double ms(u64 interval)
 {
-	return (double)interval / 40500.0;
+	const auto bus_speed = *(volatile u32*)0x800000F8;
+	return (double)interval / ((double)bus_speed / 4000.0);
 }
 
 static void update_text(HSD_GObj *gobj)
@@ -131,6 +149,7 @@ static void update_text(HSD_GObj *gobj)
 	DevelopText_Printf(text, "Fetch Line      %d\n",    fetch_line);
 	DevelopText_Printf(text, "Engine Line     %d\n",    frame_line);
 	DevelopText_Printf(text, "Engine End Line %d\n",    frame_end_line);
+	DevelopText_Printf(text, "EFB Copy Line   %d\n",    efb_copy_line);
 	DevelopText_Printf(text, "Poll 1 Line     %d\n",    poll_line[0]);
 	DevelopText_Printf(text, "Poll 2 Line     %d",      poll_line[1]);
 }

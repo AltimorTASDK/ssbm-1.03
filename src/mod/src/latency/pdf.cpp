@@ -23,6 +23,7 @@ extern "C" void hook_UpdatePadFetchRate()
 	OSCancelAlarm(&PadFetchAlarm);
 }
 
+#if 0
 static void retrace_callback(u32 retrace_count)
 {
 	PadFetchCallback();
@@ -34,6 +35,7 @@ struct set_retrace_cb {
 		HSD_VISetUserPostRetraceCallback(retrace_callback);
 	}
 } set_retrace_cb;
+#endif
 
 /*extern "C" void orig_VIRetraceHandler(u32 irq, OSContext *context);
 extern "C" void hook_VIRetraceHandler(u32 irq, OSContext *context)

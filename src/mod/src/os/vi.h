@@ -27,6 +27,7 @@ inline volatile auto *vi_regs = (vi_regdef*)0xCC002000;
 extern "C" {
 
 u32 VIGetCurrentLine();
+u32 VIGetRetraceCount();
 void VIWaitForRetrace();
 
 }
