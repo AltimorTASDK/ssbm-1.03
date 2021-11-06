@@ -213,10 +213,13 @@ add_hook UpdatePlayerStick
 # Latency debugging
 add_hook PadFetchCallback
 add_hook HSD_PerfSetStartTime
+add_hook HSD_PerfSetTotalTime
 add_hook HSD_VIWaitXFBDrawEnable
 add_hook HSD_VIPreRetraceCB
 add_hook DevelopText_Setup
+add_hook HSD_VICopyXFBASync
 # PDF
 add_hook UpdatePadFetchRate
+#add_hook VIRetraceHandler
 
 hooks_end:

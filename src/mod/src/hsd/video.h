@@ -23,9 +23,29 @@ enum HSD_VIXFBDrawDispStatus {
 
 using VIRetraceCallback = void(u32 retrace_count);
 
+struct VIAll {
+	char pad000[0x58];
+};
+
+struct XFB {
+	void *buffer;
+	u32 status;
+	VIAll vi_all;
+};
+
+struct HSD_VIInfo {
+	char pad0000[0x1458];
+	XFB xfb[3];
+	char pad1578[0x15F8 - 0x1578];
+};
+
 extern "C" {
 	
+extern HSD_VIInfo HSD_VIData;
+	
 s32 HSD_VISearchXFBByStatus(u32 status);
+void HSD_VICopyXFBASync(u32 pass);
 VIRetraceCallback *HSD_VISetUserPreRetraceCallback(VIRetraceCallback *cb);
+VIRetraceCallback *HSD_VISetUserPostRetraceCallback(VIRetraceCallback *cb);
 	
 }

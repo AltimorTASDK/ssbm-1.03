@@ -7,7 +7,7 @@
 #include <gctypes.h>
 
 constexpr auto TEXT_WIDTH = 24;
-constexpr auto TEXT_HEIGHT = 9;
+constexpr auto TEXT_HEIGHT = 12;
 
 static u32 last_poll_line;
 static u32 poll_line[2];
@@ -17,13 +17,17 @@ static u64 poll_time;
 static u64 poll_time_queue[PAD_QNUM];
 
 static u64 fetch_time;
+static u32 fetch_line;
 static u64 fetch_time_queue[PAD_QNUM];
 static u64 fetch_interval;
 
 static u64 frame_time;
-static u64 frame_line;
+static u32 frame_line;
 static u64 frame_poll_time;
 static u64 frame_fetch_time;
+
+static u64 frame_interval;
+static u32 frame_end_line;
 
 static u64 draw_poll_time[3];
 
@@ -53,6 +57,7 @@ extern "C" void hook_PadFetchCallback()
 {
 	const auto last_time = fetch_time;
 	fetch_time = OSGetTime();
+	fetch_line = VIGetCurrentLine();
 	poll_time_queue[HSD_PadLibData.qwrite] = poll_time;
 	fetch_time_queue[HSD_PadLibData.qwrite] = fetch_time;
 	fetch_interval = fetch_time - last_time;
@@ -69,14 +74,28 @@ extern "C" void hook_HSD_PerfSetStartTime()
 	orig_HSD_PerfSetStartTime();
 }
 
+extern "C" void orig_HSD_PerfSetTotalTime();
+extern "C" void hook_HSD_PerfSetTotalTime()
+{
+	frame_interval = OSGetTime() - frame_time;
+	frame_end_line = VIGetCurrentLine();
+	orig_HSD_PerfSetTotalTime();
+}
+
+extern "C" void orig_HSD_VICopyXFBASync(u32 pass);
+extern "C" void hook_HSD_VICopyXFBASync(u32 pass)
+{
+	orig_HSD_VICopyXFBASync(pass);
+}
+
 extern "C" s32 orig_HSD_VIWaitXFBDrawEnable();
 extern "C" s32 hook_HSD_VIWaitXFBDrawEnable()
 {
-	const auto index = orig_HSD_VIWaitXFBDrawEnable();
-	if (index != -1)
-		draw_poll_time[index] = frame_poll_time;
-		
-	return index;
+	const auto xfb = orig_HSD_VIWaitXFBDrawEnable();
+	if (xfb != -1)
+		draw_poll_time[xfb] = frame_poll_time;
+
+	return xfb;
 }
 
 extern "C" void orig_HSD_VIPreRetraceCB(u32 retrace_count);
@@ -85,6 +104,7 @@ extern "C" void hook_HSD_VIPreRetraceCB(u32 retrace_count)
 	orig_HSD_VIPreRetraceCB(retrace_count);
 	
 	const auto xfb = HSD_VISearchXFBByStatus(HSD_VI_XFB_NEXT);
+
 	if (xfb == -1)
 		return;
 	
@@ -105,9 +125,12 @@ static void update_text(HSD_GObj *gobj)
 	DevelopText_Printf(text, "Poll -> Engine  %.04f\n", ms(frame_time - frame_poll_time));
 	DevelopText_Printf(text, "Poll -> Display %.04f\n", ms(retrace_time - retrace_poll_time));
 	DevelopText_Printf(text, "Fetch Interval  %.04f\n", ms(fetch_interval));
-	DevelopText_Printf(text, "Engine Line     %d\n",    frame_line);
+	DevelopText_Printf(text, "Engine Time     %.04f\n", ms(frame_interval));
 	DevelopText_Printf(text, "Poll 1 Interval %.04f\n", ms(poll_interval[0]));
 	DevelopText_Printf(text, "Poll 2 Interval %.04f\n", ms(poll_interval[1]));
+	DevelopText_Printf(text, "Fetch Line      %d\n",    fetch_line);
+	DevelopText_Printf(text, "Engine Line     %d\n",    frame_line);
+	DevelopText_Printf(text, "Engine End Line %d\n",    frame_end_line);
 	DevelopText_Printf(text, "Poll 1 Line     %d\n",    poll_line[0]);
 	DevelopText_Printf(text, "Poll 2 Line     %d",      poll_line[1]);
 }
