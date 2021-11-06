@@ -7,6 +7,7 @@
 #include "hsd/tobj.h"
 #include "melee/camera.h"
 #include "melee/match.h"
+#include "melee/scene.h"
 #include "melee/stage.h"
 #include "menu/stage_select.h"
 #include "util/math.h"
@@ -19,11 +20,16 @@ struct FountainReflectionData {
 	HSD_ImageDesc *image;
 };
 
+static bool should_use_simple_fod()
+{
+	return MatchInfo_IsTeams() && SceneMajor != Scene_Training;
+}
+
 extern "C" void orig_Stage_Fountain_UpdateReflection(HSD_GObj *gobj);
 extern "C" void hook_Stage_Fountain_UpdateReflection(HSD_GObj *gobj)
 {
 	// Disable reflection in teams
-	if (!GetMatchInfo()->match.is_teams) {
+	if (!should_use_simple_fod()) {
 		orig_Stage_Fountain_UpdateReflection(gobj);
 		return;
 	}
@@ -58,7 +64,7 @@ extern "C" HSD_GObj *hook_Stage_Fountain_CreateReflection()
 {
 	auto *gobj = orig_Stage_Fountain_CreateReflection();
 
-	if (!GetMatchInfo()->match.is_teams)
+	if (!should_use_simple_fod())
 		return gobj;
 
 	// Initialize the reflection buffer to white
@@ -73,7 +79,7 @@ extern "C" void orig_Stage_Fountain_CreateStars();
 extern "C" void hook_Stage_Fountain_CreateStars()
 {
 	// Disable stars in teams
-	if (!GetMatchInfo()->match.is_teams)
+	if (!should_use_simple_fod())
 		orig_Stage_Fountain_CreateStars();
 }
 
@@ -89,7 +95,7 @@ extern "C" void hook_Stage_Fountain_SetupModel(HSD_GObj *gobj)
 
 	orig_Stage_Fountain_SetupModel(gobj);
 
-	if (!GetMatchInfo()->match.is_teams)
+	if (!should_use_simple_fod())
 		return;
 		
 	// Enable shadows on water with reflections disabled
@@ -101,7 +107,7 @@ extern "C" void hook_Stage_Fountain_SetupModel(HSD_GObj *gobj)
 extern "C" void orig_Stage_Setup(StageIDPair *id);
 extern "C" void hook_Stage_Setup(StageIDPair *id)
 {
-	if (id->grkind == Stage_FoD && GetMatchInfo()->match.is_teams) {
+	if (id->grkind == Stage_FoD && should_use_simple_fod()) {
 		// Remove FoD particles in teams
 		Stage.map_ptcl = nullptr;
 		Stage.map_texg = nullptr;
