@@ -6,9 +6,12 @@
 
 bool should_suppress_squatrv(const HSD_GObj *gobj)
 {
+	if (get_ucf_type() == ucf_type::ucf)
+		return false;
+
 	const auto *player = gobj->get<Player>();
 	
-	if (get_ucf_type() == ucf_type::ucf)
+	if (Player_IsCPUSlot(player))
 		return false;
 
 	// Must be outside deadzone for 1-2f (intending to dash on next frame)
@@ -47,6 +50,9 @@ extern "C" bool hook_Interrupt_TurnOrDash(HSD_GObj *gobj)
 		return false;
 
 	auto *player = gobj->get<Player>();
+	
+	if (Player_IsCPUSlot(player))
+		return false;
 
 	// DBOOC only
 	if (player->action_state != AS_SquatWait)

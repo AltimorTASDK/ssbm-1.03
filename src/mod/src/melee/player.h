@@ -280,3 +280,9 @@ bool Player_IsCPU(const Player *player);
 void PlayerThink_Input(HSD_GObj *gobj);
 	
 }
+
+// Like Player_IsCPU, but returns false for a human ICs' Nana
+inline bool Player_IsCPUSlot(const Player *player)
+{
+	return PlayerBlock_GetSlotType(player->slot) != SlotType_Human;
+}

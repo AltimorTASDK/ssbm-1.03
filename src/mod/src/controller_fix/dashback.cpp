@@ -7,15 +7,14 @@ static void check_dashback(HSD_GObj *gobj)
 {
 	auto *player = gobj->get<Player>();
 	
+	if (Player_IsCPU(player))
+		return;
+	
 	// Must be tilt turn f2
 	if (player->animation_frame != 2.f)
 		return;
 		
 	if (player->as_data.Turn.is_smash_turn)
-		return;
-		
-	// No Nana
-	if (player->is_backup_climber)
 		return;
 		
 	// Must satisfy vanilla xsmash conditions

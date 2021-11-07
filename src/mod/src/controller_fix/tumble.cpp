@@ -11,10 +11,14 @@ static bool should_wiggle_out(HSD_GObj *gobj)
 
 	if (std::abs(player->input.stick.x) < plco->tumble_wiggle_threshold)
 		return false;
-		
+
 	// Bail out early for vanilla success
 	if (player->input.stick_x_hold_time < plco->tumble_wiggle_frames)
 		return true;
+
+	// Don't apply fix for CPUs
+	if (Player_IsCPUSlot(player))
+		return false;
 
 	// Must be within 2f
 	if (player->input.stick_x_hold_time >= 2)

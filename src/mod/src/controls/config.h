@@ -9,7 +9,7 @@ enum class cstick_type {
 };
 
 struct controller_config {
-	static controller_config defaults;
+	static const controller_config defaults;
 	
 	u8 z_jump_bit             = 0;
 	bool perfect_wavedash     = false;
@@ -24,13 +24,13 @@ struct controller_config {
 	}
 };
 
-inline controller_config controller_config::defaults = {};
+inline const controller_config controller_config::defaults = {};
 
 inline controller_config controller_configs[4];
 
 inline const controller_config &get_player_config(const Player *player)
 {
-	if (PlayerBlock_GetSlotType(player->slot) == SlotType_Human)
+	if (!Player_IsCPUSlot(player))
 		return controller_configs[player->port];
 	else
 		return controller_config::defaults;
