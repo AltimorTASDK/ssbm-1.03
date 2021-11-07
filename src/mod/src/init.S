@@ -118,6 +118,7 @@ hooks_start:
 .set CheckJab3Input,          Interrupt_Jab3+0x3C
 .set CheckRapidJabInput,      Interrupt_RapidJab+0x18
 .set CheckFTiltAngle,         AS_053_056_FTilt+0x34
+.set SceneLoopStart,          Scene_RunLoop+0x68
 .set FirstEngineFrame,        Scene_RunLoop+0xA8
 
 add_hook Bubble_GetPosition
@@ -213,9 +214,10 @@ add_hook UpdatePadButtons
 add_hook UpdatePlayerStick
 # Latency debugging
 add_hook PadFetchCallback
+add_hook SceneLoopStart
 add_hook FirstEngineFrame
-add_hook HSD_PerfSetTotalTime
-add_hook HSD_VIWaitXFBDrawEnable
+add_hook HSD_PerfSetStartTime
+add_hook HSD_VIGetXFBDrawEnable
 add_hook HSD_VIPreRetraceCB
 add_hook DevelopText_Setup
 add_hook HSD_VICopyXFBASync

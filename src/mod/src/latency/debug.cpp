@@ -5,6 +5,7 @@
 #include "os/os.h"
 #include "os/thread.h"
 #include "os/vi.h"
+#include "rules/values.h"
 #include <gctypes.h>
 
 constexpr auto TEXT_WIDTH = 24;
@@ -31,10 +32,7 @@ static u64 frame_fetch_time;
 static u64 frame_interval;
 static u32 frame_end_line;
 
-static bool xfb_miss;
-static OSThreadQueue xfb_miss_thread_queue;
 static OSThreadQueue half_vb_thread_queue;
-static u32 efb_copy_retrace_count;
 static u32 efb_copy_line;
 static u64 efb_copy_poll_time[3];
 
@@ -59,10 +57,11 @@ static void pad_sample_callback()
 	last_poll_line = current_poll_line;
 	poll_time = current_poll_time;
 	
-	if (index == 0) {
+	if (index == 0 && get_latency() != latency_mode::normal) {
+		// Use first poll rather than previous mid-frame poll for LCD/LOW
 		PadFetchCallback();
-		OSWakeupThread(&xfb_miss_thread_queue);
-	} else if (index == 1) {
+	} else if (index == 1 && get_latency() == latency_mode::lcd) {
+		// Delay processing (and audio+rumble) by half a frame on LCD
 		OSWakeupThread(&half_vb_thread_queue);
 	}
 }
@@ -79,55 +78,59 @@ extern "C" void hook_PadFetchCallback()
 	orig_PadFetchCallback();
 }
 
+extern "C" void scene_loop_start()
+{
+	// Wait for 2nd poll to start processing in LCD mode
+	if (get_latency() == latency_mode::lcd)
+		OSSleepThread(&half_vb_thread_queue);
+}
+
 extern "C" void first_engine_frame()
 {
-	OSSleepThread(&half_vb_thread_queue);
 	frame_time = OSGetTime();
 	frame_line = VIGetCurrentLine();
 	frame_retrace_count = VIGetRetraceCount();
-	frame_poll_time = poll_time_queue[HSD_PadLibData.qread];
-	frame_fetch_time = fetch_time_queue[HSD_PadLibData.qread];
 }
 
-extern "C" void orig_HSD_PerfSetTotalTime();
-extern "C" void hook_HSD_PerfSetTotalTime()
+extern "C" void orig_HSD_PerfSetStartTime();
+extern "C" void hook_HSD_PerfSetStartTime()
 {
-	frame_interval = OSGetTime() - frame_time;
-	frame_end_line = VIGetCurrentLine();
-	orig_HSD_PerfSetTotalTime();
+	frame_poll_time = poll_time_queue[HSD_PadLibData.qread];
+	frame_fetch_time = fetch_time_queue[HSD_PadLibData.qread];
+	orig_HSD_PerfSetStartTime();
 }
 
 extern "C" void orig_HSD_VICopyXFBASync(u32 pass);
 extern "C" void hook_HSD_VICopyXFBASync(u32 pass)
 {
+	frame_interval = OSGetTime() - frame_time;
+	frame_end_line = VIGetCurrentLine();
+
 	const auto irq_enable = OSDisableInterrupts();
 
-	if (VIGetRetraceCount() == frame_retrace_count) {
-		// Artifically induce VB if not on LCD/LOW
+	// Artifically induce VB if not on LOW latency
+	if (VIGetRetraceCount() == frame_retrace_count && get_latency() != latency_mode::low)
 		VIWaitForRetrace();
 
-		if (xfb_miss) {
-			// Skip until the next frame so another XFB is free
-			xfb_miss = false;
-			return;
-		}
+	// Skip EFB copy if no XFB is ready and process a new frame instead
+	if (HSD_VIGetXFBDrawEnable() == -1) {
+		VIWaitForRetrace();
+		OSRestoreInterrupts(irq_enable);
+		return;
 	}
 
 	OSRestoreInterrupts(irq_enable);
-
 	orig_HSD_VICopyXFBASync(pass);
 }
 
-extern "C" s32 orig_HSD_VIWaitXFBDrawEnable();
-extern "C" s32 hook_HSD_VIWaitXFBDrawEnable()
+extern "C" s32 orig_HSD_VIGetXFBDrawEnable();
+extern "C" s32 hook_HSD_VIGetXFBDrawEnable()
 {
-	const auto xfb = orig_HSD_VIWaitXFBDrawEnable();
+	const auto xfb = orig_HSD_VIGetXFBDrawEnable();
 	
 	if (xfb != -1) {
 		efb_copy_poll_time[xfb] = frame_poll_time;
 		efb_copy_line = VIGetCurrentLine();
-	} else {
-		xfb_miss = true;
 	}
 
 	return xfb;
@@ -140,11 +143,10 @@ extern "C" void hook_HSD_VIPreRetraceCB(u32 retrace_count)
 	
 	const auto xfb = HSD_VISearchXFBByStatus(HSD_VI_XFB_NEXT);
 
-	if (xfb == -1)
-		return;
-	
-	retrace_time = OSGetTime();
-	retrace_poll_time = efb_copy_poll_time[xfb];
+	if (xfb != -1) {
+		retrace_time = OSGetTime();
+		retrace_poll_time = efb_copy_poll_time[xfb];
+	}
 }
 
 static double ms(u64 interval)
