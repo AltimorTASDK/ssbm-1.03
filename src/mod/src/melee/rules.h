@@ -10,7 +10,7 @@ enum class ucf_type : u8 {
 enum class latency_mode : u8 {
 	normal = 0,
 	lcd = 1,
-	lightning = 2
+	low = 2
 };
 
 enum Rule {
