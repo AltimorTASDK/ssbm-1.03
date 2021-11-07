@@ -19884,6 +19884,7 @@
 803bb028 00000000 803bb028 0 ScreenFlashCObjDesc
 803bb300 00000000 803bb300 0 CurrentBGMPath
 803eae8c 00000000 803eae8c 0 MenuPanelAnimTable
+803eb6b0 00000000 803eb6b0 0 MenuTypeDataTable
 803ec610 00000000 803ec610 0 RuleTextAnimFrames
 803ec7dc 00000000 803ec7dc 0 RuleValueBounds
 803ec7ec 00000000 803ec7ec 0 MenuRuleValueModels

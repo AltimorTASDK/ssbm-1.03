@@ -1,3 +1,4 @@
+#include "hsd/jobj.h"
 #include "melee/menu.h"
 #include "melee/scene.h"
 
@@ -13,14 +14,14 @@ extern "C" void hook_MainMenu_Enter(SceneMinorData *minor)
 	orig_MainMenu_Enter(minor);
 
 	auto *data = (MainMenuEnterData*)minor->data.enter_data;
+
+	// Hover over controls portal when returning from controls menu
+	if (SceneMajorPrevious == Scene_Controls)
+		data->selected = 1;
 	
 	// Go back to debug menu portal when returning from debug menu
 	if (SceneMajorPrevious == Scene_DebugMenu) {
 		data->menu_type = MenuType_VsMode;
-		data->selected = 1;
-	}
-
-	// Hover over controls portal when returning from controls menu
-	if (SceneMajorPrevious == Scene_Controls)
 		data->selected = 2;
+	}
 }

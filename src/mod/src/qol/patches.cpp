@@ -19,7 +19,7 @@ extern "C" void CreateScorePopup(u8 port);
 
 extern "C" void NameTag_Think(HSD_GObj *gobj);
 
-extern "C" void VsMenu_Think(HSD_GObj *gobj);
+extern "C" void VsMenu_Think();
 
 extern "C" double CSSAnimStartFrame;
 

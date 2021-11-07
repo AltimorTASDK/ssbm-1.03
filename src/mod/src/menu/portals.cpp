@@ -6,6 +6,7 @@
 #include "melee/menu.h"
 #include "melee/text.h"
 #include "util/compression.h"
+#include "util/patch_list.h"
 #include "util/melee/text_builder.h"
 #include <gctypes.h>
 
@@ -16,9 +17,9 @@
 
 enum VsMenuPortalID {
 	VsMenu_TournamentMelee = 1,
-	VsMenu_DebugMenu = 1,
+	VsMenu_Controls = 1,
 	VsMenu_SpecialMelee = 2,
-	VsMenu_Controls = 2,
+	VsMenu_DebugMenu = 2,
 	VsMenu_CustomRules = 3,
 	VsMenu_Manual = 3
 };
@@ -31,8 +32,19 @@ struct MainMenuData {
 	Text *description_text;
 };
 
+struct MenuTypeData {
+	HSD_AnimLoop *preview_anims;
+	f32 anim_frame;
+	void *pad008;
+	u8 option_count;
+	void(*think)();
+};
+
 extern "C" ArchiveModel MenMainCursor_Top;
 extern "C" ArchiveModel MenMainConTop_Top;
+extern "C" MenuTypeData MenuTypeDataTable[MenuType_Max];
+
+extern "C" void VsMenu_Think();
 
 constexpr auto debug_menu_description = text_builder::build(
 	text_builder::kern(),
@@ -91,6 +103,21 @@ constexpr auto manual_description = text_builder::build(
 	text_builder::end_textbox(),
 	text_builder::end_color());
 	
+static const auto patches = patch_list {
+	// Swap previews for debug menu and controls
+	std::pair { &MenuTypeDataTable[MenuType_VsMode].preview_anims[1], HSD_AnimLoop {
+		800, 849, 820
+	} },
+	std::pair { &MenuTypeDataTable[MenuType_VsMode].preview_anims[2], HSD_AnimLoop {
+		750, 799, 770
+	} },
+	// Swap branches for entering debug menu and controls
+	// beq 0x44
+	std::pair { (char*)VsMenu_Think+0x54, 0x41820044 },
+	// bge 0x50
+	std::pair { (char*)VsMenu_Think+0x64, 0x40800050 },
+};
+	
 extern "C" void orig_MainMenu_Init(void *menu);
 extern "C" void hook_MainMenu_Init(void *menu)
 {
@@ -98,8 +125,8 @@ extern "C" void hook_MainMenu_Init(void *menu)
 	
 	// Replace portal textures
 	const auto *names = MenMainCursor_Top.matanim_joint->child->child->next->matanim;
-	names->texanim->imagetbl[11]->img_ptr = decompress(debug_menu_tex_data);
-	names->texanim->imagetbl[12]->img_ptr = decompress(controls_tex_data);
+	names->texanim->imagetbl[11]->img_ptr = decompress(controls_tex_data);
+	names->texanim->imagetbl[12]->img_ptr = decompress(debug_menu_tex_data);
 	names->texanim->imagetbl[13]->img_ptr = decompress(manual_tex_data);
 
 	// Replace preview textures
