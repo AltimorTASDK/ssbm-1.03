@@ -32,7 +32,9 @@ static u64 frame_fetch_time;
 static u64 frame_interval;
 static u32 frame_end_line;
 
+static u32 half_vb_retrace_count;
 static OSThreadQueue half_vb_thread_queue;
+
 static u32 efb_copy_line;
 static u64 efb_copy_poll_time[3];
 
@@ -62,6 +64,7 @@ static void pad_sample_callback()
 		PadFetchCallback();
 	} else if (index == 1 && get_latency() == latency_mode::lcd) {
 		// Delay processing (and audio+rumble) by half a frame on LCD
+		half_vb_retrace_count = VIGetRetraceCount();
 		OSWakeupThread(&half_vb_thread_queue);
 	}
 }
@@ -80,9 +83,16 @@ extern "C" void hook_PadFetchCallback()
 
 extern "C" void scene_loop_start()
 {
-	// Wait for 2nd poll to start processing in LCD mode
-	if (get_latency() == latency_mode::lcd)
+	if (get_latency() != latency_mode::lcd)
+		return;
+		
+	const auto irq_enable = OSDisableInterrupts();
+	
+	// Wait for 2nd poll to start processing in LCD mode unless we're already late
+	if (VIGetRetraceCount() != half_vb_retrace_count)
 		OSSleepThread(&half_vb_thread_queue);
+		
+	OSRestoreInterrupts(irq_enable);
 }
 
 extern "C" void first_engine_frame()
