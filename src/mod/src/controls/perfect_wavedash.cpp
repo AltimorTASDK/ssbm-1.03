@@ -10,7 +10,7 @@ extern "C" float hook_Player_GetAirdodgeAngle(Player *player)
 	if (!get_player_config(player).perfect_wavedash)
 		return orig_Player_GetAirdodgeAngle(player);
 		
-	const auto &pad = get_input<0>(player->port);
+	const auto &pad = get_character_input<0>(player);
 
 	// Perfect WD if the X axis is >= 64 (.8000) and the Y axis is in the deadzone
 	if (std::abs(pad.stick.x) < 64 || std::abs(pad.stick.y) > DEADZONE)

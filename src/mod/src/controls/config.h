@@ -30,7 +30,7 @@ inline controller_config controller_configs[4];
 
 inline const controller_config &get_player_config(const Player *player)
 {
-	if (!Player_IsCPUSlot(player))
+	if (!Player_IsCPUControlled(player))
 		return controller_configs[player->port];
 	else
 		return controller_config::defaults;

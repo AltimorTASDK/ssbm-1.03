@@ -17,7 +17,7 @@ static bool should_wiggle_out(HSD_GObj *gobj)
 		return true;
 
 	// Don't apply fix for CPUs
-	if (Player_IsCPUSlot(player))
+	if (Player_IsCPUControlled(player))
 		return false;
 
 	// Must be within 2f

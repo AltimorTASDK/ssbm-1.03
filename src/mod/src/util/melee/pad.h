@@ -19,17 +19,8 @@ constexpr auto TRIGGER_DEADZONE = 42;
 constexpr auto TRIGGER_MAX = 140;
 
 namespace detail {
-constexpr auto qnum = 5;
-
-inline const PADStatus &get_input_impl(int port, int offset)
-{
-	// index is guaranteed to be in range [0, 8], avoid modulo
-	auto index = HSD_PadLibData.qread + offset;
-	if (index >= qnum)
-		index -= qnum;
-
-	return HSD_PadLibData.queue[index].stat[port];
-}
+const PADStatus &get_input_impl(int port, int offset);
+const PADStatus &get_nana_input_impl(const Player *nana, int offset);
 }
 
 template<int offset>
@@ -39,10 +30,26 @@ inline const PADStatus &get_input(int port)
 	return detail::get_input_impl(port, real_offset);
 }
 
+template<int offset>
+inline const PADStatus &get_nana_input(const Player *nana)
+{
+	constexpr auto real_offset = ((offset % NANA_BUFFER) + NANA_BUFFER) % NANA_BUFFER;
+	return detail::get_nana_input_impl(nana, real_offset);
+}
+
+template<int offset>
+inline const PADStatus &get_character_input(const Player *player)
+{
+	if (!player->is_backup_climber)
+		return get_input<offset>(player->port);
+	else
+		return get_nana_input<offset>(player);
+}
+
 inline bool check_ucf_xsmash(const Player *player)
 {
-	const auto &prev_input = get_input<-2>(player->port);
-	const auto &current_input = get_input<0>(player->port);
+	const auto &prev_input = get_character_input<-2>(player);
+	const auto &current_input = get_character_input<0>(player);
 	const auto delta = current_input.stick.x - prev_input.stick.x;
 	return delta * delta > 75 * 75;
 }

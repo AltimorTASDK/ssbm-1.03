@@ -6,6 +6,9 @@
 static bool should_suppress_spotdodge(HSD_GObj *gobj)
 {
 	const auto *player = gobj->get<Player>();
+	
+	if (Player_IsCPUControlled(player))
+		return false;
 
 	// Always prioritize cstick
 	if (player->input.cstick.y <= plco->spot_dodge_stick_threshold)

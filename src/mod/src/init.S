@@ -223,6 +223,6 @@ add_hook Scene_RunLoop
 add_hook HSD_VICopyXFBASync
 add_hook UpdatePadFetchRate
 # Nana hardware input buffer
-Player_Nana_RecordPopoData
+add_hook Player_Nana_RecordPopoData
 
 hooks_end:

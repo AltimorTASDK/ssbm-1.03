@@ -23,9 +23,11 @@ struct FountainReflectionData {
 
 static bool should_use_simple_fod()
 {
+#if 0
 	// Force simple FoD in low latency mode
 	if (get_latency() == latency_mode::low)
 		return true;
+#endif
 	
 	return MatchInfo_IsTeams() && SceneMajor != Scene_Training;
 }

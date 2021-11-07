@@ -11,7 +11,7 @@ bool should_suppress_squatrv(const HSD_GObj *gobj)
 
 	const auto *player = gobj->get<Player>();
 	
-	if (Player_IsCPUSlot(player))
+	if (Player_IsCPUControlled(player))
 		return false;
 
 	// Must be outside deadzone for 1-2f (intending to dash on next frame)
@@ -51,7 +51,7 @@ extern "C" bool hook_Interrupt_TurnOrDash(HSD_GObj *gobj)
 
 	auto *player = gobj->get<Player>();
 	
-	if (Player_IsCPUSlot(player))
+	if (Player_IsCPUControlled(player))
 		return false;
 
 	// DBOOC only

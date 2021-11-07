@@ -6,6 +6,8 @@
 #include "util/vector.h"
 #include <gctypes.h>
 
+constexpr auto NANA_BUFFER = 30;
+
 struct PlayerBlockStats;
 
 enum CID {
@@ -212,7 +214,16 @@ struct Player {
 	char pad1A6C[0x1B80 - 0x1A6C];
 	u8 cpu_flags1;
 	u8 cpu_flags2;
-	u8 cpu_flags3;
+	struct {
+		u8 cpu_flags3_80 : 1;
+		u8 cpu_flags3_40 : 1;
+		u8 cpu_flags3_20 : 1;
+		u8 cpu_flags3_10 : 1;
+		u8 cpu_flags3_8 : 1;
+		u8 cpu_flags3_4 : 1;
+		u8 cpu_flags3_2 : 1;
+		u8 is_nana_synced : 1;
+	};
 	u8 cpu_flags4;
 	PopoData popo_data_buffer[30];
 	PopoData *popo_data_write;
@@ -281,8 +292,11 @@ void PlayerThink_Input(HSD_GObj *gobj);
 	
 }
 
-// Like Player_IsCPU, but returns false for a human ICs' Nana
-inline bool Player_IsCPUSlot(const Player *player)
+// Like Player_IsCPU, but returns false for a synced human Nana
+inline bool Player_IsCPUControlled(const Player *player)
 {
-	return PlayerBlock_GetSlotType(player->slot) != SlotType_Human;
+	if (PlayerBlock_GetSlotType(player->slot) != SlotType_Human)
+		return true;
+		
+	return player->is_backup_climber && !player->is_nana_synced;
 }
