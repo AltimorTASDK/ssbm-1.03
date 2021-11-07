@@ -67,7 +67,7 @@ public:
 
 	constexpr vec_impl()
 	{
-		foreach(bind_back(operators::eq, 0));
+		foreach(bind_back(operators::eq, elem_type{}));
 	}
 
 	constexpr vec_impl(const vec_impl &other)
