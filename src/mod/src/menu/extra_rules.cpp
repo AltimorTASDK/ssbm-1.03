@@ -128,7 +128,7 @@ constexpr auto latency_normal_description = text_builder::build(
 	text_builder::end_fit(),
 	text_builder::br(),
 	text_builder::fit(),
-	text_builder::ascii<"of visual latency.">(),
+	text_builder::ascii<"of latency.">(),
 	text_builder::end_fit(),
 	text_builder::end_textbox(),
 	text_builder::end_color());
@@ -140,11 +140,11 @@ constexpr auto latency_lcd_description = text_builder::build(
 	text_builder::textbox<179, 179>(),
 	text_builder::unk06<0, 0>(),
 	text_builder::fit(),
-	text_builder::ascii<"Reduce visual latency by half a">(),
+	text_builder::ascii<"Reduce latency by half a frame.">(),
 	text_builder::end_fit(),
 	text_builder::br(),
 	text_builder::fit(),
-	text_builder::ascii<"frame. Recommended for LCDs.">(),
+	text_builder::ascii<"Recommended for LCDs.">(),
 	text_builder::end_fit(),
 	text_builder::end_textbox(),
 	text_builder::end_color());
@@ -156,11 +156,11 @@ constexpr auto latency_lightning_description = text_builder::build(
 	text_builder::textbox<179, 179>(),
 	text_builder::unk06<0, 0>(),
 	text_builder::fit(),
-	text_builder::ascii<"Reduce visual latency by as">(),
+	text_builder::ascii<"Reduce latency by one and">(),
 	text_builder::end_fit(),
 	text_builder::br(),
 	text_builder::fit(),
-	text_builder::ascii<"much as possible.">(),
+	text_builder::ascii<"a half frames.">(),
 	text_builder::end_fit(),
 	text_builder::end_textbox(),
 	text_builder::end_color());
@@ -241,6 +241,7 @@ constexpr auto pause_auto_description = text_builder::build(
 	text_builder::end_color());
 	
 static mempool pool;
+static void *decompressed_textures[ExtraRule_Max];
 
 static const auto patches = patch_list {
 	// Swap text for pause and friendly fire
@@ -259,17 +260,38 @@ static const auto patches = patch_list {
 	std::pair { (char*)Menu_SetupExtraRulesMenu+0x57C,                       0x60000000u },
 };
 
-static void replace_toggle_texture(ExtraRulesMenuData *data, int index, const u8 *tex_data)
+static void replace_toggle_texture(ExtraRulesMenuData *data, int index)
 {
 	auto *tobj = data->value_jobj_trees[index].tree[1]->u.dobj->mobj->tobj;
+	pool.remove(tobj->imagedesc);
 	tobj->imagedesc = pool.add(new HSD_ImageDesc(*tobj->imagedesc));
-	tobj->imagedesc->img_ptr = pool.add(decompress(tex_data));
+	tobj->imagedesc->img_ptr = decompressed_textures[index];
 }
 
 static void pool_free(void *data)
 {
 	HSD_Free(data); // Default free gobj data
 	pool.dec_ref();
+}
+
+static void load_textures()
+{
+	// Replace rule name textures
+	const auto *rule_names = MenMainCursorRl_Top.matanim_joint->child->child->next->matanim;
+	rule_names->texanim->imagetbl[ 9]->img_ptr = pool.add(decompress(controller_fix_tex_data));
+	rule_names->texanim->imagetbl[11]->img_ptr = pool.add(decompress(latency_tex_data));
+	rule_names->texanim->imagetbl[12]->img_ptr = pool.add(decompress(widescreen_tex_data));
+	rule_names->texanim->imagetbl[13]->img_ptr = pool.add(decompress(og_stage_select_tex_data));
+	
+	// Load rule value textures
+	decompressed_textures[ExtraRule_Pause] =
+		pool.add(decompress(pause_values_tex_data));
+
+	decompressed_textures[ExtraRule_ControllerFix] =
+		pool.add(decompress(controller_fix_values_tex_data));
+
+	decompressed_textures[ExtraRule_Latency] =
+		pool.add(decompress(latency_values_tex_data));
 }
 
 extern "C" HSD_GObj *orig_Menu_SetupExtraRulesMenu(u8 state);
@@ -281,20 +303,13 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 	// Free assets on menu exit
 	gobj->user_data_remove_func = pool_free;
 	
-	if (pool.inc_ref() != 0)
-		return gobj;
+	if (pool.inc_ref() == 0)
+		load_textures();
 
-	// Replace rule name textures
-	const auto *rule_names = MenMainCursorRl_Top.matanim_joint->child->child->next->matanim;
-	rule_names->texanim->imagetbl[ 9]->img_ptr = pool.add(decompress(controller_fix_tex_data));
-	rule_names->texanim->imagetbl[11]->img_ptr = pool.add(decompress(latency_tex_data));
-	rule_names->texanim->imagetbl[12]->img_ptr = pool.add(decompress(widescreen_tex_data));
-	rule_names->texanim->imagetbl[13]->img_ptr = pool.add(decompress(og_stage_select_tex_data));
-	
 	// Replace rule value textures
-	replace_toggle_texture(data, ExtraRule_Pause, pause_values_tex_data);
-	replace_toggle_texture(data, ExtraRule_ControllerFix, controller_fix_values_tex_data);
-	replace_toggle_texture(data, ExtraRule_Latency, latency_values_tex_data);
+	replace_toggle_texture(data, ExtraRule_Pause);
+	replace_toggle_texture(data, ExtraRule_ControllerFix);
+	replace_toggle_texture(data, ExtraRule_Latency);
 		
 	return gobj;
 }
