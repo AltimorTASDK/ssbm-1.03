@@ -59,6 +59,29 @@ public:
 		return ptr;
 	}
 
+	void remove(const void *ptr)
+	{
+		auto *entry = head;
+		allocation *prev = nullptr;
+
+		while (entry != nullptr) {
+			if (entry->ptr != ptr) {
+				prev = entry;
+				entry = entry->next;
+				continue;
+			}
+
+			entry->free(entry->ptr);
+			if (prev != nullptr)
+				prev->next = entry->next;
+			else
+				head = entry->next;
+
+			delete entry;
+			return;
+		}
+	}
+
 private:
 	void init()
 	{

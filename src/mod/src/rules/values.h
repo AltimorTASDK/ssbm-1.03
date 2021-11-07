@@ -34,3 +34,9 @@ inline bool is_widescreen()
 	const auto *rules = GetGameRules();
 	return rules->widescreen;
 }
+
+inline latency_mode get_latency()
+{
+	const auto *rules = GetGameRules();
+	return rules->latency;
+}

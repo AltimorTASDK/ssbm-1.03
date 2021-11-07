@@ -44,6 +44,7 @@ extern "C" {
 extern HSD_VIInfo HSD_VIData;
 	
 s32 HSD_VISearchXFBByStatus(u32 status);
+s32 HSD_VIGetXFBDrawEnable();
 void HSD_VICopyXFBASync(u32 pass);
 VIRetraceCallback *HSD_VISetUserPreRetraceCallback(VIRetraceCallback *cb);
 VIRetraceCallback *HSD_VISetUserPostRetraceCallback(VIRetraceCallback *cb);
