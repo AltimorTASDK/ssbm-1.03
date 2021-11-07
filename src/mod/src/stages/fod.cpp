@@ -10,6 +10,7 @@
 #include "melee/scene.h"
 #include "melee/stage.h"
 #include "menu/stage_select.h"
+#include "rules/values.h"
 #include "util/math.h"
 #include "util/matrix.h"
 #include <cstring>
@@ -22,6 +23,10 @@ struct FountainReflectionData {
 
 static bool should_use_simple_fod()
 {
+	// Force simple FoD in low latency mode
+	if (get_latency() == latency_mode::low)
+		return true;
+	
 	return MatchInfo_IsTeams() && SceneMajor != Scene_Training;
 }
 
