@@ -212,16 +212,17 @@ add_hook TrainingMenu_Think
 add_hook TumbleWiggleCheck
 add_hook UpdatePadButtons
 add_hook UpdatePlayerStick
-# Latency debugging
+# PDF+Latency
 add_hook PadFetchCallback
 add_hook SceneLoopStart
 add_hook FirstEngineFrame
 add_hook HSD_PerfSetStartTime
 add_hook HSD_VIGetXFBDrawEnable
 add_hook HSD_VIPreRetraceCB
-add_hook DevelopText_Setup
+add_hook Scene_RunLoop
 add_hook HSD_VICopyXFBASync
-# PDF
 add_hook UpdatePadFetchRate
+# Nana hardware input buffer
+Player_Nana_RecordPopoData
 
 hooks_end:

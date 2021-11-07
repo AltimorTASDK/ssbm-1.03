@@ -184,24 +184,20 @@ static void update_text(HSD_GObj *gobj)
 	DevelopText_Printf(text, "Poll 2 Line     %d",      poll_line[1]);
 }
 
-extern "C" HSD_GObj *orig_DevelopText_Setup(u32 classfier, u32 p_link, u32 p_prio, u32 gx_link,
-                                            u32 render_priority, u8 camera_priority);
-extern "C" HSD_GObj *hook_DevelopText_Setup(u32 classfier, u32 p_link, u32 p_prio, u32 gx_link,
-                                            u32 render_priority, u8 camera_priority)
+extern "C" void orig_Scene_RunLoop(void(*think_callback)());
+extern "C" void hook_Scene_RunLoop(void(*think_callback)())
 {
-	auto *gobj = orig_DevelopText_Setup(classfier, p_link, p_prio, gx_link,
-	                                    render_priority, camera_priority);
-	
 	text = DevelopText_Create(0x69, 0, 0, TEXT_WIDTH, TEXT_HEIGHT, text_buf);
 	DevelopText_Show(nullptr, text);
 	DevelopText_HideCursor(text);
 	DevelopText_SetBGColor(text, { 0, 0, 0, 96 });
 	DevelopText_SetTextColor(text, color_rgba::white);
 	DevelopText_SetScale(text, 9, 12);
-	
+
+	auto *gobj = GObj_Create(GOBJ_CLASS_UI, GOBJ_PLINK_UI, 0);
 	GObj_AddProc(gobj, update_text, 0);
 	
-	return gobj;
+	orig_Scene_RunLoop(think_callback);
 }
 
 struct set_pad_cb {
