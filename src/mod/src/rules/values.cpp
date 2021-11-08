@@ -1,6 +1,7 @@
 #include "melee/match.h"
 #include "melee/player.h"
 #include "melee/rules.h"
+#include "melee/scene.h"
 #include "rules/values.h"
 
 struct init_rules {
@@ -48,6 +49,12 @@ static bool is_pause_disabled(const StartMeleeData *data)
 extern "C" void orig_Match_Init(StartMeleeData *data);
 extern "C" void hook_Match_Init(StartMeleeData *data)
 {
+	if (SceneMajor == Scene_AttractMode) {
+		// Don't alter attract demo match settings
+		orig_Match_Init(data);
+		return;
+	}
+	
 	if (is_singleplayer(data)) {
 		// Force infinite time match + pause
 		data->rules.is_stock_match = false;

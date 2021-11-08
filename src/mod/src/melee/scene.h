@@ -8,6 +8,7 @@ enum Scene {
 	Scene_Menu         = 1,
 	Scene_VsMode       = 2,
 	Scene_DebugMenu    = 6,
+	Scene_AttractMode  = 24,
 	Scene_Tournament   = 27,
 	Scene_Controls     = 27,
 	Scene_Training     = 28,
