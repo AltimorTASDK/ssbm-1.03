@@ -4,8 +4,10 @@
 #include "hsd/mobj.h"
 #include "hsd/tobj.h"
 #include "melee/menu.h"
+#include "melee/scene.h"
 #include "melee/text.h"
 #include "util/compression.h"
+#include "util/meta.h"
 #include "util/patch_list.h"
 #include "util/melee/text_builder.h"
 #include <gctypes.h>
