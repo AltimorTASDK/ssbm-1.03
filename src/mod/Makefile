@@ -45,7 +45,7 @@ $(OBJDIR)/%.cpp.o: %.cpp
 $(OBJDIR)/%.S.o: %.S
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	@[ -d $(subst $(OBJDIR), $(DEPDIR), $(@D)) ] || mkdir -p $(subst $(OBJDIR), $(DEPDIR), $(@D))
-	$(AS) -mregnames -mgekko $^ -o $@
+	$(CC) $(ASFLAGS) -c $< -o $@
 	
 RESOURCE_DIR_IN  := resources
 RESOURCE_DIR_OUT := $(SOURCES)/resources

@@ -2,16 +2,27 @@
 #include "hsd/pad.h"
 #include "hsd/video.h"
 #include "melee/text.h"
+#include "os/alarm.h"
 #include "os/os.h"
+#include "os/serial.h"
 #include "os/thread.h"
 #include "os/vi.h"
 #include "rules/values.h"
 #include <gctypes.h>
 
-constexpr auto TEXT_WIDTH = 24;
-constexpr auto TEXT_HEIGHT = 13;
+extern "C" OSAlarm PadFetchAlarm;
 
-static u32 last_poll_line;
+extern "C" void *PADSetSamplingCallback(void(*callback)());
+extern "C" void PadFetchCallback();
+
+#ifdef POLL_DEBUG
+constexpr auto TEXT_WIDTH = 24;
+#ifdef POLL_DEBUG_VERBOSE
+constexpr auto TEXT_HEIGHT = 13;
+#else
+constexpr auto TEXT_HEIGHT = 1;
+#endif
+
 static u32 poll_line[2];
 static u64 poll_interval[2];
 
@@ -25,15 +36,11 @@ static u64 fetch_interval;
 
 static u64 frame_time;
 static u32 frame_line;
-static u32 frame_retrace_count;
 static u64 frame_poll_time;
 static u64 frame_fetch_time;
 
 static u64 frame_interval;
 static u32 frame_end_line;
-
-static u32 half_vb_retrace_count;
-static OSThreadQueue half_vb_thread_queue;
 
 static u32 efb_copy_line;
 static u64 efb_copy_poll_time[3];
@@ -43,9 +50,13 @@ static u64 retrace_poll_time;
 
 static DevText *text;
 static char text_buf[TEXT_WIDTH * TEXT_HEIGHT * 2];
+#endif
 
-extern "C" void *PADSetSamplingCallback(void(*callback)());
-extern "C" void PadFetchCallback();
+static u32 frame_retrace_count;
+static u32 last_poll_line;
+
+static u32 half_vb_retrace_count;
+static OSThreadQueue half_vb_thread_queue;
 
 static void pad_sample_callback()
 {
@@ -53,11 +64,13 @@ static void pad_sample_callback()
 	const auto current_poll_line = VIGetCurrentLine();
 	const auto index = current_poll_line < last_poll_line ? 0 : 1;
 
+#ifdef POLL_DEBUG
 	poll_line[index] = current_poll_line;
 	poll_interval[index] = current_poll_time - poll_time;
+	poll_time = current_poll_time;
+#endif
 
 	last_poll_line = current_poll_line;
-	poll_time = current_poll_time;
 	
 	if (index == 0 && get_latency() != latency_mode::normal) {
 		// Use first poll rather than previous mid-frame poll for LCD/LOW
@@ -69,17 +82,23 @@ static void pad_sample_callback()
 	}
 }
 
-extern "C" void orig_PadFetchCallback();
-extern "C" void hook_PadFetchCallback()
+static void post_retrace_callback(u32 retrace_count)
 {
-	const auto last_time = fetch_time;
-	fetch_time = OSGetTime();
-	fetch_line = VIGetCurrentLine();
-	poll_time_queue[HSD_PadLibData.qwrite] = poll_time;
-	fetch_time_queue[HSD_PadLibData.qwrite] = fetch_time;
-	fetch_interval = fetch_time - last_time;
-	orig_PadFetchCallback();
+	// Fetch on retrace in normal latency mode or if there won't be SI reads
+	if (get_latency() == latency_mode::normal || Si.poll.enable == 0)
+		PadFetchCallback();
 }
+
+extern "C" void orig_UpdatePadFetchRate();
+extern "C" void hook_UpdatePadFetchRate()
+{
+	// Don't use the fetch timer
+	orig_UpdatePadFetchRate();
+	OSCancelAlarm(&PadFetchAlarm);
+}
+
+#ifdef POLL_DEBUG
+#endif
 
 extern "C" void scene_loop_start()
 {
@@ -97,24 +116,20 @@ extern "C" void scene_loop_start()
 
 extern "C" void first_engine_frame()
 {
+#ifdef POLL_DEBUG
 	frame_time = OSGetTime();
 	frame_line = VIGetCurrentLine();
+#endif
 	frame_retrace_count = VIGetRetraceCount();
-}
-
-extern "C" void orig_HSD_PerfSetStartTime();
-extern "C" void hook_HSD_PerfSetStartTime()
-{
-	frame_poll_time = poll_time_queue[HSD_PadLibData.qread];
-	frame_fetch_time = fetch_time_queue[HSD_PadLibData.qread];
-	orig_HSD_PerfSetStartTime();
 }
 
 extern "C" void orig_HSD_VICopyXFBASync(u32 pass);
 extern "C" void hook_HSD_VICopyXFBASync(u32 pass)
 {
+#ifdef POLL_DEBUG
 	frame_interval = OSGetTime() - frame_time;
 	frame_end_line = VIGetCurrentLine();
+#endif
 
 	const auto irq_enable = OSDisableInterrupts();
 
@@ -131,6 +146,27 @@ extern "C" void hook_HSD_VICopyXFBASync(u32 pass)
 
 	OSRestoreInterrupts(irq_enable);
 	orig_HSD_VICopyXFBASync(pass);
+}
+
+#ifdef POLL_DEBUG
+extern "C" void orig_HSD_PerfSetStartTime();
+extern "C" void hook_HSD_PerfSetStartTime()
+{
+	frame_poll_time = poll_time_queue[HSD_PadLibData.qread];
+	frame_fetch_time = fetch_time_queue[HSD_PadLibData.qread];
+	orig_HSD_PerfSetStartTime();
+}
+
+extern "C" void orig_PadFetchCallback();
+extern "C" void hook_PadFetchCallback()
+{
+	const auto last_time = fetch_time;
+	fetch_time = OSGetTime();
+	fetch_line = VIGetCurrentLine();
+	poll_time_queue[HSD_PadLibData.qwrite] = poll_time;
+	fetch_time_queue[HSD_PadLibData.qwrite] = fetch_time;
+	fetch_interval = fetch_time - last_time;
+	orig_PadFetchCallback();
 }
 
 extern "C" s32 orig_HSD_VIGetXFBDrawEnable();
@@ -169,6 +205,7 @@ static void update_text(HSD_GObj *gobj)
 {
 	DevelopText_Erase(text);
 	DevelopText_SetCursor(text, 0, 0);
+#ifdef POLL_DEBUG_VERBOSE
 	DevelopText_Printf(text, "Poll -> Fetch   %.04f\n", ms(frame_fetch_time - frame_poll_time));
 	DevelopText_Printf(text, "Poll -> Engine  %.04f\n", ms(frame_time - frame_poll_time));
 	DevelopText_Printf(text, "Poll -> Display %.04f\n", ms(retrace_time - retrace_poll_time));
@@ -182,6 +219,9 @@ static void update_text(HSD_GObj *gobj)
 	DevelopText_Printf(text, "EFB Copy Line   %d\n",    efb_copy_line);
 	DevelopText_Printf(text, "Poll 1 Line     %d\n",    poll_line[0]);
 	DevelopText_Printf(text, "Poll 2 Line     %d",      poll_line[1]);
+#else
+	DevelopText_Printf(text, "Poll -> Display %.04f",   ms(retrace_time - retrace_poll_time));
+#endif
 }
 
 extern "C" void orig_Scene_RunLoop(void(*think_callback)());
@@ -199,10 +239,12 @@ extern "C" void hook_Scene_RunLoop(void(*think_callback)())
 	
 	orig_Scene_RunLoop(think_callback);
 }
+#endif
 
-struct set_pad_cb {
-	set_pad_cb()
+struct set_callbacks {
+	set_callbacks()
 	{
 		PADSetSamplingCallback(pad_sample_callback);
+		HSD_VISetUserPostRetraceCallback(post_retrace_callback);
 	}
-} set_pad_cb;
+} set_callbacks;
