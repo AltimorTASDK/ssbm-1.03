@@ -26,7 +26,7 @@ struct init_rules {
 		rules->stock_time_limit = 6;
 		rules->pause = false;
 		rules->controller_fix = ucf_type::hax;
-		rules->latency = latency_mode::normal;
+		rules->latency = latency_mode::crt;
 		rules->widescreen = false;
 	}
 } init_rules;

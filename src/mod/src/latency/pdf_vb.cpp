@@ -73,7 +73,7 @@ static void pad_sample_callback()
 
 	last_poll_line = current_poll_line;
 	
-	if (index == 0 && get_latency() != latency_mode::normal) {
+	if (index == 0 && get_latency() != latency_mode::crt) {
 		// Use first poll rather than previous mid-frame poll for LCD/LOW
 		PadFetchCallback();
 	} else if (index == 1 && get_latency() == latency_mode::lcd) {
@@ -86,7 +86,7 @@ static void pad_sample_callback()
 static void post_retrace_callback(u32 retrace_count)
 {
 	// Fetch on retrace in normal latency mode or if there won't be SI reads
-	if (get_latency() == latency_mode::normal || Si.poll.enable == 0)
+	if (get_latency() == latency_mode::crt || Si.poll.enable == 0)
 		PadFetchCallback();
 }
 
