@@ -12,6 +12,7 @@
 #include "menu/stage_select.h"
 #include "util/compression.h"
 #include "util/mempool.h"
+#include "util/meta.h"
 #include "util/patch_list.h"
 #include "util/melee/text_builder.h"
 #include <gctypes.h>
@@ -80,132 +81,47 @@ extern "C" struct {
 
 extern "C" HSD_GObj *Menu_SetupExtraRulesMenu(u8 state);
 
-constexpr auto hax_fix_description = text_builder::build(
-	text_builder::kern(),
-	text_builder::left(),
-	text_builder::color<170, 170, 170>(),
-	text_builder::textbox<179, 179>(),
-	text_builder::unk06<0, 0>(),
-	text_builder::fit(),
-	text_builder::ascii<"Maximize shield drop's range and fix">(),
-	text_builder::end_fit(),
-	text_builder::br(),
-	text_builder::fit(),
-	text_builder::ascii<"1.0 cardinal and dash out of crouch.">(),
-	text_builder::end_fit(),
-	text_builder::end_textbox(),
-	text_builder::end_color());
+template<string_literal line1, string_literal line2>
+static constexpr auto make_description_text()
+{
+	return text_builder::build(
+		text_builder::kern(),
+		text_builder::left(),
+		text_builder::color<170, 170, 170>(),
+		text_builder::textbox<179, 179>(),
+		text_builder::unk06<0, 0>(),
+		text_builder::fit(),
+		text_builder::ascii<line1>(),
+		text_builder::end_fit(),
+		text_builder::br(),
+		text_builder::fit(),
+		text_builder::ascii<line2>(),
+		text_builder::end_fit(),
+		text_builder::end_textbox(),
+		text_builder::end_color());
+}
 
-constexpr auto ucf_fix_description = text_builder::build(
-	text_builder::kern(),
-	text_builder::left(),
-	text_builder::color<170, 170, 170>(),
-	text_builder::textbox<179, 179>(),
-	text_builder::unk06<0, 0>(),
-	text_builder::fit(),
-	text_builder::ascii<"Reduce shield drop's range and remove 1.0">(),
-	text_builder::end_fit(),
-	text_builder::br(),
-	text_builder::fit(),
-	text_builder::ascii<"cardinal and dash out of crouch fixes.">(),
-	text_builder::end_fit(),
-	text_builder::end_textbox(),
-	text_builder::end_color());
-	
-constexpr auto ucf_type_descriptions = std::array {
-	hax_fix_description.data(),
-	ucf_fix_description.data()
+constexpr auto ucf_type_descriptions = multi_array {
+	make_description_text<"Maximize shield drop's range and fix",
+		              "1.0 cardinal and dash out of crouch.">(),
+	make_description_text<"Reduce shield drop's range and remove 1.0",
+		              "cardinal and dash out of crouch fixes.">()
 };
 
-constexpr auto latency_normal_description = text_builder::build(
-	text_builder::kern(),
-	text_builder::left(),
-	text_builder::color<170, 170, 170>(),
-	text_builder::textbox<179, 179>(),
-	text_builder::unk06<0, 0>(),
-	text_builder::fit(),
-	text_builder::ascii<"Play with the normal amount">(),
-	text_builder::end_fit(),
-	text_builder::br(),
-	text_builder::fit(),
-	text_builder::ascii<"of latency.">(),
-	text_builder::end_fit(),
-	text_builder::end_textbox(),
-	text_builder::end_color());
-
-constexpr auto latency_lcd_description = text_builder::build(
-	text_builder::kern(),
-	text_builder::left(),
-	text_builder::color<170, 170, 170>(),
-	text_builder::textbox<179, 179>(),
-	text_builder::unk06<0, 0>(),
-	text_builder::fit(),
-	text_builder::ascii<"Reduce latency by half a frame.">(),
-	text_builder::end_fit(),
-	text_builder::br(),
-	text_builder::fit(),
-	text_builder::ascii<"Recommended for LCDs.">(),
-	text_builder::end_fit(),
-	text_builder::end_textbox(),
-	text_builder::end_color());
-
-constexpr auto latency_lightning_description = text_builder::build(
-	text_builder::kern(),
-	text_builder::left(),
-	text_builder::color<170, 170, 170>(),
-	text_builder::textbox<179, 179>(),
-	text_builder::unk06<0, 0>(),
-	text_builder::fit(),
-	text_builder::ascii<"Reduce latency by one and">(),
-	text_builder::end_fit(),
-	text_builder::br(),
-	text_builder::fit(),
-	text_builder::ascii<"a half frames.">(),
-	text_builder::end_fit(),
-	text_builder::end_textbox(),
-	text_builder::end_color());
-
-constexpr auto latency_descriptions = std::array {
-	latency_normal_description.data(),
-	latency_lcd_description.data(),
-	latency_lightning_description.data()
+constexpr auto latency_descriptions = multi_array {
+	make_description_text<"Play with the normal amount",
+		              "of latency.">(),
+	make_description_text<"Reduce latency by half a frame.",
+		              "Recommended for LCDs.">(),
+	make_description_text<"Reduce latency by one and",
+		              "a half frames.">()
 };
 
-constexpr auto widescreen_off_description = text_builder::build(
-	text_builder::kern(),
-	text_builder::left(),
-	text_builder::color<170, 170, 170>(),
-	text_builder::textbox<179, 179>(),
-	text_builder::unk06<0, 0>(),
-	text_builder::fit(),
-	text_builder::ascii<"Play with the normal aspect">(),
-	text_builder::end_fit(),
-	text_builder::br(),
-	text_builder::fit(),
-	text_builder::ascii<"ratio.">(),
-	text_builder::end_fit(),
-	text_builder::end_textbox(),
-	text_builder::end_color());
-
-constexpr auto widescreen_on_description = text_builder::build(
-	text_builder::kern(),
-	text_builder::left(),
-	text_builder::color<170, 170, 170>(),
-	text_builder::textbox<179, 179>(),
-	text_builder::unk06<0, 0>(),
-	text_builder::fit(),
-	text_builder::ascii<"Play with a widescreen aspect">(),
-	text_builder::end_fit(),
-	text_builder::br(),
-	text_builder::fit(),
-	text_builder::ascii<"ratio.">(),
-	text_builder::end_fit(),
-	text_builder::end_textbox(),
-	text_builder::end_color());
-
-constexpr auto widescreen_descriptions = std::array {
-	widescreen_off_description.data(),
-	widescreen_on_description.data()
+constexpr auto widescreen_descriptions = multi_array {
+	make_description_text<"Play with the normal aspect",
+		              "ratio.">(),
+	make_description_text<"Play with a widescreen aspect",
+		              "ratio.">()
 };
 
 constexpr auto oss_description = text_builder::build(
