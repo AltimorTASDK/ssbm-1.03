@@ -232,7 +232,11 @@ extern "C" void hook_Scene_RunLoop(void(*think_callback)())
 	DevelopText_HideCursor(text);
 	DevelopText_SetBGColor(text, { 0, 0, 0, 96 });
 	DevelopText_SetTextColor(text, color_rgba::white);
+#ifdef POLL_DEBUG_VERBOSE
 	DevelopText_SetScale(text, 9, 12);
+#else
+	DevelopText_SetScale(text, 12, 16);
+#endif
 
 	auto *gobj = GObj_Create(GOBJ_CLASS_UI, GOBJ_PLINK_UI, 0);
 	GObj_AddProc(gobj, update_text, 0);
