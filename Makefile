@@ -12,7 +12,7 @@ export GCIDIR    := $(abspath gci)
 
 export LDFLAGS    := -Wl,-Map=output.map -Wl,--gc-sections -flto
 
-export DEFINES  := -DGEKKO -DPOLL_DEBUG -DPOLL_DEBUG_VERBOSE
+export DEFINES  := -DGEKKO -DPOLL_DEBUG
 export CFLAGS   := $(DEFINES) -mogc -mcpu=750 -meabi -mhard-float -Os \
 				   -Wall -Wno-register -Wno-unused-value -Wconversion -Warith-conversion \
 				   -ffunction-sections -fdata-sections -flto -mno-sdata
