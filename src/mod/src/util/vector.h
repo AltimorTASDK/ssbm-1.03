@@ -294,14 +294,22 @@ using color_rgb_f32 = vec_impl<color_rgb_base<f32>>;
 
 template<typename T>
 struct color_rgba_base {
-	static constexpr vec_impl<color_rgba_base> white = []() {
-		constexpr auto max =
-			std::is_same_v<T, f32> ? 1.f :
-			std::is_same_v<T, f64> ? 1.0 :
-			                         255;
+	static constexpr auto max_value =
+		std::is_same_v<T, f32> ? 1.f :
+		std::is_same_v<T, f64> ? 1.0 :
+		                         255;
 
-		return vec_impl<color_rgba_base>(max, max, max, max);
-	}();
+	static constexpr vec_impl<color_rgba_base> white = 
+		{ max_value, max_value, max_value, max_value };
+		
+	static constexpr auto hex(u32 value)
+	{
+		const auto r = (T)((value >> 24) & 0xFF) * (max_value / 255);
+		const auto g = (T)((value >> 16) & 0xFF) * (max_value / 255);
+		const auto b = (T)((value >>  8) & 0xFF) * (max_value / 255);
+		const auto a = (T)((value >>  0) & 0xFF) * (max_value / 255);
+		return vec_impl<color_rgba_base>(r, g, b, a);
+	}
 
 	T r, g, b, a;
 	constexpr auto elems() { return std::tie(r, g, b, a); }

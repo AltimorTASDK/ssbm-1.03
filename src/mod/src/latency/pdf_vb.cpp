@@ -42,6 +42,7 @@ static u64 frame_fetch_time;
 static u64 frame_interval;
 static u32 frame_end_line;
 
+static u32 efb_copy_late;
 static u32 efb_copy_line;
 static u64 efb_copy_poll_time[3];
 
@@ -146,6 +147,16 @@ extern "C" void hook_HSD_VICopyXFBASync(u32 pass)
 
 	OSRestoreInterrupts(irq_enable);
 	orig_HSD_VICopyXFBASync(pass);
+		
+#ifdef POLL_DEBUG
+	if (get_latency() != latency_mode::low) {
+		if (VIGetRetraceCount() > frame_retrace_count + 1)
+			efb_copy_late = 10;
+	} else {
+		if (VIGetRetraceCount() > frame_retrace_count)
+			efb_copy_late = 10;
+	}
+#endif
 }
 
 #ifdef POLL_DEBUG
@@ -203,12 +214,21 @@ static double ms(u64 interval)
 
 static void update_text(HSD_GObj *gobj)
 {
+	if (efb_copy_late != 0) {
+		DevelopText_SetColorIndex(text, 1);
+		efb_copy_late--;
+	} else {
+		DevelopText_SetColorIndex(text, 0);
+	}
+
 	DevelopText_Erase(text);
 	DevelopText_SetCursor(text, 0, 0);
-	DevelopText_Printf(text, "Poll -> Fetch   %.04f\n", ms(frame_fetch_time - frame_poll_time));
-	DevelopText_Printf(text, "Poll -> Engine  %.04f\n", ms(frame_time - frame_poll_time));
 #ifdef POLL_DEBUG_VERBOSE
+	DevelopText_Printf(text, "Poll -> Fetch   %.04f\n", ms(frame_fetch_time - frame_poll_time));
+#endif
+	DevelopText_Printf(text, "Poll -> Engine  %.04f\n", ms(frame_time - frame_poll_time));
 	DevelopText_Printf(text, "Poll -> Display %.04f\n", ms(retrace_time - retrace_poll_time));
+#ifdef POLL_DEBUG_VERBOSE
 	DevelopText_Printf(text, "Fetch Interval  %.04f\n", ms(fetch_interval));
 	DevelopText_Printf(text, "Engine Time     %.04f\n", ms(frame_interval));
 	DevelopText_Printf(text, "Poll 1 Interval %.04f\n", ms(poll_interval[0]));
@@ -220,7 +240,7 @@ static void update_text(HSD_GObj *gobj)
 	DevelopText_Printf(text, "Poll 1 Line     %d\n",    poll_line[0]);
 	DevelopText_Printf(text, "Poll 2 Line     %d",      poll_line[1]);
 #else
-	DevelopText_Printf(text, "Poll -> Display %.04f",   ms(retrace_time - retrace_poll_time));
+	DevelopText_Printf(text, "Engine Time     %.04f",   ms(frame_interval));
 #endif
 }
 
@@ -230,8 +250,11 @@ extern "C" void hook_Scene_RunLoop(void(*think_callback)())
 	text = DevelopText_Create(0x69, 0, 0, TEXT_WIDTH, TEXT_HEIGHT, text_buf);
 	DevelopText_Show(nullptr, text);
 	DevelopText_HideCursor(text);
-	DevelopText_SetBGColor(text, { 0, 0, 0, 96 });
-	DevelopText_SetTextColor(text, color_rgba::white);
+	DevelopText_SetBGColor(text, color_rgba::hex(0x00000060u));
+	DevelopText_SetColorIndex(text, 1);
+	DevelopText_SetTextColor(text, color_rgba::hex(0xFF0000FFu));
+	DevelopText_SetColorIndex(text, 0);
+	DevelopText_SetTextColor(text, color_rgba::hex(0xFFFFFFFFu));
 #ifdef POLL_DEBUG_VERBOSE
 	DevelopText_SetScale(text, 9, 12);
 #else
