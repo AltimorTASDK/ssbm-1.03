@@ -1,3 +1,4 @@
+#include "hsd/dobj.h"
 #include "hsd/gobj.h"
 #include "hsd/jobj.h"
 #include "hsd/memory.h"
@@ -18,6 +19,7 @@
 
 #include "resources/music/music_stages.tex.h"
 #include "resources/music/music_stages_mask.tex.h"
+#include "resources/rules/stage_music_header.tex.h"
 
 struct ItemMenuData {
 	u8 menu_type;
@@ -32,6 +34,7 @@ struct ItemMenuData {
 };
 
 extern "C" ArchiveModel MenMainConIs_Top;
+extern "C" ArchiveModel MenMainPanel_Top;
 
 extern "C" HSD_GObj *ItemMenuGObj;
 
@@ -123,7 +126,7 @@ constexpr int bgm_ids[] = {
 };
 
 static mempool pool;
-	
+
 static int bgm_selection[6] = { -1, -1, -1, -1, -1, -1 };
 
 static const auto patches = patch_list {
@@ -211,27 +214,6 @@ extern "C" void hook_Menu_UpdateItemDisplay(HSD_GObj *gobj, bool index_changed, 
 	play_selected_bgm(data, data->selected_stage);
 }
 
-extern "C" void orig_Menu_SetupItemToggles(HSD_GObj *gobj);
-extern "C" void hook_Menu_SetupItemToggles(HSD_GObj *gobj)
-{
-	orig_Menu_SetupItemToggles(gobj);
-
-	auto *data = gobj->get<ItemMenuData>();
-
-	for (u8 i = 0; i < 31; i++) {
-		auto *jobj = Menu_GetItemToggle(data, i);
-		// Hide item image
-		HSD_JObjSetFlagsAll(HSD_JObjGetFromTreeByIndex(jobj, 7), HIDDEN);
-	}
-	
-	// Replace item names
-	data->text_left->data = text_left.data();
-	data->text_right->data = text_right.data();
-
-	// Set up toggles
-	change_stage(data, data->selected_stage);
-}
-
 static void apply_texture_mask(u8 *texture, const u8 *mask, int width, int height,
                                int mask_x, int mask_y, int mask_w, int mask_h)
 {
@@ -262,22 +244,15 @@ static void apply_texture_mask(u8 *texture, const u8 *mask, int width, int heigh
 	}
 }
 
-static void pool_free(void *data)
+static void replace_textures()
 {
-	HSD_Free(data); // Default free gobj data
-	pool.dec_ref();
-}
+	// Free everything from rules menu to avoid OOM
+	mempool::free_all();
+	pool.inc_ref();
 
-extern "C" HSD_GObj *orig_Menu_SetupItemMenu(u32 state);
-extern "C" HSD_GObj *hook_Menu_SetupItemMenu(u32 state)
-{
-	auto *gobj = orig_Menu_SetupItemMenu(state);
-
-	// Free assets on menu exit
-	gobj->user_data_remove_func = pool_free;
-	
-	if (pool.inc_ref() != 0)
-		return gobj;
+	// Replace menu header name
+	const auto *name = MenMainPanel_Top.matanim_joint->child->next->next->child->next->matanim;
+	decompress(stage_music_header_tex_data, name->texanim->imagetbl[2]->img_ptr);
 
 	// Replace item frequency toggle textures
 	const auto *matanim = MenMainConIs_Top.matanim_joint->child->child->next->matanim->next;
@@ -289,21 +264,44 @@ extern "C" HSD_GObj *hook_Menu_SetupItemMenu(u32 state)
 	constexpr auto mask_width = tex_width / 6;
 
 	const auto *base = decompress(music_stages_tex_data);
+
+	for (auto i = 0; i < 6; i++)
+		memcpy(matanim->texanim->imagetbl[i]->img_ptr, base, tex_size);
+
+	delete[] base;
+
 	const auto *mask = decompress(music_stages_mask_tex_data);
 	
 	for (auto i = 0; i < 6; i++) {
-		auto *texture = pool.add(new u8[tex_size]);
-		memcpy(texture, base, tex_size);
-		apply_texture_mask(texture, mask, tex_width, tex_height,
+		apply_texture_mask((u8*)matanim->texanim->imagetbl[i]->img_ptr, mask,
+		                   tex_width, tex_height,
 		                   mask_width * i, 0, mask_width, tex_height);
-
-		matanim->texanim->imagetbl[i]->img_ptr = texture;
 	}
 	
-	delete base;
-	delete mask;
+	delete[] mask;
+}
+
+extern "C" void orig_Menu_SetupItemToggles(HSD_GObj *gobj);
+extern "C" void hook_Menu_SetupItemToggles(HSD_GObj *gobj)
+{
+	orig_Menu_SetupItemToggles(gobj);
 	
-	return gobj;
+	replace_textures();
+
+	auto *data = gobj->get<ItemMenuData>();
+
+	for (u8 i = 0; i < 31; i++) {
+		auto *jobj = Menu_GetItemToggle(data, i);
+		// Hide item image
+		HSD_JObjSetFlagsAll(HSD_JObjGetFromTreeByIndex(jobj, 7), HIDDEN);
+	}
+	
+	// Replace item names
+	data->text_left->data = text_left.data();
+	data->text_right->data = text_right.data();
+
+	// Set up toggles
+	change_stage(data, data->selected_stage);
 }
 
 extern "C" void orig_Menu_ItemMenuInput(HSD_GObj *gobj);
@@ -312,6 +310,10 @@ extern "C" void hook_Menu_ItemMenuInput(HSD_GObj *gobj)
 	orig_Menu_ItemMenuInput(gobj);
 	
 	const auto buttons = Menu_GetButtonsHelper(PORT_ALL);
+	
+	if (buttons & MenuButton_B)
+		return;
+
 	auto *data = ItemMenuGObj->get<ItemMenuData>();
 
 	// Allow cycling through stages with L/R

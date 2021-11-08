@@ -308,6 +308,10 @@ extern "C" HSD_GObj *hook_Menu_SetupRulesMenu(u8 state)
 	if (MenuTypePrevious == MenuType_MenuMusic)
 		MenuSelectedIndex = Rule_MenuMusic;
 
+	// Free everything when coming from music menus to avoid OOM
+	if (MenuTypePrevious == MenuType_MenuMusic || MenuTypePrevious == MenuType_StageMusic)
+		mempool::free_all();
+
 	auto *gobj = orig_Menu_SetupRulesMenu(state);
 	auto *data = gobj->get<RulesMenuData>();
 	
@@ -329,22 +333,22 @@ extern "C" HSD_GObj *hook_Menu_SetupRulesMenu(u8 state)
 
 	// Replace rule name textures
 	const auto *rule_names = MenMainCursorRl_Top.matanim_joint->child->child->next->matanim;
-	rule_names->texanim->imagetbl[3]->img_ptr = pool.add(decompress(ledge_grab_limit_tex_data));
-	rule_names->texanim->imagetbl[4]->img_ptr = pool.add(decompress(air_time_limit_tex_data));
-	rule_names->texanim->imagetbl[5]->img_ptr = pool.add(decompress(menu_music_tex_data));
-	rule_names->texanim->imagetbl[6]->img_ptr = pool.add(decompress(stage_music_tex_data));
+	decompress(ledge_grab_limit_tex_data, rule_names->texanim->imagetbl[3]->img_ptr);
+	decompress(air_time_limit_tex_data,   rule_names->texanim->imagetbl[4]->img_ptr);
+	decompress(menu_music_tex_data,       rule_names->texanim->imagetbl[5]->img_ptr);
+	decompress(stage_music_tex_data,      rule_names->texanim->imagetbl[6]->img_ptr);
 
 	// Replace menu header names
 	const auto *name1 = MenMainPanel_Top.matanim_joint->child->next->next->child->next->matanim;
-	name1->texanim->imagetbl[2]->img_ptr = pool.add(decompress(stage_music_header_tex_data));
+	decompress(stage_music_header_tex_data, name1->texanim->imagetbl[2]->img_ptr);
 
 	const auto *name2 = MenMainPanel_Top.joint->child->next->next->child->next->next;
-	name2->u.dobj->mobjdesc->texdesc->imagedesc->img_ptr =
-		pool.add(decompress(menu_music_header_tex_data));
+	decompress(menu_music_header_tex_data,
+		name2->u.dobj->mobjdesc->texdesc->imagedesc->img_ptr);
 
 	// Replace mode value texture
-	MenMainCursorRl01_Top.joint->child->u.dobj->mobjdesc->texdesc->imagedesc->img_ptr =
-		pool.add(decompress(mode_values_tex_data));
+	decompress(mode_values_tex_data,
+		MenMainCursorRl01_Top.joint->child->u.dobj->mobjdesc->texdesc->imagedesc->img_ptr);
 	
 	return gobj;
 }

@@ -91,6 +91,7 @@ void DevelopText_Show(HSD_GObj *unused, DevText *text);
 void DevelopText_HideBackground(DevText *text);
 void DevelopText_HideCursor(DevText *text);
 void DevelopText_SetBGColor(DevText *text, const color_rgba &color);
+void DevelopText_SetColorIndex(DevText *text, u8 index);
 void DevelopText_SetTextColor(DevText *text, const color_rgba &color);
 void DevelopText_SetScale(DevText *text, float x, float y);
 

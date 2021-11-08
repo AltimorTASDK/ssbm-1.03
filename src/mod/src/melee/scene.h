@@ -50,6 +50,7 @@ extern u8 SceneMajor;
 extern u8 SceneMajorPrevious;
 extern u8 SceneMinor;
 extern u8 SceneMinorPrevious;
+extern u32 SceneFrameCount;
 
 bool IsSinglePlayerMode();
 void Scene_Exit();

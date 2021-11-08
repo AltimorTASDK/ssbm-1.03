@@ -170,7 +170,6 @@ add_hook Menu_RandomStageMenuInput
 add_hook Menu_RandomStageMenuScroll
 add_hook Menu_RulesMenuInput
 add_hook Menu_SetupExtraRulesMenu
-add_hook Menu_SetupItemMenu
 add_hook Menu_SetupItemToggles
 add_hook Menu_SetupMainMenu
 add_hook Menu_SetupRulesMenu

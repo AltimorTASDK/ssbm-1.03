@@ -2,8 +2,11 @@
 
 #include <list>
 
+#include "melee/scene.h"
+
 class mempool {
 	struct allocation {
+		allocation *prev;
 		allocation *next;
 		const void *ptr;
 		void(*free)(const void *ptr);
@@ -37,24 +40,27 @@ public:
 		return old_ref_count;
 	}
 
-	// Returns old ref count
+	// Returns new ref count
 	int dec_ref()
 	{
-		auto old_ref_count = ref_count--;
-		if (ref_count == 0)
+		if (ref_count != 0 && --ref_count == 0)
 			free();
 			
-		return old_ref_count;
+		return ref_count;
 	}
 
 	template<typename T>
 	T *add(T *ptr)
 	{
 		head = new allocation {
+			.prev = nullptr,
 			.next = head,
 			.ptr = ptr,
 			.free = [](const void *ptr) { delete (T*)ptr; }
 		};
+		
+		if (head->next != nullptr)
+			head->next->prev = head;
 
 		return ptr;
 	}
@@ -62,20 +68,21 @@ public:
 	void remove(const void *ptr)
 	{
 		auto *entry = head;
-		allocation *prev = nullptr;
 
 		while (entry != nullptr) {
 			if (entry->ptr != ptr) {
-				prev = entry;
 				entry = entry->next;
 				continue;
 			}
 
 			entry->free(entry->ptr);
-			if (prev != nullptr)
-				prev->next = entry->next;
+			if (entry->prev != nullptr)
+				entry->prev->next = entry->next;
 			else
 				head = entry->next;
+				
+			if (entry->next != nullptr)
+				entry->next->prev = entry->prev;
 
 			delete entry;
 			return;
@@ -105,11 +112,13 @@ private:
 			delete entry;
 			entry = next;
 		}
+		
+		head = nullptr;
 
 		// Unlink
 		if (prev != nullptr)
 			prev->next = next;
-		else if (pool_list_head == this)
+		else
 			pool_list_head = next;
 			
 		if (next != nullptr)

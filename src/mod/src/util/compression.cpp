@@ -25,11 +25,13 @@ struct compressed_file {
 };
 
 // Allocates a buffer
-u8 *rle_decode(const rle_data *data)
+u8 *rle_decode(const rle_data *data, u8 *out = nullptr)
 {
 	const auto *in = data->data;
 	const auto out_len = data->uncompressed_len;
-	auto *out = new u8[out_len];
+	
+	if (out == nullptr)
+		out = new u8[out_len];
 	
 	size_t in_idx = 0;
 	size_t out_idx = 0;
@@ -64,7 +66,7 @@ u8 *rle_decode(const rle_data *data)
 }
 
 // Allocates a buffer
-u8 *index_decode(const index_header *index)
+u8 *index_decode(const index_header *index, u8 *out = nullptr)
 {
 	const auto out_len = index->uncompressed_len;
 	const auto bits = index->bits;
@@ -73,8 +75,9 @@ u8 *index_decode(const index_header *index)
 
 	const auto *rle = (rle_data*)(table + index->table_size);
 	const auto *in = rle_decode(rle);
-	
-	auto *out = new u8[out_len];
+
+	if (out == nullptr)
+		out = new u8[out_len];
 
 	size_t bitpos = 0;
 	
@@ -102,11 +105,11 @@ u8 *index_decode(const index_header *index)
 	return out;
 }
 
-u8 *decompress(const u8 *data)
+u8 *decompress(const u8 *data, void *out)
 {
 	const auto *header = (compressed_file*)data;
 	if (header->is_indexed)
-		return index_decode(&header->indexed);
+		return index_decode(&header->indexed, (u8*)out);
 	else
-		return rle_decode(&header->rle);
+		return rle_decode(&header->rle, (u8*)out);
 }
