@@ -20,7 +20,7 @@ constexpr auto TEXT_WIDTH = 24;
 #ifdef POLL_DEBUG_VERBOSE
 constexpr auto TEXT_HEIGHT = 13;
 #else
-constexpr auto TEXT_HEIGHT = 1;
+constexpr auto TEXT_HEIGHT = 3;
 #endif
 
 static u32 poll_line[2];
@@ -205,9 +205,9 @@ static void update_text(HSD_GObj *gobj)
 {
 	DevelopText_Erase(text);
 	DevelopText_SetCursor(text, 0, 0);
-#ifdef POLL_DEBUG_VERBOSE
 	DevelopText_Printf(text, "Poll -> Fetch   %.04f\n", ms(frame_fetch_time - frame_poll_time));
 	DevelopText_Printf(text, "Poll -> Engine  %.04f\n", ms(frame_time - frame_poll_time));
+#ifdef POLL_DEBUG_VERBOSE
 	DevelopText_Printf(text, "Poll -> Display %.04f\n", ms(retrace_time - retrace_poll_time));
 	DevelopText_Printf(text, "Fetch Interval  %.04f\n", ms(fetch_interval));
 	DevelopText_Printf(text, "Engine Time     %.04f\n", ms(frame_interval));
