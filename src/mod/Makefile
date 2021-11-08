@@ -28,7 +28,7 @@ $(BINFILE): $(ELFFILE)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	powerpc-eabi-objcopy -O binary $< $@
 
-$(ELFFILE): resources $(OBJFILES) $(LINKSCRIPT) $(MELEELD) | clean_unused
+$(ELFFILE): $(RESOURCES_H_OUT) $(TEXTURES_H_OUT) $(OBJFILES) $(LINKSCRIPT) $(MELEELD) | clean_unused
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(CC) $(LDFLAGS) -T$(LINKSCRIPT) -T$(MELEELD) $(OBJFILES) -o $@
 
