@@ -54,7 +54,7 @@ static constexpr auto stage_text()
 		text_builder::end_textbox());
 }
 
-constexpr auto bgm_text = std::make_tuple(
+constexpr auto bgm_text = multi_array {
 	stage_text<"Balloon Fight">(),
 	stage_text<"Battlefield">(),
 	stage_text<"Battle Theme">(),
@@ -98,11 +98,8 @@ constexpr auto bgm_text = std::make_tuple(
 
 	stage_text<"All-Star Intro">(),
 	stage_text<"Targets!">(),
-	stage_text<"Trophy">());
-
-constexpr auto bgm_text_data = for_range<sizeof_tuple<decltype(bgm_text)>>([]<size_t ...I>() {
-		return std::array { (std::get<I>(bgm_text).data())... };
-	});
+	stage_text<"Trophy">()
+};
 
 constexpr int bgm_ids[] = {
 	BGM_BalloonFight,
@@ -250,7 +247,7 @@ static void set_page(RandomStageMenuData *data, int page)
 
 		if (i < page_size) {
 			data->text[i]->hidden = false;
-			data->text[i]->data = bgm_text_data[i + page_offset];
+			data->text[i]->data = bgm_text[i + page_offset];
 			HSD_JObjClearFlagsAll(on_off_switch, HIDDEN);
 		} else {
 			data->text[i]->hidden = true;
