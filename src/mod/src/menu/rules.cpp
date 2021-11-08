@@ -75,65 +75,57 @@ extern "C" struct {
 extern "C" void Menu_UpdateRuleDisplay(HSD_GObj *gobj, bool index_changed, bool value_changed);
 extern "C" void Menu_RulesMenuInput(HSD_GObj *gobj);
 
-constexpr auto lgl_description = text_builder::build(
-	text_builder::kern(),
-	text_builder::left(),
-	text_builder::color<170, 170, 170>(),
-	text_builder::textbox<179, 179>(),
-	text_builder::unk06<0, 0>(),
-	text_builder::fit(),
-	text_builder::ascii<"Set the LGL in the event of">(),
-	text_builder::end_fit(),
-	text_builder::br(),
-	text_builder::fit(),
-	text_builder::ascii<"a time-out.">(),
-	text_builder::end_fit(),
-	text_builder::end_textbox(),
-	text_builder::end_color());
+template<string_literal line1, string_literal line2>
+static constexpr auto make_description_text()
+{
+	return text_builder::build(
+		text_builder::kern(),
+		text_builder::left(),
+		text_builder::color<170, 170, 170>(),
+		text_builder::textbox<179, 179>(),
+		text_builder::unk06<0, 0>(),
+		text_builder::fit(),
+		text_builder::ascii<line1>(),
+		text_builder::end_fit(),
+		text_builder::br(),
+		text_builder::fit(),
+		text_builder::ascii<line2>(),
+		text_builder::end_fit(),
+		text_builder::end_textbox(),
+		text_builder::end_color());
+}
 
-constexpr auto atl_description = text_builder::build(
-	text_builder::kern(),
-	text_builder::left(),
-	text_builder::color<170, 170, 170>(),
-	text_builder::textbox<179, 179>(),
-	text_builder::unk06<0, 0>(),
-	text_builder::fit(),
-	text_builder::ascii<"Set the ATL in the event of">(),
-	text_builder::end_fit(),
-	text_builder::br(),
-	text_builder::fit(),
-	text_builder::ascii<"a time-out.">(),
-	text_builder::end_fit(),
-	text_builder::end_textbox(),
-	text_builder::end_color());
+template<string_literal line1>
+static constexpr auto make_description_text()
+{
+	return text_builder::build(
+		text_builder::kern(),
+		text_builder::left(),
+		text_builder::color<170, 170, 170>(),
+		text_builder::textbox<179, 179>(),
+		text_builder::offset<0, -10>(),
+		text_builder::br(),
+		text_builder::unk06<0, 0>(),
+		text_builder::fit(),
+		text_builder::ascii<line1>(),
+		text_builder::end_fit(),
+		text_builder::end_textbox(),
+		text_builder::end_color());
+}
 
-constexpr auto menu_music_description = text_builder::build(
-	text_builder::kern(),
-	text_builder::left(),
-	text_builder::color<170, 170, 170>(),
-	text_builder::textbox<179, 179>(),
-	text_builder::offset<0, -10>(),
-	text_builder::br(),
-	text_builder::unk06<0, 0>(),
-	text_builder::fit(),
-	text_builder::ascii<"Customize the menu music.">(),
-	text_builder::end_fit(),
-	text_builder::end_textbox(),
-	text_builder::end_color());
+constexpr auto lgl_description = make_description_text<
+	"Set the LGL in the event of",
+	"a time-out.">();
 
-constexpr auto stage_music_description = text_builder::build(
-	text_builder::kern(),
-	text_builder::left(),
-	text_builder::color<170, 170, 170>(),
-	text_builder::textbox<179, 179>(),
-	text_builder::offset<0, -10>(),
-	text_builder::br(),
-	text_builder::unk06<0, 0>(),
-	text_builder::fit(),
-	text_builder::ascii<"Customize the stage music.">(),
-	text_builder::end_fit(),
-	text_builder::end_textbox(),
-	text_builder::end_color());
+constexpr auto atl_description = make_description_text<
+	"Set the ATL in the event of",
+	"a time-out.">();
+
+constexpr auto menu_music_description = make_description_text<
+	"Customize the menu music.">();
+
+constexpr auto stage_music_description = make_description_text<
+	"Customize the stage music.">();
 	
 static mempool pool;
 	
