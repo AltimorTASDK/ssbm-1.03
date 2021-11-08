@@ -32,6 +32,12 @@ struct MainMenuData {
 	Text *description_text;
 };
 
+struct MainMenuEnterData {
+	u8 menu_type;
+	u8 selected;
+	u8 pad002;
+};
+
 struct MenuTypeData {
 	HSD_AnimLoop *preview_anims;
 	f32 anim_frame;
@@ -46,63 +52,41 @@ extern "C" MenuTypeData MenuTypeDataTable[MenuType_Max];
 
 extern "C" void VsMenu_Think();
 
-constexpr auto debug_menu_description = text_builder::build(
-	text_builder::kern(),
-	text_builder::left(),
-	text_builder::color<170, 170, 170>(),
-	text_builder::textbox<179, 128>(),
-	text_builder::offset<0, -20>(),
-	text_builder::br(),
-	text_builder::unk06<0, 0>(),
-	text_builder::fit(),
-	text_builder::ascii<"Toggle DEVELOP mode and">(),
-	text_builder::end_fit(),
-	text_builder::br(),
-	text_builder::unk06<0, 0>(),
-	text_builder::fit(),
-	text_builder::ascii<"other options.">(),
-	text_builder::end_fit(),
-	text_builder::end_textbox(),
-	text_builder::end_color());
+template<string_literal line1, string_literal line2>
+static constexpr auto make_description_text()
+{
+	return text_builder::build(
+		text_builder::kern(),
+		text_builder::left(),
+		text_builder::color<170, 170, 170>(),
+		text_builder::textbox<179, 128>(),
+		text_builder::offset<0, -20>(),
+		text_builder::br(),
+		text_builder::unk06<0, 0>(),
+		text_builder::fit(),
+		text_builder::ascii<line1>(),
+		text_builder::end_fit(),
+		text_builder::br(),
+		text_builder::unk06<0, 0>(),
+		text_builder::fit(),
+		text_builder::ascii<line2>(),
+		text_builder::end_fit(),
+		text_builder::end_textbox(),
+		text_builder::end_color());
+}
 
-constexpr auto controls_description = text_builder::build(
-	text_builder::kern(),
-	text_builder::left(),
-	text_builder::color<170, 170, 170>(),
-	text_builder::textbox<179, 128>(),
-	text_builder::offset<0, -20>(),
-	text_builder::br(),
-	text_builder::unk06<0, 0>(),
-	text_builder::fit(),
-	text_builder::ascii<"Remap buttons and change">(),
-	text_builder::end_fit(),
-	text_builder::br(),
-	text_builder::unk06<0, 0>(),
-	text_builder::fit(),
-	text_builder::ascii<"other controller settings.">(),
-	text_builder::end_fit(),
-	text_builder::end_textbox(),
-	text_builder::end_color());
+constexpr auto debug_menu_description = make_description_text<
+	"Toggle DEVELOP mode and",
+	"other options.">();
 
-constexpr auto manual_description = text_builder::build(
-	text_builder::kern(),
-	text_builder::left(),
-	text_builder::color<170, 170, 170>(),
-	text_builder::textbox<179, 128>(),
-	text_builder::offset<0, -20>(),
-	text_builder::br(),
-	text_builder::unk06<0, 0>(),
-	text_builder::fit(),
-	text_builder::ascii<"Read the 1.03 memory card">(),
-	text_builder::end_fit(),
-	text_builder::br(),
-	text_builder::unk06<0, 0>(),
-	text_builder::fit(),
-	text_builder::ascii<"manual.">(),
-	text_builder::end_fit(),
-	text_builder::end_textbox(),
-	text_builder::end_color());
-	
+constexpr auto controls_description = make_description_text<
+	"Remap buttons and change",
+	"other controller settings.">();
+
+constexpr auto manual_description = make_description_text<
+	"Read the 1.03 memory card",
+	"other controller settings.">();
+
 static const auto patches = patch_list {
 	// Swap previews for debug menu and controls
 	std::pair { &MenuTypeDataTable[MenuType_VsMode].preview_anims[1], HSD_AnimLoop {
@@ -117,6 +101,24 @@ static const auto patches = patch_list {
 	// bge 0x50
 	std::pair { (char*)VsMenu_Think+0x64, 0x40800050 },
 };
+
+extern "C" void orig_MainMenu_Enter(SceneMinorData *minor);
+extern "C" void hook_MainMenu_Enter(SceneMinorData *minor)
+{
+	orig_MainMenu_Enter(minor);
+
+	auto *data = (MainMenuEnterData*)minor->data.enter_data;
+
+	// Hover over controls portal when returning from controls menu
+	if (SceneMajorPrevious == Scene_Controls)
+		data->selected = 1;
+	
+	// Go back to debug menu portal when returning from debug menu
+	if (SceneMajorPrevious == Scene_DebugMenu) {
+		data->menu_type = MenuType_VsMode;
+		data->selected = 2;
+	}
+}
 	
 extern "C" void orig_MainMenu_Init(void *menu);
 extern "C" void hook_MainMenu_Init(void *menu)
