@@ -7,6 +7,7 @@
 #include "hsd/tobj.h"
 #include "melee/camera.h"
 #include "melee/match.h"
+#include "melee/player.h"
 #include "melee/scene.h"
 #include "melee/stage.h"
 #include "menu/stage_select.h"
@@ -23,13 +24,28 @@ struct FountainReflectionData {
 
 static bool should_use_simple_fod()
 {
-#if 0
-	// Force simple FoD in low latency mode
+	// Use simple FoD in low latency mode
 	if (get_latency() == latency_mode::low)
 		return true;
-#endif
 	
-	return MatchInfo_IsTeams() && SceneMajor != Scene_Training;
+	// Use simple FoD in teams
+	if (MatchInfo_IsTeams() && SceneMajor != Scene_Training)
+		return true;
+		
+	// Use simple FoD if more than one ICs
+	auto ic_count = 0;
+	for (auto i = 0; i < 6; i++) {
+		if (PlayerBlock_GetSlotType(i) == SlotType_None)
+			continue;
+			
+		if (PlayerBlock_GetCharacterID(i, 0) != CID_Popo)
+			continue;
+
+		if (++ic_count > 1)
+			return true;
+	}
+	
+	return false;
 }
 
 extern "C" void orig_Stage_Fountain_UpdateReflection(HSD_GObj *gobj);

@@ -719,7 +719,7 @@
 8003248c 000000c0 8003248c 0 PlayerBlock_0x08_LoadSlotType_DataOffset_0x221F_Check
 8003254c 0000007c 8003254c 0 PlayerBlock_0x08_StoreR4toPlayerType
 800325c8 00000048 800325c8 0 PlayerBlock_LoadInternalCharIDFromExternalOrFlag
-80032610 000000bc 80032610 0 zz_0032610_
+80032610 000000bc 80032610 0 PlayerBlock_GetCharacterID
 800326cc 0000009c 800326cc 0 PlayerBlock_0x10x14x18_LoadPlayerCoordsToR4
 80032768 000000c0 80032768 0 PlayerBlock_0x10x14x18_StoreNametagCoords
 80032828 000000ac 80032828 0 PlayerBlock_0x10x14x18_UpdateNametagCoords

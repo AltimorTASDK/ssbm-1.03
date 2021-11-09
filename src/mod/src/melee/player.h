@@ -278,6 +278,7 @@ extern "C" {
 	
 HSD_GObj *PlayerBlock_GetSubCharGObj(s32 slot, s32 subchar);
 HSD_GObj *PlayerBlock_GetGObj(s32 slot);
+s32 PlayerBlock_GetCharacterID(s32 slot, s32 subchar);
 u8 PlayerBlock_GetPort(s32 slot);
 u8 PlayerBlock_GetTeam(s32 slot);
 u32 PlayerBlock_GetSlotType(s32 slot);
