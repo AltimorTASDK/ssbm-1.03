@@ -157,7 +157,7 @@ constexpr auto pause_auto_description = text_builder::build(
 	text_builder::end_color());
 	
 static mempool pool;
-static void *decompressed_textures[ExtraRule_Max];
+static texture_swap *decompressed_textures[ExtraRule_Max];
 
 static const auto patches = patch_list {
 	// Swap text for pause and friendly fire
@@ -179,9 +179,7 @@ static const auto patches = patch_list {
 static void replace_toggle_texture(ExtraRulesMenuData *data, int index)
 {
 	auto *tobj = data->value_jobj_trees[index].tree[1]->u.dobj->mobj->tobj;
-	pool.remove(tobj->imagedesc);
-	tobj->imagedesc = pool.add(new HSD_ImageDesc(*tobj->imagedesc));
-	tobj->imagedesc->img_ptr = decompressed_textures[index];
+	tobj->imagedesc = decompressed_textures[index]->image;
 }
 
 static void pool_free(void *data)
@@ -194,20 +192,20 @@ static void load_textures()
 {
 	// Replace rule name textures
 	const auto *rule_names = MenMainCursorRl_Top.matanim_joint->child->child->next->matanim;
-	rule_names->texanim->imagetbl[ 9]->img_ptr = pool.add(decompress(controller_fix_tex_data));
-	rule_names->texanim->imagetbl[11]->img_ptr = pool.add(decompress(latency_tex_data));
-	rule_names->texanim->imagetbl[12]->img_ptr = pool.add(decompress(widescreen_tex_data));
-	rule_names->texanim->imagetbl[13]->img_ptr = pool.add(decompress(og_stage_select_tex_data));
+	pool.add(new texture_swap(controller_fix_tex_data,  rule_names->texanim->imagetbl[ 9]));
+	pool.add(new texture_swap(latency_tex_data,         rule_names->texanim->imagetbl[11]));
+	pool.add(new texture_swap(widescreen_tex_data,      rule_names->texanim->imagetbl[12]));
+	pool.add(new texture_swap(og_stage_select_tex_data, rule_names->texanim->imagetbl[13]));
 	
 	// Load rule value textures
 	decompressed_textures[ExtraRule_Pause] =
-		pool.add(decompress(pause_values_tex_data));
+		pool.add(new texture_swap(pause_values_tex_data));
 
 	decompressed_textures[ExtraRule_ControllerFix] =
-		pool.add(decompress(controller_fix_values_tex_data));
+		pool.add(new texture_swap(controller_fix_values_tex_data));
 
 	decompressed_textures[ExtraRule_Latency] =
-		pool.add(decompress(latency_values_tex_data));
+		pool.add(new texture_swap(latency_values_tex_data));
 }
 
 extern "C" HSD_GObj *orig_Menu_SetupExtraRulesMenu(u8 state);

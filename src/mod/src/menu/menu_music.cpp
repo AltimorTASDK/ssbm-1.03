@@ -352,8 +352,8 @@ extern "C" HSD_GObj *hook_Menu_SetupRandomStageMenu(u8 state)
 	if (pool.inc_ref() != 0)
 		return gobj;
 
-	texture_l.init(pool.add(decompress(trigger_l_tex_data)), 32, 16, GX_TF_IA4);
-	texture_r.init(pool.add(decompress(trigger_r_tex_data)), 32, 16, GX_TF_IA4);
+	pool.add(init_texture(trigger_l_tex_data, &texture_l));
+	pool.add(init_texture(trigger_r_tex_data, &texture_r));
 	
 	return gobj;
 }

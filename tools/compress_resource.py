@@ -51,7 +51,7 @@ def index_encode(data, bits, table):
 
 def compress_rle(data):
     # 0 = not indexed
-    return bytearray(struct.pack(">H", 0)) + rle_encode(data)
+    return bytearray(struct.pack(">Bx", 0)) + rle_encode(data)
 
 def compress_indexed(data):
     unique_bytes = [b for b in range(0x100) if b in data]
@@ -63,7 +63,7 @@ def compress_indexed(data):
         return None
         
     # 1 = indexed
-    indexed = bytearray(struct.pack(">H", 1))
+    indexed = bytearray(struct.pack(">Bx", 1))
     
     # Uncompressed size
     indexed += struct.pack(">H", len(data))
@@ -89,6 +89,11 @@ def compress(data):
         return rle
     else:
         return indexed 
+        
+def get_header_size(extension):
+    return {
+        '.tex': 6
+    }.get(extension, 0)
 
 def main():
     if len(sys.argv) < 3:
@@ -100,14 +105,21 @@ def main():
         
     with open(in_path, "rb") as f:
         data = f.read()
+        
+    header_size = get_header_size(os.path.splitext(in_path)[1])
+    header = data[:header_size]
+    body = data[header_size:]
 
-    compressed = compress(data)
+    compressed = compress(body)
     
-    compression_rate = (1 - len(compressed) / len(data)) * 100
+    compression_rate = (1 - (len(compressed) + len(header)) / len(data)) * 100
     name = os.path.basename(out_path)
     print(f"{name} compression rate: {compression_rate:.02f}%")
         
     with open(out_path, "wb") as f:
+        # Include the size of the header_size field itself
+        f.write(struct.pack(">H", header_size + 2))
+        f.write(header)
         f.write(compressed)
 
 if __name__ == "__main__":

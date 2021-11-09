@@ -48,6 +48,21 @@ public:
 			
 		return ref_count;
 	}
+	
+	// Free all entries
+	void reset()
+	{
+		auto *entry = head;
+		while (entry != nullptr) {
+			entry->free(entry->ptr);
+
+			auto *next = entry->next;
+			delete entry;
+			entry = next;
+		}
+		
+		head = nullptr;
+	}
 
 	template<typename T>
 	T *add(T *ptr)
@@ -104,16 +119,7 @@ private:
 
 	void free()
 	{
-		auto *entry = head;
-		while (entry != nullptr) {
-			entry->free(entry->ptr);
-
-			auto *next = entry->next;
-			delete entry;
-			entry = next;
-		}
-		
-		head = nullptr;
+		reset();
 
 		// Unlink
 		if (prev != nullptr)

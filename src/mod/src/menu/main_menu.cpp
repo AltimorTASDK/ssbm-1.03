@@ -131,23 +131,22 @@ extern "C" void hook_MainMenu_Init(void *menu)
 	
 	// Replace portal textures
 	const auto *names = MenMainCursor_Top.matanim_joint->child->child->next->matanim;
-	names->texanim->imagetbl[11]->img_ptr = decompress(controls_tex_data);
-	names->texanim->imagetbl[12]->img_ptr = decompress(debug_menu_tex_data);
-	names->texanim->imagetbl[13]->img_ptr = decompress(manual_tex_data);
+	unmanaged_texture_swap(controls_tex_data,   names->texanim->imagetbl[11]);
+	unmanaged_texture_swap(debug_menu_tex_data, names->texanim->imagetbl[12]);
+	unmanaged_texture_swap(manual_tex_data,     names->texanim->imagetbl[13]);
 
 	// Replace preview textures
 	const auto *previews =
 		MenMainConTop_Top.matanim_joint->child->child->next->child->next->child->matanim;
-	previews->texanim->imagetbl[1]->img_ptr = decompress(vs_mode_preview_tex_data);
-	previews->texanim->imagetbl[7]->height = 132;
-	previews->texanim->imagetbl[7]->img_ptr = decompress(controls_preview_tex_data);
+	unmanaged_texture_swap(vs_mode_preview_tex_data,  previews->texanim->imagetbl[1]);
+	unmanaged_texture_swap(controls_preview_tex_data, previews->texanim->imagetbl[7]);
 
 #if 0
 	const auto *tournament_preview =
 		MenMainConTop_Top.matanim_joint->child->child->next->child->
 		next->next->next->next->next->next->next->next->next->matanim;
-	tournament_preview->texanim->imagetbl[21]->img_ptr =
-		decompress(debug_menu_preview_20XX_tex_data);
+	unmanaged_texture_swap(debug_menu_preview_20XX_tex_data,
+	                       tournament_preview->texanim->imagetbl[21]);
 #endif
 }
 

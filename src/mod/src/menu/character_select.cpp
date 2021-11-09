@@ -13,6 +13,7 @@
 #include "menu/stage_select.h"
 #include "rules/values.h"
 #include "util/compression.h"
+#include "util/mempool.h"
 #include "util/vector.h"
 #include "util/melee/fobj_builder.h"
 
@@ -103,6 +104,8 @@ extern "C" CSSPort CSSPorts[4];
 
 extern "C" bool CSS_DropPuck(u8 index);
 extern "C" void CSS_UpdatePortrait(u8 port);
+
+static mempool pool;
 
 static bool is_unplugged[4];
 
@@ -200,25 +203,29 @@ static void replace_textures()
 	auto *banner = MnSlChrModels->Menu.matanim_joint->child->next->next->next->child->matanim;
 
 	if (get_ucf_type() == ucf_type::hax) {
-		decompress(banner_103_tex_data,      banner->texanim->imagetbl[0]->img_ptr);
-		decompress(banner_103_team_tex_data, banner->texanim->imagetbl[1]->img_ptr);
+		pool.add(new texture_swap(banner_103_tex_data,      banner->texanim->imagetbl[0]));
+		pool.add(new texture_swap(banner_103_team_tex_data, banner->texanim->imagetbl[1]));
 	} else {
-		decompress(banner_ucf_tex_data,      banner->texanim->imagetbl[0]->img_ptr);
-		decompress(banner_ucf_team_tex_data, banner->texanim->imagetbl[1]->img_ptr);
+		pool.add(new texture_swap(banner_ucf_tex_data,      banner->texanim->imagetbl[0]));
+		pool.add(new texture_swap(banner_ucf_team_tex_data, banner->texanim->imagetbl[1]));
 	}
 
+	// Replace VS text with latency mode
 	auto *top_panel = MnSlChrModels->Menu.joint->child->u.dobj->mobjdesc;
 	if (get_latency() == latency_mode::crt)
-		decompress(vs_ball_crt_tex_data, top_panel->texdesc->imagedesc->img_ptr);
+		pool.add(new texture_swap(vs_ball_crt_tex_data, top_panel->texdesc->imagedesc));
 	else if (get_latency() == latency_mode::lcd)
-		decompress(vs_ball_lcd_tex_data, top_panel->texdesc->imagedesc->img_ptr);
+		pool.add(new texture_swap(vs_ball_lcd_tex_data, top_panel->texdesc->imagedesc));
 	else if (get_latency() == latency_mode::low)
-		decompress(vs_ball_low_tex_data, top_panel->texdesc->imagedesc->img_ptr);
+		pool.add(new texture_swap(vs_ball_low_tex_data, top_panel->texdesc->imagedesc));
 }
 
 extern "C" void orig_CSS_Setup();
 extern "C" void hook_CSS_Setup()
 {
+	// Free any assets from previous CSS setup
+	pool.reset();
+	
 #if 0
 	// Replace "READY TO FIGHT" color tracks
 	auto *ready_anim = MnSlChrModels->PressStart.matanim_joint->child->next->matanim;

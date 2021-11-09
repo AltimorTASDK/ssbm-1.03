@@ -333,22 +333,22 @@ extern "C" HSD_GObj *hook_Menu_SetupRulesMenu(u8 state)
 
 	// Replace rule name textures
 	const auto *rule_names = MenMainCursorRl_Top.matanim_joint->child->child->next->matanim;
-	decompress(ledge_grab_limit_tex_data, rule_names->texanim->imagetbl[3]->img_ptr);
-	decompress(air_time_limit_tex_data,   rule_names->texanim->imagetbl[4]->img_ptr);
-	decompress(menu_music_tex_data,       rule_names->texanim->imagetbl[5]->img_ptr);
-	decompress(stage_music_tex_data,      rule_names->texanim->imagetbl[6]->img_ptr);
+	pool.add(new texture_swap(ledge_grab_limit_tex_data, rule_names->texanim->imagetbl[3]));
+	pool.add(new texture_swap(air_time_limit_tex_data,   rule_names->texanim->imagetbl[4]));
+	pool.add(new texture_swap(menu_music_tex_data,       rule_names->texanim->imagetbl[5]));
+	pool.add(new texture_swap(stage_music_tex_data,      rule_names->texanim->imagetbl[6]));
 
 	// Replace menu header names
 	const auto *name1 = MenMainPanel_Top.matanim_joint->child->next->next->child->next->matanim;
-	decompress(stage_music_header_tex_data, name1->texanim->imagetbl[2]->img_ptr);
+	pool.add(new texture_swap(stage_music_header_tex_data, name1->texanim->imagetbl[2]));
 
 	const auto *name2 = MenMainPanel_Top.joint->child->next->next->child->next->next;
-	decompress(menu_music_header_tex_data,
-		name2->u.dobj->mobjdesc->texdesc->imagedesc->img_ptr);
+	pool.add(new texture_swap(menu_music_header_tex_data,
+		name2->u.dobj->mobjdesc->texdesc->imagedesc));
 
 	// Replace mode value texture
-	decompress(mode_values_tex_data,
-		MenMainCursorRl01_Top.joint->child->u.dobj->mobjdesc->texdesc->imagedesc->img_ptr);
+	pool.add(new texture_swap(mode_values_tex_data,
+		MenMainCursorRl01_Top.joint->child->u.dobj->mobjdesc->texdesc->imagedesc));
 	
 	return gobj;
 }

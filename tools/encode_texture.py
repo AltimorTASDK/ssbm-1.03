@@ -139,6 +139,9 @@ def encode_png(in_path, out_path, fmt):
             if x >= width or y >= height:
                 return 0
             return data[y][x * 4 + channel]
+            
+        # Write header
+        out_file.write(struct.pack(">HHBx", width, height, fmt))
         
         { # Call corresponding encoding function
             GX_TF_I4:     encode_i4,
