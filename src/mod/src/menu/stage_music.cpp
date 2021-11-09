@@ -301,13 +301,13 @@ extern "C" void hook_Menu_SetupItemToggles(HSD_GObj *gobj)
 extern "C" void orig_Menu_ItemMenuInput(HSD_GObj *gobj);
 extern "C" void hook_Menu_ItemMenuInput(HSD_GObj *gobj)
 {
-	orig_Menu_ItemMenuInput(gobj);
-	
 	const auto buttons = Menu_GetButtonsHelper(PORT_ALL);
 	
 	if (buttons & (MenuButton_B | MenuButton_Start))
 		config.save();
 
+	orig_Menu_ItemMenuInput(gobj);
+	
 	auto *data = ItemMenuGObj->get<ItemMenuData>();
 
 	// Allow cycling through stages with L/R
