@@ -61,7 +61,9 @@ static OSThreadQueue half_vb_thread_queue;
 
 static void pad_sample_callback()
 {
+#ifdef POLL_DEBUG
 	const auto current_poll_time = OSGetTime();
+#endif
 	const auto current_poll_line = VIGetCurrentLine();
 	const auto index = current_poll_line < last_poll_line ? 0 : 1;
 
