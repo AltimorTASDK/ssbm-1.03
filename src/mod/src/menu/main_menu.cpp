@@ -12,9 +12,11 @@
 #include "util/melee/text_builder.h"
 #include <gctypes.h>
 
+#include "resources/portals/vs_mode_preview.tex.h"
 #include "resources/portals/controls.tex.h"
 #include "resources/portals/controls_preview.tex.h"
 #include "resources/portals/debug_menu.tex.h"
+#include "resources/portals/debug_menu_preview_20XX.tex.h"
 #include "resources/portals/manual.tex.h"
 
 enum VsMenuPortalID {
@@ -136,8 +138,17 @@ extern "C" void hook_MainMenu_Init(void *menu)
 	// Replace preview textures
 	const auto *previews =
 		MenMainConTop_Top.matanim_joint->child->child->next->child->next->child->matanim;
+	previews->texanim->imagetbl[1]->img_ptr = decompress(vs_mode_preview_tex_data);
 	previews->texanim->imagetbl[7]->height = 132;
 	previews->texanim->imagetbl[7]->img_ptr = decompress(controls_preview_tex_data);
+
+#if 0
+	const auto *tournament_preview =
+		MenMainConTop_Top.matanim_joint->child->child->next->child->
+		next->next->next->next->next->next->next->next->next->matanim;
+	tournament_preview->texanim->imagetbl[21]->img_ptr =
+		decompress(debug_menu_preview_20XX_tex_data);
+#endif
 }
 
 static void update_portal_description(MainMenuData *data, u32 menu_type, u32 index)

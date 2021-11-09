@@ -122,6 +122,7 @@ hooks_start:
 .set FirstEngineFrame,        Scene_RunLoop+0xA8
 
 add_hook Bubble_GetPosition
+add_hook Camera_GetBounds
 add_hook CheckCSSPlayerCount
 add_hook CheckIsCPUPuck
 add_hook CheckScrollingRuleIndex
@@ -140,6 +141,7 @@ add_hook CreateCSSNameText
 add_hook CSS_Init
 add_hook CSS_PlayerThink
 add_hook CSS_Setup
+add_hook CSS_UpdatePortrait
 add_hook DebugMenu_Exit
 add_hook DevelopText_Draw
 add_hook EnterSpecialMelee

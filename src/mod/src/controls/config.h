@@ -22,6 +22,15 @@ struct controller_config {
 	{
 		*this = defaults;
 	}
+	
+	bool is_illegal() const
+	{
+		return perfect_wavedash
+		    || c_up != cstick_type::smash
+		    || c_horizontal != cstick_type::smash
+		    || c_down != cstick_type::smash
+		    || !tap_jump;
+	}
 };
 
 inline const controller_config controller_config::defaults = {};

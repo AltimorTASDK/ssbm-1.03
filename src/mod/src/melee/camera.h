@@ -4,9 +4,16 @@
 #include "util/vector.h"
 #include <gctypes.h>
 
+enum CameraMode {
+	CameraMode_Normal = 0
+};
+
+struct CameraMovement;
+
 struct Camera {
 	HSD_GObj *gobj;
-	char pad004[0x3A8 - 0x004];
+	u32 mode;
+	char pad008[0x3A8 - 0x008];
 };
 
 struct CmSubject {

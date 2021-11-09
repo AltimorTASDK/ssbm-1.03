@@ -1,6 +1,9 @@
+#include "controls/config.h"
 #include "hsd/aobj.h"
 #include "hsd/archive.h"
+#include "hsd/dobj.h"
 #include "hsd/fobj.h"
+#include "hsd/jobj.h"
 #include "hsd/mobj.h"
 #include "hsd/pad.h"
 #include "hsd/tobj.h"
@@ -8,8 +11,19 @@
 #include "melee/player.h"
 #include "melee/scene.h"
 #include "menu/stage_select.h"
+#include "rules/values.h"
+#include "util/compression.h"
 #include "util/vector.h"
 #include "util/melee/fobj_builder.h"
+
+#include "resources/css/banner_103.tex.h"
+#include "resources/css/banner_103_team.tex.h"
+#include "resources/css/banner_ucf.tex.h"
+#include "resources/css/banner_ucf_team.tex.h"
+
+#include "resources/css/vs_ball_crt.tex.h"
+#include "resources/css/vs_ball_lcd.tex.h"
+#include "resources/css/vs_ball_low.tex.h"
 
 enum CSSPlayerState {
 	CSSPlayerState_Disabled = 0,
@@ -38,7 +52,15 @@ struct CSSPuckData {
 };
 
 struct CSSPort {
-	char pad000[0x09];
+	u8 series_icon_joint;
+	u8 portrait_joint;
+	u8 team_joint;
+	u8 closed_port_joint;
+	u8 port_background_joint;
+	u8 port_type_joint;
+	u8 handicap_slider_joint;
+	u8 cpu_level_slider_joint;
+	u8 unknown_joint;
 	u8 picked_character;
 	u8 team;
 	u8 slot_type;
@@ -74,11 +96,13 @@ extern "C" struct {
 
 extern "C" u8 CSSPendingSceneChange;
 extern "C" u8 CSSPortCount;
+extern "C" HSD_JObj *CSSMenuJObj;
 extern "C" CSSPlayerData *CSSPlayers[4];
 extern "C" CSSPuckData *CSSPucks[4];
 extern "C" CSSPort CSSPorts[4];
 
 extern "C" bool CSS_DropPuck(u8 index);
+extern "C" void CSS_UpdatePortrait(u8 port);
 
 static bool is_unplugged[4];
 
@@ -137,7 +161,22 @@ extern "C" void hook_CSS_PlayerThink(HSD_GObj *gobj)
 		return;
 
 	CSS_DropPuck(puck);
+	CSS_UpdatePortrait(puck);
 	data->state = CSSPlayerState_Idle;
+}
+
+extern "C" void orig_CSS_UpdatePortrait(u8 port);
+extern "C" void hook_CSS_UpdatePortrait(u8 port)
+{
+	orig_CSS_UpdatePortrait(port);
+	
+	if (CSSPorts[port].slot_type != SlotType_Human || !controller_configs[port].is_illegal())
+		return;
+	
+	// Use red HMN indicator for illegal controls
+	auto *jobj = HSD_JObjGetFromTreeByIndex(CSSMenuJObj, CSSPorts[port].port_type_joint);
+	auto *mobj = jobj->u.dobj->next->mobj;
+	mobj->mat->diffuse = color_rgba::hex(0xFF3333FFu);
 }
 
 extern "C" void orig_CSS_Init(void *menu);
@@ -155,6 +194,28 @@ extern "C" void hook_CSS_Init(void *menu)
 	orig_CSS_Init(menu);
 }
 
+static void replace_textures()
+{
+	// Replace MELEE/TEAM BATTLE textures
+	auto *banner = MnSlChrModels->Menu.matanim_joint->child->next->next->next->child->matanim;
+
+	if (get_ucf_type() == ucf_type::hax) {
+		decompress(banner_103_tex_data,      banner->texanim->imagetbl[0]->img_ptr);
+		decompress(banner_103_team_tex_data, banner->texanim->imagetbl[1]->img_ptr);
+	} else {
+		decompress(banner_ucf_tex_data,      banner->texanim->imagetbl[0]->img_ptr);
+		decompress(banner_ucf_team_tex_data, banner->texanim->imagetbl[1]->img_ptr);
+	}
+
+	auto *top_panel = MnSlChrModels->Menu.joint->child->u.dobj->mobjdesc;
+	if (get_latency() == latency_mode::crt)
+		decompress(vs_ball_crt_tex_data, top_panel->texdesc->imagedesc->img_ptr);
+	else if (get_latency() == latency_mode::lcd)
+		decompress(vs_ball_lcd_tex_data, top_panel->texdesc->imagedesc->img_ptr);
+	else if (get_latency() == latency_mode::low)
+		decompress(vs_ball_low_tex_data, top_panel->texdesc->imagedesc->img_ptr);
+}
+
 extern "C" void orig_CSS_Setup();
 extern "C" void hook_CSS_Setup()
 {
@@ -168,6 +229,9 @@ extern "C" void hook_CSS_Setup()
 	fobj_g->ad = track_g.data();
 	fobj_b->ad = track_b.data();
 #endif
+
+	if (CSSPortCount != 1)
+		replace_textures();
 	
 	// Remove KO stars
 	if (CSSData->ko_stars != nullptr) {

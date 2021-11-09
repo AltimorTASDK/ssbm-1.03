@@ -67,4 +67,9 @@ StageParams *Stage_GetParameters();
 void Stage_GetSpawnPoint(u32 slot, vec3 *spawn);
 u32 Stage_GetID();
 
+f32 Stage_GetCameraLimitLeft();
+f32 Stage_GetCameraLimitRight();
+f32 Stage_GetCameraLimitTop();
+f32 Stage_GetCameraLimitBottom();
+
 }
