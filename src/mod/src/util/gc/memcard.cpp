@@ -16,6 +16,7 @@ struct buffer_wrapper;
 extern "C" void *CardWorkArea;
 
 extern "C" void InitCardBuffers();
+extern "C" void MemoryCard_RequestSave();
 
 static mempool pool;
 
@@ -28,11 +29,27 @@ static struct {
 	void *src_buffer;
 	u32 src_size;
 
+	bool save_pending;
+
 	s32 error;
 	card_file file;
 	card_stat stats;
-	wait_object wait_main;
+	wait_object wait;
 } op;
+
+extern "C" void orig_MemoryCard_RequestSave();
+extern "C" void hook_MemoryCard_RequestSave()
+{
+	const auto irq_enable = OSDisableInterrupts();
+	
+	// Defer the game's memcard save if we're doing our own
+	if (op.wait.is_complete())
+		orig_MemoryCard_RequestSave();
+	else
+		op.save_pending = true;
+	
+	OSRestoreInterrupts(irq_enable);
+}
 
 static void card_error(const char *fmt, auto &&...args)
 {
@@ -40,7 +57,7 @@ static void card_error(const char *fmt, auto &&...args)
 		OSReport(fmt, args...);
 
 	CARD_Unmount(op.card);
-	op.wait_main.wake();
+	op.wait.wake();
 }
 
 static void card_callback(s32 chan, s32 result)
@@ -58,9 +75,15 @@ static void card_callback(s32 chan, s32 result)
 	}
 
 	CARD_Unmount(chan);
-
+	
 	// Wake up the main thread
-	op.wait_main.wake();
+	op.wait.wake();
+	
+	// Check if the game is waiting to use the memcard
+	if (op.save_pending) {
+		orig_MemoryCard_RequestSave();
+		op.save_pending = false;
+	}
 }
 
 static void read_callback(s32 chan, s32 result)
@@ -77,7 +100,7 @@ static void read_callback(s32 chan, s32 result)
 		return card_error("CARD_GetStatus failed (%d)\n", op.error);
 		
 	if (op.buffer == nullptr)
-		return op.wait_main.wake();
+		return op.wait.wake();
 		
 	const auto size = std::min(op.stats.len, op.size);
 
@@ -130,8 +153,8 @@ static void write_callback(s32 chan, s32 result)
 static void card_io(s32 card, const char *filename, void *buffer, u32 size, bool read)
 {
 	// Any previous operations must be complete
-	op.wait_main.sleep();
-	op.wait_main.reset();
+	op.wait.sleep();
+	op.wait.reset();
 
 	op.card = card;
 	op.filename = filename;
@@ -176,5 +199,5 @@ s32 card_write(s32 card, const char *filename, void *in, u32 size)
 
 void card_sync()
 {
-	op.wait_main.sleep();
+	op.wait.sleep();
 }

@@ -227,5 +227,7 @@ add_hook Scene_RunLoop
 #endif
 # Nana hardware input buffer
 add_hook Player_Nana_RecordPopoData
+# Memcard
+add_hook MemoryCard_RequestSave
 
 hooks_end:

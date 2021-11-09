@@ -37,4 +37,9 @@ public:
 		complete = true;
 		OSWakeupThread(&queue);
 	}
+	
+	bool is_complete() const
+	{
+		return complete;
+	}
 };

@@ -23,11 +23,12 @@ ready_2p:
         # Check for special 1p ready frames value
         lbz     r0, CSSReadyFrames@l(r3)
         cmpwi   r0, 0xFF
-        bne     orig_CheckCSSPlayerCount+4
+        bne     end
 
         # Reset ready frames value so animation restarts
         li      r0, 0
         stb     r0, CSSReadyFrames@l(r3)
 
+end:
         # Skip overwritten instruction
         b       orig_CheckCSSPlayerCount+4

@@ -33,6 +33,12 @@ constexpr T clamp(T value, T min, T max)
 }
 
 template<typename T>
+constexpr T lerp(T a, T b, auto c)
+{
+	return a + (b - a) * c;
+}
+
+template<typename T>
 constexpr T mod(T value, T modulus)
 {
 	if (value >= 0)
