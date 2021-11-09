@@ -102,7 +102,7 @@ static void patch_crash_screen()
 	TRK_flush_cache(patch_location, 4);
 }
 
-extern "C" __attribute__((section(".init"))) void _start()
+extern "C" [[gnu::section(".init")]] void _start()
 {
 	OSReport("Running 1.03 loader\n");
 	
