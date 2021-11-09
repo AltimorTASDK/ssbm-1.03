@@ -1,19 +1,20 @@
 #include "hsd/pad.h"
 #include "melee/player.h"
 #include "util/melee/pad.h"
+#include <cstddef>
 #include <gctypes.h>
 
 // Manually maintain a buffer of hardware values for Nana
 static PADStatus nana_hw_buffer[4][NANA_BUFFER];
 
-static u32 get_nana_read_index(const Player *nana)
+static ptrdiff_t get_nana_read_index(const Player *nana)
 {
-	return ((u32)nana->popo_data_read - (u32)nana->popo_data_buffer) / sizeof(PopoData);
+	return nana->popo_data_read - nana->popo_data_buffer;
 }
 
-static u32 get_nana_write_index(const Player *nana)
+static ptrdiff_t get_nana_write_index(const Player *nana)
 {
-	return ((u32)nana->popo_data_write - (u32)nana->popo_data_buffer) / sizeof(PopoData);
+	return nana->popo_data_write - nana->popo_data_buffer;
 }
 
 namespace detail {
