@@ -6,7 +6,7 @@
 
 extern "C" {
 
-__attribute__((noreturn)) void OSPanic(const char *file, int line, const char *fmt, ...);
+[[noreturn]] void OSPanic(const char *file, int line, const char *fmt, ...);
 void OSReport(const char *fmt, ...);
 u64 OSGetTime();
 
