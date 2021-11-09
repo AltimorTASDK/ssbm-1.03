@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstring>
 #include <gctypes.h>
+#include <ogc/cache.h>
 #include <ogc/gx.h>
 
 struct index_header {
@@ -72,7 +73,7 @@ u8 *rle_decode(const rle_data *rle, u8 *out = nullptr)
 		}
 	}
 	
-	DCFlushRange(out, out_len);
+	DCStoreRange(out, out_len);
 	
 	return out;
 }
@@ -112,7 +113,7 @@ u8 *index_decode(const index_header *index, u8 *out = nullptr)
 	
 	delete[] in;
 	
-	DCFlushRange(out, out_len);
+	DCStoreRange(out, out_len);
 	
 	return out;
 }
