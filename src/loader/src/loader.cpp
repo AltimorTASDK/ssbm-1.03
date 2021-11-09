@@ -63,7 +63,7 @@ static void panic(const char *fmt, auto &&...args)
 	OSDefaultErrorHandler(&context);
 }
 
-static void read_callback(s32 chan, s32 result)
+static void card_callback(s32 chan, s32 result)
 {
 	if (result < 0) {
 		panic("Card read failed (%d)\n", result);
@@ -74,8 +74,13 @@ static void read_callback(s32 chan, s32 result)
 	OSWakeupThread(&sleep_queue);
 }
 
-static void attach_callback(s32 chan, s32 result)
+static void read_callback(s32 chan, s32 result)
 {
+	if (result < 0) {
+		panic("Card mount failed (%d)\n", result);
+		return;
+	}
+
 	if (s32 error = CARD_Open(chan, "103Code", &file); error < 0) {
 		panic("CARD_Open failed (%d)\n", error);
 		return;
@@ -86,7 +91,7 @@ static void attach_callback(s32 chan, s32 result)
 		return;
 	}
 
-	if (s32 error = CARD_ReadAsync(&file, mod_init, stats.len, 0, read_callback); error < 0) {
+	if (s32 error = CARD_ReadAsync(&file, mod_init, stats.len, 0, card_callback); error < 0) {
 		panic("CARD_ReadAsync failed (%d)\n", error);
 		return;
 	}
@@ -113,7 +118,7 @@ extern "C" [[gnu::section(".init")]] void _start()
 
 	InitCardBuffers();
 	
-	if (s32 error = CARD_MountAsync(0, CardWorkArea, nullptr, attach_callback); error < 0) {
+	if (s32 error = CARD_MountAsync(0, CardWorkArea, nullptr, read_callback); error < 0) {
 		panic("CARD_MountAsync failed (%d)\n", error);
 		return;
 	}

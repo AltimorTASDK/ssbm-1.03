@@ -10,6 +10,7 @@
 #include "melee/scene.h"
 #include "melee/text.h"
 #include "menu/stage_select.h"
+#include "rules/saved_config.h"
 #include "util/compression.h"
 #include "util/mempool.h"
 #include "util/meta.h"
@@ -38,7 +39,7 @@ struct ExtraRulesMenuData {
 	};
 	union {
 		u8 score_display;
-		u8 low_latency;
+		latency_mode latency;
 	};
 	union {
 		u8 sd_penalty;
@@ -69,6 +70,8 @@ extern "C" ArchiveModel MenMainCursorTr03_Top;
 
 // "Ready to start" banner animation frame
 extern "C" u8 CSSReadyFrames;
+
+extern "C" HSD_GObj *ExtraRulesMenuGObj;
 
 extern "C" struct {
 	f32 unselected;
@@ -228,10 +231,21 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 	return gobj;
 }
 
+static void save_config()
+{
+	const auto *data = ExtraRulesMenuGObj->get<ExtraRulesMenuData>();
+	config.widescreen = data->widescreen;
+	config.latency = data->latency;
+	config.save();
+}
+
 extern "C" void orig_Menu_ExtraRulesMenuInput(HSD_GObj *gobj);
 extern "C" void hook_Menu_ExtraRulesMenuInput(HSD_GObj *gobj)
 {
 	const auto buttons = Menu_GetButtonsHelper(PORT_ALL);
+	
+	if (buttons & (MenuButton_B | MenuButton_Start))
+		save_config();
 
 	if ((buttons & MenuButton_A) && MenuSelectedIndex == ExtraRule_OldStageSelect) {
 		// Check for attempting to enter the OSS with 0 players
@@ -239,6 +253,8 @@ extern "C" void hook_Menu_ExtraRulesMenuInput(HSD_GObj *gobj)
 			Menu_PlaySFX(MenuSFX_Denied);
 			return;
 		}
+		
+		save_config();
 	}
 	
 	orig_Menu_ExtraRulesMenuInput(gobj);

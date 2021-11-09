@@ -8,6 +8,7 @@
 #include "melee/music.h"
 #include "melee/stage.h"
 #include "melee/text.h"
+#include "rules/saved_config.h"
 #include "util/compression.h"
 #include "util/math.h"
 #include "util/mempool.h"
@@ -127,8 +128,6 @@ constexpr int bgm_ids[] = {
 
 static mempool pool;
 
-static int bgm_selection[6] = { -1, -1, -1, -1, -1, -1 };
-
 static const auto patches = patch_list {
 	// Start cursor on BF
 	// li r3, 5
@@ -137,7 +136,7 @@ static const auto patches = patch_list {
 
 static int get_selected_bgm_id(ItemMenuData *data, u8 stage)
 {
-	const auto bgm = bgm_selection[stage];
+	const auto bgm = config.stage_bgm[stage];
 	if (bgm != -1)
 		return bgm_ids[bgm];
 		
@@ -176,7 +175,7 @@ static void change_stage(ItemMenuData *data, u8 stage)
 {
 	// Copy selection for stage
 	for (u8 i = 0; i < 31; i++)
-		set_toggle(data, i, i == bgm_selection[stage]);
+		set_toggle(data, i, i == config.stage_bgm[stage]);
 		
 	play_selected_bgm(data, stage);
 }
@@ -201,9 +200,9 @@ extern "C" void hook_Menu_UpdateItemDisplay(HSD_GObj *gobj, bool index_changed, 
 		return;
 		
 	if (MenuSelectedValue)
-		bgm_selection[data->selected_stage] = MenuSelectedIndex;
+		config.stage_bgm[data->selected_stage] = MenuSelectedIndex;
 	else
-		bgm_selection[data->selected_stage] = -1;
+		config.stage_bgm[data->selected_stage] = -1;
 		
 	for (u8 i = 0; i < 31; i++) {
 		// Disable all other songs
@@ -306,8 +305,8 @@ extern "C" void hook_Menu_ItemMenuInput(HSD_GObj *gobj)
 	
 	const auto buttons = Menu_GetButtonsHelper(PORT_ALL);
 	
-	if (buttons & MenuButton_B)
-		return;
+	if (buttons & (MenuButton_B | MenuButton_Start))
+		config.save();
 
 	auto *data = ItemMenuGObj->get<ItemMenuData>();
 
@@ -364,12 +363,12 @@ extern "C" bool hook_Stage_GetBGM(u32 stage_id, u32 flags, u32 *result)
 	// Restart BGM even if it's the same as the menu music
 	CurrentBGMPath[0] = '\0';
 
-	auto bgm_index = stage_id == Stage_BF  ? bgm_selection[5]
-	               : stage_id == Stage_DL  ? bgm_selection[4]
-	               : stage_id == Stage_FD  ? bgm_selection[3]
-	               : stage_id == Stage_FoD ? bgm_selection[2]
-	               : stage_id == Stage_PS  ? bgm_selection[1]
-	               : stage_id == Stage_YS  ? bgm_selection[0]
+	auto bgm_index = stage_id == Stage_BF  ? config.stage_bgm[5]
+	               : stage_id == Stage_DL  ? config.stage_bgm[4]
+	               : stage_id == Stage_FD  ? config.stage_bgm[3]
+	               : stage_id == Stage_FoD ? config.stage_bgm[2]
+	               : stage_id == Stage_PS  ? config.stage_bgm[1]
+	               : stage_id == Stage_YS  ? config.stage_bgm[0]
 	                                       : -1;
 					      
 	if (bgm_index == -1)

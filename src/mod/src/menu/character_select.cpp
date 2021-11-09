@@ -224,7 +224,8 @@ extern "C" void orig_CSS_Setup();
 extern "C" void hook_CSS_Setup()
 {
 	// Free any assets from previous CSS setup
-	pool.reset();
+	pool.dec_ref();
+	pool.inc_ref();
 	
 #if 0
 	// Replace "READY TO FIGHT" color tracks

@@ -1,0 +1,180 @@
+#include "hsd/memory.h"
+#include "os/card.h"
+#include "os/os.h"
+#include "os/thread.h"
+#include "util/math.h"
+#include "util/mempool.h"
+#include "util/gc/wait_object.h"
+#include <algorithm>
+#include <cstring>
+#include <gctypes.h>
+#include <ogc/cache.h>
+#include <ogc/card.h>
+
+struct buffer_wrapper;
+
+extern "C" void *CardWorkArea;
+
+extern "C" void InitCardBuffers();
+
+static mempool pool;
+
+static struct {
+	s32 card;
+	const char *filename;
+	bool read;
+	void *buffer;
+	u32 size;
+	void *src_buffer;
+	u32 src_size;
+
+	s32 error;
+	card_file file;
+	card_stat stats;
+	wait_object wait_main;
+} op;
+
+static void card_error(const char *fmt, auto &&...args)
+{
+	if (op.error != CARD_ERROR_NOFILE)
+		OSReport(fmt, args...);
+
+	CARD_Unmount(op.card);
+	op.wait_main.wake();
+}
+
+static void card_callback(s32 chan, s32 result)
+{
+	op.error = result;
+
+	if (result < 0)
+		return card_error("Card operation failed (%d)\n", result);
+	
+	if (op.buffer != op.src_buffer) {
+		if (op.read && op.error >= 0)
+			memcpy(op.src_buffer, op.buffer, op.src_size);
+			
+		HSD_Free(op.buffer);
+	}
+
+	CARD_Unmount(chan);
+
+	// Wake up the main thread
+	op.wait_main.wake();
+}
+
+static void read_callback(s32 chan, s32 result)
+{
+	if (result < 0) {
+		op.error = result;
+		return card_error("Card mount failed (%d)\n", result);
+	}
+
+	if (op.error = CARD_Open(chan, op.filename, &op.file); op.error < 0)
+		return card_error("CARD_Open failed (%d)\n", op.error);
+
+	if (op.error = CARD_GetStatus(chan, op.file.filenum, &op.stats); op.error < 0)
+		return card_error("CARD_GetStatus failed (%d)\n", op.error);
+		
+	if (op.buffer == nullptr)
+		return op.wait_main.wake();
+		
+	const auto size = std::min(op.stats.len, op.size);
+
+	if (op.error = CARD_ReadAsync(&op.file, op.buffer, size, 0, card_callback); op.error < 0)
+		return card_error("CARD_ReadAsync failed (%d)\n", op.error);
+}
+
+static void write_callback(s32 chan, s32 result)
+{
+	if (result < 0) {
+		op.error = result;
+		return card_error("Card mount failed (%d)\n", result);
+	}
+		
+	static constinit auto write = [](s32 chan, s32 result) {
+		if (op.error = CARD_WriteAsync(&op.file, op.buffer, op.size, 0, card_callback);
+		    op.error < 0)
+			return card_error("CARD_WriteAsync failed (%d)\n", op.error);
+	};
+
+	static constinit auto create = [](s32 chan, s32 result) {
+		if (op.error = CARD_CreateAsync(op.card, op.filename, op.size, &op.file, write);
+		    op.error < 0)
+			return card_error("CARD_CreateAsync failed (%d)\n", op.error);
+	};
+
+	static constinit auto remake = [](s32 chan, s32 result) {
+		if (op.error = CARD_DeleteAsync(op.card, op.filename, create);
+		    op.error < 0)
+			return card_error("CARD_DeleteAsync failed (%d)\n", op.error);
+	};
+
+	if (op.error = CARD_Open(op.card, op.filename, &op.file);
+	    op.error < 0 && op.error != CARD_ERROR_NOFILE)
+		return card_error("CARD_Open failed (%d)\n", op.error);
+
+	if (op.error == CARD_ERROR_NOFILE)
+		return create(op.card, 0);
+
+	if (op.error = CARD_GetStatus(op.card, op.file.filenum, &op.stats); op.error < 0)
+		return card_error("CARD_GetStatus failed (%d)\n", op.error);
+
+	// Resize if needed
+	if (op.stats.len != op.size)
+		remake(op.card, 0);
+	else
+		write(op.card, 0);
+}
+
+static void card_io(s32 card, const char *filename, void *buffer, u32 size, bool read)
+{
+	// Any previous operations must be complete
+	op.wait_main.sleep();
+	op.wait_main.reset();
+
+	op.card = card;
+	op.filename = filename;
+	op.read = read;
+	op.src_buffer = buffer;
+	op.src_size = size;
+	
+	// Size must be aligned
+	op.size = align_up(size, read ? 0x200 : cardmap[card].sector_size);
+
+	if (buffer != nullptr && op.size != size) {
+		// Make resized buffer
+		op.buffer = HSD_MemAlloc(op.size);
+
+		if (!read) {
+			memcpy(op.buffer, buffer, size);
+			memset((u8*)op.buffer + size, 0, op.size - size);
+		}
+	} else {
+		op.buffer = buffer;
+	}
+	
+	const auto callback = read ? read_callback : write_callback;
+	
+	InitCardBuffers();
+	
+	if (op.error = CARD_MountAsync(card, CardWorkArea, nullptr, callback); op.error < 0)
+		card_error("CARD_MountAsync failed (%d)\n", op.error);
+}
+
+s32 card_read(s32 card, const char *filename, void *out, u32 max_size)
+{
+	card_io(card, filename, out, max_size, true);
+	return op.error < 0 ? op.error : (s32)op.stats.len;
+}
+
+s32 card_write(s32 card, const char *filename, void *in, u32 size)
+{
+	card_io(card, filename, in, size, false);
+	return op.error;
+}
+
+void card_sync()
+{
+	op.wait_main.sleep();
+}

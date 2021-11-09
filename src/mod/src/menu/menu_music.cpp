@@ -8,6 +8,7 @@
 #include "melee/rules.h"
 #include "melee/text.h"
 #include "os/gx.h"
+#include "rules/saved_config.h"
 #include "util/compression.h"
 #include "util/math.h"
 #include "util/matrix.h"
@@ -160,7 +161,6 @@ static mempool pool;
 static texture texture_l;
 static texture texture_r;
 
-static int menu_bgm = -1;
 static u16 selected_index[page_count] = { 0 };
 
 static const auto patches = patch_list {
@@ -240,7 +240,7 @@ static void set_page(RandomStageMenuData *data, int page)
 	MenuSelectedIndex = selected_index[page];
 
 	for (u8 i = 0; i < max_page_size; i++) {
-		set_toggle(data, i, menu_bgm == i + page_offset);
+		set_toggle(data, i, config.menu_bgm == i + page_offset);
 
 		auto *jobj = Menu_GetRandomStageToggle(data, i);
 		auto *on_off_switch = HSD_JObjGetFromTreeByIndex(jobj, 2);
@@ -269,9 +269,9 @@ extern "C" void hook_Menu_UpdateRandomStageDisplay(HSD_GObj *gobj,
 	auto *data = gobj->get<RandomStageMenuData>();
 	
 	if (MenuSelectedValue)
-		menu_bgm = MenuSelectedIndex + data->page * max_page_size;
+		config.menu_bgm = MenuSelectedIndex + data->page * max_page_size;
 	else
-		menu_bgm = -1;
+		config.menu_bgm = -1;
 
 	for (u8 i = 0; i < max_page_size; i++) {
 		// Disable all other songs
@@ -362,6 +362,10 @@ extern "C" void orig_Menu_RandomStageMenuInput(HSD_GObj *gobj);
 extern "C" void hook_Menu_RandomStageMenuInput(HSD_GObj *gobj)
 {
 	const auto buttons = Menu_GetButtonsHelper(PORT_ALL);
+	
+	if (buttons & (MenuButton_B | MenuButton_Start))
+		config.save();
+	
 	auto *data = RandomStageMenuGObj->get<RandomStageMenuData>();
 
 	if (buttons & MenuButton_L) {
@@ -416,8 +420,8 @@ extern "C" void hook_Menu_RandomStageMenuScroll(RandomStageMenuData *data, u32 b
 extern "C" s32 orig_Menu_GetBGM();
 extern "C" s32 hook_Menu_GetBGM()
 {
-	if (menu_bgm == -1)
+	if (config.menu_bgm == -1)
 		return orig_Menu_GetBGM();
 		
-	return bgm_ids[menu_bgm];
+	return bgm_ids[config.menu_bgm];
 }

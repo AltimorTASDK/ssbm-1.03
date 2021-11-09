@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <climits>
 #include <cmath>
 
 namespace math {
