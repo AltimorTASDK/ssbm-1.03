@@ -23,6 +23,16 @@ static bool is_singleplayer()
 	return true;
 }
 
+extern "C" void orig_Camera_SetNormal();
+extern "C" void hook_Camera_SetNormal()
+{
+	if (is_singleplayer())
+		MainCamera.mode = CameraMode_Fixed;
+	else
+		MainCamera.mode = CameraMode_Normal;
+}
+
+#if 0
 extern "C" void orig_Camera_GetBounds(CameraBounds *out, CameraMovement *movement);
 extern "C" void hook_Camera_GetBounds(CameraBounds *out, CameraMovement *movement)
 {
@@ -46,3 +56,4 @@ extern "C" void hook_Camera_GetBounds(CameraBounds *out, CameraMovement *movemen
 	out->min = lerp(out->min, new_min, lerp_strength);
 	out->max = lerp(out->max, new_max, lerp_strength);
 }
+#endif
