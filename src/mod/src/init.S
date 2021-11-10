@@ -122,7 +122,6 @@ hooks_start:
 .set FirstEngineFrame,        Scene_RunLoop+0xA8
 
 add_hook Bubble_GetPosition
-add_hook Camera_GetBounds
 add_hook CheckCSSPlayerCount
 add_hook CheckIsCPUPuck
 add_hook CheckScrollingRuleIndex
@@ -197,7 +196,6 @@ add_hook Stage_Fountain_CreateStars
 add_hook Stage_Fountain_SetupModel
 add_hook Stage_Fountain_UpdateReflection
 add_hook Stage_GetBGM
-add_hook Stage_GetSpawnPoint
 add_hook Stage_IsValidRandomChoice
 add_hook Stage_PokemonStadium_TransformationDecide
 add_hook Stage_Setup
@@ -229,5 +227,13 @@ add_hook Scene_RunLoop
 add_hook Player_Nana_RecordPopoData
 # Memcard
 add_hook MemoryCard_RequestSave
+# 1P camera
+#if 0
+add_hook Camera_GetBounds
+#endif
+add_hook Camera_SetNormal
+# Neutral spawns
+add_hook Stage_GetSpawnPoint
+add_hook PlayerBlock_GetRespawnPoint
 
 hooks_end:

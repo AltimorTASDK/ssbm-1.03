@@ -81,12 +81,11 @@ bool is_1v1()
 	for (u32 i = 0; i < 4; i++) {
 		if (PlayerBlock_GetSlotType(i) == SlotType_None)
 			continue;
+			
+		count++;
 	}
 	
-	if (count != 2)
-		return -1;
-
-	return true;
+	return count == 2;
 }
 
 // Returns -1 if not 1v1/2v2

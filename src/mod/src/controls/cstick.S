@@ -103,7 +103,9 @@ hook_CheckRapidJabInput:
         lwz     r3, 0x8(r1)
         addi    r1, r1, 0x14
         # Skip original comparison
-        bne     orig_CheckRapidJabInput+4
+        bne     1f
         # Restore r0
         lwz     r0, Player.instant_buttons(r6)
         b       orig_CheckRapidJabInput
+1:
+        b       orig_CheckRapidJabInput+4

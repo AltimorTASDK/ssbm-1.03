@@ -3,6 +3,7 @@
 #include "melee/scene.h"
 #include "melee/stage.h"
 #include "menu/stage_select.h"
+#include "util/patch_list.h"
 #include "util/melee/ports.h"
 #include <gctypes.h>
 
@@ -24,7 +25,7 @@ constexpr vec2 ps_spawns[]  = { { -40.0000f, 32.0000f }, { 40.0000f, 32.0000f },
 
 constexpr vec2 ys_spawns[]  = { { -42.0000f, 26.6000f }, { 42.0000f, 28.0000f },
                                 { -42.0000f,  5.0000f }, { 42.0000f,  5.0000f } };
-					 
+
 static const vec2 *get_spawn_list()
 {
 	switch(Stage_GetID()) {
@@ -51,24 +52,40 @@ extern "C" void hook_Stage_GetSpawnPoint(u32 port, vec3 *result)
 	if (port >= 4)
 		return;
 		
-	// Must have a spawn list for this stage
 	const auto *spawns = get_spawn_list();
+
+	// Must have a spawn list for this stage
 	if (spawns == nullptr)
 		return;
 		
 	const auto spawn_index = get_sorted_port_index(port);
 		
 	// Spawn index is -1 if not 1v1/2v2
-	if (spawn_index != -1) {
-		result->x = spawns[spawn_index].x;
-		result->y = spawns[spawn_index].y;
-		
-		// Adjust spawns for platform heights if using modded FoD
-		if (Stage_GetID() == Stage_FoD && !use_og_stage_select) {
-			if (spawn_index == 0)
-				result->y += 4.f;
-			else if (spawn_index == 1)
-				result->y -= 4.f;
-		}
+	if (spawn_index == -1)
+		return;
+
+	result->x = spawns[spawn_index].x;
+	result->y = spawns[spawn_index].y;
+	
+	// Adjust spawns for platform heights if using modded FoD
+	if (Stage_GetID() == Stage_FoD && !use_og_stage_select) {
+		if (spawn_index == 0)
+			result->y += 4.f;
+		else if (spawn_index == 1)
+			result->y -= 4.f;
 	}
+}
+
+extern "C" u32 orig_PlayerBlock_GetRespawnPoint(u32 port, vec3 *respawn, vec3 *offset);
+extern "C" u32 hook_PlayerBlock_GetRespawnPoint(u32 port, vec3 *respawn, vec3 *offset)
+{
+	if (Stage_GetID() != Stage_BF && Stage_GetID() != Stage_FD)
+		return orig_PlayerBlock_GetRespawnPoint(port, respawn, offset);
+
+	// Use a single merged respawn point on BF and FD
+	Stage.use_unique_respawns = false;
+	orig_PlayerBlock_GetRespawnPoint(port, respawn, offset);
+	respawn->x = 0;
+		
+	return 0;
 }

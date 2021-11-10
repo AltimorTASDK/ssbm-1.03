@@ -5,7 +5,8 @@
 #include <gctypes.h>
 
 enum CameraMode {
-	CameraMode_Normal = 0
+	CameraMode_Normal = 0,
+	CameraMode_Fixed = 4
 };
 
 struct CameraMovement;

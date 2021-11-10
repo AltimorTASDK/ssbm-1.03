@@ -32,16 +32,12 @@ static bool should_use_simple_fod()
 	if (MatchInfo_IsTeams() && SceneMajor != Scene_Training)
 		return true;
 		
-	// Use simple FoD if more than one ICs
-	auto ic_count = 0;
+	// Use simple FoD if there's an ICs
 	for (auto i = 0; i < 6; i++) {
 		if (PlayerBlock_GetSlotType(i) == SlotType_None)
 			continue;
 			
-		if (PlayerBlock_GetCharacterID(i, 0) != CID_Popo)
-			continue;
-
-		if (++ic_count > 1)
+		if (PlayerBlock_GetCharacterID(i, 0) == CID_Popo)
 			return true;
 	}
 	

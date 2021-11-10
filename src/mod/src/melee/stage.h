@@ -47,7 +47,15 @@ struct StageObject {
 };
 
 struct StageData {
-	char pad000[0x6A8];
+	char pad000[0x8C];
+	struct {
+		u8 flags_80 : 1;
+		u8 flags_40 : 1;
+		u8 flags_20 : 1;
+		u8 flags_10 : 1;
+		u8 use_unique_respawns : 1;
+	};
+	char pad08D[0x6A8 - 0x8D];
 	void *itemdata;
 	void *coll_data;
 	void *ground_params;
