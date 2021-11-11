@@ -390,13 +390,26 @@ extern "C" void hook_Menu_RulesMenuInput(HSD_GObj *gobj)
 	GObj_Free(gobj);
 }
 
+extern "C" void orig_Menu_UpdateRuleDisplay(HSD_GObj *gobj, bool index_changed, bool value_changed);
+extern "C" void hook_Menu_UpdateRuleDisplay(HSD_GObj *gobj, bool index_changed, bool value_changed)
+{
+	orig_Menu_UpdateRuleDisplay(gobj, index_changed, value_changed);
+	
+	if (!value_changed)
+		return;
+
+	// Reset crew stock count when switching modes
+	if (MenuSelectedIndex == Rule_Mode && MenuSelectedValue != Mode_Crew)
+		reset_crew_stocks();
+
+	// Reset crew stock count when changing stock count
+	if (MenuSelectedIndex == Rule_StockCount)
+		reset_crew_stocks();
+}
+
 extern "C" void orig_Menu_UpdateRuleValue(HSD_GObj *gobj, HSD_JObj *jobj, u8 index, u32 value);
 extern "C" void hook_Menu_UpdateRuleValue(HSD_GObj *gobj, HSD_JObj *jobj, u8 index, u32 value)
 {
-	// Reset crew stock count when switching away from crew mode
-	if (index == Rule_Mode && value != Mode_Crew)
-		reset_crew_stocks();
-	
 	if (index == Rule_LedgeGrabLimit)
 		update_lgl_value(gobj, value);
 	else if (index == Rule_AirTimeLimit)
