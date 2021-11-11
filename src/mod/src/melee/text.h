@@ -73,6 +73,7 @@ struct DevText {
 extern "C" {
 	
 extern Text *NameTagText;
+extern char **SISData[5];
 
 void Text_FreeAll();
 

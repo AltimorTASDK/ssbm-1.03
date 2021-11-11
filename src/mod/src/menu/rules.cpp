@@ -12,6 +12,7 @@
 #include "util/compression.h"
 #include "util/mempool.h"
 #include "util/patch_list.h"
+#include "util/melee/match.h"
 #include "util/melee/text_builder.h"
 #include <gctypes.h>
 
@@ -117,6 +118,9 @@ static constexpr auto make_description_text()
 		text_builder::end_textbox(),
 		text_builder::end_color());
 }
+
+constexpr auto crew_description = make_description_text<
+	"Participate in a crew battle.">();
 
 constexpr auto lgl_description = make_description_text<
 	"Set the LGL in the event of",
@@ -389,6 +393,10 @@ extern "C" void hook_Menu_RulesMenuInput(HSD_GObj *gobj)
 extern "C" void orig_Menu_UpdateRuleValue(HSD_GObj *gobj, HSD_JObj *jobj, u8 index, u32 value);
 extern "C" void hook_Menu_UpdateRuleValue(HSD_GObj *gobj, HSD_JObj *jobj, u8 index, u32 value)
 {
+	// Reset crew stock count when switching away from crew mode
+	if (index == Rule_Mode && value != Mode_Crew)
+		reset_crew_stocks();
+	
 	if (index == Rule_LedgeGrabLimit)
 		update_lgl_value(gobj, value);
 	else if (index == Rule_AirTimeLimit)
@@ -397,12 +405,17 @@ extern "C" void hook_Menu_UpdateRuleValue(HSD_GObj *gobj, HSD_JObj *jobj, u8 ind
 		orig_Menu_UpdateRuleValue(gobj, jobj, index, value);
 }
 
-extern "C" void orig_Menu_CreateRuleDescriptionText(RulesMenuData *data, int rule, int value);
-extern "C" void hook_Menu_CreateRuleDescriptionText(RulesMenuData *data, int rule, int value)
+extern "C" void orig_Menu_CreateRuleDescriptionText(RulesMenuData *data, u32 rule, u32 value);
+extern "C" void hook_Menu_CreateRuleDescriptionText(RulesMenuData *data, u32 rule, u32 value)
 {
 	orig_Menu_CreateRuleDescriptionText(data, rule, value);
 	
 	auto *text = data->description_text;
+	
+	if (rule == Rule_Mode && value == Mode_Crew) {
+		text->data = crew_description.data();
+		return;
+	}
 
 	switch (rule) {
 	case Rule_LedgeGrabLimit: text->data = lgl_description.data(); break;

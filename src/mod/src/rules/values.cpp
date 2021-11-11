@@ -3,6 +3,7 @@
 #include "melee/rules.h"
 #include "melee/scene.h"
 #include "rules/values.h"
+#include "util/melee/match.h"
 
 struct init_rules {
 	init_rules()
@@ -89,6 +90,10 @@ extern "C" void hook_Match_Init(StartMeleeData *data)
 		data->players[i].handicap = 9;
 		data->players[i].offense_ratio = 1.f;
 		data->players[i].defense_ratio = 1.f;
+		
+		// Carry over winner stock counts for crew
+		if (GetGameRules()->mode == Mode_Crew)
+			data->players[i].stocks = (u8)get_crew_stocks(i);
 	}
 	
 	orig_Match_Init(data);

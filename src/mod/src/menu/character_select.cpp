@@ -17,6 +17,9 @@
 #include "util/mempool.h"
 #include "util/vector.h"
 #include "util/melee/fobj_builder.h"
+#include "util/melee/match.h"
+#include "util/melee/text_builder.h"
+#include <cstring>
 
 #include "resources/css/banner_103.tex.h"
 #include "resources/css/banner_103_team.tex.h"
@@ -105,6 +108,9 @@ extern "C" CSSPort CSSPorts[4];
 
 extern "C" bool CSS_DropPuck(u8 index);
 extern "C" void CSS_UpdatePortrait(u8 port);
+
+constexpr auto crew_text = text_builder::build(
+	text_builder::ascii<"An epic crew battle!">());
 
 static mempool pool;
 
@@ -245,6 +251,15 @@ static void replace_textures()
 		pool.add(new texture_swap(vs_ball_low_tex_data, top_panel->texdesc->imagedesc));
 }
 
+extern "C" void orig_CSS_ChooseTopString();
+extern "C" void hook_CSS_ChooseTopString()
+{
+	if (GetGameRules()->mode == Mode_Crew)
+		memcpy(SISData[0][0x4A], crew_text.data(), crew_text.size());
+	else
+		orig_CSS_ChooseTopString();
+}
+
 extern "C" void orig_CSS_Setup();
 extern "C" void hook_CSS_Setup()
 {
@@ -266,10 +281,16 @@ extern "C" void hook_CSS_Setup()
 	if (CSSPortCount != 1)
 		replace_textures();
 	
-	// Remove KO stars
 	if (CSSData->ko_stars != nullptr) {
-		for (auto i = 0; i < 6; i++)
-			CSSData->ko_stars[i] = 0;
+		if (GetGameRules()->mode == Mode_Crew) {
+			// Display crew stock counts with KO stars
+			for (auto i = 0; i < 6; i++)
+				CSSData->ko_stars[i] = (u8)get_crew_stocks(i);
+		} else {
+			// Remove KO stars in non-crews
+			for (auto i = 0; i < 6; i++)
+				CSSData->ko_stars[i] = 0;
+		}
 	}
 
 	orig_CSS_Setup();

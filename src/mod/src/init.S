@@ -137,6 +137,7 @@ add_hook CheckFTiltAngle
 add_hook CmSubject_WorldToScreen
 add_hook CObjLoad
 add_hook CreateCSSNameText
+add_hook CSS_ChooseTopString
 add_hook CSS_Init
 add_hook CSS_PlayerThink
 add_hook CSS_Setup

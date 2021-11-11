@@ -59,10 +59,12 @@ hook_CheckJabInput:
         bl      check_cstick_jab
         cmpwi   r3, 0
         # Skip original comparison
-        bne     orig_CheckJabInput+4
+        bne     1f
         # Restore r0
         lwz     r0, Player.instant_buttons(r31)
         b       orig_CheckJabInput
+1:
+        b       orig_CheckJabInput+4
 
 .global hook_CheckJab2Input
 hook_CheckJab2Input:
@@ -71,10 +73,12 @@ hook_CheckJab2Input:
         # Restore r3
         lwz     r3, HSD_GObj.data(r29)
         # Skip original comparison
-        bne     orig_CheckJab2Input+4
+        bne     1f
         # Restore r0
         lwz     r0, Player.instant_buttons(r3)
         b       orig_CheckJab2Input
+1:
+        b       orig_CheckJab2Input+4
 
 .global hook_CheckJab3Input
 hook_CheckJab3Input:
@@ -83,10 +87,12 @@ hook_CheckJab3Input:
         # Restore r3
         lwz     r3, HSD_GObj.data(r30)
         # Skip original comparison
-        bne     orig_CheckJab3Input+4
+        bne     1f
         # Restore r0
         lwz     r0, Player.instant_buttons(r3)
         b       orig_CheckJab3Input
+1:
+        b       orig_CheckJab3Input+4
 
 .global hook_CheckRapidJabInput
 hook_CheckRapidJabInput:
