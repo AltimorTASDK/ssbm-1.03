@@ -53,7 +53,7 @@ void update_crew_stocks(const MatchController &match)
 	}
 
 	for (auto i = 0; i < 4; i++) {
-		if (PlayerBlock_GetSlotType(i) != SlotType_None && !won_last_match(i))
+		if (PlayerBlock_GetSlotType(i) != SlotType_None && !won_last_match(match, i))
 			return;
 	}
 	
