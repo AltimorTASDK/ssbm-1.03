@@ -243,10 +243,11 @@ add_hook PlayerBlock_GetRespawnPoint
 .set CheckToUpdateStockCountTextAgain, Menu_UpdateRuleDisplay+0x32C
 .set CheckToCycleToStockCountText,     Menu_UpdateRuleDisplay+0x504
 .set CheckToUpdateStockCountValue,     Menu_UpdateRuleValue+0x6C
-.set CheckToSetStockCountValue1,       Menu_RulesMenuInput+0x3DC
-.set CheckToSetStockCountValue2,       Menu_RulesMenuInput+0x43C
-.set CheckToSetStockCountValue3,       Menu_RulesMenuInput+0x510
-.set CheckToSetStockCountValue4,       Menu_RulesMenuInput+0x5FC
+.set CheckToSetStockCountValue1,       Menu_RulesMenuInput+0x328
+.set CheckToSetStockCountValue2,       Menu_RulesMenuInput+0x3DC
+.set CheckToSetStockCountValue3,       Menu_RulesMenuInput+0x43C
+.set CheckToSetStockCountValue4,       Menu_RulesMenuInput+0x510
+.set CheckToSetStockCountValue5,       Menu_RulesMenuInput+0x5FC
 add_hook CheckToSetStockCount
 add_hook CheckToUseStockCountText
 add_hook CheckToUseStockCountDescription
@@ -258,6 +259,7 @@ add_hook CheckToSetStockCountValue1
 add_hook CheckToSetStockCountValue2
 add_hook CheckToSetStockCountValue3
 add_hook CheckToSetStockCountValue4
+add_hook CheckToSetStockCountValue5
 add_hook Menu_UpdateStockCountOrTimerText
 # Match rules
 add_hook VsMode_InitDataFromRules

@@ -86,3 +86,9 @@ hook_CheckToSetStockCountValue4:
         bl      check_mode
         # Skip overwritten instruction
         b       orig_CheckToSetStockCountValue4+4
+
+.global hook_CheckToSetStockCountValue5
+hook_CheckToSetStockCountValue5:
+        bl      check_mode
+        # Skip overwritten instruction
+        b       orig_CheckToSetStockCountValue5+5

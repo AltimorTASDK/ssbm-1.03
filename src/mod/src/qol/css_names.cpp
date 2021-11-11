@@ -1,5 +1,4 @@
 #include "melee/match.h"
-#include "melee/player.h"
 #include "melee/scene.h"
 #include "melee/text.h"
 #include "util/melee/match.h"
@@ -12,6 +11,6 @@ extern "C" void set_css_name_color(int port, Text *text)
 	if (IsSinglePlayerMode())
 		return;
 	
-	if (won_last_match(port))
+	if (won_last_match(LastMatchData.match, port))
 		Text_SetSubtextColor(text, 0, winner_color);
 }

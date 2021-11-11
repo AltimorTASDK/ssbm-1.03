@@ -19,7 +19,7 @@ static u8 get_lras_override_scene()
 	return VsScene_CSS;
 }
 
-static u8 get_next_scene(MatchExitData *exit_data)
+static u8 get_next_scene(const MatchExitData *exit_data)
 {
 	// Add extra LRAS button combos
 	if (exit_data->match.result == MatchResult_LRAStart)
@@ -35,12 +35,14 @@ static u8 get_next_scene(MatchExitData *exit_data)
 extern "C" void orig_Scene_Match_Exit(SceneMinorData *data, u8 victory_screen, u8 sudden_death);
 extern "C" void hook_Scene_Match_Exit(SceneMinorData *data, u8 victory_screen, u8 sudden_death)
 {
+	const auto *exit_data = (MatchExitData*)data->data.exit_data;
+
 	// Override next scene and remove sudden death
-	const auto next_scene = get_next_scene((MatchExitData*)data->data.exit_data);
+	const auto next_scene = get_next_scene(exit_data);
 		
 	// Store crew stock count for next game
 	if (GetGameRules()->mode == Mode_Crew)
-		update_crew_stocks();
+		update_crew_stocks(exit_data->match);
 
 	orig_Scene_Match_Exit(data, next_scene, next_scene);
 }
