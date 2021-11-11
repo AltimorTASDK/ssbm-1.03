@@ -89,7 +89,7 @@ constexpr auto controls_description = make_description_text<
 
 constexpr auto manual_description = make_description_text<
 	"Read the 1.03 memory card",
-	"other controller settings.">();
+	"manual.">();
 
 static const auto patches = patch_list {
 	// Swap previews for debug menu and controls
