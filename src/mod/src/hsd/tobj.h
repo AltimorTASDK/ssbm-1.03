@@ -64,7 +64,7 @@ struct HSD_TObjTev {
 using HSD_TObjTevDesc = HSD_TObjTev;
 
 struct HSD_TObj {
-	HSD_Obj tobj;
+	HSD_Obj base;
 	HSD_TObj *next;
 	u32 id;
 	u32 src;

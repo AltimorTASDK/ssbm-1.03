@@ -62,6 +62,9 @@ extern "C" ArchiveModel MenMainPanel_Top;
 // Mode values
 extern "C" ArchiveModel MenMainCursorRl01_Top;
 
+// Handicap values
+extern "C" ArchiveModel MenMainCursorRl03_Top;
+
 extern "C" ArchiveModel MenMainNmRl_Top;
 
 extern "C" struct {
@@ -128,6 +131,8 @@ constexpr auto stage_music_description = make_description_text<
 	"Customize the stage music.">();
 	
 static mempool pool;
+
+static texture_swap *mode_value_texture;
 	
 static const auto patches = patch_list {
 	// Hide left/right arrows for menu music when selected
@@ -301,36 +306,8 @@ static void pool_free(void *data)
 	pool.dec_ref();
 }
 
-extern "C" HSD_GObj *orig_Menu_SetupRulesMenu(u8 state);
-extern "C" HSD_GObj *hook_Menu_SetupRulesMenu(u8 state)
+static void load_textures()
 {
-	// Handle coming back to rules from menu music
-	if (MenuTypePrevious == MenuType_MenuMusic)
-		MenuSelectedIndex = Rule_MenuMusic;
-
-	// Free everything when coming from music menus to avoid OOM
-	if (MenuTypePrevious == MenuType_MenuMusic || MenuTypePrevious == MenuType_StageMusic)
-		mempool::free_all();
-
-	auto *gobj = orig_Menu_SetupRulesMenu(state);
-	auto *data = gobj->get<RulesMenuData>();
-	
-	// Replace rule value models
-	replace_counter_jobj(data, Rule_LedgeGrabLimit);
-	replace_timer_jobj(data, Rule_AirTimeLimit);
-	
-	// Display initial values
-	update_lgl_value(gobj, data->ledge_grab_limit);
-	update_atl_value(gobj, data->air_time_limit);
-	
-	hide_rule_value(data, Rule_MenuMusic);
-
-	// Free assets on menu exit
-	gobj->user_data_remove_func = pool_free;
-	
-	if (pool.inc_ref() != 0)
-		return gobj;
-
 	// Replace rule name textures
 	const auto *rule_names = MenMainCursorRl_Top.matanim_joint->child->child->next->matanim;
 	pool.add(new texture_swap(ledge_grab_limit_tex_data, rule_names->texanim->imagetbl[3]));
@@ -346,9 +323,50 @@ extern "C" HSD_GObj *hook_Menu_SetupRulesMenu(u8 state)
 	pool.add(new texture_swap(menu_music_header_tex_data,
 		name2->u.dobj->mobjdesc->texdesc->imagedesc));
 
+	// Load mode value texture
+	mode_value_texture = pool.add(new texture_swap(mode_values_tex_data));
+}
+
+extern "C" HSD_GObj *orig_Menu_SetupRulesMenu(u8 state);
+extern "C" HSD_GObj *hook_Menu_SetupRulesMenu(u8 state)
+{
+	// Handle coming back to rules from menu music
+	if (MenuTypePrevious == MenuType_MenuMusic)
+		MenuSelectedIndex = Rule_MenuMusic;
+
+	// Free everything when coming from music menus to avoid OOM
+	if (MenuTypePrevious == MenuType_MenuMusic || MenuTypePrevious == MenuType_StageMusic)
+		mempool::free_all();
+	
+	if (pool.inc_ref() == 0)
+		load_textures();
+		
+	// Copy the 3-value animation from handicap for mode
+	MenMainCursorRl01_Top.matanim_joint->child->matanim->texanim =
+		MenMainCursorRl03_Top.matanim_joint->child->matanim->texanim;
+
+	auto *gobj = orig_Menu_SetupRulesMenu(state);
+	auto *data = gobj->get<RulesMenuData>();
+
+	// Free assets on menu exit
+	gobj->user_data_remove_func = pool_free;
+	
+	// Replace rule value models
+	replace_counter_jobj(data, Rule_LedgeGrabLimit);
+	replace_timer_jobj(data, Rule_AirTimeLimit);
+	
+	// Display initial values
+	update_lgl_value(gobj, data->ledge_grab_limit);
+	update_atl_value(gobj, data->air_time_limit);
+	
+	hide_rule_value(data, Rule_MenuMusic);
+
 	// Replace mode value texture
-	pool.add(new texture_swap(mode_values_tex_data,
-		MenMainCursorRl01_Top.joint->child->u.dobj->mobjdesc->texdesc->imagedesc));
+	auto *tobj = data->value_jobj_trees[Rule_Mode].tree[1]->u.dobj->mobj->tobj;
+	tobj->imagedesc = mode_value_texture->image;
+	
+	// Increase scale by 1.5x for 6 value texture
+	tobj->scale.x = 9;
 	
 	return gobj;
 }

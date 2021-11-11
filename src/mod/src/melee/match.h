@@ -67,7 +67,8 @@ struct PlayerInitData {
 	u8 subcolor;
 	u8 handicap;
 	u8 team;
-	char pad00A[0x18 - 0x0A];
+	u8 nametag;
+	char pad00B[0x18 - 0x0B];
 	f32 offense_ratio;
 	f32 defense_ratio;
 	char pad020[0x24 - 0x20];
