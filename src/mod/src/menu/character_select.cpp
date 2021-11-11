@@ -15,6 +15,7 @@
 #include "rules/values.h"
 #include "util/compression.h"
 #include "util/mempool.h"
+#include "util/patch_list.h"
 #include "util/vector.h"
 #include "util/melee/fobj_builder.h"
 #include "util/melee/match.h"
@@ -106,15 +107,23 @@ extern "C" CSSPlayerData *CSSPlayers[4];
 extern "C" CSSPuckData *CSSPucks[4];
 extern "C" CSSPort CSSPorts[4];
 
+extern "C" void CSS_Setup();
 extern "C" bool CSS_DropPuck(u8 index);
 extern "C" void CSS_UpdatePortrait(u8 port);
 
 constexpr auto crew_text = text_builder::build(
 	text_builder::ascii<"An epic crew battle!">());
 
+static const auto patches = patch_list {
+	// Use "Survival!" voice clip for crew
+	// li r3, 0x7538
+	std::pair { (char*)CSS_Setup+0xE4, 0x38607538 },
+};
+
 static mempool pool;
 
 static bool is_unplugged[4];
+static bool saved_is_unplugged[4];
 
 #if 0
 template<u8 a, u8 b>
@@ -173,7 +182,11 @@ extern "C" void hook_CSS_PlayerThink(HSD_GObj *gobj)
 	
 	css_rumble_toggle(data->port);
 
-	// Player states get changed on match start, ignore
+	// Port states get saved when entering SSS
+	if (CSSPendingSceneChange == 1)
+		saved_is_unplugged[data->port] = is_unplugged[data->port];
+
+	// Player states get changed on scene change, ignore
 	if (CSSPendingSceneChange != 0)
 		return;
 
@@ -222,7 +235,7 @@ extern "C" void hook_CSS_Init(void *menu)
 	// Forget unplugged state on entry from main menu
 	if (SceneMinorPrevious == 0) {
 		for (auto i = 0; i < 4; i++)
-			is_unplugged[i] = false;
+			is_unplugged[i] = saved_is_unplugged[i];
 	}
 	
 	orig_CSS_Init(menu);
