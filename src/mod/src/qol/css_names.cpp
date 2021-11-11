@@ -3,7 +3,7 @@
 #include "melee/scene.h"
 #include "melee/text.h"
 
-constexpr auto winner_color = color_rgba(255, 215, 0, 255);
+constexpr auto winner_color = color_rgba::hex(0xFFD700FF);
 
 static bool won_last_match_teams(const MatchInfo *match_info, int port)
 {
