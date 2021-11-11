@@ -53,10 +53,10 @@ void update_crew_stocks(const MatchController &match)
 	}
 
 	for (auto i = 0; i < 4; i++) {
-		if (PlayerBlock_GetSlotType(i) != SlotType_None && crew_stocks[i] > 0)
+		if (PlayerBlock_GetSlotType(i) != SlotType_None && !won_last_match(i))
 			return;
 	}
 	
-	// Reset crew stocks if no one has any stocks left
+	// Reset crew stocks if a draw occurs
 	reset_crew_stocks();
 }
