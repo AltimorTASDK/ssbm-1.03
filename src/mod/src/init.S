@@ -155,7 +155,6 @@ add_hook Interrupt_TurnOrDash
 add_hook MainMenu_Enter
 add_hook MainMenu_Init
 add_hook Match_HandlePause
-add_hook Match_Init
 add_hook MatchController_UpdateTeamWinners
 add_hook MatchController_UpdateWinners
 add_hook Menu_CreateExtraRulesMenu
@@ -235,5 +234,32 @@ add_hook Camera_SetNormal
 # Neutral spawns
 add_hook Stage_GetSpawnPoint
 add_hook PlayerBlock_GetRespawnPoint
+# Crew mode
+.set CheckToSetStockCount,             Menu_RulesMenuThink+0x2AC
+.set CheckToUseStockCountText,         Menu_SetupRulesMenu+0x410
+.set CheckToUseStockCountDescription,  Menu_CreateRuleDescriptionText+0x48
+.set CheckToUpdateStockCountText,      Menu_UpdateRuleDisplay+0x230
+.set CheckToUpdateStockCountTextAgain, Menu_UpdateRuleDisplay+0x32C
+.set CheckToCycleToStockCountText,     Menu_UpdateRuleDisplay+0x504
+.set CheckToUpdateStockCountValue,     Menu_UpdateRuleValue+0x6C
+.set CheckToSetStockCountValue1,       Menu_RulesMenuInput+0x3DC
+.set CheckToSetStockCountValue2,       Menu_RulesMenuInput+0x43C
+.set CheckToSetStockCountValue3,       Menu_RulesMenuInput+0x510
+.set CheckToSetStockCountValue4,       Menu_RulesMenuInput+0x5FC
+add_hook CheckToSetStockCount
+add_hook CheckToUseStockCountText
+add_hook CheckToUseStockCountDescription
+add_hook CheckToUpdateStockCountText
+add_hook CheckToUpdateStockCountTextAgain
+add_hook CheckToCycleToStockCountText
+add_hook CheckToUpdateStockCountValue
+add_hook CheckToSetStockCountValue1
+add_hook CheckToSetStockCountValue2
+add_hook CheckToSetStockCountValue3
+add_hook CheckToSetStockCountValue4
+add_hook Menu_UpdateStockCountOrTimerText
+# Match rules
+add_hook VsMode_InitDataFromRules
+add_hook Match_Init
 
 hooks_end:

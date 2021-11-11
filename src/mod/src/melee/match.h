@@ -130,6 +130,11 @@ struct StartMeleeData {
 	PlayerInitData players[6];
 };
 
+struct VsModeData {
+	char pad000[0x08];
+	StartMeleeData data;
+};
+
 struct MatchExitData {
 	char pad000[0x0C];
 	MatchController match;

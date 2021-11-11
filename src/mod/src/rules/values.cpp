@@ -46,6 +46,21 @@ static bool is_pause_disabled(const StartMeleeData *data)
 	return !GetGameRules()->pause && data->rules.is_stock_match && data->players[0].stocks == 4;
 }
 
+extern "C" void orig_VsMode_InitDataFromRules(VsModeData *vs_data);
+extern "C" void hook_VsMode_InitDataFromRules(VsModeData *vs_data)
+{
+	auto *rules = GetGameRules();
+
+	if (rules->mode == Mode_Crew) {
+		// Use stock rules for crew
+		rules->mode = Mode_Stock;
+		orig_VsMode_InitDataFromRules(vs_data);
+		rules->mode = Mode_Crew;
+	} else {
+		orig_VsMode_InitDataFromRules(vs_data);
+	}
+}
+
 extern "C" void orig_Match_Init(StartMeleeData *data);
 extern "C" void hook_Match_Init(StartMeleeData *data)
 {

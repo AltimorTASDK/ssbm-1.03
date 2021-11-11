@@ -67,6 +67,8 @@ extern "C" ArchiveModel MenMainCursorRl03_Top;
 
 extern "C" ArchiveModel MenMainNmRl_Top;
 
+extern "C" HSD_GObj *RulesMenuGObj;
+
 extern "C" struct {
 	ArchiveModel *mode;
 	ArchiveModel *stock_count;
@@ -408,4 +410,17 @@ extern "C" void hook_Menu_CreateRuleDescriptionText(RulesMenuData *data, int rul
 	case Rule_MenuMusic:      text->data = menu_music_description.data(); break;
 	case Rule_StageMusic:     text->data = stage_music_description.data(); break;
 	}
+}
+
+extern "C" void orig_Menu_UpdateStockCountOrTimerText(bool show_time);
+extern "C" void hook_Menu_UpdateStockCountOrTimerText(bool show_time)
+{
+	// Show stock count in crew mode
+	u8 mode;
+	if (MenuSelectedIndex == Rule_Mode)
+		mode = MenuSelectedValue;
+	else
+		mode = RulesMenuGObj->get<RulesMenuData>()->mode;
+	
+	orig_Menu_UpdateStockCountOrTimerText(mode != Mode_Stock && mode != Mode_Crew);
 }
