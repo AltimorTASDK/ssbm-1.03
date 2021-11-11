@@ -8,6 +8,7 @@
 #include "hsd/pad.h"
 #include "hsd/tobj.h"
 #include "melee/match.h"
+#include "melee/nametag.h"
 #include "melee/player.h"
 #include "melee/scene.h"
 #include "menu/stage_select.h"
@@ -135,16 +136,40 @@ extern "C" bool check_is_cpu_puck(u8 port)
 	return CSSPlayers[port]->state == CSSPlayerState_Unplugged;
 }
 
+static void css_rumble_toggle(u8 port)
+{
+	if (!(HSD_PadCopyStatus[port].instant_buttons & Button_DPadUp))
+		return;
+		
+	const auto nametag = CSSData->data.players[port].nametag;
+
+	if (nametag == NO_NAMETAG) {
+		// Toggle port rumble setting
+		const auto rumble = !GetPortRumbleFlag(port);
+		SetPortRumbleFlag(port, rumble);
+		if (rumble)
+			HSD_PadRumble(port, 0, 0, 60);
+	} else {
+		// Toggle nametag rumble setting
+		auto *nametag_entry = NameTag_GetEntry(nametag);
+		nametag_entry->rumble = !nametag_entry->rumble;
+		if (nametag_entry->rumble)
+			HSD_PadRumble(port, 0, 0, 60);
+	}
+}
+
 extern "C" void orig_CSS_PlayerThink(HSD_GObj *gobj);
 extern "C" void hook_CSS_PlayerThink(HSD_GObj *gobj)
 {
 	orig_CSS_PlayerThink(gobj);
+	
+	auto *data = gobj->get<CSSPlayerData>();
+	
+	css_rumble_toggle(data->port);
 
 	// Player states get changed on match start, ignore
 	if (CSSPendingSceneChange != 0)
 		return;
-	
-	auto *data = gobj->get<CSSPlayerData>();
 
 	is_unplugged[data->port] = data->state == CSSPlayerState_Unplugged;
 

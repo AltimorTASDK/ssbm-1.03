@@ -290,6 +290,9 @@ s32 PlayerBlockStats_GetActionStat(const PlayerBlockStats *stats, u32 index);
 bool Player_IsCPU(const Player *player);
 
 void PlayerThink_Input(HSD_GObj *gobj);
+
+bool GetPortRumbleFlag(u32 port);
+void SetPortRumbleFlag(u32 port, bool flag);
 	
 }
 
