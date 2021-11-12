@@ -2,6 +2,12 @@
 
 .set SlotType_Human, 0
 
+.set Mode_Crew, 2
+
+.set MenuSFX_Denied, 3
+
+.set GameRules.mode, 0x02
+
 .global hook_CheckIsCPUPuck
 hook_CheckIsCPUPuck:
         # Check if set to CPU normally
@@ -34,8 +40,18 @@ hook_CheckIsCPUPuck:
 
 .global hook_CheckCSSPlayerCount
 hook_CheckCSSPlayerCount:
+        bl      GetGameRules
+        lbz     r0, GameRules.mode(r3)
         lis     r3, CSSReadyFrames@ha
+        cmpwi   r0, Mode_Crew
+        bne     not_crew
+        
+        # Only allow 1v1 in crew mode
+        cmpwi   r4, 2
+        beq     ready_2p
+        b       not_ready
 
+not_crew:
         cmpwi   r4, 1
         bgt     ready_2p
         bne     not_ready
@@ -64,3 +80,53 @@ ready_2p:
 1:
         # Skip overwritten instruction
         b       orig_CheckCSSPlayerCount+4
+
+.global hook_CheckCSSMatchStartCooldown
+hook_CheckCSSMatchStartCooldown:
+        # Bail out if ready to start match
+        cmplwi  r0, 0
+        beq     2f
+        
+        # Check if crew
+        bl      GetGameRules
+        lbz     r0, GameRules.mode(r3)
+        cmpwi   r0, Mode_Crew
+        bne     1f
+
+        lis     r3, CSSReadyFrames@ha
+        lbz     r0, CSSReadyFrames@l(r3)
+        cmplwi  r0, 0
+        bne     1f
+        
+        # Allow condition to succeed if not ready in crews so "denied" SFX plays
+        creqv   eq, eq, eq
+        b       2f
+        
+1:
+        # Cooldown not ready
+        crxor   eq, eq, eq
+2:
+        # Skip overwritten instruction
+        b       orig_CheckCSSMatchStartCooldown+4
+
+.global hook_CheckCSSModeSwap
+hook_CheckCSSModeSwap:
+        # Bail if not pressing A
+        beq     1f
+        
+        # Check if crew
+        bl      GetGameRules
+        lbz     r0, GameRules.mode(r3)
+        cmpwi   r0, Mode_Crew
+        bne     1f
+        
+        li      r3, MenuSFX_Denied
+        bl      Menu_PlaySFX
+        
+        # Set cr0.eq to prevent changing to teams
+        creqv   eq, eq, eq
+        
+1:
+        # Restore r3
+        li      r3, 1
+        b       orig_CheckCSSModeSwap

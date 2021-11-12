@@ -21,7 +21,7 @@ enum MenuButton {
 
 enum MenuSFX {
 	MenuSFX_Back      = 0,
-	MenuSFX_Activate     = 1,
+	MenuSFX_Activate  = 1,
 	MenuSFX_Scroll    = 2,
 	MenuSFX_Denied    = 3
 };

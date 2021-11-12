@@ -99,9 +99,6 @@ hooks_start:
 .set UpdatePlayerStick,       PlayerThink_Input+0x1D0
 .set CheckScrollingRuleIndex, Menu_UpdateRuleDisplay+0x418
 .set ShowNameTagCheck,        NameTag_Think+0x28
-.set CreateCSSNameText,       CSS_Setup+0x1180
-.set CheckCSSPlayerCount,     CSS_ReadyThink+0x124
-.set CheckIsCPUPuck,          CSS_PlayerThink+0x1CF4
 .set CheckStockStealInput,    Match_CheckStockSteal+0xF8
 .set GetDebugMenuButtons,     DebugMenu_Input+0x1C
 .set EnterSpecialMelee,       VsMenu_Think+0xBC
@@ -118,12 +115,8 @@ hooks_start:
 .set CheckJab3Input,          Interrupt_Jab3+0x3C
 .set CheckRapidJabInput,      Interrupt_RapidJab+0x18
 .set CheckFTiltAngle,         AS_053_056_FTilt+0x34
-.set SceneLoopStart,          Scene_RunLoop+0x68
-.set FirstEngineFrame,        Scene_RunLoop+0xA8
 
 add_hook Bubble_GetPosition
-add_hook CheckCSSPlayerCount
-add_hook CheckIsCPUPuck
 add_hook CheckScrollingRuleIndex
 add_hook CheckStockStealInput
 add_hook CheckUTiltInput
@@ -136,12 +129,6 @@ add_hook CheckRapidJabInput
 add_hook CheckFTiltAngle
 add_hook CmSubject_WorldToScreen
 add_hook CObjLoad
-add_hook CreateCSSNameText
-add_hook CSS_ChooseTopString
-add_hook CSS_Init
-add_hook CSS_PlayerThink
-add_hook CSS_Setup
-add_hook CSS_UpdatePortrait
 add_hook DebugMenu_Exit
 add_hook DevelopText_Draw
 add_hook EnterSpecialMelee
@@ -213,6 +200,8 @@ add_hook TumbleWiggleCheck
 add_hook UpdatePadButtons
 add_hook UpdatePlayerStick
 # PDF+Latency
+.set SceneLoopStart,   Scene_RunLoop+0x68
+.set FirstEngineFrame, Scene_RunLoop+0xA8
 add_hook SceneLoopStart
 add_hook FirstEngineFrame
 add_hook HSD_VICopyXFBASync
@@ -265,5 +254,21 @@ add_hook Menu_UpdateStockCountOrTimerText
 # Match rules
 add_hook VsMode_InitDataFromRules
 add_hook Match_Init
+# CSS
+.set CreateCSSNameText,          CSS_Setup+0x1180
+.set CheckCSSPlayerCount,        CSS_ReadyThink+0x124
+.set CheckCSSMatchStartCooldown, CSS_ReadyThink+0x310
+.set CheckCSSModeSwap,           CSS_PlayerThink+0x150C
+.set CheckIsCPUPuck,             CSS_PlayerThink+0x1CF4
+add_hook CreateCSSNameText
+add_hook CheckCSSPlayerCount
+add_hook CheckCSSMatchStartCooldown
+add_hook CheckCSSModeSwap
+add_hook CheckIsCPUPuck
+add_hook CSS_ChooseTopString
+add_hook CSS_Init
+add_hook CSS_PlayerThink
+add_hook CSS_Setup
+add_hook CSS_UpdatePortrait
 
 hooks_end:

@@ -262,13 +262,7 @@ static void c_up_toggle(u8 port)
 				return false;
 
 			const auto &pad = HSD_PadCopyStatus[port];
-			
-			if (pad.cstick.y < YSMASH_THRESHOLD)
-				return false;
-			
-			// Must be above top 50d line
-			const auto angle = std::atan2(pad.cstick.y, std::abs(pad.cstick.x));
-			return angle >= ANGLE_50D;
+			return pad.cstick.y >= YSMASH_THRESHOLD;
 		},
 		[&] {
 			config->c_up = cstick_type::tilt;
@@ -287,15 +281,7 @@ static void c_horizontal_toggle(u8 port)
 				return false;
 
 			const auto &pad = HSD_PadCopyStatus[port];
-			const auto abs_x = std::abs(pad.cstick.x);
-			const auto abs_y = std::abs(pad.cstick.y);
-			
-			if (abs_x < XSMASH_THRESHOLD)
-				return false;
-			
-			// Must be between top/bottom 50d line
-			const auto angle = std::atan2(abs_y, abs_x);
-			return angle < ANGLE_50D;
+			return std::abs(pad.cstick.x) >= XSMASH_THRESHOLD;
 		},
 		[&] {
 			config->c_horizontal = cstick_type::tilt;
@@ -314,13 +300,7 @@ static void c_down_toggle(u8 port)
 				return false;
 
 			const auto &pad = HSD_PadCopyStatus[port];
-			
-			if (pad.cstick.y > -YSMASH_THRESHOLD)
-				return false;
-			
-			// Must be below bottom 50d line
-			const auto angle = std::atan2(pad.cstick.y, std::abs(pad.cstick.x));
-			return angle <= -ANGLE_50D;
+			return pad.cstick.y <= -YSMASH_THRESHOLD;
 		},
 		[&] {
 			config->c_down = cstick_type::tilt;
@@ -500,6 +480,10 @@ extern "C" void hook_CSS_Setup()
 				CSSData->ko_stars[i] = 0;
 		}
 	}
+
+	// Force teams mode off in crews
+	if (GetGameRules()->mode == Mode_Crew)
+		CSSData->data.rules.is_teams = false;
 
 	orig_CSS_Setup();
 
