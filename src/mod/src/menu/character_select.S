@@ -42,7 +42,6 @@ hook_CheckIsCPUPuck:
 hook_CheckCSSPlayerCount:
         bl      GetGameRules
         lbz     r0, GameRules.mode(r3)
-        lis     r3, CSSReadyFrames@ha
         cmpwi   r0, Mode_Crew
         bne     not_crew
         
@@ -56,6 +55,12 @@ not_crew:
         bgt     ready_2p
         bne     not_ready
         
+        bl      check_if_non_dummy
+        cmpwi   r3, 0
+        beq     not_ready
+
+        lis     r3, CSSReadyFrames@ha
+        
         # Store special value for ready frames
         li      r0, 0xFF
         stb     r0, CSSReadyFrames@l(r3)
@@ -68,7 +73,12 @@ not_ready:
         b       CSS_ReadyThink+0x27C
         
 ready_2p:
+        bl      check_if_non_dummy
+        cmpwi   r3, 0
+        beq     not_ready
+
         # Check for special 1p ready frames value
+        lis     r3, CSSReadyFrames@ha
         lbz     r0, CSSReadyFrames@l(r3)
         cmpwi   r0, 0xFF
         bne     1f

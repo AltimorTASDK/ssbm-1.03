@@ -35,7 +35,7 @@
 #include "resources/css/vs_ball_low.tex.h"
 
 enum CSSPlayerState {
-	CSSPlayerState_Disabled = 0,
+	CSSPlayerState_HoveringPorts = 0,
 	CSSPlayerState_HoldingPuck = 1,
 	CSSPlayerState_Idle = 2,
 	CSSPlayerState_Unplugged = 3
@@ -164,6 +164,20 @@ extern "C" bool check_is_cpu_puck(u8 port)
 {
 	// Allow anyone to move pucks of fake HMN ports
 	return CSSPlayers[port]->state == CSSPlayerState_Unplugged;
+}
+
+extern "C" bool check_if_non_dummy()
+{
+	// Check if there's a real HMN port before starting a match
+	for (auto i = 0; i < CSSPortCount; i++) {
+		if (CSSPorts[i].slot_type != SlotType_Human)
+			continue;
+
+		if (CSSPlayers[i]->state != CSSPlayerState_Unplugged)
+			return true;
+	}
+	
+	return false;
 }
 
 static void rumble_toggle(u8 port)
