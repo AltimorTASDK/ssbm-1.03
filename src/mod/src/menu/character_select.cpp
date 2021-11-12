@@ -7,6 +7,7 @@
 #include "hsd/mobj.h"
 #include "hsd/pad.h"
 #include "hsd/tobj.h"
+#include "melee/constants.h"
 #include "melee/match.h"
 #include "melee/nametag.h"
 #include "melee/player.h"
@@ -19,7 +20,9 @@
 #include "util/vector.h"
 #include "util/melee/fobj_builder.h"
 #include "util/melee/match.h"
+#include "util/melee/pad.h"
 #include "util/melee/text_builder.h"
+#include <cmath>
 #include <cstring>
 
 #include "resources/css/banner_103.tex.h"
@@ -111,6 +114,9 @@ extern "C" void CSS_Setup();
 extern "C" bool CSS_DropPuck(u8 index);
 extern "C" void CSS_UpdatePortrait(u8 port);
 
+// All CSS toggles except rumble require 1s hold
+constexpr auto TOGGLE_HOLD_TIME = 60;
+
 constexpr auto crew_text = text_builder::build(
 	text_builder::ascii<"An epic crew battle!">());
 
@@ -124,6 +130,15 @@ static mempool pool;
 
 static bool is_unplugged[4];
 static bool saved_is_unplugged[4];
+
+static struct {
+	u32 z_jump;
+	u32 perfect_wavedash;
+	u32 c_up;
+	u32 c_horizontal;
+	u32 c_down;
+	u32 tap_jump;
+} toggle_timers[4];
 
 #if 0
 template<u8 a, u8 b>
@@ -151,7 +166,7 @@ extern "C" bool check_is_cpu_puck(u8 port)
 	return CSSPlayers[port]->state == CSSPlayerState_Unplugged;
 }
 
-static void css_rumble_toggle(u8 port)
+static void rumble_toggle(u8 port)
 {
 	if (!(HSD_PadCopyStatus[port].instant_buttons & Button_DPadUp))
 		return;
@@ -173,14 +188,199 @@ static void css_rumble_toggle(u8 port)
 	}
 }
 
+static void check_css_toggle(u8 port, u32 *timer, auto &&check_callback, auto &&apply_callback)
+{
+	if (!check_callback()) {
+		*timer = 0;
+		return;
+	}
+	
+	if (++*timer < TOGGLE_HOLD_TIME)
+		return;
+		
+	apply_callback();
+	HSD_PadRumble(port, 0, 0, 60);
+}
+
+static void show_illegal_controls(u8 port)
+{
+	// Use red HMN indicator for illegal controls
+	auto *jobj = HSD_JObjGetFromTreeByIndex(CSSMenuJObj, CSSPorts[port].port_type_joint);
+	auto *mobj = jobj->u.dobj->next->mobj;
+	mobj->mat->diffuse = color_rgba::hex(0xFF3333FFu);
+}
+
+static void z_jump_toggle(u8 port)
+{
+	auto *config = &controller_configs[port];
+	const auto &pad = HSD_PadCopyStatus[port];
+	
+	check_css_toggle(port, &toggle_timers[port].z_jump,
+		[&] {
+			// Check if already remapped
+			if (config->z_jump_bit != 0)
+				return false;
+
+			// Must be holding exactly X+Z or Y+Z
+			return pad.buttons == (Button_X | Button_Z)
+			    || pad.buttons == (Button_Y | Button_Z);
+		},
+		[&] {
+			config->z_jump_bit = (u8)__builtin_ctz(pad.buttons & (Button_X | Button_Y));
+		});
+}
+
+static void perfect_wavedash_toggle(u8 port)
+{
+	auto *config = &controller_configs[port];
+	
+	check_css_toggle(port, &toggle_timers[port].perfect_wavedash,
+		[&] {
+			// Check if already using PWD
+			if (config->perfect_wavedash)
+				return false;
+
+			// Must be holding L/R only
+			const auto &pad = HSD_PadCopyStatus[port];
+			constexpr auto mask = Button_L | Button_R;
+			return (pad.buttons & mask) != 0 && (pad.buttons & ~mask) == 0;
+		},
+		[&] {
+			config->perfect_wavedash = true;
+			show_illegal_controls(port);
+		});
+}
+
+static void c_up_toggle(u8 port)
+{
+	auto *config = &controller_configs[port];
+	
+	check_css_toggle(port, &toggle_timers[port].c_up,
+		[&] {
+			// Check if already using cstick utilt
+			if (config->c_up == cstick_type::tilt)
+				return false;
+
+			const auto &pad = HSD_PadCopyStatus[port];
+			
+			if (pad.cstick.y < YSMASH_THRESHOLD)
+				return false;
+			
+			// Must be above top 50d line
+			const auto angle = std::atan2(pad.cstick.y, std::abs(pad.cstick.x));
+			return angle >= ANGLE_50D;
+		},
+		[&] {
+			config->c_up = cstick_type::tilt;
+			show_illegal_controls(port);
+		});
+}
+
+static void c_horizontal_toggle(u8 port)
+{
+	auto *config = &controller_configs[port];
+	
+	check_css_toggle(port, &toggle_timers[port].c_horizontal,
+		[&] {
+			// Check if already using cstick ftilt
+			if (config->c_horizontal == cstick_type::tilt)
+				return false;
+
+			const auto &pad = HSD_PadCopyStatus[port];
+			const auto abs_x = std::abs(pad.cstick.x);
+			const auto abs_y = std::abs(pad.cstick.y);
+			
+			if (abs_x < XSMASH_THRESHOLD)
+				return false;
+			
+			// Must be between top/bottom 50d line
+			const auto angle = std::atan2(abs_y, abs_x);
+			return angle < ANGLE_50D;
+		},
+		[&] {
+			config->c_horizontal = cstick_type::tilt;
+			show_illegal_controls(port);
+		});
+}
+
+static void c_down_toggle(u8 port)
+{
+	auto *config = &controller_configs[port];
+	
+	check_css_toggle(port, &toggle_timers[port].c_down,
+		[&] {
+			// Check if already using cstick dtilt
+			if (config->c_down == cstick_type::tilt)
+				return false;
+
+			const auto &pad = HSD_PadCopyStatus[port];
+			
+			if (pad.cstick.y > -YSMASH_THRESHOLD)
+				return false;
+			
+			// Must be below bottom 50d line
+			const auto angle = std::atan2(pad.cstick.y, std::abs(pad.cstick.x));
+			return angle <= -ANGLE_50D;
+		},
+		[&] {
+			config->c_down = cstick_type::tilt;
+			show_illegal_controls(port);
+		});
+}
+
+static void tap_jump_toggle(u8 port)
+{
+	auto *config = &controller_configs[port];
+	
+	check_css_toggle(port, &toggle_timers[port].tap_jump,
+		[&] {
+			// Check if tap jump is already disabled
+			if (!config->tap_jump)
+				return false;
+				
+			// Has to be against the top of the CSS
+			if (CSSPlayers[port]->position.y != 25)
+				return false;
+
+			// Require 6625 upward input
+			const auto &pad = HSD_PadCopyStatus[port];
+			return pad.stick.y >= YSMASH_THRESHOLD;
+		},
+		[&] {
+			config->tap_jump = false;
+			show_illegal_controls(port);
+		});
+}
+
+static void reset_toggle_timers(u8 port)
+{
+	toggle_timers[port].z_jump = 0;
+	toggle_timers[port].perfect_wavedash = 0;
+	toggle_timers[port].c_up = 0;
+	toggle_timers[port].c_horizontal = 0;
+	toggle_timers[port].c_down = 0;
+	toggle_timers[port].tap_jump = 0;
+}
+
 extern "C" void orig_CSS_PlayerThink(HSD_GObj *gobj);
 extern "C" void hook_CSS_PlayerThink(HSD_GObj *gobj)
 {
 	orig_CSS_PlayerThink(gobj);
 	
 	auto *data = gobj->get<CSSPlayerData>();
-	
-	css_rumble_toggle(data->port);
+
+	// CSS toggles
+	if (HSD_PadCopyStatus[data->port].err == 0) {
+		rumble_toggle(data->port);
+		z_jump_toggle(data->port);
+		perfect_wavedash_toggle(data->port);
+		c_up_toggle(data->port);
+		c_horizontal_toggle(data->port);
+		c_down_toggle(data->port);
+		tap_jump_toggle(data->port);
+	} else {
+		reset_toggle_timers(data->port);
+	}
 
 	// Port states get saved when entering SSS
 	if (CSSPendingSceneChange == 1)
@@ -217,13 +417,8 @@ extern "C" void hook_CSS_UpdatePortrait(u8 port)
 {
 	orig_CSS_UpdatePortrait(port);
 	
-	if (CSSPorts[port].slot_type != SlotType_Human || !controller_configs[port].is_illegal())
-		return;
-	
-	// Use red HMN indicator for illegal controls
-	auto *jobj = HSD_JObjGetFromTreeByIndex(CSSMenuJObj, CSSPorts[port].port_type_joint);
-	auto *mobj = jobj->u.dobj->next->mobj;
-	mobj->mat->diffuse = color_rgba::hex(0xFF3333FFu);
+	if (CSSPorts[port].slot_type == SlotType_Human && controller_configs[port].is_illegal())
+		show_illegal_controls(port);
 }
 
 extern "C" void orig_CSS_Init(void *menu);
@@ -309,8 +504,11 @@ extern "C" void hook_CSS_Setup()
 	orig_CSS_Setup();
 
 	// Don't consider fake HMN ports freshly unplugged when entering the CSS
-	for (auto i = 0; i < CSSPortCount; i++) {
+	for (u8 i = 0; i < CSSPortCount; i++) {
 		if (is_unplugged[i])
 			CSSPlayers[i]->state = CSSPlayerState_Unplugged;
+		
+		// Initialize toggle timers
+		reset_toggle_timers(i);
 	}
 }

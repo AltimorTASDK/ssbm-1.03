@@ -18,6 +18,12 @@ constexpr auto TRIGGER_DEADZONE = 42;
 // 1.0
 constexpr auto TRIGGER_MAX = 140;
 
+constexpr auto ANGLE_50D = .87266463f;
+
+constexpr auto XSMASH_THRESHOLD = .8000f;
+
+constexpr auto YSMASH_THRESHOLD = .6625f;
+
 namespace detail {
 const PADStatus &get_input_impl(int port, int offset);
 const PADStatus &get_nana_input_impl(const Player *nana, int offset);

@@ -1,3 +1,4 @@
+#include "hsd/aobj.h"
 #include "hsd/archive.h"
 #include "hsd/dobj.h"
 #include "hsd/gobj.h"
@@ -348,8 +349,8 @@ extern "C" HSD_GObj *hook_Menu_SetupRulesMenu(u8 state)
 		load_textures();
 		
 	// Copy the 3-value animation from handicap for mode
-	MenMainCursorRl01_Top.matanim_joint->child->matanim->texanim =
-		MenMainCursorRl03_Top.matanim_joint->child->matanim->texanim;
+	MenMainCursorRl01_Top.matanim_joint->child->matanim->texanim->aobjdesc->fobjdesc =
+		MenMainCursorRl03_Top.matanim_joint->child->matanim->texanim->aobjdesc->fobjdesc;
 
 	auto *gobj = orig_Menu_SetupRulesMenu(state);
 	auto *data = gobj->get<RulesMenuData>();

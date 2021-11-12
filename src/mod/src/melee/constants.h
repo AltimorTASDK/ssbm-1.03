@@ -1,9 +1,14 @@
 #pragma once
 
+#include "util/vector.h"
 #include <gctypes.h>
 
 struct PlayerConstants {
-	char pad000[0x3C];
+	vec2 deadzone;
+	char pad008[0x20 - 0x08];
+	f32 angle_50d;
+	f32 x_tilt_threshold;
+	char pad028[0x3C - 0x28];
 	f32 x_smash_threshold;
 	s32 x_smash_frames;
 	char pad044[0x70 - 0x44];
