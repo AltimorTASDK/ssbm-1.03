@@ -6,7 +6,7 @@
 hook_CheckIsCPUPuck:
         # Check if set to CPU normally
         cmplwi  r5, SlotType_Human
-        bne     end
+        bne     1f
 
         # Back up registers used in loop
         mfctr   r0
@@ -28,7 +28,7 @@ hook_CheckIsCPUPuck:
         addi    r1, r1, 0x18
         mtctr   r0
 
-end:
+1:
         # Skip overwritten instruction
         b       orig_CheckIsCPUPuck+4
 
@@ -55,12 +55,12 @@ ready_2p:
         # Check for special 1p ready frames value
         lbz     r0, CSSReadyFrames@l(r3)
         cmpwi   r0, 0xFF
-        bne     end
+        bne     1f
 
         # Reset ready frames value so animation restarts
         li      r0, 0
         stb     r0, CSSReadyFrames@l(r3)
 
-end:
+1:
         # Skip overwritten instruction
         b       orig_CheckCSSPlayerCount+4
