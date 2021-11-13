@@ -11,7 +11,6 @@ extern "C" void DevelopMode_SetCameraType();
 
 extern "C" void CSS_PlayerThink(HSD_GObj *gobj);
 extern "C" void CSS_Setup();
-extern "C" void CSS_ReadyThink(HSD_GObj *gobj);
 extern "C" void CSS_UpdatePortrait(u8 port);
 extern "C" void CSS_GObjCallback(u8 port);
 
