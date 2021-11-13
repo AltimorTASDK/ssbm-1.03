@@ -73,6 +73,8 @@ extern u8 MenuSelectedValue;
 
 extern u32 MenuButtons;
 
+extern u8 IsEnteringMenu;
+
 MenuCallbacks *Menu_GetCallbacks(u8 id);
 
 void Menu_ExitToMinorScene(u8 scene);

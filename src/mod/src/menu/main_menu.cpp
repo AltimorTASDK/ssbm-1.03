@@ -18,6 +18,7 @@
 #include "resources/portals/debug_menu.tex.h"
 #include "resources/portals/debug_menu_preview_20XX.tex.h"
 #include "resources/portals/manual.tex.h"
+#include "resources/screens/manual_header.tex.h"
 
 enum VsMenuPortalID {
 	VsMenu_TournamentMelee = 1,
@@ -49,6 +50,9 @@ struct MenuTypeData {
 	u8 option_count;
 	void(*think)();
 };
+
+// Menu frame
+extern "C" ArchiveModel MenMainPanel_Top;
 
 extern "C" ArchiveModel MenMainCursor_Top;
 extern "C" ArchiveModel MenMainConTop_Top;
@@ -140,6 +144,11 @@ extern "C" void hook_MainMenu_Init(void *menu)
 		MenMainConTop_Top.matanim_joint->child->child->next->child->next->child->matanim;
 	unmanaged_texture_swap(vs_mode_preview_tex_data,  previews->texanim->imagetbl[1]);
 	unmanaged_texture_swap(controls_preview_tex_data, previews->texanim->imagetbl[7]);
+	
+	// Replace menu panel header
+	const auto *header = MenMainPanel_Top.matanim_joint->child->next->next->child->
+		next->next->next->next->matanim;
+	unmanaged_texture_swap(manual_header_tex_data, header->texanim->imagetbl[8]);
 
 #if 0
 	const auto *tournament_preview =

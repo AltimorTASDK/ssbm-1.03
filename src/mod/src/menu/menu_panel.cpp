@@ -25,8 +25,6 @@ struct MenuPanelAnim {
 	HSD_AnimLoop idle;
 };
 
-extern "C" u8 IsEnteringMenu;
-
 extern "C" MenuPanelAnim MenuPanelAnimTable[MenuType_Max];
 
 static bool is_in_menu_music(const MenuPanelData *data)

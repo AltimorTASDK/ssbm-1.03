@@ -87,6 +87,7 @@ int Text_CreateCanvas(u32 sis_id, HSD_GObj *camera_gobj, u8 classifier, u8 p_lin
 		      
 Text *Text_Create(u32 sis_id, s32 canvas_id,
                   f32 trans_x, f32 trans_y, f32 trans_z, f32 aspect_x, f32 aspect_z);
+void Text_Free(Text *text);
 
 void Text_SetFromSIS(Text *text, u32 id);
 void Text_SetSubtextColor(Text *text, int subtext, const color_rgba &color);

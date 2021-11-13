@@ -2,7 +2,9 @@
 #include "hsd/cobj.h"
 #include "hsd/gobj.h"
 #include "hsd/jobj.h"
+#include "hsd/mobj.h"
 #include "hsd/pad.h"
+#include "hsd/tobj.h"
 #include "hsd/video.h"
 #include "melee/menu.h"
 #include "melee/text.h"
@@ -32,11 +34,13 @@ static mempool pool;
 
 static float scroll_offset;
 
+static Text *text;
+
 bool manual_open;
 
 constexpr auto bottom_text = text_builder::build(
 		text_builder::kern(),
-		text_builder::left(),
+		text_builder::center(),
 		text_builder::color<170, 170, 170>(),
 		text_builder::textbox<179, 179>(),
 		text_builder::offset<0, -10>(),
@@ -54,9 +58,11 @@ static void manual_input(HSD_GObj *gobj)
 	
 	if (buttons & MenuButton_B) {
 		manual_open = false;
-		Text_FreeAll();
-		GObj_Free(gobj);
+		IsEnteringMenu = false;
+		Menu_PlaySFX(MenuSFX_Back);
+		Text_Free(text);
 		pool.dec_ref();
+		Menu_MainMenuTransition(MenuType_VsMode, 3, MenuState_ExitTo);
 		return;
 	}
 	
@@ -112,7 +118,6 @@ static void draw_manual(HSD_GObj *gobj, u32 pass)
 	                   color_rgba::hex(0x929196FFu), texture_scrollbar, align::top_right);
 }
 
-extern "C" void orig_Menu_EnterCustomRulesMenu();
 extern "C" void hook_Menu_EnterCustomRulesMenu()
 {
 	manual_open = true;
@@ -125,16 +130,18 @@ extern "C" void hook_Menu_EnterCustomRulesMenu()
 	auto *gobj = GObj_Create(GOBJ_CLASS_PROC, GOBJ_PLINK_PROC, 0x80);
 	GObj_AddProc(gobj, manual_input, 0);
 	Menu_SetGObjPrio(gobj);
-	GObj_SetupGXLink(gobj, draw_manual, GOBJ_GXLINK_MENU_TOP, 0);
+	GObj_SetupGXLink(gobj, draw_manual, GOBJ_GXLINK_MENU_TOP, 0x80);
 
 	pool.inc_ref();
+	
 	pool.add(init_texture(manual_p1_tex_data, &texture_p1));
 	pool.add(init_texture(manual_p2_tex_data, &texture_p2));
 	pool.add(init_texture(manual_p3_tex_data, &texture_p3));
 	pool.add(init_texture(manual_border_tex_data, &texture_border));
 	pool.add(init_texture(scrollbar_tex_data, &texture_scrollbar));
 	
-	auto *text = Text_Create(0, 1, -9.5f, 8.f, 17.f, 364.68331909f, 76.75543640f);
+	// Bottom text
+	text = Text_Create(0, 1, -9.5f, 8.f, 17.f, 364.68331909f, 76.75543640f);
 	text->stretch.x = 0.0521f;
 	text->stretch.y = 0.0521f;
 	Text_SetFromSIS(text, 0);

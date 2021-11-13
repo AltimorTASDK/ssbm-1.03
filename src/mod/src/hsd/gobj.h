@@ -19,7 +19,7 @@ enum GObjGXLink {
 };
 
 enum GObjPLink {
-	GOBJ_PLINK_PROC        = 0,
+	GOBJ_PLINK_PROC        = 1,
 	GOBJ_PLINK_STAGE       = 5,
 	GOBJ_PLINK_PLAYER      = 8,
 	GOBJ_PLINK_ITEM        = 9,
