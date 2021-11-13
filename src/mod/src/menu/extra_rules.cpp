@@ -117,8 +117,8 @@ constexpr auto latency_descriptions = multi_array {
 		              "of latency.">(),
 	make_description_text<"Reduce latency by half a frame.",
 		              "Recommended for LCDs.">(),
-	make_description_text<"Reduce latency by one and",
-		              "a half frames.">()
+	make_description_text<"Reduce latency by one and a half",
+		              "frames. Recommended only for Wii.">()
 };
 
 constexpr auto widescreen_descriptions = multi_array {
@@ -159,7 +159,7 @@ constexpr auto pause_auto_description = text_builder::build(
 	text_builder::end_fit(),
 	text_builder::end_textbox(),
 	text_builder::end_color());
-	
+
 static mempool pool;
 static texture_swap *decompressed_textures[ExtraRule_Max];
 
@@ -200,7 +200,7 @@ static void load_textures()
 	pool.add(new texture_swap(latency_tex_data,         rule_names->texanim->imagetbl[11]));
 	pool.add(new texture_swap(widescreen_tex_data,      rule_names->texanim->imagetbl[12]));
 	pool.add(new texture_swap(og_stage_select_tex_data, rule_names->texanim->imagetbl[13]));
-	
+
 	// Load rule value textures
 	decompressed_textures[ExtraRule_Pause] =
 		pool.add(new texture_swap(pause_values_tex_data));
@@ -220,7 +220,7 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 
 	// Free assets on menu exit
 	gobj->user_data_remove_func = pool_free;
-	
+
 	if (pool.inc_ref() == 0)
 		load_textures();
 
@@ -228,7 +228,7 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 	replace_toggle_texture(data, ExtraRule_Pause);
 	replace_toggle_texture(data, ExtraRule_ControllerFix);
 	replace_toggle_texture(data, ExtraRule_Latency);
-		
+
 	return gobj;
 }
 
@@ -244,7 +244,7 @@ extern "C" void orig_Menu_ExtraRulesMenuInput(HSD_GObj *gobj);
 extern "C" void hook_Menu_ExtraRulesMenuInput(HSD_GObj *gobj)
 {
 	const auto buttons = Menu_GetButtonsHelper(PORT_ALL);
-	
+
 	if (buttons & (MenuButton_B | MenuButton_Start))
 		save_config();
 
@@ -254,7 +254,7 @@ extern "C" void hook_Menu_ExtraRulesMenuInput(HSD_GObj *gobj)
 			Menu_PlaySFX(MenuSFX_Denied);
 			return;
 		}
-		
+
 		save_config();
 	}
 
@@ -265,7 +265,7 @@ extern "C" void hook_Menu_ExtraRulesMenuInput(HSD_GObj *gobj)
 			return;
 		}
 	}
-	
+
 	orig_Menu_ExtraRulesMenuInput(gobj);
 }
 
@@ -274,7 +274,7 @@ extern "C" void hook_Menu_CreateRandomStageMenu()
 {
 	if (MenuType != MenuType_ExtraRules)
 		return orig_Menu_CreateRandomStageMenu();
-		
+
 	// Go to stage select if coming from extra rules
 	use_og_stage_select = true;
 	Menu_ExitToMinorScene(VsScene_SSS);
@@ -286,16 +286,16 @@ extern "C" void hook_Menu_UpdateExtraRuleDescriptionText(HSD_GObj *gobj,
                                                          bool index_changed, bool value_changed)
 {
 	orig_Menu_UpdateExtraRuleDescriptionText(gobj, index_changed, value_changed);
-	
+
 	if (!index_changed && !value_changed)
 		return;
-		
+
 	auto *data = gobj->get<ExtraRulesMenuData>();
 	auto *text = data->description_text;
-	
+
 	const auto index = MenuSelectedIndex;
 	const auto value = MenuSelectedValue;
-	
+
 	if (index == ExtraRule_Pause && !value) {
 		text->data = pause_auto_description.data();
 		return;
