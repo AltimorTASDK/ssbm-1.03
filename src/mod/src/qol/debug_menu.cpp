@@ -32,11 +32,11 @@ static s32 repeat_timer[4];
 extern "C" u32 get_directional_input(int port)
 {
 	constexpr auto threshold = 60;
-	
+
 	const auto &pad = HSD_PadCopyStatus[port];
-	
+
 	u32 buttons = 0;
-	
+
 	if (pad.raw_stick.x < -threshold)
 		buttons |= DebugButton_Left;
 	else if (pad.raw_stick.x > threshold)
@@ -46,7 +46,7 @@ extern "C" u32 get_directional_input(int port)
 		buttons |= DebugButton_Down;
 	else if (pad.raw_stick.y > threshold)
 		buttons |= DebugButton_Up;
-		
+
 	if (buttons == 0) {
 		repeat_timer[port] = 0;
 	} else if (repeat_timer[port] != 0) {
@@ -67,7 +67,7 @@ extern "C" u32 get_debug_menu_buttons()
 		buttons |= HSD_PadCopyStatus[i].instant_buttons;
 		buttons |= get_directional_input(i);
 	}
-	
+
 	return buttons;
 }
 
@@ -86,10 +86,6 @@ extern "C" u32 hook_DebugMenu_Exit(u32 arg)
 struct set_debug_language {
 	set_debug_language()
 	{
-		// 20XX
-		if (DebugMenuEntries[DebugEntry_Language].value == nullptr)
-			return;
-			
 		// Set default debug menu language to game language
 		*DebugMenuEntries[DebugEntry_Language].value = IsLanguageUS();
 	}
