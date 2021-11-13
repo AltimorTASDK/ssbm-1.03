@@ -1,5 +1,6 @@
 #include "melee/camera.h"
 #include "melee/player.h"
+#include "melee/scene.h"
 #include "melee/stage.h"
 #include "util/math.h"
 #include "util/vector.h"
@@ -26,7 +27,7 @@ static bool is_singleplayer()
 extern "C" void orig_Camera_SetNormal();
 extern "C" void hook_Camera_SetNormal()
 {
-	if (is_singleplayer())
+	if (is_singleplayer() && SceneMajor == Scene_VsMode)
 		MainCamera.mode = CameraMode_Fixed;
 	else
 		MainCamera.mode = CameraMode_Normal;
@@ -45,7 +46,7 @@ extern "C" void hook_Camera_GetBounds(CameraBounds *out, CameraMovement *movemen
 	const auto limits_min = vec2(Stage_GetCameraLimitLeft(),  Stage_GetCameraLimitBottom());
 	const auto limits_max = vec2(Stage_GetCameraLimitRight(), Stage_GetCameraLimitTop());
 	const auto center = (limits_min + limits_max) / 2;
-	
+
 	constexpr auto limit_scale = .75f;
 	const auto scaled_min = lerp(center, limits_min, limit_scale);
 	const auto scaled_max = lerp(center, limits_max, limit_scale);
