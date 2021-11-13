@@ -108,11 +108,11 @@ static void draw_manual(HSD_GObj *gobj, u32 pass)
 		     
 	rs.reset_2d();
 
-	rs.fill_tiled_rect(vec3(320, scissor_y, 17), vec2(515, scissor_h),
+	rs.fill_tiled_rect(vec3(320, scissor_y, 17), vec2(516, scissor_h),
 	                   color_rgba::hex(0x929196FFu), texture_border, align::top);
 	
 	constexpr auto scrollbar_size = vec2(11, 6);
-	constexpr auto scrollbar_x = 320 + 515.f / 2 - 2;
+	constexpr auto scrollbar_x = 320 + 516.f / 2 - 2;
 	constexpr auto scrollbar_y_min = scissor_y + 14.f;
 	constexpr auto scrollbar_y_max = scissor_y + scissor_h - scrollbar_size.y - 14.f;
 	
