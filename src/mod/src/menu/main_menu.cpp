@@ -16,8 +16,9 @@
 #include "resources/portals/controls.tex.h"
 #include "resources/portals/controls_preview.tex.h"
 #include "resources/portals/debug_menu.tex.h"
-#include "resources/portals/debug_menu_preview_20XX.tex.h"
+#include "resources/portals/debug_menu_preview.tex.h"
 #include "resources/portals/manual.tex.h"
+#include "resources/portals/manual_preview.tex.h"
 #include "resources/screens/manual_header.tex.h"
 
 enum VsMenuPortalID {
@@ -144,19 +145,19 @@ extern "C" void hook_MainMenu_Init(void *menu)
 		MenMainConTop_Top.matanim_joint->child->child->next->child->next->child->matanim;
 	unmanaged_texture_swap(vs_mode_preview_tex_data,  previews->texanim->imagetbl[1]);
 	unmanaged_texture_swap(controls_preview_tex_data, previews->texanim->imagetbl[7]);
+	unmanaged_texture_swap(manual_preview_tex_data,   previews->texanim->imagetbl[8]);
 	
 	// Replace menu panel header
 	const auto *header = MenMainPanel_Top.matanim_joint->child->next->next->child->
 		next->next->next->next->matanim;
 	unmanaged_texture_swap(manual_header_tex_data, header->texanim->imagetbl[8]);
 
-#if 0
+	// Debug menu preview
 	const auto *tournament_preview =
 		MenMainConTop_Top.matanim_joint->child->child->next->child->
 		next->next->next->next->next->next->next->next->next->matanim;
 	unmanaged_texture_swap(debug_menu_preview_20XX_tex_data,
 	                       tournament_preview->texanim->imagetbl[21]);
-#endif
 }
 
 static void update_portal_description(MainMenuData *data, u32 menu_type, u32 index)
