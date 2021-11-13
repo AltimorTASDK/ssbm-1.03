@@ -22,6 +22,8 @@ extern "C" void MemoryCard_RequestSave();
 
 static mempool pool;
 
+static bool first_save_check = true;
+
 static struct {
 	s32 card;
 	const char *filename;
@@ -61,21 +63,25 @@ extern "C" u32 hook_MemoryCard_DoLoadData()
 	return 0;
 }
 
+extern "C" u32 orig_UpdateMemCardState();
 extern "C" u32 hook_UpdateMemCardState()
 {
+	if (first_save_check)
+		return orig_UpdateMemCardState();
+	
 	// Always act as if memcard is present
 	MemCardState = 0;
 	return 0;
 }
 
+extern "C" u32 orig_GetNextSceneMajorCallback();
 extern "C" u32 hook_GetNextSceneMajorCallback()
 {
-	static auto first = true;
-	
-	if (first) {
+	if (first_save_check) {
 		// Load the new save file after loading 1.03
-		first = false;
-		return Scene_ReloadData;
+		const auto result = orig_GetNextSceneMajorCallback();
+		first_save_check = false;
+		return result;
 	} else {
 		return Scene_Transition;
 	}
