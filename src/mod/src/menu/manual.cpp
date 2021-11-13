@@ -72,6 +72,10 @@ static void manual_input(HSD_GObj *gobj)
 	
 	total_y = clamp(total_y, -1.f, 1.f);
 	
+	// Check deadzone
+	if (std::abs(total_y) < .2875f)
+		return;
+	
 	scroll_offset = clamp(scroll_offset - total_y * .0125f, 0.f, MAX_SCROLL);
 }
 
@@ -93,13 +97,13 @@ static void draw_manual(HSD_GObj *gobj, u32 pass)
 	const auto pos_p2 = pos_p1 - vec3(0, scale, 0);
 	const auto pos_p3 = pos_p2 - vec3(0, scale, 0);
 
-	rs.fill_rect(pos_p1, vec2(1, -1) * scale, texture_p1,
+	rs.fill_rect(pos_p1, vec2(1, -1) * scale, color_rgba::white, texture_p1,
 	             uv_coord::zero, uv_coord::one, align::top);
 
-	rs.fill_rect(pos_p2, vec2(1, -1) * scale, texture_p2,
+	rs.fill_rect(pos_p2, vec2(1, -1) * scale, color_rgba::white, texture_p2,
 	             uv_coord::zero, uv_coord::one, align::top);
 
-	rs.fill_rect(pos_p3, vec2(1, -1) * scale, texture_p3,
+	rs.fill_rect(pos_p3, vec2(1, -1) * scale, color_rgba::white, texture_p3,
 	             uv_coord::zero, uv_coord::one, align::top);
 		     
 	rs.reset_2d();
