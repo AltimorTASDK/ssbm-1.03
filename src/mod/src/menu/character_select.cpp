@@ -146,7 +146,7 @@ constexpr auto make_color_track()
 {
 	constexpr auto a_f32 = (f32)a / 255.f;
 	constexpr auto b_f32 = (f32)b / 255.f;
-	
+
 	return fobj_builder<HSD_A_FRAC_U16, 32768>::write_keys<
 		HSD_A_OP_LIN,
 		{ a_f32, 10 }, { a_f32, 15 }, { b_f32, 15 }, { a_f32, 15 },
@@ -168,6 +168,12 @@ extern "C" bool check_is_cpu_puck(u8 port)
 
 extern "C" bool check_if_non_dummy()
 {
+	// Check that no one is holding a puck
+	for (auto i = 0; i < CSSPortCount; i++) {
+		if (CSSPlayers[i]->state == CSSPlayerState_HoldingPuck)
+			return false;
+	}
+
 	// Check if there's a real HMN port before starting a match
 	for (auto i = 0; i < CSSPortCount; i++) {
 		if (CSSPorts[i].slot_type != SlotType_Human)
@@ -176,7 +182,7 @@ extern "C" bool check_if_non_dummy()
 		if (CSSPlayers[i]->state != CSSPlayerState_Unplugged)
 			return true;
 	}
-	
+
 	return false;
 }
 
@@ -187,7 +193,7 @@ extern "C" bool check_if_any_players()
 		if (CSSPorts[i].slot_type != SlotType_None)
 			return true;
 	}
-	
+
 	return false;
 }
 
@@ -195,7 +201,7 @@ static void rumble_toggle(u8 port)
 {
 	if (!(HSD_PadCopyStatus[port].instant_buttons & Button_DPadUp))
 		return;
-		
+
 	const auto nametag = CSSData->data.players[port].nametag;
 
 	if (nametag == NO_NAMETAG) {
@@ -219,10 +225,10 @@ static void check_css_toggle(u8 port, u32 *timer, auto &&check_callback, auto &&
 		*timer = 0;
 		return;
 	}
-	
+
 	if (++*timer < TOGGLE_HOLD_TIME)
 		return;
-		
+
 	apply_callback();
 	HSD_PadRumble(port, 0, 0, 60);
 }
@@ -231,7 +237,7 @@ static void show_illegal_controls(u8 port)
 {
 	if (CSSPorts[port].slot_type != SlotType_Human)
 		return;
-	
+
 	// Use red HMN indicator for illegal controls
 	auto *jobj = HSD_JObjGetFromTreeByIndex(CSSMenuJObj, CSSPorts[port].port_type_joint);
 	auto *mobj = jobj->u.dobj->next->mobj;
@@ -242,7 +248,7 @@ static void z_jump_toggle(u8 port)
 {
 	auto *config = &controller_configs[port];
 	const auto &pad = HSD_PadCopyStatus[port];
-	
+
 	check_css_toggle(port, &toggle_timers[port].z_jump,
 		[&] {
 			// Check if already remapped
@@ -261,7 +267,7 @@ static void z_jump_toggle(u8 port)
 static void perfect_wavedash_toggle(u8 port)
 {
 	auto *config = &controller_configs[port];
-	
+
 	check_css_toggle(port, &toggle_timers[port].perfect_wavedash,
 		[&] {
 			// Check if already using PWD
@@ -282,7 +288,7 @@ static void perfect_wavedash_toggle(u8 port)
 static void c_up_toggle(u8 port)
 {
 	auto *config = &controller_configs[port];
-	
+
 	check_css_toggle(port, &toggle_timers[port].c_up,
 		[&] {
 			// Check if already using cstick utilt
@@ -301,7 +307,7 @@ static void c_up_toggle(u8 port)
 static void c_horizontal_toggle(u8 port)
 {
 	auto *config = &controller_configs[port];
-	
+
 	check_css_toggle(port, &toggle_timers[port].c_horizontal,
 		[&] {
 			// Check if already using cstick ftilt
@@ -320,7 +326,7 @@ static void c_horizontal_toggle(u8 port)
 static void c_down_toggle(u8 port)
 {
 	auto *config = &controller_configs[port];
-	
+
 	check_css_toggle(port, &toggle_timers[port].c_down,
 		[&] {
 			// Check if already using cstick dtilt
@@ -339,13 +345,13 @@ static void c_down_toggle(u8 port)
 static void tap_jump_toggle(u8 port)
 {
 	auto *config = &controller_configs[port];
-	
+
 	check_css_toggle(port, &toggle_timers[port].tap_jump,
 		[&] {
 			// Check if tap jump is already disabled
 			if (!config->tap_jump)
 				return false;
-				
+
 			// Has to be against the top of the CSS
 			if (CSSPlayers[port]->position.y != 25)
 				return false;
@@ -374,7 +380,7 @@ extern "C" void orig_CSS_PlayerThink(HSD_GObj *gobj);
 extern "C" void hook_CSS_PlayerThink(HSD_GObj *gobj)
 {
 	orig_CSS_PlayerThink(gobj);
-	
+
 	auto *data = gobj->get<CSSPlayerData>();
 
 	// CSS toggles
@@ -402,16 +408,16 @@ extern "C" void hook_CSS_PlayerThink(HSD_GObj *gobj)
 
 	if (data->state != CSSPlayerState_HoldingPuck)
 		return;
-	
+
 	// Drop fake HMN puck if a real player plugs in
 	const auto puck = data->held_puck;
 
 	if (puck >= 4 || puck == data->port)
 		return;
-		
+
 	if (CSSPlayers[puck]->state == CSSPlayerState_Unplugged)
 		return;
-		
+
 	if (CSSPorts[puck].slot_type != SlotType_Human)
 		return;
 
@@ -424,7 +430,7 @@ extern "C" void orig_CSS_UpdatePortrait(u8 port);
 extern "C" void hook_CSS_UpdatePortrait(u8 port)
 {
 	orig_CSS_UpdatePortrait(port);
-	
+
 	if (CSSPorts[port].slot_type == SlotType_Human && controller_configs[port].is_illegal())
 		show_illegal_controls(port);
 }
@@ -434,13 +440,13 @@ extern "C" void hook_CSS_Init(void *menu)
 {
 	// Reset original stage select flag when re-entering CSS
 	use_og_stage_select = false;
-	
+
 	// Forget unplugged state on entry from main menu
 	if (SceneMinorPrevious == 0) {
 		for (auto i = 0; i < 4; i++)
 			is_unplugged[i] = saved_is_unplugged[i];
 	}
-	
+
 	orig_CSS_Init(menu);
 }
 
@@ -482,7 +488,7 @@ extern "C" void hook_CSS_Setup()
 	// Free any assets from previous CSS setup
 	pool.dec_ref();
 	pool.inc_ref();
-	
+
 #if 0
 	// Replace "READY TO FIGHT" color tracks
 	auto *ready_anim = MnSlChrModels->PressStart.matanim_joint->child->next->matanim;
@@ -494,9 +500,6 @@ extern "C" void hook_CSS_Setup()
 	fobj_b->ad = track_b.data();
 #endif
 
-	if (CSSPortCount != 1)
-		replace_textures();
-	
 	if (CSSData->ko_stars != nullptr) {
 		if (GetGameRules()->mode == Mode_Crew) {
 			// Display crew stock counts with KO stars
@@ -515,11 +518,14 @@ extern "C" void hook_CSS_Setup()
 
 	orig_CSS_Setup();
 
+	if (CSSPortCount != 1)
+		replace_textures();
+
 	// Don't consider fake HMN ports freshly unplugged when entering the CSS
 	for (u8 i = 0; i < CSSPortCount; i++) {
 		if (is_unplugged[i])
 			CSSPlayers[i]->state = CSSPlayerState_Unplugged;
-		
+
 		// Initialize toggle timers
 		reset_toggle_timers(i);
 	}

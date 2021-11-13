@@ -26,7 +26,7 @@ hook_CheckIsCPUPuck:
         bl      check_is_cpu_puck
 
         cmplwi  r3, 0
-        
+
         lwz     r0, 0x14(r1)
         lwz     r6, 0x10(r1)
         lwz     r4, 0xC(r1)
@@ -44,7 +44,7 @@ hook_CheckCSSPlayerCount:
         lbz     r0, GameRules.mode(r3)
         cmpwi   r0, Mode_Crew
         bne     not_crew
-        
+
         # Only allow 1v1 in crew mode
         cmpwi   r4, 2
         beq     ready_2p
@@ -54,24 +54,24 @@ not_crew:
         cmpwi   r4, 1
         bgt     ready_2p
         bne     not_ready
-        
+
         bl      check_if_non_dummy
         cmpwi   r3, 0
         beq     not_ready
 
         lis     r3, CSSReadyFrames@ha
-        
+
         # Store special value for ready frames
         li      r0, 0xFF
         stb     r0, CSSReadyFrames@l(r3)
-        
+
         # Hide banner without clearing ready state
         mr      r3, r29
         b       CSS_ReadyThink+0x290
-        
+
 not_ready:
         b       CSS_ReadyThink+0x27C
-        
+
 ready_2p:
         bl      check_if_non_dummy
         cmpwi   r3, 0
@@ -96,13 +96,13 @@ hook_CheckCSSMatchStartCooldown:
         # Bail out if ready to start match
         cmplwi  r0, 0
         beq     2f
-        
+
         # Check if crew
         bl      GetGameRules
         lbz     r0, GameRules.mode(r3)
         cmpwi   r0, Mode_Crew
         bne     1f
-        
+
         # Don't play error sound if 0 players
         bl      check_if_any_players
         cmpwi   r3, 0
@@ -112,11 +112,11 @@ hook_CheckCSSMatchStartCooldown:
         lbz     r0, CSSReadyFrames@l(r3)
         cmplwi  r0, 0
         bne     1f
-        
+
         # Allow condition to succeed if not ready in crews so "denied" SFX plays
         creqv   eq, eq, eq
         b       2f
-        
+
 1:
         # Cooldown not ready
         crxor   eq, eq, eq
@@ -128,19 +128,19 @@ hook_CheckCSSMatchStartCooldown:
 hook_CheckCSSModeSwap:
         # Bail if not pressing A
         beq     1f
-        
+
         # Check if crew
         bl      GetGameRules
         lbz     r0, GameRules.mode(r3)
         cmpwi   r0, Mode_Crew
         bne     1f
-        
+
         li      r3, MenuSFX_Denied
         bl      Menu_PlaySFX
-        
+
         # Set cr0.eq to prevent changing to teams
         creqv   eq, eq, eq
-        
+
 1:
         # Restore r3
         li      r3, 1
