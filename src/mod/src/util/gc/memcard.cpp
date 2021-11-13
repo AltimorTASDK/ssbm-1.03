@@ -1,4 +1,5 @@
 #include "hsd/memory.h"
+#include "melee/scene.h"
 #include "os/card.h"
 #include "os/os.h"
 #include "os/thread.h"
@@ -60,12 +61,24 @@ extern "C" u32 hook_MemoryCard_DoLoadData()
 	return 0;
 }
 
-extern "C" u32 orig_UpdateMemCardState();
 extern "C" u32 hook_UpdateMemCardState()
 {
 	// Always act as if memcard is present
 	MemCardState = 0;
 	return 0;
+}
+
+extern "C" u32 hook_GetNextSceneMajorCallback()
+{
+	static auto first = true;
+	
+	if (first) {
+		// Load the new save file after loading 1.03
+		first = false;
+		return Scene_ReloadData;
+	} else {
+		return Scene_Transition;
+	}
 }
 
 static void card_error(const char *fmt, auto &&...args)

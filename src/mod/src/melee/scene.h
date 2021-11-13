@@ -12,7 +12,9 @@ enum Scene {
 	Scene_Tournament   = 27,
 	Scene_Controls     = 27,
 	Scene_Training     = 28,
-	Scene_Boot         = 40
+	Scene_Boot         = 40,
+	Scene_ReloadData   = 41,
+	Scene_Transition   = 45
 };
 
 enum VsScene {

@@ -366,7 +366,7 @@
 8001cc84 00000130 8001cc84 0 MemoryCard_CheckToSaveData
 8001cdb4 0000004c 8001cdb4 0 zz_001cdb4_
 8001ce00 00000078 8001ce00 0 MemoryCard_RequestSave
-8001ce78 00000048 8001ce78 0 Ab_Unknown_OnSceneTransition
+8001ce78 00000048 8001ce78 0 GetNextSceneMajorCallback
 8001cec0 00000024 8001cec0 0 Ab_Unknown_MenuScene_EveryFrame_2
 8001cee4 00000034 8001cee4 0 Ab_Unknown_MenuScene_EveryFrame
 8001cf18 0000024c 8001cf18 0 Ab_Unknown_OnLoadScene
