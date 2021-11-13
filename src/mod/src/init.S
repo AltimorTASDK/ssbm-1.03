@@ -281,5 +281,8 @@ add_hook MainMenu_Init
 add_hook Menu_SetupMainMenu
 add_hook Menu_UpdateMainMenuPreview
 add_hook Menu_CreatePortalDescriptionText
+# Hide messages
+add_hook ShouldShowSpecialMessage
+add_hook ShouldShowTrophyMessage
 
 hooks_end:
