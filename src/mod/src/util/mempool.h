@@ -20,7 +20,7 @@ public:
 
 	allocation *head = nullptr;
 	int ref_count = 0;
-	
+
 	// Forcibly free all mem pools (on scene change)
 	static void free_all()
 	{
@@ -36,7 +36,7 @@ public:
 		auto old_ref_count = ref_count++;
 		if (old_ref_count == 0)
 			init();
-			
+
 		return old_ref_count;
 	}
 
@@ -45,10 +45,10 @@ public:
 	{
 		if (ref_count != 0 && --ref_count == 0)
 			free();
-			
+
 		return ref_count;
 	}
-	
+
 	// Free all entries
 	void reset()
 	{
@@ -60,7 +60,7 @@ public:
 			delete entry;
 			entry = next;
 		}
-		
+
 		head = nullptr;
 	}
 
@@ -73,7 +73,7 @@ public:
 			.ptr = ptr,
 			.free = [](const void *ptr) { delete (T*)ptr; }
 		};
-		
+
 		if (head->next != nullptr)
 			head->next->prev = head;
 
@@ -95,7 +95,7 @@ public:
 				entry->prev->next = entry->next;
 			else
 				head = entry->next;
-				
+
 			if (entry->next != nullptr)
 				entry->next->prev = entry->prev;
 
@@ -126,7 +126,7 @@ private:
 			prev->next = next;
 		else
 			pool_list_head = next;
-			
+
 		if (next != nullptr)
 			next->prev = prev;
 	}

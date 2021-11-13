@@ -137,11 +137,11 @@ constexpr auto menu_music_description = make_description_text<
 
 constexpr auto stage_music_description = make_description_text<
 	"Customize the stage music.">();
-	
+
 static mempool pool;
 
 static texture_swap *mode_value_texture;
-	
+
 static const auto patches = patch_list {
 	// Hide left/right arrows for menu music when selected
 	// cmplwi r24, 4
@@ -184,10 +184,10 @@ static void replace_value_jobj(HSD_JObj *parent, HSD_JObj **jobj_tree)
 	auto *value_jobj = HSD_JObjFromArchiveModel(value_model);
 	HSD_JObjReqAnimAll(value_jobj, 0.f);
 	HSD_JObjAnimAll(value_jobj);
-	
+
 	// Update the stored jobj tree for the new jobj
 	HSD_JObjGetTree<9>(value_jobj, jobj_tree);
-	
+
 	// Parent in the new value jobj
 	HSD_JObjAddChild(parent, value_jobj);
 }
@@ -239,7 +239,7 @@ static void show_timer_value(HSD_JObj **jobj_tree, bool show)
 		else
 			HSD_JObjSetFlagsAll(jobj_tree[i], HIDDEN);
 	}
-	
+
 	// Swap joint 4 between ":" or "NONE" with mat anim
 	HSD_JObjReqAnimAll(jobj_tree[4], show ? 0.f : 1.f);
 	HSD_JObjAnimAll(jobj_tree[4]);
@@ -260,7 +260,7 @@ static void update_lgl_value(HSD_GObj *gobj, u32 value)
 {
 	auto *data = gobj->get<RulesMenuData>();
 	auto **jobj_tree = data->value_jobj_trees[Rule_LedgeGrabLimit].tree;
-	
+
 	if (value == 0) {
 		show_counter_value(jobj_tree, false);
 		return;
@@ -299,7 +299,7 @@ static void update_atl_value(HSD_GObj *gobj, u32 value)
 static void hide_rule_value(RulesMenuData *data, int index)
 {
 	auto *cursor = data->jobj_tree.rules[index]->child;
-	
+
 	// Hide value background + arrows
 	for (auto *jobj : HSD_JObjGetFromTreeByIndices<6, 13>(cursor))
 		HSD_JObjSetFlagsAll(jobj, HIDDEN);
@@ -342,13 +342,9 @@ extern "C" HSD_GObj *hook_Menu_SetupRulesMenu(u8 state)
 	if (MenuTypePrevious == MenuType_MenuMusic)
 		MenuSelectedIndex = Rule_MenuMusic;
 
-	// Free everything when coming from music menus to avoid OOM
-	if (MenuTypePrevious == MenuType_MenuMusic || MenuTypePrevious == MenuType_StageMusic)
-		mempool::free_all();
-	
 	if (pool.inc_ref() == 0)
 		load_textures();
-		
+
 	// Copy the 3-value animation from handicap for mode
 	MenMainCursorRl01_Top.matanim_joint->child->matanim->texanim->aobjdesc->fobjdesc =
 		MenMainCursorRl03_Top.matanim_joint->child->matanim->texanim->aobjdesc->fobjdesc;
@@ -358,24 +354,24 @@ extern "C" HSD_GObj *hook_Menu_SetupRulesMenu(u8 state)
 
 	// Free assets on menu exit
 	gobj->user_data_remove_func = pool_free;
-	
+
 	// Replace rule value models
 	replace_counter_jobj(data, Rule_LedgeGrabLimit);
 	replace_timer_jobj(data, Rule_AirTimeLimit);
-	
+
 	// Display initial values
 	update_lgl_value(gobj, data->ledge_grab_limit);
 	update_atl_value(gobj, data->air_time_limit);
-	
+
 	hide_rule_value(data, Rule_MenuMusic);
 
 	// Replace mode value texture
 	auto *tobj = data->value_jobj_trees[Rule_Mode].tree[1]->u.dobj->mobj->tobj;
 	tobj->imagedesc = mode_value_texture->image;
-	
+
 	// Increase scale by 1.5x for 6 value texture
 	tobj->scale.x = 9;
-	
+
 	return gobj;
 }
 
@@ -383,7 +379,7 @@ extern "C" void orig_Menu_RulesMenuInput(HSD_GObj *gobj);
 extern "C" void hook_Menu_RulesMenuInput(HSD_GObj *gobj)
 {
 	const auto buttons = Menu_GetButtonsHelper(PORT_ALL);
-	
+
 	if (settings_locked && MenuSelectedIndex < Rule_MenuMusic) {
 		if (buttons & (MenuButton_Left | MenuButton_Right)) {
 			// Don't allow changing rules with settings locked
@@ -391,12 +387,12 @@ extern "C" void hook_Menu_RulesMenuInput(HSD_GObj *gobj)
 			return;
 		}
 	}
-	
+
 	orig_Menu_RulesMenuInput(gobj);
 
 	if (MenuSelectedIndex != Rule_MenuMusic || !(buttons & MenuButton_A))
 		return;
-		
+
 	// Open menu music
 	Menu_CreateRandomStageMenu();
 	GObj_Free(gobj);
@@ -406,7 +402,7 @@ extern "C" void orig_Menu_UpdateRuleDisplay(HSD_GObj *gobj, bool index_changed, 
 extern "C" void hook_Menu_UpdateRuleDisplay(HSD_GObj *gobj, bool index_changed, bool value_changed)
 {
 	orig_Menu_UpdateRuleDisplay(gobj, index_changed, value_changed);
-	
+
 	if (!value_changed)
 		return;
 
@@ -434,9 +430,9 @@ extern "C" void orig_Menu_CreateRuleDescriptionText(RulesMenuData *data, u32 rul
 extern "C" void hook_Menu_CreateRuleDescriptionText(RulesMenuData *data, u32 rule, u32 value)
 {
 	orig_Menu_CreateRuleDescriptionText(data, rule, value);
-	
+
 	auto *text = data->description_text;
-	
+
 	if (rule == Rule_Mode && value == Mode_Crew) {
 		text->data = crew_description.data();
 		return;
@@ -459,6 +455,6 @@ extern "C" void hook_Menu_UpdateStockCountOrTimerText(bool show_time)
 		mode = MenuSelectedValue;
 	else
 		mode = RulesMenuGObj->get<RulesMenuData>()->mode;
-	
+
 	orig_Menu_UpdateStockCountOrTimerText(mode != Mode_Stock && mode != Mode_Crew);
 }

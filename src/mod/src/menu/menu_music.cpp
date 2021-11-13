@@ -168,7 +168,7 @@ static const auto patches = patch_list {
 	// Expand the menu data struct to allow an extra Text pointer
 	// li r3, 0xB8
 	std::pair { (char*)Menu_SetupRandomStageMenu+0xB4,     0x386000B8u },
-	
+
 	// Move data->state to the formerly unused memory at +0x38 to make room for a 30th toggle
 	// stb r26, 0x38(r30)
 	std::pair { (char*)Menu_SetupRandomStageMenu+0x11C,    0x9B5E0038u },
@@ -190,7 +190,7 @@ static const auto patches = patch_list {
 	std::pair { (char*)Menu_RandomStageMenuThink+0x1A0,    0x9B3F0038u },
 	// lbz r0, 0x38(r31)
 	std::pair { (char*)Menu_RandomStageMenuThink+0x25C,    0x881F0038u },
-	
+
 	// Change toggle loops from 29 to 30
 	// cmpwi r24, 0x1E
 	std::pair { (char*)Menu_SetupRandomStageMenu+0x424,    0x2C18001Eu },
@@ -206,7 +206,7 @@ static const auto patches = patch_list {
 	std::pair { (char*)Menu_RandomStageMenuInput+0x168,    0x2C1D001Eu },
 	// cmpwi r25, 0x1E
 	std::pair { (char*)Menu_SetupRandomStageToggles+0x258, 0x2C19001Eu },
-	
+
 	// Allow having all toggles disabled
 	// nop
 	std::pair { (char*)Menu_RandomStageMenuInput+0xD8,     0x60000000u },
@@ -220,7 +220,7 @@ static int get_page_size(int page)
 static void set_toggle(RandomStageMenuData *data, u8 index, bool toggle)
 {
 	data->toggles[index] = toggle;
-	
+
 	if (index == MenuSelectedIndex)
 		MenuSelectedValue = toggle;
 
@@ -263,12 +263,12 @@ extern "C" void hook_Menu_UpdateRandomStageDisplay(HSD_GObj *gobj,
                                                    bool index_changed, bool value_changed)
 {
 	orig_Menu_UpdateRandomStageDisplay(gobj, index_changed, value_changed);
-	
+
 	if (!value_changed)
 		return;
 
 	auto *data = gobj->get<RandomStageMenuData>();
-	
+
 	if (MenuSelectedValue)
 		config.menu_bgm = MenuSelectedIndex + data->page * max_page_size;
 	else
@@ -279,7 +279,7 @@ extern "C" void hook_Menu_UpdateRandomStageDisplay(HSD_GObj *gobj,
 		if (i != MenuSelectedIndex)
 			set_toggle(data, i, false);
 	}
-	
+
 	// Play new BGM
 	PlayBGM(Menu_GetBGM());
 }
@@ -288,7 +288,7 @@ extern "C" void orig_Menu_SetupRandomStageToggles(RandomStageMenuData *data);
 extern "C" void hook_Menu_SetupRandomStageToggles(RandomStageMenuData *data)
 {
 	orig_Menu_SetupRandomStageToggles(data);
-	
+
 	// Set up toggles
 	set_page(data, 0);
 }
@@ -296,22 +296,22 @@ extern "C" void hook_Menu_SetupRandomStageToggles(RandomStageMenuData *data)
 static void menu_music_gx(HSD_GObj *gobj, u32 pass)
 {
 	GObj_GXProcJoint(gobj, pass);
-	
+
 	if (pass != HSD_RP_BOTTOMHALF)
 		return;
 
 	const auto *data = gobj->get<RandomStageMenuData>();
-	
+
 	// Must have finished transition animation
 	if (data->state != MenuState_Idle)
 		return;
-	
+
 	constexpr auto color_active   = color_rgba(255, 255, 255, 255);
 	constexpr auto color_inactive = color_rgba(255, 255, 255, 96);
-	
+
 	const auto &color_l = data->page != 0              ? color_active : color_inactive;
 	const auto &color_r = data->page != page_count - 1 ? color_active : color_inactive;
-	
+
 	constexpr auto offset_l = vec3(-2.5f, 7.625f, 17.f);
 	constexpr auto offset_r = offset_l * vec3(-1, 1, 1);
 	constexpr auto size = vec2(1.f, -.5f) * 2.f;
@@ -336,26 +336,26 @@ extern "C" HSD_GObj *orig_Menu_SetupRandomStageMenu(u8 state);
 extern "C" HSD_GObj *hook_Menu_SetupRandomStageMenu(u8 state)
 {
 	auto *gobj = orig_Menu_SetupRandomStageMenu(state);
-	
+
 	// Set new GX proc
 	gobj->render_cb = menu_music_gx;
-	
+
 	for (auto i = 0u; i < page_count; i++)
 		selected_index[i] = 0;
-	
+
 	// Initialize new field
 	auto *data = gobj->get<RandomStageMenuData>();
 	data->page = 0;
 
 	// Free assets on menu exit
 	gobj->user_data_remove_func = pool_free;
-	
+
 	if (pool.inc_ref() != 0)
 		return gobj;
 
 	pool.add(init_texture(trigger_l_tex_data, &texture_l));
 	pool.add(init_texture(trigger_r_tex_data, &texture_r));
-	
+
 	return gobj;
 }
 
@@ -363,7 +363,7 @@ extern "C" void orig_Menu_RandomStageMenuInput(HSD_GObj *gobj);
 extern "C" void hook_Menu_RandomStageMenuInput(HSD_GObj *gobj)
 {
 	const auto buttons = Menu_GetButtonsHelper(PORT_ALL);
-	
+
 	if (buttons & (MenuButton_B | MenuButton_Start))
 		config.save();
 
@@ -372,7 +372,7 @@ extern "C" void hook_Menu_RandomStageMenuInput(HSD_GObj *gobj)
 		Menu_PlaySFX(MenuSFX_Denied);
 		return;
 	}
-	
+
 	auto *data = RandomStageMenuGObj->get<RandomStageMenuData>();
 
 	if (buttons & MenuButton_L) {
@@ -414,7 +414,7 @@ extern "C" void hook_Menu_RandomStageMenuScroll(RandomStageMenuData *data, u32 b
 	const auto page_size = get_page_size(data->page);
 	const auto row_count = std::min(page_size, max_row_count);
 	const auto col_count = (page_size + max_row_count - 1) / max_row_count;
-		
+
 	col = clamp(col, 0, col_count - 1);
 	row = mod(row, row_count);
 
@@ -429,6 +429,6 @@ extern "C" s32 hook_Menu_GetBGM()
 {
 	if (config.menu_bgm == -1)
 		return orig_Menu_GetBGM();
-		
+
 	return bgm_ids[config.menu_bgm];
 }
