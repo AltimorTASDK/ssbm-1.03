@@ -7,14 +7,14 @@
 extern "C" const vec3 &orig_HUD_GetStockIconPosition(u32 port);
 extern "C" const vec3 &hook_HUD_GetStockIconPosition(u32 port)
 {
-	// Don't apply in training mode since CPUs can be added mid game
-	if (SceneMajor == Scene_Training)
+	// Only apply to vs mode
+	if (SceneMajor != Scene_VsMode)
 		return orig_HUD_GetStockIconPosition(port);
-	
+
 	const auto sorted = get_sorted_port_index(port);
 	if (sorted == -1)
 		return orig_HUD_GetStockIconPosition(port);
-		
+
 	if (MatchInfo_IsTeams() && !is_1v1()) {
 		// Display each team together
 		const auto team = sorted % 2;
