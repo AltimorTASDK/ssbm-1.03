@@ -229,6 +229,9 @@ static void check_css_toggle(u8 port, u32 *timer, auto &&check_callback, auto &&
 
 static void show_illegal_controls(u8 port)
 {
+	if (CSSPorts[port].slot_type != SlotType_Human)
+		return;
+	
 	// Use red HMN indicator for illegal controls
 	auto *jobj = HSD_JObjGetFromTreeByIndex(CSSMenuJObj, CSSPorts[port].port_type_joint);
 	auto *mobj = jobj->u.dobj->next->mobj;
