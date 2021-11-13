@@ -140,13 +140,10 @@ add_hook Interrupt_SpotDodge
 add_hook Interrupt_SpotDodge_OoS
 add_hook Interrupt_SquatRv
 add_hook Interrupt_TurnOrDash
-add_hook MainMenu_Enter
-add_hook MainMenu_Init
 add_hook Match_HandlePause
 add_hook MatchController_UpdateTeamWinners
 add_hook MatchController_UpdateWinners
 add_hook Menu_CreateExtraRulesMenu
-add_hook Menu_CreatePortalDescriptionText
 add_hook Menu_CreateRandomStageMenu
 add_hook Menu_CreateRuleDescriptionText
 add_hook Menu_ExitToRulesMenu
@@ -159,7 +156,6 @@ add_hook Menu_RandomStageMenuScroll
 add_hook Menu_RulesMenuInput
 add_hook Menu_SetupExtraRulesMenu
 add_hook Menu_SetupItemToggles
-add_hook Menu_SetupMainMenu
 add_hook Menu_SetupRulesMenu
 add_hook Menu_SetupRandomStageMenu
 add_hook Menu_SetupRandomStageToggles
@@ -279,5 +275,11 @@ add_hook InitializeSaveData
 .set SetMenuRotation, Menu_UpdateCStickRotation+0xF8
 add_hook SetMenuRotation
 add_hook Menu_EnterCustomRulesMenu
+# Main menu
+add_hook MainMenu_Enter
+add_hook MainMenu_Init
+add_hook Menu_SetupMainMenu
+add_hook Menu_UpdateMainMenuPreview
+add_hook Menu_CreatePortalDescriptionText
 
 hooks_end:

@@ -156,8 +156,22 @@ extern "C" void hook_MainMenu_Init(void *menu)
 	const auto *tournament_preview =
 		MenMainConTop_Top.matanim_joint->child->child->next->child->
 		next->next->next->next->next->next->next->next->next->matanim;
-	unmanaged_texture_swap(debug_menu_preview_20XX_tex_data,
+	unmanaged_texture_swap(debug_menu_preview_tex_data,
 	                       tournament_preview->texanim->imagetbl[21]);
+}
+
+extern "C" void orig_Menu_UpdateMainMenuPreview(HSD_GObj *gobj, u8 index_changed);
+extern "C" void hook_Menu_UpdateMainMenuPreview(HSD_GObj *gobj, u8 index_changed)
+{
+	orig_Menu_UpdateMainMenuPreview(gobj, index_changed);
+	
+	const auto *data = gobj->get<MainMenuData>();
+	
+	if (data->menu_type != MenuType_VsMode || MenuSelectedIndex != VsMenu_DebugMenu)
+		return;
+		
+	// Hide controllers
+	HSD_JObjSetFlagsAll(data->jobj_tree[36], HIDDEN);
 }
 
 static void update_portal_description(MainMenuData *data, u32 menu_type, u32 index)
