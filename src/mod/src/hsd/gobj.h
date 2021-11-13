@@ -19,6 +19,7 @@ enum GObjGXLink {
 };
 
 enum GObjPLink {
+	GOBJ_PLINK_PROC        = 0,
 	GOBJ_PLINK_STAGE       = 5,
 	GOBJ_PLINK_PLAYER      = 8,
 	GOBJ_PLINK_ITEM        = 9,
@@ -28,14 +29,15 @@ enum GObjPLink {
 };
 
 enum GObjClass {
-	GOBJ_CLASS_STAGE  = 3,
-	GOBJ_CLASS_PLAYER = 4,
-	GOBJ_CLASS_ITEM   = 6,
-	GOBJ_CLASS_TEXT   = 9,
-	GOBJ_CLASS_FOG    = 10,
-	GOBJ_CLASS_LIGHT  = 11,
-	GOBJ_CLASS_UI     = 14,
-	GOBJ_CLASS_CAMERA = 19
+	GOBJ_CLASS_PROC    = 0,
+	GOBJ_CLASS_STAGE   = 3,
+	GOBJ_CLASS_PLAYER  = 4,
+	GOBJ_CLASS_ITEM    = 6,
+	GOBJ_CLASS_TEXT    = 9,
+	GOBJ_CLASS_FOG     = 10,
+	GOBJ_CLASS_LIGHT   = 11,
+	GOBJ_CLASS_UI      = 14,
+	GOBJ_CLASS_CAMERA  = 19
 };
 
 enum GObjKind {

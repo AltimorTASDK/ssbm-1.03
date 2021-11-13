@@ -509,40 +509,6 @@ static void create_footer()
 
 static void create_text_canvas()
 {
-	static constinit auto canvas_eye      = HSD_WObjDesc { .pos = { 0, 0, 1 } };
-	static constinit auto canvas_interest = HSD_WObjDesc { .pos = { 0, 0, 0 } };
-	
-	static constinit auto canvas_cobjdesc = HSD_CObjDesc {
-		.projection_type = ProjType_Ortho,
-		.viewport_right  = 640,
-		.viewport_bottom = 480,
-		.scissor_right   = 640,
-		.scissor_bottom  = 480,
-		.eye_position    = &canvas_eye,
-		.interest        = &canvas_interest,
-		.far             = 65535,
-		.ortho = {
-			.bottom  = -480,
-			.right   = 640
-		}
-	};
-
-	static constinit auto canvas_cobjdesc_wide = HSD_CObjDesc {
-		.projection_type = ProjType_Ortho,
-		.viewport_right  = 640,
-		.viewport_bottom = 480,
-		.scissor_right   = 640,
-		.scissor_bottom  = 480,
-		.eye_position    = &canvas_eye,
-		.interest        = &canvas_interest,
-		.far             = 65535,
-		.ortho = {
-			.bottom  = -480,
-			.left    = ortho_left_wide,
-			.right   = ortho_right_wide,
-		}
-	};
-	
 	auto *canvas_gobj = GObj_Create(GOBJ_CLASS_TEXT, GOBJ_PLINK_MENU_CAMERA, 0);
 	auto *canvas_cobj = HSD_CObjLoadDesc(is_widescreen() ? &canvas_cobjdesc_wide
 	                                                     : &canvas_cobjdesc);

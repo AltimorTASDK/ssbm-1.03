@@ -39,7 +39,7 @@ extern void *CardWorkArea;
 
 }
 
-static void *mod_init = (void*)0x817D1000;
+static void *mod_init = (void*)0x817B1000;
 
 static card_file file;
 static card_stat stats;

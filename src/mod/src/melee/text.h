@@ -40,9 +40,14 @@ enum class text_opcode {
 struct Text {
 	vec3 trans;
 	vec2 aspect;
-	char pad014[0x34 - 0x14];
+	char pad014[0x24 - 0x14];
+	vec2 stretch;
+	color_rgb background;
+	u8 draw_background;
+	color_rgba default_color;
 	vec2 default_scale;
-	char pad03C[0x4D - 0x3C];
+	vec2 default_spacing;
+	char pad044[0x4D - 0x44];
 	u8 hidden;
 	char pad04E[0x5C - 0x4E];
 	const char *data;

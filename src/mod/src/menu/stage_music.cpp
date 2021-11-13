@@ -9,6 +9,7 @@
 #include "melee/stage.h"
 #include "melee/text.h"
 #include "rules/saved_config.h"
+#include "rules/settings_lock.h"
 #include "util/compression.h"
 #include "util/math.h"
 #include "util/mempool.h"
@@ -305,6 +306,12 @@ extern "C" void hook_Menu_ItemMenuInput(HSD_GObj *gobj)
 	
 	if (buttons & (MenuButton_B | MenuButton_Start))
 		config.save();
+
+	if (settings_locked && (buttons & MenuButton_A) && MenuSelectedIndex < 31) {
+		// Don't allow changing music with settings locked
+		Menu_PlaySFX(MenuSFX_Denied);
+		return;
+	}
 
 	orig_Menu_ItemMenuInput(gobj);
 	

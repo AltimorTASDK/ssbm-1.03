@@ -14,6 +14,7 @@
 struct buffer_wrapper;
 
 extern "C" void *CardWorkArea;
+extern "C" u32 MemCardState;
 
 extern "C" void InitCardBuffers();
 extern "C" void MemoryCard_RequestSave();
@@ -49,6 +50,22 @@ extern "C" void hook_MemoryCard_RequestSave()
 		op.save_pending = true;
 	
 	OSRestoreInterrupts(irq_enable);
+}
+
+extern "C" u32 orig_MemoryCard_DoLoadData();
+extern "C" u32 hook_MemoryCard_DoLoadData()
+{
+	// Always return success
+	orig_MemoryCard_DoLoadData();
+	return 0;
+}
+
+extern "C" u32 orig_UpdateMemCardState();
+extern "C" u32 hook_UpdateMemCardState()
+{
+	// Always act as if memcard is present
+	MemCardState = 0;
+	return 0;
 }
 
 static void card_error(const char *fmt, auto &&...args)

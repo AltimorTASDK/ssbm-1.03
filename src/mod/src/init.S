@@ -217,6 +217,8 @@ add_hook Scene_RunLoop
 add_hook Player_Nana_RecordPopoData
 # Memcard
 add_hook MemoryCard_RequestSave
+add_hook MemoryCard_DoLoadData
+add_hook UpdateMemCardState
 # 1P camera
 #if 0
 add_hook Camera_GetBounds
@@ -270,5 +272,12 @@ add_hook CSS_Init
 add_hook CSS_PlayerThink
 add_hook CSS_Setup
 add_hook CSS_UpdatePortrait
+# Settings lock
+add_hook InitializeGlobalData
+add_hook InitializeSaveData
+# Manual
+.set SetMenuRotation, Menu_UpdateCStickRotation+0xF8
+add_hook SetMenuRotation
+add_hook Menu_EnterCustomRulesMenu
 
 hooks_end:

@@ -50,7 +50,7 @@ $(OBJDIR)/%.S.o: %.S
 RESOURCE_DIR_IN  := resources
 RESOURCE_DIR_OUT := $(SOURCES)/resources
 RESOURCES        := $(foreach dir, $(RESOURCE_DIR_IN), $(shell find $(dir) -type f))
-RESOURCES        := $(filter-out %.psd, $(RESOURCES))
+RESOURCES        := $(filter-out %.docx, $(filter-out %.psd, $(RESOURCES)))
 TEXTURES         := $(filter     %.png, $(RESOURCES))
 RESOURCES        := $(filter-out %.png, $(RESOURCES))
 

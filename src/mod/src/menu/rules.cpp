@@ -9,6 +9,7 @@
 #include "melee/menu.h"
 #include "melee/rules.h"
 #include "melee/text.h"
+#include "rules/settings_lock.h"
 #include "rules/values.h"
 #include "util/compression.h"
 #include "util/mempool.h"
@@ -381,9 +382,19 @@ extern "C" HSD_GObj *hook_Menu_SetupRulesMenu(u8 state)
 extern "C" void orig_Menu_RulesMenuInput(HSD_GObj *gobj);
 extern "C" void hook_Menu_RulesMenuInput(HSD_GObj *gobj)
 {
+	const auto buttons = Menu_GetButtonsHelper(PORT_ALL);
+	
+	if (settings_locked && MenuSelectedIndex < Rule_MenuMusic) {
+		if (buttons & (MenuButton_Left | MenuButton_Right)) {
+			// Don't allow changing rules with settings locked
+			Menu_PlaySFX(MenuSFX_Denied);
+			return;
+		}
+	}
+	
 	orig_Menu_RulesMenuInput(gobj);
 
-	if (MenuSelectedIndex != Rule_MenuMusic || !(MenuButtons & MenuButton_A))
+	if (MenuSelectedIndex != Rule_MenuMusic || !(buttons & MenuButton_A))
 		return;
 		
 	// Open menu music

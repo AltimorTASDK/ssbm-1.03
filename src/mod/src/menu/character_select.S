@@ -102,6 +102,11 @@ hook_CheckCSSMatchStartCooldown:
         lbz     r0, GameRules.mode(r3)
         cmpwi   r0, Mode_Crew
         bne     1f
+        
+        # Don't play error sound if 0 players
+        bl      check_if_any_players
+        cmpwi   r3, 0
+        beq     1f
 
         lis     r3, CSSReadyFrames@ha
         lbz     r0, CSSReadyFrames@l(r3)

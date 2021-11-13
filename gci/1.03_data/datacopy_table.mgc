@@ -40,12 +40,12 @@ Format:
 
 # Loader 2
 80469000
-817d0000
+817b0000
 000001c0
 
 # Compiled code
 80461834
-817d0800
+817b0800
 00000800
 
 # End table
@@ -68,7 +68,7 @@ Format:
 
 # Compiled code
 80465000
-817d0800
+817b0800
 00000800
 
 # End table
@@ -91,7 +91,7 @@ Format:
 
 # Compiled code
 80465000
-817d0800
+817b0800
 00000800
 
 # End table

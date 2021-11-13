@@ -6,7 +6,7 @@ from itertools import compress, takewhile
 def rle_encode(data):
     i = 0
     # Prepend uncompressed length
-    out = bytearray(struct.pack(">H", len(data)))
+    out = bytearray(struct.pack(">I", len(data)))
 
     while i < len(data):
         run = len([*takewhile(
@@ -51,7 +51,7 @@ def index_encode(data, bits, table):
 
 def compress_rle(data):
     # 0 = not indexed
-    return bytearray(struct.pack(">Bx", 0)) + rle_encode(data)
+    return bytearray(struct.pack(">Bxxx", 0)) + rle_encode(data)
 
 def compress_indexed(data):
     unique_bytes = [b for b in range(0x100) if b in data]
@@ -63,10 +63,10 @@ def compress_indexed(data):
         return None
         
     # 1 = indexed
-    indexed = bytearray(struct.pack(">Bx", 1))
+    indexed = bytearray(struct.pack(">Bxxx", 1))
     
     # Uncompressed size
-    indexed += struct.pack(">H", len(data))
+    indexed += struct.pack(">I", len(data))
 
     # Index table
     # 2 byte align

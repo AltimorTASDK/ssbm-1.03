@@ -11,6 +11,7 @@
 #include "melee/text.h"
 #include "menu/stage_select.h"
 #include "rules/saved_config.h"
+#include "rules/settings_lock.h"
 #include "util/compression.h"
 #include "util/mempool.h"
 #include "util/meta.h"
@@ -255,6 +256,14 @@ extern "C" void hook_Menu_ExtraRulesMenuInput(HSD_GObj *gobj)
 		}
 		
 		save_config();
+	}
+
+	if (settings_locked && MenuSelectedIndex < ExtraRule_OldStageSelect) {
+		if (buttons & (MenuButton_Left | MenuButton_Right)) {
+			// Don't allow changing rules with settings locked
+			Menu_PlaySFX(MenuSFX_Denied);
+			return;
+		}
 	}
 	
 	orig_Menu_ExtraRulesMenuInput(gobj);

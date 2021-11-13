@@ -1,5 +1,6 @@
 #pragma once
 
+#include "hsd/gobj.h"
 #include <gctypes.h>
 
 constexpr auto PORT_ALL = 4;
@@ -81,6 +82,8 @@ void Menu_PlaySFX(s32 sfx);
 void Menu_ExitToRulesMenu();
 void Menu_CreateRandomStageMenu();
 void Menu_MainMenuTransition(u32 menu_type, u16 index, u8 state);
+
+void Menu_SetGObjPrio(HSD_GObj *gobj);
 
 }
 

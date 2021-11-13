@@ -180,6 +180,17 @@ extern "C" bool check_if_non_dummy()
 	return false;
 }
 
+extern "C" bool check_if_any_players()
+{
+	// Check if there are any players
+	for (auto i = 0; i < CSSPortCount; i++) {
+		if (CSSPorts[i].slot_type != SlotType_None)
+			return true;
+	}
+	
+	return false;
+}
+
 static void rumble_toggle(u8 port)
 {
 	if (!(HSD_PadCopyStatus[port].instant_buttons & Button_DPadUp))

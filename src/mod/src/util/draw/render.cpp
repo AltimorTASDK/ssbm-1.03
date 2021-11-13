@@ -1,6 +1,8 @@
 #include "hsd/cobj.h"
 #include "os/gx.h"
 #include "os/os.h"
+#include "qol/widescreen.h"
+#include "rules/values.h"
 #include "util/matrix.h"
 #include "util/meta.h"
 #include "util/vector.h"
@@ -119,12 +121,17 @@ void render_state::reset_2d()
 {
 	reset();
 
-	constexpr auto proj = ortho_projection(0, resolution.y, 0, resolution.x, -1000, 1000);
+	constexpr auto proj = ortho_projection(0, 480, 0, 640, -1000, 1000);
+	constexpr auto proj_wide = ortho_projection(0, 480, ortho_left_wide, ortho_right_wide,
+	                                            -1000, 1000);
 	GX_SetCurrentMtx(0);
-	GX_LoadProjectionMtx(proj.as_multidimensional(), GX_ORTHOGRAPHIC);
+	if (is_widescreen())
+		GX_LoadProjectionMtx(proj_wide.as_multidimensional(), GX_ORTHOGRAPHIC);
+	else
+		GX_LoadProjectionMtx(proj.as_multidimensional(), GX_ORTHOGRAPHIC);
 	GX_LoadPosMtxImm(matrix3x4::identity.as_multidimensional(), GX_PNMTX0);
 	
-	set_scissor(0, 0, resolution.x, resolution.y);
+	set_scissor(0, 0, 640, 480);
 }
 
 void render_state::reset_3d()

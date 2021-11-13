@@ -6,7 +6,7 @@ OUTPUT_FORMAT(elf32-powerpc)
 OUTPUT_ARCH(powerpc:common);
 ENTRY(_start);
 
-PROVIDE(__LOAD_BASE__ = 0x817D0800);
+PROVIDE(__LOAD_BASE__ = 0x817B0800);
 
 MEMORY
 {

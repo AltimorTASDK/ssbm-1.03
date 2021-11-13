@@ -8,14 +8,14 @@
 #include <ogc/gx.h>
 
 struct index_header {
-	u16 uncompressed_len;
+	u32 uncompressed_len;
 	u8 bits;
 	u8 table_size;
 	u8 table[];
 };
 
 struct rle_data {
-	u16 uncompressed_len;
+	u32 uncompressed_len;
 	u8 data[];
 };
 
