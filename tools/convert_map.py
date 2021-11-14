@@ -100,7 +100,7 @@ def parse_map(in_dol, in_map, out_dol, out_map, func_list):
             out_map.write(f"{match:08X} {size:08X} {match:08X} 0 {name}\n")
 
 def main():
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 6:
         print("Usage: convert_map.py <in dol> <in map> <out dol> <out map> <out function list>",
               file=sys.stderr)
         sys.exit(1)

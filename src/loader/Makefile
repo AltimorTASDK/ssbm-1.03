@@ -1,5 +1,5 @@
-ELFFILE     := $(GCIDIR)/1.03_data/loader.elf
-BINFILE     := $(GCIDIR)/1.03_data/loader.bin
+ELFFILE  := $(GCIDIR)/1.03_data/loader.elf
+BINFILE  := $(GCIDIR)/1.03_data/loader.bin
 
 OBJDIR   := obj
 DEPDIR   := dep
@@ -20,28 +20,16 @@ LINKSCRIPT := loader.ld
 
 GCIFILE     := $(BINDIR)/ssbm-1.03-loader.gci
 GCISRC      := $(GCIDIR)/ssbm.gci
-GCIFILE20XX := $(BINDIR)/ssbm-1.03-loader-20XX.gci
-GCISRC20XX  := $(GCIDIR)/20XX.gci
 
 MGCMAIN  := $(GCIDIR)/1.03.mgc
 MGCFILES := $(shell find $(GCIDIR) -type f -name '*.mgc')
 
-.PHONY: all
-all: ssbm 20xx
-
 .PHONY: ssbm
 ssbm: $(GCIFILE)
-
-.PHONY: 20xx
-20xx: $(GCIFILE20XX)
 
 $(GCIFILE): $(BINFILE) $(MGCFILES) $(GCISRC)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -i $(GCISRC) -o $@ $(MGCMAIN)
-
-$(GCIFILE20XX): $(BINFILE) $(MGCFILES) $(GCISRC20XX)
-	@[ -d $(@D) ] || mkdir -p $(@D)
-	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -i $(GCISRC20XX) -o $@ $(MGCMAIN)
 
 .PHONY: bin
 bin: $(BINFILE)

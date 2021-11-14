@@ -482,8 +482,14 @@ static void replace_textures()
 extern "C" void orig_CSS_ChooseTopString();
 extern "C" void hook_CSS_ChooseTopString()
 {
+#ifdef PAL
+	constexpr auto index = 0x48;
+#else
+	constexpr auto index = 0x4A;
+#endif
+
 	if (SceneMajor == Scene_VsMode && GetGameRules()->mode == Mode_Crew)
-		memcpy(SISData[0][0x4A], crew_text.data(), crew_text.size());
+		memcpy(SISData[0][index], crew_text.data(), crew_text.size());
 	else
 		orig_CSS_ChooseTopString();
 }

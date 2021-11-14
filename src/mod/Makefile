@@ -1,5 +1,5 @@
-ELFFILE     := bin/mod.elf
-BINFILE     := bin/mod.bin
+ELFFILE  := bin/mod.elf
+BINFILE  := bin/mod.bin
 
 OBJDIR   := obj
 DEPDIR   := dep
@@ -46,7 +46,7 @@ $(OBJDIR)/%.S.o: %.S
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	@[ -d $(subst $(OBJDIR), $(DEPDIR), $(@D)) ] || mkdir -p $(subst $(OBJDIR), $(DEPDIR), $(@D))
 	$(CC) $(ASFLAGS) -c $< -o $@
-	
+
 RESOURCE_DIR_IN  := resources
 RESOURCE_DIR_OUT := $(SOURCES)/resources
 RESOURCES        := $(foreach dir, $(RESOURCE_DIR_IN), $(shell find $(dir) -type f))
@@ -63,7 +63,7 @@ $(shell echo $(subst $(RESOURCE_DIR_IN), $(RESOURCE_DIR_OUT), $1) | sed -r "s/([
 endef
 
 define make_resource_rule
-$(call get_resource_out, $1): $1 $(TOOLS)/compress_resource.py 
+$(call get_resource_out, $1): $1 $(TOOLS)/compress_resource.py
 	cp $$< $$@
 	python $(TOOLS)/compress_resource.py $$@ $$@
 endef

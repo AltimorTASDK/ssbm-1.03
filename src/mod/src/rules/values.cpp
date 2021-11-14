@@ -15,7 +15,7 @@ struct init_rules {
 
 		ExtraRuleValueBounds[ExtraRule_Latency]    = { 0, (u8)latency_mode::low };
 		ExtraRuleValueBounds[ExtraRule_Widescreen] = { 0, 1 };
-		
+
 		// Set default rules
 		auto *rules = GetGameRules();
 		rules->mode = Mode_Stock;
@@ -65,12 +65,12 @@ extern "C" void hook_VsMode_InitDataFromRules(VsModeData *vs_data)
 extern "C" void orig_Match_Init(StartMeleeData *data);
 extern "C" void hook_Match_Init(StartMeleeData *data)
 {
-	if (SceneMajor == Scene_AttractMode) {
-		// Don't alter attract demo match settings
+	if (SceneMajor != Scene_VsMode) {
+		// Don't alter non-VS settings
 		orig_Match_Init(data);
 		return;
 	}
-	
+
 	if (is_singleplayer(data)) {
 		// Force infinite time match + pause
 		data->rules.is_stock_match = false;
@@ -85,16 +85,16 @@ extern "C" void hook_Match_Init(StartMeleeData *data)
 	data->rules.friendly_fire = true;
 	data->rules.score_display = false;
 	data->rules.sd_penalty = -2;
-	
+
 	for (auto i = 0; i < 6; i++) {
 		data->players[i].handicap = 9;
 		data->players[i].offense_ratio = 1.f;
 		data->players[i].defense_ratio = 1.f;
-		
+
 		// Carry over winner stock counts for crew
 		if (GetGameRules()->mode == Mode_Crew)
 			data->players[i].stocks = (u8)get_crew_stocks(i);
 	}
-	
+
 	orig_Match_Init(data);
 }

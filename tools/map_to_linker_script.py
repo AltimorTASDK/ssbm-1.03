@@ -1,9 +1,19 @@
+import sys
+
 def is_char_allowed(c):
     return 'a' <= c <= 'z' or 'A' <= c <= 'Z' or '0' <= c <= '9' or c == '_'
 
 def main():
+    if len(sys.argv) < 3:
+        print("Usage: map_to_linker_script.py <in.map> <out.ld>",
+              file=sys.stderr)
+        sys.exit(1)
+
+    in_path = sys.argv[1]
+    out_path = sys.argv[2]
+
     script = ""
-    with open("GALE01.map") as f:
+    with open(in_path) as f:
         while True:
             line = f.readline()
             if not line:
@@ -22,7 +32,7 @@ def main():
 
             script += f"{name:60s} = 0x{address};\n"
 
-    with open("GALE01.ld", "w") as f:
+    with open(out_path, "w") as f:
         f.write(script)
 
 if __name__ == "__main__":

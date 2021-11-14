@@ -6,11 +6,11 @@ export CC  := powerpc-eabi-gcc
 export CXX := powerpc-eabi-g++
 export LD  := powerpc-eabi-ld
 
-export BINDIR    := $(abspath bin)
-export TOOLS     := $(abspath tools)
-export GCIDIR    := $(abspath gci)
+export BINDIR   := $(abspath bin)
+export TOOLS    := $(abspath tools)
+export GCIDIR   := $(abspath gci)
 
-export LDFLAGS    := -Wl,-Map=output.map -Wl,--gc-sections -flto
+export LDFLAGS  := -Wl,-Map=output.map -Wl,--gc-sections -flto
 
 export DEFINES  := -DGEKKO
 export CFLAGS   := $(DEFINES) -mogc -mcpu=750 -meabi -mhard-float -Os \
@@ -20,11 +20,21 @@ export ASFLAGS  := $(DEFINES) -Wa,-mregnames -Wa,-mgekko
 export CXXFLAGS := $(CFLAGS) -std=c++2b -fconcepts -fno-rtti -fno-exceptions
 export INCLUDE  := -Isrc -I$(DEVKITPATH)/libogc/include
 
-export MELEELD  := $(abspath GALE01.ld)
+ifeq ($(VERSION),)
+$(error Specify Melee version with VERSION)
+else ifeq ($(VERSION), 102)
+export MELEELD  := $(abspath GALE01r2.ld)
+else ifeq ($(VERSION), PAL)
+export MELEELD  := $(abspath GALP01.ld)
+else
+$(error Unsupported Melee version "$(VERSION)")
+endif
+
+export MELEEMAP := $(MELEELD:.ld=.map)
 
 .PHONY: all
 all: loader mod
-	
+
 .PHONY: loader
 loader: $(MELEELD)
 	+@cd src/loader && $(MAKE)
@@ -37,9 +47,9 @@ mod: $(MELEELD)
 resources: $(MELEELD)
 	+@cd src/mod && $(MAKE) resources
 
-$(MELEELD): GALE01.map $(TOOLS)/map_to_linker_script.py
-	python $(TOOLS)/map_to_linker_script.py
-	
+$(MELEELD): $(MELEEMAP) $(TOOLS)/map_to_linker_script.py
+	python $(TOOLS)/map_to_linker_script.py $(MELEEMAP) $(MELEELD)
+
 .PHONY: clean
 clean:
 	rm -rf $(BINDIR)
