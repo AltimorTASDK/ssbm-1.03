@@ -19,7 +19,11 @@ DEPFILES := $(patsubst $(OBJDIR)/%.o, $(DEPDIR)/%.d, $(OBJFILES))
 LINKSCRIPT := loader.ld
 
 GCIFILE     := $(BINDIR)/ssbm-1.03-loader.gci
+ifeq ($(VERSION), PAL)
+GCISRC      := $(GCIDIR)/ssbm-pal.gci
+else
 GCISRC      := $(GCIDIR)/ssbm.gci
+endif
 
 MGCMAIN  := $(GCIDIR)/1.03.mgc
 MGCFILES := $(shell find $(GCIDIR) -type f -name '*.mgc')
