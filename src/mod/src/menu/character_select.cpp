@@ -105,6 +105,7 @@ extern "C" struct {
 
 extern "C" u8 CSSPendingSceneChange;
 extern "C" u8 CSSPortCount;
+extern "C" u8 CSSSingleplayerPort;
 extern "C" HSD_JObj *CSSMenuJObj;
 extern "C" CSSPlayerData *CSSPlayers[4];
 extern "C" CSSPuckData *CSSPucks[4];
@@ -235,6 +236,9 @@ static void check_css_toggle(u8 port, u32 *timer, auto &&check_callback, auto &&
 
 static void show_illegal_controls(u8 port)
 {
+	if (SceneMajor != Scene_VsMode)
+		return;
+
 	if (CSSPorts[port].slot_type != SlotType_Human)
 		return;
 
@@ -396,6 +400,9 @@ extern "C" void hook_CSS_PlayerThink(HSD_GObj *gobj)
 		reset_toggle_timers(data->port);
 	}
 
+	if (SceneMajor != Scene_VsMode)
+		return;
+
 	// Port states get saved when entering SSS
 	if (CSSPendingSceneChange == 1)
 		saved_is_unplugged[data->port] = is_unplugged[data->port];
@@ -476,7 +483,7 @@ static void replace_textures()
 extern "C" void orig_CSS_ChooseTopString();
 extern "C" void hook_CSS_ChooseTopString()
 {
-	if (GetGameRules()->mode == Mode_Crew)
+	if (SceneMajor == Scene_VsMode && GetGameRules()->mode == Mode_Crew)
 		memcpy(SISData[0][0x4A], crew_text.data(), crew_text.size());
 	else
 		orig_CSS_ChooseTopString();
@@ -485,6 +492,9 @@ extern "C" void hook_CSS_ChooseTopString()
 extern "C" void orig_CSS_Setup();
 extern "C" void hook_CSS_Setup()
 {
+	if (SceneMajor != Scene_VsMode)
+		return orig_CSS_Setup();
+
 	// Free any assets from previous CSS setup
 	pool.dec_ref();
 	pool.inc_ref();
@@ -518,8 +528,7 @@ extern "C" void hook_CSS_Setup()
 
 	orig_CSS_Setup();
 
-	if (CSSPortCount != 1)
-		replace_textures();
+	replace_textures();
 
 	// Don't consider fake HMN ports freshly unplugged when entering the CSS
 	for (u8 i = 0; i < CSSPortCount; i++) {
