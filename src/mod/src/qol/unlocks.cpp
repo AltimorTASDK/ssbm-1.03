@@ -7,13 +7,20 @@ extern "C" void UnlockAllStages();
 extern "C" void UnlockAllFeatures();
 extern "C" void UnlockAllTrophies();
 
-struct unlock_all {
-	unlock_all()
-	{
-		FeatureUnlockMask = 0xFF;
-		UnlockAllCharacters();
-		UnlockAllStages();
-		UnlockAllFeatures();
-		UnlockAllTrophies();
-	}
-} unlock_all;
+static void unlock_everything()
+{
+	FeatureUnlockMask = 0xFF;
+	UnlockAllCharacters();
+	UnlockAllStages();
+	UnlockAllFeatures();
+	UnlockAllTrophies();
+}
+
+extern "C" u32 orig_MemoryCard_DoLoadData();
+extern "C" u32 hook_MemoryCard_DoLoadData()
+{
+	// Unlock everything and always return success
+	orig_MemoryCard_DoLoadData();
+	unlock_everything();
+	return 0;
+}

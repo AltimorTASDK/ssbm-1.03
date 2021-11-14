@@ -45,22 +45,14 @@ extern "C" void orig_MemoryCard_RequestSave();
 extern "C" void hook_MemoryCard_RequestSave()
 {
 	const auto irq_enable = OSDisableInterrupts();
-	
+
 	// Defer the game's memcard save if we're doing our own
 	if (op.wait.is_complete())
 		orig_MemoryCard_RequestSave();
 	else
 		op.save_pending = true;
-	
-	OSRestoreInterrupts(irq_enable);
-}
 
-extern "C" u32 orig_MemoryCard_DoLoadData();
-extern "C" u32 hook_MemoryCard_DoLoadData()
-{
-	// Always return success
-	orig_MemoryCard_DoLoadData();
-	return 0;
+	OSRestoreInterrupts(irq_enable);
 }
 
 extern "C" u32 orig_UpdateMemCardState();
@@ -68,7 +60,7 @@ extern "C" u32 hook_UpdateMemCardState()
 {
 	if (first_save_check)
 		return orig_UpdateMemCardState();
-	
+
 	// Always act as if memcard is present
 	MemCardState = 0;
 	return 0;
@@ -102,19 +94,19 @@ static void card_callback(s32 chan, s32 result)
 
 	if (result < 0)
 		return card_error("Card operation failed (%d)\n", result);
-	
+
 	if (op.buffer != op.src_buffer) {
 		if (op.read && op.error >= 0)
 			memcpy(op.src_buffer, op.buffer, op.src_size);
-			
+
 		HSD_Free(op.buffer);
 	}
 
 	CARD_Unmount(chan);
-	
+
 	// Wake up the main thread
 	op.wait.wake();
-	
+
 	// Check if the game is waiting to use the memcard
 	if (op.save_pending) {
 		orig_MemoryCard_RequestSave();
@@ -134,10 +126,10 @@ static void read_callback(s32 chan, s32 result)
 
 	if (op.error = CARD_GetStatus(chan, op.file.filenum, &op.stats); op.error < 0)
 		return card_error("CARD_GetStatus failed (%d)\n", op.error);
-		
+
 	if (op.buffer == nullptr)
 		return op.wait.wake();
-		
+
 	const auto size = std::min(op.stats.len, op.size);
 
 	if (op.error = CARD_ReadAsync(&op.file, op.buffer, size, 0, card_callback); op.error < 0)
@@ -150,7 +142,7 @@ static void write_callback(s32 chan, s32 result)
 		op.error = result;
 		return card_error("Card mount failed (%d)\n", result);
 	}
-		
+
 	static constinit auto write = [](s32 chan, s32 result) {
 		if (op.error = CARD_WriteAsync(&op.file, op.buffer, op.size, 0, card_callback);
 		    op.error < 0)
@@ -197,7 +189,7 @@ static void card_io(s32 card, const char *filename, void *buffer, u32 size, bool
 	op.read = read;
 	op.src_buffer = buffer;
 	op.src_size = size;
-	
+
 	// Size must be aligned
 	op.size = align_up(size, read ? 0x200 : cardmap[card].sector_size);
 
@@ -212,11 +204,11 @@ static void card_io(s32 card, const char *filename, void *buffer, u32 size, bool
 	} else {
 		op.buffer = buffer;
 	}
-	
+
 	const auto callback = read ? read_callback : write_callback;
-	
+
 	InitCardBuffers();
-	
+
 	if (op.error = CARD_MountAsync(card, CardWorkArea, nullptr, callback); op.error < 0)
 		card_error("CARD_MountAsync failed (%d)\n", op.error);
 }
