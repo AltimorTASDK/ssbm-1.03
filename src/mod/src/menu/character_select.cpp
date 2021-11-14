@@ -105,7 +105,6 @@ extern "C" struct {
 
 extern "C" u8 CSSPendingSceneChange;
 extern "C" u8 CSSPortCount;
-extern "C" u8 CSSSingleplayerPort;
 extern "C" HSD_JObj *CSSMenuJObj;
 extern "C" CSSPlayerData *CSSPlayers[4];
 extern "C" CSSPuckData *CSSPucks[4];
