@@ -22,7 +22,7 @@
 #include "resources/screens/manual_border.tex.h"
 #include "resources/screens/scrollbar.tex.h"
 
-constexpr auto MAX_SCROLL = 1.7625f;
+constexpr auto MAX_SCROLL = 1.73f;
 
 static texture texture_p1;
 static texture texture_p2;
@@ -55,7 +55,7 @@ constexpr auto bottom_text = text_builder::build(
 static void manual_input(HSD_GObj *gobj)
 {
 	const auto buttons = Menu_GetButtons(PORT_ALL);
-	
+
 	if (buttons & MenuButton_B) {
 		manual_open = false;
 		IsEnteringMenu = false;
@@ -65,17 +65,17 @@ static void manual_input(HSD_GObj *gobj)
 		Menu_MainMenuTransition(MenuType_VsMode, 3, MenuState_ExitTo);
 		return;
 	}
-	
+
 	auto total_y = 0.f;
 	for (auto i = 0; i < 4; i++)
 		total_y += HSD_PadCopyStatus[i].stick.y;
-	
+
 	total_y = clamp(total_y, -1.f, 1.f);
-	
+
 	// Check deadzone
 	if (std::abs(total_y) < .2875f)
 		return;
-	
+
 	scroll_offset = clamp(scroll_offset - total_y * .0125f, 0.f, MAX_SCROLL);
 }
 
@@ -83,7 +83,7 @@ static void draw_manual(HSD_GObj *gobj, u32 pass)
 {
 	if (pass != HSD_RP_BOTTOMHALF)
 		return;
-	
+
 	auto &rs = render_state::get();
 	rs.reset_3d();
 
@@ -91,7 +91,7 @@ static void draw_manual(HSD_GObj *gobj, u32 pass)
 	constexpr auto scissor_h = 288;
 
 	rs.set_scissor(0, scissor_y, 640, scissor_h);
-	
+
 	constexpr auto scale = 25.f;
 	const auto pos_p1 = vec3(0, 7.5f + scroll_offset * scale, 17);
 	const auto pos_p2 = pos_p1 - vec3(0, scale, 0);
@@ -105,17 +105,17 @@ static void draw_manual(HSD_GObj *gobj, u32 pass)
 
 	rs.fill_rect(pos_p3, vec2(1, -1) * scale, color_rgba::white, texture_p3,
 	             uv_coord::zero, uv_coord::one, align::top);
-		     
+
 	rs.reset_2d();
 
 	rs.fill_tiled_rect(vec3(320, scissor_y, 17), vec2(516, scissor_h),
 	                   color_rgba::hex(0x929196FFu), texture_border, align::top);
-	
+
 	constexpr auto scrollbar_size = vec2(11, 6);
 	constexpr auto scrollbar_x = 320 + 516.f / 2 - 2;
 	constexpr auto scrollbar_y_min = scissor_y + 14.f;
 	constexpr auto scrollbar_y_max = scissor_y + scissor_h - scrollbar_size.y - 14.f;
-	
+
 	const auto scrollbar_y = lerp(scrollbar_y_min, scrollbar_y_max, scroll_offset / MAX_SCROLL);
 
 	rs.fill_tiled_rect(vec3(scrollbar_x, scrollbar_y, 17), scrollbar_size,
@@ -125,25 +125,25 @@ static void draw_manual(HSD_GObj *gobj, u32 pass)
 extern "C" void hook_Menu_EnterCustomRulesMenu()
 {
 	manual_open = true;
-	
+
 	scroll_offset = 0;
-	
+
 	MenuTypePrevious = MenuType;
 	MenuType = MenuType_Rules;
-	
+
 	auto *gobj = GObj_Create(GOBJ_CLASS_PROC, GOBJ_PLINK_PROC, 0x80);
 	GObj_AddProc(gobj, manual_input, 0);
 	Menu_SetGObjPrio(gobj);
 	GObj_SetupGXLink(gobj, draw_manual, GOBJ_GXLINK_MENU_TOP, 0x80);
 
 	pool.inc_ref();
-	
+
 	pool.add(init_texture(manual_p1_tex_data, &texture_p1));
 	pool.add(init_texture(manual_p2_tex_data, &texture_p2));
 	pool.add(init_texture(manual_p3_tex_data, &texture_p3));
 	pool.add(init_texture(manual_border_tex_data, &texture_border));
 	pool.add(init_texture(scrollbar_tex_data, &texture_scrollbar));
-	
+
 	// Bottom text
 	text = Text_Create(0, 1, -9.5f, 8.f, 17.f, 364.68331909f, 76.75543640f);
 	text->stretch.x = 0.0521f;

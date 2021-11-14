@@ -2406,6 +2406,7 @@ Menu_CreateRandomStageMenu                                   = 0x80237410;
 NameTag_DeleteAndMoveNamesUp                                 = 0x80237834;
 NameTag_Validate                                             = 0x802379bc;
 wP_NameEntryMenu                                             = 0x8023817c;
+Menu_LoadNameTags                                            = 0x80239a24;
 NameEntry_Stuff                                              = 0x8023c54c;
 SoundTest_ControlStuffEveryFrame                             = 0x8024b2b0;
 EventMatchThinkAndControl                                    = 0x8024d864;
