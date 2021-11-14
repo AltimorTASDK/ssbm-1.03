@@ -16,6 +16,16 @@ static void unlock_everything()
 	UnlockAllTrophies();
 }
 
+extern "C" u32 hook_IsFeatureUnlocked(u32 index)
+{
+	return 1;
+}
+
+extern "C" u32 hook_IsTrophyUnlocked(u32 index)
+{
+	return 1;
+}
+
 extern "C" u32 orig_MemoryCard_DoLoadData();
 extern "C" u32 hook_MemoryCard_DoLoadData()
 {

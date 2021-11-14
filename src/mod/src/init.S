@@ -283,7 +283,7 @@ add_hook Menu_SetupMainMenu
 add_hook Menu_UpdateMainMenuPreview
 add_hook Menu_CreatePortalDescriptionText
 # Hide messages
-add_hook ShouldShowSpecialMessage
-add_hook ShouldShowTrophyMessage
+add_hook IsFeatureUnlocked
+add_hook IsTrophyUnlocked
 
 hooks_end:
