@@ -118,7 +118,7 @@ constexpr auto latency_descriptions = multi_array {
 	make_description_text<"Reduce latency by half a frame.",
 		              "Recommended for LCDs.">(),
 	make_description_text<"Reduce latency by one and a half",
-		              "frames. Recommended only for Wii.">()
+		              "frames. For use on Wii only.">()
 };
 
 constexpr auto widescreen_descriptions = multi_array {
