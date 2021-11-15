@@ -43,30 +43,30 @@ extern "C" void orig_Stage_GetSpawnPoint(u32 port, vec3 *result);
 extern "C" void hook_Stage_GetSpawnPoint(u32 port, vec3 *result)
 {
 	orig_Stage_GetSpawnPoint(port, result);
-	
+
 	// No singleplayer
 	if (IsSinglePlayerMode() && SceneMajor != Scene_Training)
 		return;
-	
+
 	// No P5/P6
 	if (port >= 4)
 		return;
-		
+
 	const auto *spawns = get_spawn_list();
 
 	// Must have a spawn list for this stage
 	if (spawns == nullptr)
 		return;
-		
+
 	const auto spawn_index = get_sorted_port_index(port);
-		
+
 	// Spawn index is -1 if not 1v1/2v2
 	if (spawn_index == -1)
 		return;
 
 	result->x = spawns[spawn_index].x;
 	result->y = spawns[spawn_index].y;
-	
+
 	// Adjust spawns for platform heights if using modded FoD
 	if (Stage_GetID() == Stage_FoD && !use_og_stage_select) {
 		if (spawn_index == 0)
@@ -86,6 +86,14 @@ extern "C" u32 hook_PlayerBlock_GetRespawnPoint(u32 port, vec3 *respawn, vec3 *o
 	Stage.use_unique_respawns = false;
 	orig_PlayerBlock_GetRespawnPoint(port, respawn, offset);
 	respawn->x = 0;
-		
+
 	return 0;
+}
+
+extern "C" void orig_Match_SetSpawnFacingDirections();
+extern "C" void hook_Match_SetSpawnFacingDirections()
+{
+	// Always face center in 1p mode
+	if (get_player_count() != 1)
+		orig_Match_SetSpawnFacingDirections();
 }

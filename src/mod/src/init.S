@@ -224,6 +224,7 @@ add_hook Camera_SetNormal
 # Neutral spawns
 add_hook Stage_GetSpawnPoint
 add_hook PlayerBlock_GetRespawnPoint
+add_hook Match_SetSpawnFacingDirections
 # Crew mode
 .set CheckToSetStockCount,             Menu_RulesMenuThink+0x2AC
 .set CheckToUseStockCountText,         Menu_SetupRulesMenu+0x410
