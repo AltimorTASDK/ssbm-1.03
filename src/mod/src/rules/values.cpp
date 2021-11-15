@@ -73,6 +73,7 @@ extern "C" void hook_Match_Init(StartMeleeData *data)
 	if (is_singleplayer(data)) {
 		// Force infinite time match + pause
 		data->rules.is_stock_match = false;
+		data->rules.is_coin_match = false;
 		data->rules.timer_enabled = false;
 		data->rules.pause_disabled = false;
 	} else {

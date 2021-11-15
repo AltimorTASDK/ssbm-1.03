@@ -77,7 +77,7 @@ struct PlayerInitData {
 struct StartMeleeRules {
 	struct {
 		u8 flags1_80 : 1;
-		u8 flags1_40 : 1;
+		u8 is_coin_match : 1;
 		u8 is_stock_match : 1;
 		u8 max_players : 3;
 		u8 timer_enabled : 1;
@@ -151,7 +151,7 @@ struct MatchInfo {
 };
 
 extern "C" {
-	
+
 extern MatchExitData LastMatchData;
 
 MatchInfo *GetMatchInfo();
