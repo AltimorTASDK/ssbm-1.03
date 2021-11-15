@@ -3,7 +3,7 @@
 .set Rule_LedgeGrabLimit, 2
 
 .set Mode_Stock, 1
-.set Mode_Crew,  2
+.set Mode_Crew,  3
 
 .global hook_CheckScrollingRuleIndex
 hook_CheckScrollingRuleIndex:
@@ -13,7 +13,7 @@ hook_CheckScrollingRuleIndex:
         li      r0, 0
 1:
         b       orig_CheckScrollingRuleIndex
-        
+
 check_mode:
         # Check for both stock and crew
         cmplwi  cr0, r0, Mode_Stock
