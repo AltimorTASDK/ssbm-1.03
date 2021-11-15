@@ -2,6 +2,7 @@
 
 #include <gctypes.h>
 
+int get_player_count();
 bool is_1v1();
 
 // Sorts port indices

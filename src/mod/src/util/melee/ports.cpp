@@ -12,14 +12,14 @@ static int get_singles_index(u32 port)
 	for (u32 i = 0; i < 4; i++) {
 		if (PlayerBlock_GetSlotType(i) == SlotType_None)
 			continue;
-			
+
 		if (i == port)
 			result = count;
 
 		if (++count > 2)
 			return -1;
 	}
-	
+
 	if (count != 2)
 		return -1;
 
@@ -39,7 +39,7 @@ static int get_doubles_index(u32 port)
 	for (u32 i = 0; i < 4; i++) {
 		if (PlayerBlock_GetSlotType(i) == SlotType_None)
 			continue;
-			
+
 		auto team = PlayerBlock_GetTeam(i);
 		int index;
 
@@ -59,14 +59,14 @@ static int get_doubles_index(u32 port)
 			// Third team
 			return -1;
 		}
-		
+
 		if (i == port)
 			result = index;
 	}
 
 	if (team1_count != 2 || team2_count != 2)
 		return -1; // Not 2v2
-		
+
 	// Check if on higher team index
 	if (PlayerBlock_GetTeam(port) * 2 > team1 + team2)
 		result++;
@@ -74,18 +74,21 @@ static int get_doubles_index(u32 port)
 	return result;
 }
 
-bool is_1v1()
+int get_player_count()
 {
 	auto count = 0;
 
 	for (u32 i = 0; i < 4; i++) {
-		if (PlayerBlock_GetSlotType(i) == SlotType_None)
-			continue;
-			
+		if (PlayerBlock_GetSlotType(i) != SlotType_None)
 		count++;
 	}
-	
-	return count == 2;
+
+	return count;
+}
+
+bool is_1v1()
+{
+	return get_player_count() == 2;
 }
 
 // Returns -1 if not 1v1/2v2
