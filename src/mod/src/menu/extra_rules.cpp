@@ -251,7 +251,7 @@ extern "C" void hook_Menu_ExtraRulesMenuInput(HSD_GObj *gobj)
 
 	if ((buttons & MenuButton_A) && MenuSelectedIndex == ExtraRule_OldStageSelect) {
 		// Check for attempting to enter the OSS with no players
-		if (last_css_ready_frames == 0) {
+		if (!check_can_start_match()) {
 			Menu_PlaySFX(MenuSFX_Denied);
 			return;
 		}
@@ -273,7 +273,10 @@ extern "C" void hook_Menu_ExtraRulesMenuInput(HSD_GObj *gobj)
 extern "C" void orig_Menu_CreateRandomStageMenu();
 extern "C" void hook_Menu_CreateRandomStageMenu()
 {
-	// Go to original stage select
+	if (MenuType != MenuType_ExtraRules)
+		return orig_Menu_CreateRandomStageMenu();
+
+	// Go to original stage select if coming from extra rules
 	use_og_stage_select = true;
 	Menu_ExitToMinorScene(VsScene_SSS);
 }

@@ -2,4 +2,4 @@
 
 #include <gctypes.h>
 
-inline u8 last_css_ready_frames;
+extern "C" bool check_can_start_match(bool check_crew = true);

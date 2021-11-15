@@ -35,8 +35,6 @@
 #include "resources/css/vs_ball_lcd.tex.h"
 #include "resources/css/vs_ball_low.tex.h"
 
-#include "os/os.h"
-
 enum CSSPlayerState {
 	CSSPlayerState_HoveringPorts = 0,
 	CSSPlayerState_HoldingPuck = 1,
@@ -136,6 +134,7 @@ static const auto patches = patch_list {
 
 static mempool pool;
 
+static u8 player_states[4];
 static bool is_unplugged[4];
 static bool saved_is_unplugged[4];
 
@@ -174,27 +173,34 @@ extern "C" bool check_is_cpu_puck(u8 port)
 	return CSSPlayers[port]->state == CSSPlayerState_Unplugged;
 }
 
-extern "C" bool check_can_start_match()
+extern "C" bool check_can_start_match(bool check_crew)
 {
+	auto player_count = 0;
+
 	for (auto i = 0; i < CSSPortCount; i++) {
 		if (CSSPorts[i].slot_type == SlotType_None)
 			continue;
 
 		// Check that no one is holding a puck
-		if (CSSPlayers[i]->state == CSSPlayerState_HoldingPuck)
+		if (player_states[i] == CSSPlayerState_HoldingPuck)
 			return false;
 
 		// Check that no one doesn't have a valid character selected
 		if (CSSPorts[i].character_icon >= CharacterIcon_Max)
 			return false;
+
+		player_count++;
 	}
+
+	if (check_crew && GetGameRules()->mode == Mode_Crew && player_count != 2)
+		return false;
 
 	// Check if there's a real HMN port before starting a match
 	for (auto i = 0; i < CSSPortCount; i++) {
 		if (CSSPorts[i].slot_type != SlotType_Human)
 			continue;
 
-		if (CSSPlayers[i]->state != CSSPlayerState_Unplugged)
+		if (player_states[i] != CSSPlayerState_Unplugged)
 			return true;
 	}
 
@@ -394,22 +400,15 @@ static void reset_toggle_timers(u8 port)
 	toggle_timers[port].tap_jump = 0;
 }
 
-extern "C" void orig_CSS_ReadyThink(HSD_GObj *gobj);
-extern "C" void hook_CSS_ReadyThink(HSD_GObj *gobj)
-{
-	orig_CSS_ReadyThink(gobj);
-
-	// Store ready frames pre scene change for OSS check
-	if (CSSPendingSceneChange == 0)
-		last_css_ready_frames = CSSReadyFrames;
-}
-
 extern "C" void orig_CSS_PlayerThink(HSD_GObj *gobj);
 extern "C" void hook_CSS_PlayerThink(HSD_GObj *gobj)
 {
 	orig_CSS_PlayerThink(gobj);
 
 	auto *data = gobj->get<CSSPlayerData>();
+
+	if (CSSPendingSceneChange == 0)
+		player_states[data->port] = data->state;
 
 	// CSS toggles
 	if (HSD_PadCopyStatus[data->port].err == 0) {

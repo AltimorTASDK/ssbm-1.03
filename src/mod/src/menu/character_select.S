@@ -40,21 +40,11 @@ hook_CheckIsCPUPuck:
 
 .global hook_CheckCSSPlayerCount
 hook_CheckCSSPlayerCount:
-        bl      GetGameRules
-        lbz     r0, GameRules.mode(r3)
-        cmpwi   r0, Mode_Crew
-        bne     not_crew
-
-        # Only allow 1v1 in crew mode
-        cmpwi   r4, 2
-        beq     ready_2p
-        b       not_ready
-
-not_crew:
         cmpwi   r4, 1
         bgt     ready_2p
         bne     not_ready
 
+        li      r3, 1
         bl      check_can_start_match
         cmpwi   r3, 0
         beq     not_ready
@@ -97,29 +87,35 @@ hook_CheckCSSMatchStartCooldown:
         cmplwi  r0, 0
         beq     2f
 
+        lis     r3, CSSReadyFrames@ha
+        lbz     r0, CSSReadyFrames@l(r3)
+        cmplwi  r0, 0
+        bne     1f
+
         # Check if crew
         bl      GetGameRules
         lbz     r0, GameRules.mode(r3)
         cmpwi   r0, Mode_Crew
         bne     1f
 
-        # Don't play error sound if 0 players
-        bl      check_if_any_players
+        # Back up r7
+        mr      r28, r7
+
+        # Don't play error sound if non-crew-related failure
+        li      r3, 0
+        bl      check_can_start_match
         cmpwi   r3, 0
         beq     1f
 
-        lis     r3, CSSReadyFrames@ha
-        lbz     r0, CSSReadyFrames@l(r3)
-        cmplwi  r0, 0
-        bne     1f
+        mr      r7, r28
 
         # Allow condition to succeed if not ready in crews so "denied" SFX plays
-        creqv   eq, eq, eq
+        crset   eq
         b       2f
 
 1:
         # Cooldown not ready
-        crxor   eq, eq, eq
+        crclr   eq
 2:
         # Skip overwritten instruction
         b       orig_CheckCSSMatchStartCooldown+4
