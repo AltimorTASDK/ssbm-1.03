@@ -267,6 +267,7 @@ add_hook CheckIsCPUPuck
 add_hook CSS_ChooseTopString
 add_hook CSS_Init
 add_hook CSS_PlayerThink
+add_hook CSS_ReadyThink
 add_hook CSS_Setup
 add_hook CSS_UpdatePortrait
 # Settings lock
@@ -282,8 +283,10 @@ add_hook MainMenu_Init
 add_hook Menu_SetupMainMenu
 add_hook Menu_UpdateMainMenuPreview
 add_hook Menu_CreatePortalDescriptionText
-# Hide messages
+# Unlocks
 add_hook IsFeatureUnlocked
 add_hook IsTrophyUnlocked
+add_hook GetUnlockedEventMatchCount
+add_hook ShouldShowUnlockMessage
 
 hooks_end:

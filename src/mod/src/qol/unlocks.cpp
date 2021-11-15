@@ -26,6 +26,16 @@ extern "C" u32 hook_IsTrophyUnlocked(u32 index)
 	return 1;
 }
 
+extern "C" u32 hook_GetUnlockedEventMatchCount(u32 index)
+{
+	return 42;
+}
+
+extern "C" bool hook_ShouldShowUnlockMessage(u32 index)
+{
+	return false;
+}
+
 extern "C" u32 orig_MemoryCard_DoLoadData();
 extern "C" u32 hook_MemoryCard_DoLoadData()
 {
