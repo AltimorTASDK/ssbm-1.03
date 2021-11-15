@@ -23,7 +23,6 @@
 #include "resources/screens/scrollbar.tex.h"
 
 constexpr auto MAX_SCROLL = 2.0865f;
-constexpr auto PAGE_SCROLL = .605625f;
 
 static texture texture_p1;
 static texture texture_p2;
@@ -44,13 +43,11 @@ constexpr auto bottom_text = text_builder::build(
 	text_builder::center(),
 	text_builder::color<170, 170, 170>(),
 	text_builder::textbox<179, 179>(),
+	text_builder::offset<0, -10>(),
+	text_builder::br(),
 	text_builder::unk06<0, 0>(),
 	text_builder::fit(),
 	text_builder::ascii<"Up/Down: Scroll">(),
-	text_builder::end_fit(),
-	text_builder::br(),
-	text_builder::fit(),
-	text_builder::ascii<"L/R: Skip Page">(),
 	text_builder::end_fit(),
 	text_builder::end_textbox(),
 	text_builder::end_color());
@@ -68,12 +65,6 @@ static void manual_input(HSD_GObj *gobj)
 		Menu_MainMenuTransition(MenuType_VsMode, 3, MenuState_ExitTo);
 		return;
 	}
-
-	if (buttons & MenuButton_L)
-		scroll_offset = clamp(scroll_offset - PAGE_SCROLL, 0.f, MAX_SCROLL);
-
-	if (buttons & MenuButton_R)
-		scroll_offset = clamp(scroll_offset + PAGE_SCROLL, 0.f, MAX_SCROLL);
 
 	auto total_y = 0.f;
 	for (auto i = 0; i < 4; i++)
