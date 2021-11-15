@@ -12,6 +12,7 @@
 #include "melee/nametag.h"
 #include "melee/player.h"
 #include "melee/scene.h"
+#include "menu/character_select.h"
 #include "menu/stage_select.h"
 #include "rules/values.h"
 #include "util/compression.h"
@@ -34,11 +35,17 @@
 #include "resources/css/vs_ball_lcd.tex.h"
 #include "resources/css/vs_ball_low.tex.h"
 
+#include "os/os.h"
+
 enum CSSPlayerState {
 	CSSPlayerState_HoveringPorts = 0,
 	CSSPlayerState_HoldingPuck = 1,
 	CSSPlayerState_Idle = 2,
 	CSSPlayerState_Unplugged = 3
+};
+
+enum CharacterIcon {
+	CharacterIcon_Max = 0x19
 };
 
 struct CSSPlayerData {
@@ -73,7 +80,7 @@ struct CSSPort {
 	u8 picked_character;
 	u8 team;
 	u8 slot_type;
-	u8 pad00C;
+	u8 last_slot_type;
 	u8 color;
 	u8 character_icon;
 	u8 last_character_icon;
@@ -103,6 +110,7 @@ extern "C" struct {
 	ArchiveModel Portrait;
 } *MnSlChrModels;
 
+extern "C" u8 CSSReadyFrames;
 extern "C" u8 CSSPendingSceneChange;
 extern "C" u8 CSSPortCount;
 extern "C" HSD_JObj *CSSMenuJObj;
@@ -123,7 +131,7 @@ constexpr auto crew_text = text_builder::build(
 static const auto patches = patch_list {
 	// Use "Survival!" voice clip for crew
 	// li r3, 0x7538
-	std::pair { (char*)CSS_Setup+0xE4, 0x38607538 },
+	std::pair { (char*)CSS_Setup+0xF8, 0x38607538 },
 };
 
 static mempool pool;
@@ -166,11 +174,18 @@ extern "C" bool check_is_cpu_puck(u8 port)
 	return CSSPlayers[port]->state == CSSPlayerState_Unplugged;
 }
 
-extern "C" bool check_if_non_dummy()
+extern "C" bool check_can_start_match()
 {
-	// Check that no one is holding a puck
 	for (auto i = 0; i < CSSPortCount; i++) {
+		if (CSSPorts[i].slot_type == SlotType_None)
+			continue;
+
+		// Check that no one is holding a puck
 		if (CSSPlayers[i]->state == CSSPlayerState_HoldingPuck)
+			return false;
+
+		// Check that no one doesn't have a valid character selected
+		if (CSSPorts[i].character_icon >= CharacterIcon_Max)
 			return false;
 	}
 
@@ -377,6 +392,16 @@ static void reset_toggle_timers(u8 port)
 	toggle_timers[port].c_horizontal = 0;
 	toggle_timers[port].c_down = 0;
 	toggle_timers[port].tap_jump = 0;
+}
+
+extern "C" void orig_CSS_ReadyThink(HSD_GObj *gobj);
+extern "C" void hook_CSS_ReadyThink(HSD_GObj *gobj)
+{
+	orig_CSS_ReadyThink(gobj);
+
+	// Store ready frames pre scene change for OSS check
+	if (CSSPendingSceneChange == 0)
+		last_css_ready_frames = CSSReadyFrames;
 }
 
 extern "C" void orig_CSS_PlayerThink(HSD_GObj *gobj);

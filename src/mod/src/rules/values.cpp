@@ -9,7 +9,6 @@ struct init_rules {
 	init_rules()
 	{
 		// Set new rule value bounds
-		RuleValueBounds[Rule_Mode]           = { Mode_Time, Mode_Crew };
 		RuleValueBounds[Rule_LedgeGrabLimit] = { 0, ledge_grab_limit_values.size() - 1 };
 		RuleValueBounds[Rule_AirTimeLimit]   = { 0, air_time_limit_values.size() - 1 };
 

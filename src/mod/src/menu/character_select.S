@@ -2,7 +2,7 @@
 
 .set SlotType_Human, 0
 
-.set Mode_Crew, 2
+.set Mode_Crew, 3
 
 .set MenuSFX_Denied, 3
 
@@ -55,7 +55,7 @@ not_crew:
         bgt     ready_2p
         bne     not_ready
 
-        bl      check_if_non_dummy
+        bl      check_can_start_match
         cmpwi   r3, 0
         beq     not_ready
 
@@ -73,7 +73,7 @@ not_ready:
         b       CSS_ReadyThink+0x27C
 
 ready_2p:
-        bl      check_if_non_dummy
+        bl      check_can_start_match
         cmpwi   r3, 0
         beq     not_ready
 

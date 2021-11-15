@@ -47,8 +47,8 @@ enum Mode {
 	Mode_Time = 0,
 	Mode_Stock = 1,
 	Mode_Coin = 2,
-	Mode_Crew = 2,
-	Mode_Bonus = 3
+	Mode_Bonus = 3,
+	Mode_Crew = 3
 };
 
 struct GameRules {
