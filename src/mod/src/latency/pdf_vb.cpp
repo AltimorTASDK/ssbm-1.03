@@ -54,7 +54,7 @@ static char text_buf[TEXT_WIDTH * TEXT_HEIGHT * 2];
 #endif
 
 static u32 frame_retrace_count;
-static u32 last_poll_line;
+static u32 last_poll_retrace_count;
 
 static u32 half_vb_retrace_count;
 static OSThreadQueue half_vb_thread_queue;
@@ -65,7 +65,8 @@ static void pad_sample_callback()
 	const auto current_poll_time = OSGetTime();
 #endif
 	const auto current_poll_line = VIGetCurrentLine();
-	const auto index = current_poll_line < last_poll_line ? 0 : 1;
+	const auto current_retrace_count = VIGetRetraceCount();
+	const auto index = current_retrace_count > last_poll_retrace_count ? 0 : 1;
 
 #ifdef POLL_DEBUG
 	poll_line[index] = current_poll_line;
@@ -73,8 +74,8 @@ static void pad_sample_callback()
 	poll_time = current_poll_time;
 #endif
 
-	last_poll_line = current_poll_line;
-	
+	last_poll_retrace_count = current_retrace_count;
+
 	if (index == 0 && get_latency() != latency_mode::crt) {
 		// Use first poll rather than previous mid-frame poll for LCD/LOW
 		PadFetchCallback();
@@ -100,6 +101,13 @@ extern "C" void hook_UpdatePadFetchRate()
 	OSCancelAlarm(&PadFetchAlarm);
 }
 
+extern "C" void orig_SISetSamplingRate(u32 msecs);
+extern "C" void hook_SISetSamplingRate(u32 msecs)
+{
+	// Always use default polling rate/interval
+	orig_SISetSamplingRate(16);
+}
+
 #ifdef POLL_DEBUG
 #endif
 
@@ -107,13 +115,13 @@ extern "C" void scene_loop_start()
 {
 	if (get_latency() != latency_mode::lcd)
 		return;
-		
+
 	const auto irq_enable = OSDisableInterrupts();
-	
+
 	// Wait for 2nd poll to start processing in LCD mode unless we're already late
 	if (VIGetRetraceCount() != half_vb_retrace_count)
 		OSSleepThread(&half_vb_thread_queue);
-		
+
 	OSRestoreInterrupts(irq_enable);
 }
 
@@ -149,7 +157,7 @@ extern "C" void hook_HSD_VICopyXFBASync(u32 pass)
 
 	OSRestoreInterrupts(irq_enable);
 	orig_HSD_VICopyXFBASync(pass);
-		
+
 #ifdef POLL_DEBUG
 	if (get_latency() != latency_mode::low) {
 		if (VIGetRetraceCount() > frame_retrace_count + 1)
@@ -186,7 +194,7 @@ extern "C" s32 orig_HSD_VIGetXFBDrawEnable();
 extern "C" s32 hook_HSD_VIGetXFBDrawEnable()
 {
 	const auto xfb = orig_HSD_VIGetXFBDrawEnable();
-	
+
 	if (xfb != -1) {
 		efb_copy_poll_time[xfb] = frame_poll_time;
 		efb_copy_line = VIGetCurrentLine();
@@ -199,7 +207,7 @@ extern "C" void orig_HSD_VIPreRetraceCB(u32 retrace_count);
 extern "C" void hook_HSD_VIPreRetraceCB(u32 retrace_count)
 {
 	orig_HSD_VIPreRetraceCB(retrace_count);
-	
+
 	const auto xfb = HSD_VISearchXFBByStatus(HSD_VI_XFB_NEXT);
 
 	if (xfb != -1) {
@@ -265,7 +273,7 @@ extern "C" void hook_Scene_RunLoop(void(*think_callback)())
 
 	auto *gobj = GObj_Create(GOBJ_CLASS_UI, GOBJ_PLINK_UI, 0);
 	GObj_AddProc(gobj, update_text, 0);
-	
+
 	orig_Scene_RunLoop(think_callback);
 }
 #endif
