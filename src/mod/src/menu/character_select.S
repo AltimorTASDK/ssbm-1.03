@@ -44,9 +44,12 @@ hook_CheckCSSPlayerCount:
         bgt     ready_2p
         bne     not_ready
 
+        # Back up r8
+        mr      r28, r8
         li      r3, 1
         bl      check_can_start_match
         cmpwi   r3, 0
+        mr      r8, r28
         beq     not_ready
 
         lis     r3, CSSReadyFrames@ha
@@ -63,9 +66,12 @@ not_ready:
         b       CSS_ReadyThink+0x27C
 
 ready_2p:
+        # Back up r8
+        mr      r28, r8
         li      r3, 1
         bl      check_can_start_match
         cmpwi   r3, 0
+        mr      r8, r28
         beq     not_ready
 
         # Check for special 1p ready frames value
