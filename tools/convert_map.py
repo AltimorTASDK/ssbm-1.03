@@ -84,6 +84,8 @@ def match_address(address, size, in_dol, out_dol, func_list):
     return match
 
 def parse_map(in_dol, in_map, out_dol, out_map, func_list):
+    last_match = None
+
     for line in in_map:
         if line.startswith("."):
             continue
@@ -96,8 +98,15 @@ def parse_map(in_dol, in_map, out_dol, out_map, func_list):
         size = int(size, 16)
 
         match = match_address(address, size, in_dol, out_dol, func_list)
+
         if match is not None:
             out_map.write(f"{match:08X} {size:08X} {match:08X} 0 {name}\n")
+
+            if last_match is not None:
+                if match < last_match:
+                    print(f"Out of order: {name} {match:08X}")
+
+            last_match = match
 
 def main():
     if len(sys.argv) < 6:
