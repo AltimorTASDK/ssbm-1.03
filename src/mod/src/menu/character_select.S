@@ -63,6 +63,7 @@ not_ready:
         b       CSS_ReadyThink+0x27C
 
 ready_2p:
+        li      r3, 1
         bl      check_can_start_match
         cmpwi   r3, 0
         beq     not_ready
@@ -105,9 +106,8 @@ hook_CheckCSSMatchStartCooldown:
         li      r3, 0
         bl      check_can_start_match
         cmpwi   r3, 0
-        beq     1f
-
         mr      r7, r28
+        beq     1f
 
         # Allow condition to succeed if not ready in crews so "denied" SFX plays
         crset   eq
