@@ -70,10 +70,9 @@ extern "C" ArchiveModel MenMainCursorRl03_Top;
 // Controller fix values
 extern "C" ArchiveModel MenMainCursorTr03_Top;
 
-// "Ready to start" banner animation frame
-extern "C" u8 CSSReadyFrames;
-
 extern "C" HSD_GObj *ExtraRulesMenuGObj;
+
+extern "C" u8 FeatureUnlockMask;
 
 extern "C" struct {
 	f32 unselected;
@@ -216,6 +215,9 @@ static void load_textures()
 extern "C" HSD_GObj *orig_Menu_SetupExtraRulesMenu(u8 state);
 extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 {
+	// Ensure all of the options always get populated
+	FeatureUnlockMask = 0xFF;
+
 	auto *gobj = orig_Menu_SetupExtraRulesMenu(state);
 	auto *data = gobj->get<ExtraRulesMenuData>();
 
