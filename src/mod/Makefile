@@ -95,7 +95,6 @@ define make_resource_rule
 $(call get_resource_out, $1): $1 $(TOOLS)/compress_resource.py
 	@mkdir -p $$(dir $$@)
 	cp $$< $$@
-	python $(TOOLS)/compress_resource.py $$@ $$@
 endef
 
 define make_texture_rule
