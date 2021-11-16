@@ -18,7 +18,7 @@ struct OSThreadQueue {
 };
 
 extern "C" {
-	
+
 void TRK_flush_cache(const void *start, u32 size);
 
 void OSReport(const char *fmt, ...);
@@ -51,10 +51,10 @@ extern "C" char __BSS_SIZE__;
 static void panic(const char *fmt, auto &&...args)
 {
 	OSReport(fmt, args...);
-	
+
 	// Enable interrupts so VI interrupts happen
 	OSRestoreInterrupts(1);
-	
+
 	// Enable scheduler so crash screen thread runs
 	OSEnableScheduler();
 
@@ -110,22 +110,22 @@ static void patch_crash_screen()
 extern "C" [[gnu::section(".init")]] void _start()
 {
 	OSReport("Running 1.03 loader\n");
-	
+
 	patch_crash_screen();
-	
+
 	// Zero out the bussy
 	memset(&__BSS_START__, 0, (size_t)&__BSS_SIZE__);
 
 	InitCardBuffers();
-	
+
 	if (s32 error = CARD_MountAsync(0, CardWorkArea, nullptr, read_callback); error < 0) {
 		panic("CARD_MountAsync failed (%d)\n", error);
 		return;
 	}
-	
+
 	// Wait for read to complete
 	OSSleepThread(&sleep_queue);
-	
+
 	CARD_Unmount(0);
 
 	TRK_flush_cache(mod_init, stats.len);
