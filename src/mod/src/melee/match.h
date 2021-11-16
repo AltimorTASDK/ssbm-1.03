@@ -93,6 +93,28 @@ struct StartMeleeRules {
 		u8 flags2_02 : 1;
 		u8 friendly_fire : 1;
 	};
+#ifdef NTSC100
+	struct {
+		u8 flags3_80 : 1;
+		u8 flags3_40 : 1;
+		u8 flags3_20 : 1;
+		u8 pause_disabled : 1;
+		u8 flags3_08 : 1;
+		u8 flags3_04 : 1;
+		u8 flags3_02 : 1;
+		u8 score_display : 1;
+	};
+	struct {
+		u8 flags4_80 : 1;
+		u8 flags4_40 : 1;
+		u8 flags4_20 : 1;
+		u8 flags4_10 : 1;
+		u8 flags4_08 : 1;
+		u8 flags4_04 : 1;
+		u8 flags4_02 : 1;
+		u8 flags4_01 : 1;
+	};
+#else
 	struct {
 		u8 flags3_80 : 1;
 		u8 flags3_40 : 1;
@@ -113,6 +135,7 @@ struct StartMeleeRules {
 		u8 flags4_02 : 1;
 		u8 flags4_01 : 1;
 	};
+#endif
 	char pad004[0x08 - 0x04];
 	u8 is_teams;
 	char pad009[0x0B - 0x09];
