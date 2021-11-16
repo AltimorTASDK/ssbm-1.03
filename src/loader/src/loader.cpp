@@ -1,6 +1,7 @@
 #include "hsd/memory.h"
 #include "os/os.h"
 #include "os/thread.h"
+#include "util/diff.h"
 #include "util/gc/wait_object.h"
 #include <cstddef>
 #include <cstdio>
@@ -127,99 +128,6 @@ static void *alloc_and_read(const char *file)
 	auto *buf = HSD_MemAlloc(size);
 	card_read(file, buf);
 	return buf;
-}
-
-static u32 apply_diff(const char *base, const char *diff, char *out)
-{
-	enum {
-		CMD_EOF              = 0,
-		CMD_DATA_LEN16       = 247,
-		CMD_DATA_LEN32       = 248,
-		CMD_COPY_POS16_LEN8  = 249,
-		CMD_COPY_POS16_LEN16 = 250,
-		CMD_COPY_POS16_LEN32 = 251,
-		CMD_COPY_POS32_LEN8  = 252,
-		CMD_COPY_POS32_LEN16 = 253,
-		CMD_COPY_POS32_LEN32 = 254
-	};
-
-	char *start = out;
-
-	while (*diff != CMD_EOF) {
-		switch (*diff) {
-		default: {
-			const auto len = *(u8*)diff;
-			memcpy(out, diff + 1, len);
-			out += len;
-			diff += 1 + len;
-			break;
-		}
-		case CMD_DATA_LEN16: {
-			const auto len = *(u16*)(diff + 1);
-			memcpy(out, diff + 3, len);
-			out += len;
-			diff += 3 + len;
-			break;
-		}
-		case CMD_DATA_LEN32: {
-			const auto len = *(u32*)(diff + 1);
-			memcpy(out, diff + 5, len);
-			out += len;
-			diff += 5 + len;
-			break;
-		}
-		case CMD_COPY_POS16_LEN8: {
-			const auto pos = *(u16*)(diff + 1);
-			const auto len = *(u8*)(diff + 3);
-			memcpy(out, base + pos, len);
-			out += len;
-			diff += 4;
-			break;
-		}
-		case CMD_COPY_POS16_LEN16: {
-			const auto pos = *(u16*)(diff + 1);
-			const auto len = *(u16*)(diff + 3);
-			memcpy(out, base + pos, len);
-			out += len;
-			diff += 5;
-			break;
-		}
-		case CMD_COPY_POS16_LEN32: {
-			const auto pos = *(u16*)(diff + 1);
-			const auto len = *(u32*)(diff + 3);
-			memcpy(out, base + pos, len);
-			out += len;
-			diff += 7;
-			break;
-		}
-		case CMD_COPY_POS32_LEN8: {
-			const auto pos = *(u32*)(diff + 1);
-			const auto len = *(u8*)(diff + 5);
-			memcpy(out, base + pos, len);
-			out += len;
-			diff += 6;
-			break;
-		}
-		case CMD_COPY_POS32_LEN16: {
-			const auto pos = *(u32*)(diff + 1);
-			const auto len = *(u16*)(diff + 5);
-			memcpy(out, base + pos, len);
-			out += len;
-			diff += 7;
-			break;
-		}
-		case CMD_COPY_POS32_LEN32: {
-			const auto pos = *(u32*)(diff + 1);
-			const auto len = *(u32*)(diff + 5);
-			memcpy(out, base + pos, len);
-			out += len;
-			diff += 9;
-			break;
-		}
-		}
-	}
-
-	return (u32)(out - start);
 }
 #endif
 
