@@ -289,10 +289,12 @@ add_hook IsFeatureUnlocked
 add_hook IsTrophyUnlocked
 add_hook GetUnlockedEventMatchCount
 add_hook ShouldShowUnlockMessage
-# v1.02 mechanics
 #if defined(NTSC100) || defined(NTSC101)
+# v1.02 hitlag
 .set RoundReceivedDamage, Player_MeleeDamage+0x454
 add_hook RoundReceivedDamage
+# Flame cancel
+add_hook Collision_AS_Bowser_FlameStartAir
 #endif
 # File patching
 #if defined(NTSC100) || defined(PAL)

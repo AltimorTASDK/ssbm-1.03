@@ -347,7 +347,23 @@ enum ActionState {
 	AS_NAMED_MAX
 };
 
+struct ActionStateInfo {
+	u32 subaction;
+	u32 stat_flags;
+	u8 flags1;
+	u8 flags2;
+	u8 flags3;
+	u8 flags4;
+	GObjProcCallback *animation_handler;
+	GObjProcCallback *interrupt_handler;
+	GObjProcCallback *physics_handler;
+	GObjProcCallback *collision_handler;
+	GObjProcCallback *camera_handler;
+};
+
 extern "C" {
+
+extern ActionStateInfo LinkActionStates[21];
 
 bool Interrupt_HammerJump(HSD_GObj *gobj);
 bool Interrupt_Jump(HSD_GObj *gobj);

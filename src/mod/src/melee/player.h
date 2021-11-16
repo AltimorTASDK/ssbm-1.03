@@ -299,6 +299,12 @@ bool Player_IsCPU(const Player *player);
 
 void PlayerThink_Input(HSD_GObj *gobj);
 
+bool Player_CollisionAir(HSD_GObj *gobj);
+void Player_AirToGroundTransition(Player *player);
+
+void Player_ASChange(HSD_GObj *gobj, u32 new_state, u32 flags, HSD_GObj *parent,
+                     f32 start_frame, f32 frame_rate, f32 lerp_override);
+
 bool GetPortRumbleFlag(u32 port);
 void SetPortRumbleFlag(u32 port, bool flag);
 

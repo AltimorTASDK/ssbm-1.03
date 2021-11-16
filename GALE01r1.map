@@ -291,7 +291,7 @@
 80068E2C 00000024 80068E2C 0 Add1toSpawnNumberTotal
 80068E50 00000034 80068E50 0 StageInfo_FlatzoneCheck_ModifyCharWidth
 80068E84 00000514 80068E84 0 AllocateAndInitPlayer
-80069398 00000E10 80069398 0 ActionStateChange
+80069398 00000E10 80069398 0 Player_ASChange
 8006A318 00000840 8006A318 0 PlayerThinkAgain
 8006AB58 0000004C 8006AB58 0 HumanOrCPUCheck
 8006ABA4 00000124 8006ABA4 0 Player_UpdateActionInputTimers
@@ -350,6 +350,7 @@
 8007D448 00000038 8007D448 0 Air_StoreBool_LoseGroundJump_NoECBfor10Frames
 8007D480 0000008C 8007D480 0 Air_StoreBool_LoseAllJumps_NoECBfor5Frames_NoXVeloc
 8007D50C 0000000C 8007D50C 0 Jumps_UseUpAllJumps
+8007d670 0000000C 8007d670 0 Player_AirToGroundTransition
 8007D7A0 00000038 8007D7A0 0 AS_FallorWait_CheckAirStateFlag
 8007D7D8 00000038 8007D7D8 0 Joystick_Angle_Retrieve_AbsX
 8007D810 00000038 8007D810 0 Player_GetCStickAngleAbsX
@@ -378,6 +379,7 @@
 800811B0 00000194 800811B0 0 AS_252_CliffCatch
 80081344 0000003C 80081344 0 AS_253_CliffWait_TimertoEnter
 800814DC 0000029C 800814DC 0 Interrupt_Walljump
+80081b4c 0000029C 80081b4c 0 Player_CollisionAir
 80081C14 00000158 80081C14 0 Damage_CheckIfHittingGround
 800820E4 000000F8 800820E4 0 CliffCatch_ChecktoEnter_CheckRegrabDisableByte
 80082548 00000098 80082548 0 Physics_Player_CopyCurrFrameToPrev
@@ -1309,7 +1311,7 @@
 8013521C 0000006C 8013521C 0 ch_Bowser_SpecialNStart_CollisionInterrupt
 80135288 0000006C 80135288 0 ch_Bowser_SpecialN_CollisionInterrupt
 801352F4 0000006C 801352F4 0 ch_Bowser_SpecialNEnd_CollisionInterrupt
-80135438 0000006C 80135438 0 ch_Bowser_SpecialAirNStart_CollisionInterrupt
+80135360 0000006C 80135360 0 Collision_AS_Bowser_FlameStartAir
 801353CC 0000006C 801353CC 0 ch_Bowser_SpecialAirN_CollisionInterrupt
 80135438 0000006C 80135438 0 ch_Bowser_SpecialAirNEnd_CollisionInterrupt
 8013592C 00000058 8013592C 0 ch_Bowser_SpecialHi_AnimationInterrupt
@@ -4090,6 +4092,7 @@
 803B24EC 00000178 803B24EC 0 Ab_Unknown_OnExtResultsScreen
 803ba348 00000000 803ba348 0 ScreenFlashCObjDesc
 803ba620 00000000 803ba620 0 CurrentBGMPath
+803c7138 00000000 803c7138 0 LinkActionStates
 803ea1ac 00000000 803ea1ac 0 MenuPanelAnimTable
 803ea9d0 00000000 803ea9d0 0 MenuTypeDataTable
 803ebafc 00000000 803ebafc 0 RuleValueBounds
