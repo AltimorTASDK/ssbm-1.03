@@ -13,26 +13,30 @@ export GCIDIR   := $(abspath gci)
 export LDFLAGS  := -Wl,-Map=output.map -Wl,--gc-sections -flto
 
 export DEFINES  := -DGEKKO -DPOLL_DEBUG -DPOLL_DEBUG_VERBOSE
+
+ifeq ($(VERSION),)
+$(error Specify Melee version with VERSION)
+else ifeq ($(VERSION), 100)
+export MELEELD  := $(abspath GALE01r0.ld)
+export DEFINES  += -DNTSC100
+else ifeq ($(VERSION), 102)
+export MELEELD  := $(abspath GALE01r2.ld)
+export DEFINES  += -DNTSC102
+else ifeq ($(VERSION), PAL)
+export MELEELD  := $(abspath GALP01.ld)
+export DEFINES  += -DPAL
+else
+$(error Unsupported Melee version "$(VERSION)")
+endif
+
+export MELEEMAP := $(MELEELD:.ld=.map)
+
 export CFLAGS   := $(DEFINES) -mogc -mcpu=750 -meabi -mhard-float -Os \
 				   -Wall -Wno-register -Wno-unused-value -Wconversion -Warith-conversion \
 				   -ffunction-sections -fdata-sections -flto -mno-sdata
 export ASFLAGS  := $(DEFINES) -Wa,-mregnames -Wa,-mgekko
 export CXXFLAGS := $(CFLAGS) -std=c++2b -fconcepts -fno-rtti -fno-exceptions
 export INCLUDE  := -Isrc -I$(DEVKITPATH)/libogc/include
-
-ifeq ($(VERSION),)
-$(error Specify Melee version with VERSION)
-else ifeq ($(VERSION), 100)
-export MELEELD  := $(abspath GALE01r0.ld)
-else ifeq ($(VERSION), 102)
-export MELEELD  := $(abspath GALE01r2.ld)
-else ifeq ($(VERSION), PAL)
-export MELEELD  := $(abspath GALP01.ld)
-else
-$(error Unsupported Melee version "$(VERSION)")
-endif
-
-export MELEEMAP := $(MELEELD:.ld=.map)
 
 .PHONY: all
 all: loader mod
