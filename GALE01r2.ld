@@ -1650,6 +1650,7 @@ Match_NoContestOrRetry                                       = 0x8016cf4c;
 Match_HandlePause                                            = 0x8016cfe0;
 Match_SetupPlayer                                            = 0x8016d8ac;
 Match_Init                                                   = 0x8016dcc0;
+Match_SetSpawnFacingDirections                               = 0x8016deec;
 PlayerBlock_MatchStartReadWriteValues                        = 0x8016e2bc;
 StartMelee                                                   = 0x8016e730;
 fk_MatchStart                                                = 0x8016e934;

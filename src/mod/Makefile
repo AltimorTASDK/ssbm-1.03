@@ -1,5 +1,21 @@
-ELFFILE  := bin/mod.elf
-BINFILE  := bin/mod.bin
+ifeq ($(VERSION), 100)
+ELFFILE := bin/mod-ntsc100.elf
+BINFILE := bin/mod-ntsc100.bin
+GCINAME := 103CodeNTSC100
+GCIFILE := $(BINDIR)/ssbm-1.03-ntsc100.gci
+else ifeq ($(VERSION), 102)
+ELFFILE := bin/mod.elf
+BINFILE := bin/mod.bin
+GCINAME := 103Code
+GCIFILE := $(BINDIR)/ssbm-1.03.gci
+else ifeq ($(VERSION), PAL)
+ELFFILE := bin/mod-pal.elf
+BINFILE := bin/mod-pal.bin
+GCINAME := 103CodePAL
+GCIFILE := $(BINDIR)/ssbm-1.03-pal.gci
+endif
+
+DIFFSRC  := bin/mod.bin
 
 OBJDIR   := obj
 DEPDIR   := dep
@@ -18,11 +34,19 @@ DEPFILES := $(patsubst $(OBJDIR)/%.o, $(DEPDIR)/%.d, $(OBJFILES))
 
 LINKSCRIPT := mod.ld
 
-GCIFILE     := $(BINDIR)/ssbm-1.03.gci
-
+ifeq ($(VERSION), 102)
 $(GCIFILE): $(BINFILE) $(TOOLS)/bin_to_gci.py
 	@[ -d $(@D) ] || mkdir -p $(@D)
-	python $(TOOLS)/bin_to_gci.py $< $@ "103Code"
+	python $(TOOLS)/bin_to_gci.py $< $@ $(GCINAME)
+else
+$(GCIFILE): $(BINFILE).diff $(TOOLS)/bin_to_gci.py
+	@[ -d $(@D) ] || mkdir -p $(@D)
+	python $(TOOLS)/bin_to_gci.py $< $@ $(GCINAME)
+
+$(BINFILE).diff: $(BINFILE) $(TOOLS)/diff.py
+	@[ -d $(@D) ] || mkdir -p $(@D)
+	python $(TOOLS)/diff.py $(DIFFSRC) $< $@
+endif
 
 $(BINFILE): $(ELFFILE)
 	@[ -d $(@D) ] || mkdir -p $(@D)

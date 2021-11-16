@@ -1,6 +1,18 @@
 ELFFILE  := $(GCIDIR)/1.03_data/loader.elf
 BINFILE  := $(GCIDIR)/1.03_data/loader.bin
 
+ifeq ($(VERSION), 100)
+ELFFILE  := $(GCIDIR)/1.03_data/loader-ntsc100.elf
+BINFILE  := $(GCIDIR)/1.03_data/loader-ntsc100.bin
+else ifeq ($(VERSION), 102)
+ELFFILE  := $(GCIDIR)/1.03_data/loader-ntsc102.elf
+BINFILE  := $(GCIDIR)/1.03_data/loader-ntsc102.bin
+else ifeq ($(VERSION), PAL)
+ELFFILE  := $(GCIDIR)/1.03_data/loader-pal.elf
+BINFILE  := $(GCIDIR)/1.03_data/loader-pal.bin
+GCINAME := 103CodePAL
+endif
+
 OBJDIR   := obj
 DEPDIR   := dep
 SOURCES  := src
