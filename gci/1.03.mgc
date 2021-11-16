@@ -27,6 +27,10 @@ The save file has three main components:
 !loc 80461834
 !file "1.03_data/loader-ntsc102.bin"
 
+# 1.01 loader
+!loc 80462834
+!file "1.03_data/loader-ntsc101.bin"
+
 # 1.00 loader
 !loc 80463834
 !file "1.03_data/loader-ntsc100.bin"
