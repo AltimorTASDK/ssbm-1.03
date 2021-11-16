@@ -1,36 +1,18 @@
+#include "hsd/memory.h"
+#include "os/os.h"
+#include "os/thread.h"
+#include "util/gc/wait_object.h"
 #include <cstddef>
 #include <cstdio>
 #include <cstring>
+#include <gctypes.h>
 #include <ogc/card.h>
-
-struct OSContext {
-	char pad000[0x2C8];
-};
-
-struct OSThread {
-	OSContext ctx;
-	char pad2C8[0x310 - 0x2C8];
-};
-
-struct OSThreadQueue {
-	OSThread *next;
-	OSThread *prev;
-};
 
 extern "C" {
 
 void TRK_flush_cache(const void *start, u32 size);
 
-void *HSD_MemAlloc(u32 size);
-void HSD_Free(void *ptr);
-
-void OSReport(const char *fmt, ...);
-
-void OSRestoreInterrupts(u32 level);
-
 void OSEnableScheduler();
-void OSSleepThread(OSThreadQueue *queue);
-void OSWakeupThread(OSThreadQueue *queue);
 
 s32 OSSaveContext(OSContext *context);
 void OSDefaultErrorHandler(OSContext *context);
@@ -46,7 +28,7 @@ static void *mod_init = (void*)0x817B1000;
 
 static card_file file;
 static card_stat stats;
-static OSThreadQueue sleep_queue;
+static wait_object wait;
 static void *read_dest;
 static const char *read_file;
 
@@ -76,7 +58,7 @@ static void card_callback(s32 chan, s32 result)
 	}
 
 	// Wake up the main thread
-	OSWakeupThread(&sleep_queue);
+	wait.wake();
 }
 
 static void read_callback(s32 chan, s32 result)
@@ -98,7 +80,7 @@ static void read_callback(s32 chan, s32 result)
 
 	if (read_dest == nullptr) {
 		// Wake up the main thread
-		OSWakeupThread(&sleep_queue);
+		wait.wake();
 		return;
 	}
 
@@ -123,13 +105,15 @@ static u32 card_read(const char *file, void *dest)
 	read_file = file;
 	read_dest = dest;
 
+	wait.reset();
+
 	if (s32 error = CARD_MountAsync(0, CardWorkArea, nullptr, read_callback); error < 0) {
 		panic("CARD_MountAsync failed (%d)\n", error);
 		return 0;
 	}
 
 	// Wait for read to complete
-	OSSleepThread(&sleep_queue);
+	wait.sleep();
 
 	CARD_Unmount(0);
 
