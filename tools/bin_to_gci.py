@@ -25,22 +25,22 @@ def write_gci_header(file, filename, block_count):
     file.write(struct.pack(">I", 0))               # Comments address
 
 def main():
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 4:
         print("Usage: bin_to_gci.py <in> <out> <gci filename>", file=sys.stderr)
         sys.exit(1)
-        
+
     in_path = sys.argv[1]
     out_path = sys.argv[2]
     filename = sys.argv[3]
-        
+
     with open(in_path, "rb") as f:
         data = f.read()
-        
+
     block_count = (len(data) + BLOCK_SIZE - 1) // BLOCK_SIZE
-    
+
     # Pad to block size
     data = data.ljust(block_count * BLOCK_SIZE, b"\x00")
-        
+
     with open(out_path, "wb") as f:
         write_gci_header(f, filename.encode(), block_count)
         f.write(data)
