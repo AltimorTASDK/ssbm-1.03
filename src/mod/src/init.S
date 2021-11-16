@@ -202,6 +202,7 @@ add_hook SceneLoopStart
 add_hook FirstEngineFrame
 add_hook HSD_VICopyXFBASync
 add_hook UpdatePadFetchRate
+add_hook SISetSamplingRate
 #ifdef POLL_DEBUG
 add_hook PadFetchCallback
 add_hook HSD_PerfSetStartTime
@@ -288,5 +289,10 @@ add_hook IsFeatureUnlocked
 add_hook IsTrophyUnlocked
 add_hook GetUnlockedEventMatchCount
 add_hook ShouldShowUnlockMessage
+# v1.02 mechanics
+#if defined(NTSC100) || defined(NTSC101)
+.set RoundReceivedDamage, Player_MeleeDamage+0x454
+add_hook RoundReceivedDamage
+#endif
 
 hooks_end:
