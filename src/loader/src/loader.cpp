@@ -238,8 +238,10 @@ extern "C" [[gnu::section(".init")]] void _start()
 	const auto code_size = card_read("103Code", mod_init);
 #else
 	auto *base = alloc_and_read("103Code");
-#ifdef NTSC100
+#if defined(NTSC100)
 	auto *diff = alloc_and_read("103CodeNTSC100");
+#elif defined(NTSC101)
+	auto *diff = alloc_and_read("103CodeNTSC101");
 #endif
 	const auto code_size = apply_diff((char*)base, (char*)diff, (char*)mod_init);
 #endif
