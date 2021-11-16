@@ -1,5 +1,3 @@
-#include "resources/patches/ntsc100/PlGn.diff.h"
-
 #if defined(NTSC100) || defined(PAL)
 
 #include "hsd/gobj.h"
@@ -11,6 +9,8 @@
 #include <gctypes.h>
 #include <string>
 #include <tuple>
+
+//#include "resources/patches/ntsc100/PlGn.diff.h"
 
 /*const auto patch_table = std::array {
 #ifdef NTSC100
