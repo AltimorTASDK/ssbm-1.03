@@ -20,6 +20,8 @@ extern "C" void NameTag_Think(HSD_GObj *gobj);
 
 extern "C" void VsMenu_Think();
 
+extern "C" void Damage_DamageStale();
+
 extern "C" double CSSAnimStartFrame;
 
 constexpr u32 NOP = 0x60000000;
@@ -75,6 +77,9 @@ static const auto patches = patch_list {
 	// Replace tournament melee with debug menu
 	// li r0, 6
 	std::pair { (char*)VsMenu_Think+0xA4,         0x38000006u },
+	// Enable damage staling in develop mode
+	// b 0x8
+	std::pair { (char*)Damage_DamageStale+0x28,   0x48000008u },
 #if 0
 	// Clone characters slide out from behind CSS
 	std::pair { (char*)&CSSAnimStartFrame,        0.0 },
