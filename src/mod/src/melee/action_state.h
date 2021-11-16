@@ -363,8 +363,6 @@ struct ActionStateInfo {
 
 extern "C" {
 
-extern ActionStateInfo LinkActionStates[21];
-
 bool Interrupt_HammerJump(HSD_GObj *gobj);
 bool Interrupt_Jump(HSD_GObj *gobj);
 

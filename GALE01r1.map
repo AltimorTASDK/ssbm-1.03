@@ -4093,6 +4093,7 @@
 803ba348 00000000 803ba348 0 ScreenFlashCObjDesc
 803ba620 00000000 803ba620 0 CurrentBGMPath
 803c7138 00000000 803c7138 0 LinkActionStates
+803d02c0 00000000 803d02c0 0 YLinkActionStates
 803ea1ac 00000000 803ea1ac 0 MenuPanelAnimTable
 803ea9d0 00000000 803ea9d0 0 MenuTypeDataTable
 803ebafc 00000000 803ebafc 0 RuleValueBounds
