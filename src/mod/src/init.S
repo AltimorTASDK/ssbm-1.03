@@ -294,5 +294,9 @@ add_hook ShouldShowUnlockMessage
 .set RoundReceivedDamage, Player_MeleeDamage+0x454
 add_hook RoundReceivedDamage
 #endif
+# File patching
+#if defined(NTSC100) || defined(PAL)
+add_hook Player_InitializeFromInfo
+#endif
 
 hooks_end:

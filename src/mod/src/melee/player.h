@@ -115,6 +115,12 @@ struct PopoData {
 	f32 direction;
 };
 
+struct CharacterData {
+	char pad000[0x08];
+	u8 *archive_base;
+	char pad00C[0x54 - 0x0C];
+};
+
 struct Player {
 	static constexpr auto MAX_HITBOXES = 4;
 	static constexpr auto MAX_HURTBOXES = 15;
@@ -149,7 +155,9 @@ struct Player {
 	f32 ground_pushback_vel;
 	f32 jostle_delta_x;
 	f32 jostle_delta_z;
-	char pad0100[0x3E4 - 0x100];
+	char pad0100[0x10C - 0x100];
+	CharacterData *character_data;
+	char pad0110[0x3E4 - 0x110];
 	SubactionState subaction_state;
 	char pad0400[0x4B8 - 0x400];
 	f32 overlay_r;
@@ -275,7 +283,7 @@ struct Player {
 };
 
 extern "C" {
-	
+
 HSD_GObj *PlayerBlock_GetSubCharGObj(s32 slot, s32 subchar);
 HSD_GObj *PlayerBlock_GetGObj(s32 slot);
 s32 PlayerBlock_GetCharacterID(s32 slot, s32 subchar);
@@ -293,7 +301,7 @@ void PlayerThink_Input(HSD_GObj *gobj);
 
 bool GetPortRumbleFlag(u32 port);
 void SetPortRumbleFlag(u32 port, bool flag);
-	
+
 }
 
 // Like Player_IsCPU, but returns false for a synced human Nana
@@ -301,6 +309,6 @@ inline bool Player_IsCPUControlled(const Player *player)
 {
 	if (PlayerBlock_GetSlotType(player->slot) != SlotType_Human)
 		return true;
-		
+
 	return player->is_backup_climber && !player->is_nana_synced;
 }
