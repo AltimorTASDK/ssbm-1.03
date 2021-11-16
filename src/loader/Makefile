@@ -10,7 +10,6 @@ BINFILE  := $(GCIDIR)/1.03_data/loader-ntsc102.bin
 else ifeq ($(VERSION), PAL)
 ELFFILE  := $(GCIDIR)/1.03_data/loader-pal.elf
 BINFILE  := $(GCIDIR)/1.03_data/loader-pal.bin
-GCINAME := 103CodePAL
 endif
 
 OBJDIR   := obj

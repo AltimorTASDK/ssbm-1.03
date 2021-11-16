@@ -118,14 +118,14 @@ static void patch_crash_screen()
 	TRK_flush_cache(patch_location, 4);
 }
 
-u32 card_read(const char *file, void *dest)
+static u32 card_read(const char *file, void *dest)
 {
 	read_file = file;
 	read_dest = dest;
 
 	if (s32 error = CARD_MountAsync(0, CardWorkArea, nullptr, read_callback); error < 0) {
 		panic("CARD_MountAsync failed (%d)\n", error);
-		return;
+		return 0;
 	}
 
 	// Wait for read to complete
@@ -136,7 +136,8 @@ u32 card_read(const char *file, void *dest)
 	return stats.len;
 }
 
-void *alloc_and_read(const char *file)
+#ifndef NTSC102
+static void *alloc_and_read(const char *file)
 {
 	const auto size = card_read(file, nullptr);
 	auto *buf = HSD_MemAlloc(size);
@@ -144,7 +145,7 @@ void *alloc_and_read(const char *file)
 	return buf;
 }
 
-void apply_diff(const char *base, const char *diff, char *out)
+static u32 apply_diff(const char *base, const char *diff, char *out)
 {
 	enum {
 		CMD_EOF              = 0,
@@ -158,38 +159,85 @@ void apply_diff(const char *base, const char *diff, char *out)
 		CMD_COPY_POS32_LEN32 = 254
 	};
 
-	auto offset = 0;
+	char *start = out;
 
 	while (*diff != CMD_EOF) {
 		switch (*diff) {
-		default:
-			const auto len = *(u8*)(diff + 1);
+		default: {
+			const auto len = *(u8*)diff;
 			memcpy(out, diff + 1, len);
 			out += len;
 			diff += 1 + len;
 			break;
-		case CMD_DATA_LEN16:
+		}
+		case CMD_DATA_LEN16: {
 			const auto len = *(u16*)(diff + 1);
 			memcpy(out, diff + 3, len);
 			out += len;
 			diff += 3 + len;
 			break;
-		case CMD_DATA_LEN32:
+		}
+		case CMD_DATA_LEN32: {
 			const auto len = *(u32*)(diff + 1);
 			memcpy(out, diff + 5, len);
 			out += len;
 			diff += 5 + len;
 			break;
-		case CMD_COPY_POS16_LEN8:
+		}
+		case CMD_COPY_POS16_LEN8: {
 			const auto pos = *(u16*)(diff + 1);
 			const auto len = *(u8*)(diff + 3);
-			memcpy(out, diff + 5, len);
+			memcpy(out, base + pos, len);
 			out += len;
 			diff += 4;
 			break;
 		}
+		case CMD_COPY_POS16_LEN16: {
+			const auto pos = *(u16*)(diff + 1);
+			const auto len = *(u16*)(diff + 3);
+			memcpy(out, base + pos, len);
+			out += len;
+			diff += 5;
+			break;
+		}
+		case CMD_COPY_POS16_LEN32: {
+			const auto pos = *(u16*)(diff + 1);
+			const auto len = *(u32*)(diff + 3);
+			memcpy(out, base + pos, len);
+			out += len;
+			diff += 7;
+			break;
+		}
+		case CMD_COPY_POS32_LEN8: {
+			const auto pos = *(u32*)(diff + 1);
+			const auto len = *(u8*)(diff + 5);
+			memcpy(out, base + pos, len);
+			out += len;
+			diff += 6;
+			break;
+		}
+		case CMD_COPY_POS32_LEN16: {
+			const auto pos = *(u32*)(diff + 1);
+			const auto len = *(u16*)(diff + 5);
+			memcpy(out, base + pos, len);
+			out += len;
+			diff += 7;
+			break;
+		}
+		case CMD_COPY_POS32_LEN32: {
+			const auto pos = *(u32*)(diff + 1);
+			const auto len = *(u32*)(diff + 5);
+			memcpy(out, base + pos, len);
+			out += len;
+			diff += 9;
+			break;
+		}
+		}
 	}
+
+	return (u32)(out - start);
 }
+#endif
 
 extern "C" [[gnu::section(".init")]] void _start()
 {
@@ -209,7 +257,7 @@ extern "C" [[gnu::section(".init")]] void _start()
 #ifdef NTSC100
 	auto *diff = alloc_and_read("103CodeNTSC100");
 #endif
-
+	const auto code_size = apply_diff((char*)base, (char*)diff, (char*)mod_init);
 #endif
 
 	TRK_flush_cache(mod_init, code_size);
