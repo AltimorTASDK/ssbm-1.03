@@ -39,7 +39,7 @@ export CFLAGS   := $(DEFINES) -mogc -mcpu=750 -meabi -mhard-float -Os \
 				   -ffunction-sections -fdata-sections -flto -mno-sdata
 export ASFLAGS  := $(DEFINES) -Wa,-mregnames -Wa,-mgekko
 export CXXFLAGS := $(CFLAGS) -std=c++2b -fconcepts -fno-rtti -fno-exceptions
-export INCLUDE  := -Isrc -I$(DEVKITPATH)/libogc/include
+export INCLUDE  := -Isrc -I$(abspath src/mod/src) -I$(DEVKITPATH)/libogc/include
 
 .PHONY: all
 all: loader mod
