@@ -5,8 +5,7 @@ zero: .float 0
 
 .section .text
 
-.global hook_RoundReceivedDamage
-hook_RoundReceivedDamage:
+round_up_damage:
         # Check if damage is rounded to 0
         cmpwi   r0, 0
         bne     1f
@@ -21,6 +20,16 @@ hook_RoundReceivedDamage:
         li      r0, 1
 
 1:
+        blr
+
+.global hook_RoundDealtDamage
+hook_RoundDealtDamage:
+        bl      round_up_damage
+        b       orig_RoundDealtDamage
+
+.global hook_RoundReceivedDamage
+hook_RoundReceivedDamage:
+        bl      round_up_damage
         b       orig_RoundReceivedDamage
 
 #endif

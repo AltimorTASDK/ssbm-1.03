@@ -291,7 +291,9 @@ add_hook GetUnlockedEventMatchCount
 add_hook ShouldShowUnlockMessage
 #if defined(NTSC100) || defined(NTSC101)
 # v1.02 hitlag
+.set RoundDealtDamage, Player_MeleeDamage+0x36C
 .set RoundReceivedDamage, Player_MeleeDamage+0x454
+add_hook RoundDealtDamage
 add_hook RoundReceivedDamage
 # Flame cancel
 add_hook Collision_AS_Bowser_FlameStartAir
