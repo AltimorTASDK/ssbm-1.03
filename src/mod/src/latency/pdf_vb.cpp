@@ -63,8 +63,8 @@ static void pad_sample_callback()
 {
 #ifdef POLL_DEBUG
 	const auto current_poll_time = OSGetTime();
-#endif
 	const auto current_poll_line = VIGetCurrentLine();
+#endif
 	const auto current_retrace_count = VIGetRetraceCount();
 	const auto index = current_retrace_count > last_poll_retrace_count ? 0 : 1;
 
