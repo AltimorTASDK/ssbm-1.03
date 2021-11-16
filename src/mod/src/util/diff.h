@@ -17,7 +17,6 @@ inline u32 apply_diff(const char *base, const char *diff, char *out)
 		CMD_COPY_POS32_LEN32 = 254
 	};
 
-	char *start = out;
 	u32 offset = 0;
 
 	while (*diff != CMD_EOF) {
