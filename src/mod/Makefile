@@ -3,6 +3,11 @@ ELFFILE := bin/mod-ntsc100.elf
 BINFILE := bin/mod-ntsc100.bin
 GCINAME := 103CodeNTSC100
 GCIFILE := $(BINDIR)/ssbm-1.03-ntsc100.gci
+else ifeq ($(VERSION), 101)
+ELFFILE := bin/mod-ntsc101.elf
+BINFILE := bin/mod-ntsc101.bin
+GCINAME := 103CodeNTSC101
+GCIFILE := $(BINDIR)/ssbm-1.03-ntsc101.gci
 else ifeq ($(VERSION), 102)
 ELFFILE := bin/mod.elf
 BINFILE := bin/mod.bin

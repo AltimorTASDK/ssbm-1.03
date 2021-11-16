@@ -12,13 +12,16 @@ export GCIDIR   := $(abspath gci)
 
 export LDFLAGS  := -Wl,-Map=output.map -Wl,--gc-sections -flto
 
-export DEFINES  := -DGEKKO -DPOLL_DEBUG -DPOLL_DEBUG_VERBOSE
+export DEFINES  := -DGEKKO
 
 ifeq ($(VERSION),)
 $(error Specify Melee version with VERSION)
 else ifeq ($(VERSION), 100)
 export MELEELD  := $(abspath GALE01r0.ld)
 export DEFINES  += -DNTSC100
+else ifeq ($(VERSION), 101)
+export MELEELD  := $(abspath GALE01r1.ld)
+export DEFINES  += -DNTSC101
 else ifeq ($(VERSION), 102)
 export MELEELD  := $(abspath GALE01r2.ld)
 export DEFINES  += -DNTSC102
