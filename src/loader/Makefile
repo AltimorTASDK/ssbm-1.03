@@ -4,6 +4,9 @@ BINFILE  := $(GCIDIR)/1.03_data/loader.bin
 ifeq ($(VERSION), 100)
 ELFFILE  := $(GCIDIR)/1.03_data/loader-ntsc100.elf
 BINFILE  := $(GCIDIR)/1.03_data/loader-ntsc100.bin
+else ifeq ($(VERSION), 101)
+ELFFILE  := $(GCIDIR)/1.03_data/loader-ntsc101.elf
+BINFILE  := $(GCIDIR)/1.03_data/loader-ntsc101.bin
 else ifeq ($(VERSION), 102)
 ELFFILE  := $(GCIDIR)/1.03_data/loader-ntsc102.elf
 BINFILE  := $(GCIDIR)/1.03_data/loader-ntsc102.bin
