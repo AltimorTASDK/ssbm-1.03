@@ -69,6 +69,9 @@ def make_diff(a, b, out):
         offset += 1
         data_len += 1
 
+    # Add any remaining data
+    cmd_data(data_pos, data_len)
+
     out.write(struct.pack(">B", CMD_EOF))
 
 def main():
