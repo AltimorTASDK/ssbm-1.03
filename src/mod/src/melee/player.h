@@ -247,11 +247,25 @@ struct Player {
 		u8 is_invisible : 1;
 	};
 	struct {
+#ifdef PAL
+		u8 flags8_80 : 1;
+		u8 flags8_40 : 1;
+		u8 flags8_20 : 1;
+		u8 flags8_10 : 1;
+		u8 flags8_08 : 1;
+		u8 no_update : 1;
+		u8 is_backup_climber : 1;
+		u8 flags8_01 : 1;
+#else
 		u8 flags8_80 : 1;
 		u8 flags8_40 : 1;
 		u8 flags8_20 : 1;
 		u8 no_update : 1;
 		u8 is_backup_climber : 1;
+		u8 flags8_04 : 1;
+		u8 flags8_02 : 1;
+		u8 flags8_01 : 1;
+#endif
 	};
 	u8 flags9;
 	u8 flags10;
