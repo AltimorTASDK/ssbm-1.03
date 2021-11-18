@@ -91,6 +91,10 @@ static void post_retrace_callback(u32 retrace_count)
 	// Fetch on retrace in normal latency mode or if there won't be SI reads
 	if (get_latency() == latency_mode::crt || Si.poll.enable == 0)
 		PadFetchCallback();
+
+	// Wake game thread when polling is disabled so it doesn't hang
+	if (get_latency() == latency_mode::lcd && Si.poll.enable == 0)
+		OSWakeupThread(&half_vb_thread_queue);
 }
 
 extern "C" void orig_UpdatePadFetchRate();
@@ -113,7 +117,7 @@ extern "C" void hook_SISetSamplingRate(u32 msecs)
 
 extern "C" void scene_loop_start()
 {
-	if (get_latency() != latency_mode::lcd)
+	if (get_latency() != latency_mode::lcd || Si.poll.enable == 0)
 		return;
 
 	const auto irq_enable = OSDisableInterrupts();
