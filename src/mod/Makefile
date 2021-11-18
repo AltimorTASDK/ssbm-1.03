@@ -39,6 +39,9 @@ DEPFILES := $(patsubst $(OBJDIR)/%.o, $(DEPDIR)/%.d, $(OBJFILES))
 
 LINKSCRIPT := mod.ld
 
+CFLAGS  += -flto
+LDFLAGS += -flto
+
 ifeq ($(VERSION), 102)
 $(GCIFILE): $(BINFILE) $(TOOLS)/bin_to_gci.py
 	@[ -d $(@D) ] || mkdir -p $(@D)

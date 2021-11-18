@@ -1,4 +1,6 @@
 #include "hsd/memory.h"
+#include "melee/nametag.h"
+#include "melee/scene.h"
 #include "os/os.h"
 #include "os/thread.h"
 #include "util/diff.h"
@@ -7,11 +9,18 @@
 #include <cstdio>
 #include <cstring>
 #include <gctypes.h>
+#include <ogc/cache.h>
 #include <ogc/card.h>
 
 extern "C" {
 
-void TRK_flush_cache(const void *start, u32 size);
+extern void *CardWorkArea;
+
+extern char SaveFileName[25];
+
+extern char __LOAD_BASE__;
+extern char __COPY_START__;
+extern char __COPY_SIZE__;
 
 void OSEnableScheduler();
 
@@ -21,7 +30,7 @@ s32 DisplayCrashScreen(OSContext *context);
 
 void InitCardBuffers();
 
-extern void *CardWorkArea;
+u32 MemoryCard_DoLoadData();
 
 }
 
@@ -98,7 +107,7 @@ static void patch_crash_screen()
 	auto *patch_location = (char*)DisplayCrashScreen+0x4C;
 	*(u32*)patch_location = 0x48000220u;
 
-	TRK_flush_cache(patch_location, 4);
+	ICInvalidateRange(patch_location, 4);
 }
 
 static u32 card_read(const char *file, void *dest)
@@ -131,7 +140,7 @@ static void *alloc_and_read(const char *file)
 }
 #endif
 
-extern "C" [[gnu::section(".init")]] void _start()
+extern "C" [[gnu::section(".loader")]] void load_mod()
 {
 	OSReport("Running 1.03 loader\n");
 
@@ -154,9 +163,23 @@ extern "C" [[gnu::section(".init")]] void _start()
 	const auto code_size = apply_diff((char*)base, (char*)diff, (char*)mod_init);
 #endif
 
-	TRK_flush_cache(mod_init, code_size);
+	ICInvalidateRange(mod_init, code_size);
+
+	// Use a different save file name
+	// Overwriting the end retains 20XX's modified save name
+	strcpy(SaveFileName + strlen(SaveFileName) - 4, "_103");
+
+	// Clear nametags
+	memset(NameTag_GetEntry(0), 0, sizeof(NameTagEntry) * 120);
 
 	// Run mod init
 	OSReport("Running 1.03\n");
 	((void(*)())mod_init)();
+
+	// Load new save file
+	MemoryCard_DoLoadData();
+
+	// Boot to CSS
+	*(u8*)Scene_GetExitData() = Scene_VsMode;
+	Scene_Exit();
 }

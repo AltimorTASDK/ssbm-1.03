@@ -17,13 +17,13 @@ SECTIONS
 {
     /DISCARD/ : { *crtbegin.o(*) *crtend.o(*) }
 
-    .init   : { *(.init   .init.*) }
-    .text   : { *(.text   .text.*) }
-    .rodata : { *(.rodata .rodata.*) }
+    .init   : {      *(.init   .init.*) }
+    .text   : {      *(.text   .text.*) }
+    .rodata : {      *(.rodata .rodata.*) }
     .ctors  : { KEEP(*(.ctors .ctors.*)) }
-    .data   : { *(.data   .data.*) }
+    .data   : {      *(.data   .data.*) }
     PROVIDE(__BSS_START__ = .);
-    .bss    : { *(.bss    .bss.*) }
+    .bss    : {      *(.bss    .bss.*) }
     PROVIDE(__BSS_SIZE__ = . - __BSS_START__);
 
     /DISCARD/ : { *(*) }

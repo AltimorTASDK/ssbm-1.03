@@ -101,7 +101,7 @@ write_branch:
         lwz     r0, 16(r1)
         lwz     r31, 8(r1)
         addi    r1, r1, 12
-        mtlr
+        mtlr    r0
         blr
 
 hooks_start:

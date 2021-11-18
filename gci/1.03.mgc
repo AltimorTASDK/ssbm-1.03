@@ -1,36 +1,40 @@
-1.03 Version A MGC SCRIPT
-
-The save file has three main components:
-1. The ACE exploit that runs our custom code when entering "Name Entry" in Melee
-2. The custom data we want to load, such as the Gecko codehandler and codeset
-3. The datacopy table, which tells the ACE loader where to copy our custom data
---------------------------------------------------------------------------------
-
 !begin
 
-!src "1.03_data/ace_exploit.mgc"
-!src "1.03_data/datacopy_table.mgc"
+# Make the first nametag so long that it overflows into the stack's return pointer
+!loc 8045d850
+DDDDDDDD DDDDDDDD DDDDDDDD DDDDDDDD
+DDDDDDDD DDDDDDDD DDDDDDDD DDDDDDDD
+DDDDDDDD DDDDDDDD DDDDDDDD DDDDDDDD
+DDDDDDDD DDDDDDDD DDDDDDDD DDDDDDDD
+DDDDDDDD DDDDDDDD DDDDDDDD DDDDDDDD
+DDDDDDDD DDDDDDDD DDDDDDDD DDDDDDDD
+DDDDDDDD DDDDDDDD DDDDDDDD DDDDDDDD
+DDDDDDDD DDDDDDDD DDDDDDDD DDDDDDDD
+DDDDDDDD DDDDDDDD DDDDDDDD DDDDDDDD
+DDDDDDDD DDDDDDDD DDDDDDDD DDDDDDDD
+DDDDDDDD DDDDDDDD DDDDDDDD DDDDDDDD
+DDDDDDDD DDDDDDDD DDDDDDDD DDDDDDDD
+DDDDDDDD DDDDDDDD DDDDDDDD DDDDDDDD
+DDDDDDDD 804ee8f8 8045d930 00000000
 
-# Load our custom data into the addresses expected by the datacopy table
-
-# Internal filename
-!loc 8046180c
-!string "103Settings"
-# pad to 0x18 length
-00 00 00 00 00 00 00 00 00 00 00 00 00
-
-# Displayed filename
-!loc 80461824
-!string "1.03 Datafile"
+# This forces execution to branch to 8045d930 instead of back to the nametag
+# function. Better yet, 8045d930 is at a different offset in each version
+# of Melee, because the save file loads into slightly different spots.
+# This means we can conveniently run different code for each Melee version
+# using only one save file.
+#
+# v1.02: 8045d930
+# v1.01: 8045e610
+# v1.00: 8045f8f8
 
 # 1.02 loader
-!loc 80461834
+!loc 8045d930
 !file "1.03_data/loader-ntsc102.bin"
 
 # 1.01 loader
-!loc 80462834
+!loc 8045e610
 !file "1.03_data/loader-ntsc101.bin"
 
 # 1.00 loader
-!loc 80463834
+!loc 8045f8f8
 !file "1.03_data/loader-ntsc100.bin"
