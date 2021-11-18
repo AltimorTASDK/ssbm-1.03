@@ -80,10 +80,28 @@ ctor_end:
  * Returns address
  */
 write_branch:
+        mflr    r0
+        stw     r0, 4(r1)
+        stwu    r1, -12(r1)
+        stw     r31, 8(r1)
+
+        mr      r31, r3
+
         sub     r0, r4, r3
         rlwinm  r0, r0, 0, 6, 29
         oris    r0, r0, 0x4800
         stw     r0, 0(r3)
+
+        # Clear cache for overwritten instruction
+        li      r4, 4
+        bl      ICInvalidateRange
+
+        mr      r3, r31
+
+        lwz     r0, 16(r1)
+        lwz     r31, 8(r1)
+        addi    r1, r1, 12
+        mtlr
         blr
 
 hooks_start:
