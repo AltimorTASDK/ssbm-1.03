@@ -52,6 +52,12 @@ def make_diff(a, b, out):
         # Check for a copy large enough to be more efficient
         for check_len in range(7, len(b) - offset):
             data = b[offset:offset+check_len]
+
+            # Check to extend previous match
+            if match_len != 0 and data == a[match_pos:match_pos+check_len]:
+                    match_len = check_len
+                    continue
+
             try:
                 index = a.index(data)
                 match_len = check_len
