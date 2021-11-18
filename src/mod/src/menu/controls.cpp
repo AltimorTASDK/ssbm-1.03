@@ -20,7 +20,7 @@
 
 enum class option {
 	min,
-	
+
 	z_jump = min,
 	perfect_wavedash,
 	c_up,
@@ -32,7 +32,7 @@ enum class option {
 
 	ok = max_toggle,
 	redo,
-	
+
 	max
 };
 
@@ -151,7 +151,7 @@ static struct {
 	int right_arrow_timer;
 	int footer_timer;
 	Text *description_text;
-	
+
 	struct {
 		int value;
 		Text *label_text;
@@ -159,7 +159,7 @@ static struct {
 		int left_arrow_timer;
 		int right_arrow_timer;
 	} toggles[toggle_count];
-	
+
 	void init()
 	{
 		selected = option::min;
@@ -169,31 +169,31 @@ static struct {
 			toggles[index].left_arrow_timer = 0;
 			toggles[index].right_arrow_timer = 0;
 		}
-		
+
 		load_config();
 	}
-	
+
 	auto *get_toggle(option index)
 	{
 		return &toggles[std::to_underlying(index)];
 	}
-	
+
 	void update_value_text(int index)
 	{
 		toggles[index].value_text->data = value_text_data[index][toggles[index].value];
 	}
-	
+
 	void update_description()
 	{
 		description_text->data = description_text_data[std::to_underlying(selected)];
 	}
-	
+
 	void set_selected(option value)
 	{
 		selected = value;
 		update_description();
 	}
-	
+
 	void exit()
 	{
 		Scene_SetMajorPending(Scene_Menu);
@@ -206,7 +206,7 @@ static struct {
 			toggles[index].value = 0;
 			update_value_text(index);
 		}
-		
+
 		set_selected(option::min);
 	}
 
@@ -221,7 +221,7 @@ static struct {
 
 		Menu_PlaySFX(MenuSFX_Scroll);
 	}
-	
+
 	void scroll_down()
 	{
 		if (selected >= option::max_toggle)
@@ -249,7 +249,7 @@ static struct {
 			exit();
 		}
 	}
-	
+
 	void scroll_left()
 	{
 		Menu_PlaySFX(MenuSFX_Scroll);
@@ -285,7 +285,7 @@ static struct {
 	void load_config()
 	{
 		auto *config = &controller_configs[port];
-		
+
 		get_toggle(option::z_jump)->value =
 			config->z_jump_bit == __builtin_ctz(Button_X) ? 1 :
 			config->z_jump_bit == __builtin_ctz(Button_Y) ? 2 : 0;
@@ -305,7 +305,7 @@ static struct {
 		get_toggle(option::tap_jump)->value =
 			config->tap_jump ? 0 : 1;
 	}
-	
+
 	void save_config()
 	{
 		auto *config = &controller_configs[port];
@@ -382,19 +382,19 @@ static HSD_GObj *create_model(ArchiveModelScene *model, GObjProcCallback callbac
 	auto *jobj = HSD_JObjLoadDesc(model->joint);
 	GObj_InitKindObj(gobj, GOBJ_KIND_JOBJ, jobj);
 	GObj_SetupGXLink(gobj, GObj_GXProcJoint, gx_link, 0);
-	
+
 	if (callback != nullptr)
 		GObj_AddProc(gobj, callback, 0);
-		
+
 	if (animated) {
 		HSD_JObjAddSceneAnimByIndex(jobj, model, anim_index);
 		HSD_JObjReqAnimAll(jobj, anim_frame);
 		HSD_JObjAnimAll(jobj);
 	}
-		
+
 	if (hidden)
 		HSD_JObjSetFlagsAll(jobj, HIDDEN);
-		
+
 	return gobj;
 }
 
@@ -439,7 +439,7 @@ static void update_option(HSD_GObj *gobj)
 {
 	const auto index = gobj->get_primitive<option>();
 	auto *jobj = gobj->get_hsd_obj<HSD_JObj>();
-	
+
 	if (index == menu_state.selected) {
 		HSD_JObjLoopAnim(jobj, { 10, 20, 10 });
 	} else {
@@ -481,13 +481,13 @@ static void update_footer(HSD_GObj *gobj)
 {
 	auto *jobj = gobj->get_hsd_obj<HSD_JObj>();
 	auto [redo, ok] = HSD_JObjGetFromTreeTuple<1, 5>(jobj);
-	
+
 	const auto flash_frame = (float)menu_state.footer_timer;
 	HSD_JObjReqAnimAll(ok,   menu_state.selected == option::ok   ? flash_frame : 0);
 	HSD_JObjReqAnimAll(redo, menu_state.selected == option::redo ? flash_frame : 0);
 	HSD_JObjAnimAll(ok);
 	HSD_JObjAnimAll(redo);
-	
+
 	menu_state.footer_timer = (menu_state.footer_timer + 1) % 20;
 }
 
@@ -496,10 +496,10 @@ static void create_footer()
 	auto *footer = create_model(scene->models->footer, update_footer);
 	auto *jobj = footer->get_hsd_obj<HSD_JObj>();
 	auto [redo, ok, options] = HSD_JObjGetFromTreeTuple<1, 5, 7>(jobj);
-	
+
 	// Remove Options
 	HSD_JObjSetFlagsAll(options, HIDDEN);
-	
+
 	// Display centered with spacing matching vanilla
 	ok->position.x   = -4.5f;
 	redo->position.x =  4.5f;
@@ -515,7 +515,7 @@ static void create_text_canvas()
 	GObj_InitKindObj(canvas_gobj, GOBJ_KIND_CAMERA, canvas_cobj);
 	GObj_SetupCameraGXLink(canvas_gobj, GObj_GXProcCamera, 19);
 	canvas_gobj->gxlink_prios = 1 << GOBJ_GXLINK_MENU_FG;
-	
+
 	canvas = Text_CreateCanvas(0, canvas_gobj, GOBJ_CLASS_TEXT, GOBJ_PLINK_MENU_CAMERA, 0,
 	                           GOBJ_GXLINK_MENU_FG, 0, 19);
 }
@@ -525,7 +525,7 @@ static void create_text()
 	menu_state.description_text = Text_Create(0, canvas, 124.5f, 45, 0, 391, 30);
 	Text_SetFromSIS(menu_state.description_text, 0);
 	menu_state.update_description();
-				   
+
 	for (auto index = 0; index < std::to_underlying(option::max_toggle); index++) {
 		const auto y_pos = 113.f + (float)index * 35.7f;
 		auto *toggle = &menu_state.toggles[index];
@@ -585,7 +585,7 @@ static void Controls_Think()
 
 	if (buttons & MenuButton_Up)
 		menu_state.scroll_up();
-	
+
 	if (buttons & MenuButton_Down)
 		menu_state.scroll_down();
 
@@ -606,7 +606,7 @@ static void Controls_Init(void *enter_data)
 	scene = HSD_ArchiveGetSymbol<scene_type>(GmTou1p, "ScGamTour_scene_data");
 
 	create_menu();
-	
+
 	PlayBGM(Menu_GetBGM());
 }
 
@@ -620,7 +620,7 @@ static void Controls_Free(void *exit_data)
 extern "C" void store_controls_menu_port()
 {
 	MenuInputCooldown = 0;
-	
+
 	// Remember who entered the Controls menu
 	for (u8 i = 0; i < 4; i++) {
 		if (Menu_GetButtons(i) & MenuButton_Confirm) {

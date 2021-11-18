@@ -8,13 +8,23 @@ enum Scene {
 	Scene_Menu         = 1,
 	Scene_VsMode       = 2,
 	Scene_DebugMenu    = 6,
+#ifdef PAL
+	Scene_AttractMode  = 27,
+	Scene_Tournament   = 30,
+	Scene_Controls     = 30,
+	Scene_Training     = 31,
+	Scene_Boot         = 43,
+	Scene_ReloadData   = 44,
+	Scene_Transition   = 48,
+#else
 	Scene_AttractMode  = 24,
 	Scene_Tournament   = 27,
 	Scene_Controls     = 27,
 	Scene_Training     = 28,
 	Scene_Boot         = 40,
 	Scene_ReloadData   = 41,
-	Scene_Transition   = 45
+	Scene_Transition   = 45,
+#endif
 };
 
 enum VsScene {

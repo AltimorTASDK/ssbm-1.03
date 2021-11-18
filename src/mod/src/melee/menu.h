@@ -36,9 +36,15 @@ enum MenuState {
 };
 
 enum MenuID {
+#ifdef PAL
+	MenuID_Tournament = 38,
+	MenuID_Controls   = 38,
+	MenuID_None       = 47
+#else
 	MenuID_Tournament = 36,
 	MenuID_Controls   = 36,
 	MenuID_None       = 45
+#endif
 };
 
 enum MenuType {
@@ -62,7 +68,7 @@ struct MenuCallbacks {
 };
 
 extern "C" {
-	
+
 extern u16 MenuInputCooldown;
 
 extern u8 MenuType;

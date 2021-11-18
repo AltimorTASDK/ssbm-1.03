@@ -1,6 +1,10 @@
 .section .text
 
+#ifdef PAL
+.set Scene_Tournament, 30
+#else
 .set Scene_Tournament, 27
+#endif
 
 .global hook_EnterSpecialMelee
 hook_EnterSpecialMelee:
@@ -12,6 +16,6 @@ hook_EnterSpecialMelee:
         li      r0, Scene_Tournament
         stb     r0, 0(r3)
         bl      Scene_Exit
-        
+
         # Return
         b       VsMenu_Think+0x24C
