@@ -1,4 +1,3 @@
-
 .section .text
 
 .global hook_SceneLoopStart
