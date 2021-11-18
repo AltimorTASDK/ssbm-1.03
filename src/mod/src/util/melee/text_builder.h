@@ -10,6 +10,12 @@ namespace text_builder {
 template<auto c>
 constexpr auto ascii_to_melee()
 {
+#ifdef PAL
+	if constexpr (c == u'é')
+		return std::array { '\x90' };
+	else
+		return std::array { (char)c };
+#else
 	if constexpr (c >= '0' && c <= '9')
 		return std::array { '\x20', (char)(c - '0') };
 	else if constexpr (c >= 'A' && c <= 'Z')
@@ -40,6 +46,7 @@ constexpr auto ascii_to_melee()
 		return std::array { '\x40', '\x00' };
 	else if constexpr (c == ' ')
 		return std::array { (char)text_opcode::space };
+#endif
 }
 
 template<string_literal str>

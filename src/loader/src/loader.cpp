@@ -1,6 +1,7 @@
 #include "hsd/memory.h"
 #include "melee/nametag.h"
 #include "melee/scene.h"
+#include "os/card.h"
 #include "os/os.h"
 #include "os/thread.h"
 #include "util/diff.h"
@@ -151,6 +152,11 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 
 	InitCardBuffers();
 
+#ifdef PAL
+	// Use GALE01 saves
+	cardmap[0].gamecode[3] = 'E';
+#endif
+
 #ifdef NTSC102
 	const auto code_size = card_read("103Code", mod_init);
 #else
@@ -159,8 +165,15 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 	auto *diff = alloc_and_read("103CodeNTSC100");
 #elif defined(NTSC101)
 	auto *diff = alloc_and_read("103CodeNTSC101");
+#elif defined(PAL)
+	auto *diff = alloc_and_read("103CodePAL");
 #endif
 	const auto code_size = apply_diff((char*)base, (char*)diff, (char*)mod_init);
+#endif
+
+#ifdef PAL
+	// Restore PAL gamecode
+	cardmap[0].gamecode[3] = 'P';
 #endif
 
 	ICInvalidateRange(mod_init, code_size);

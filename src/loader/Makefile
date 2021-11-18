@@ -30,16 +30,18 @@ OBJFILES := \
 
 DEPFILES := $(patsubst $(OBJDIR)/%.o, $(DEPDIR)/%.d, $(OBJFILES))
 
-LINKSCRIPT := loader.ld
-
-GCIFILE     := $(BINDIR)/ssbm-1.03-loader.gci
 ifeq ($(VERSION), PAL)
-GCISRC      := $(GCIDIR)/ssbm-pal.gci
+GCIFILE    := $(BINDIR)/ssbm-1.03-loader-pal.gci
+GCISRC     := $(GCIDIR)/ssbm-pal.gci
+MGCMAIN    := $(GCIDIR)/1.03-pal.mgc
+LINKSCRIPT := loader-pal.ld
 else
-GCISRC      := $(GCIDIR)/ssbm.gci
+GCIFILE    := $(BINDIR)/ssbm-1.03-loader.gci
+GCISRC     := $(GCIDIR)/ssbm.gci
+MGCMAIN    := $(GCIDIR)/1.03.mgc
+LINKSCRIPT := loader.ld
 endif
 
-MGCMAIN  := $(GCIDIR)/1.03.mgc
 MGCFILES := $(shell find $(GCIDIR) -type f -name '*.mgc')
 
 .PHONY: ssbm

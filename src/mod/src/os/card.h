@@ -7,7 +7,8 @@ struct card_block {
 	s32 result;
 	u32 pad008;
 	u32 sector_size;
-	char pad010[0x110 - 0x10];
+	char pad010[0x10C - 0x10];
+	char *gamecode;
 };
 
 extern "C" card_block cardmap[2];

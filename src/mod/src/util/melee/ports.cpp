@@ -34,7 +34,7 @@ static int get_doubles_index(u32 port)
 	auto team2 = -1;
 	auto team2_count = 1;
 
-	int result;
+	auto result = -1;
 
 	for (u32 i = 0; i < 4; i++) {
 		if (PlayerBlock_GetSlotType(i) == SlotType_None)
