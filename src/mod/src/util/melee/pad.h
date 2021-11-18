@@ -39,7 +39,7 @@ inline const PADStatus &get_input(int port)
 template<int offset>
 inline const PADStatus &get_nana_input(const Player *nana)
 {
-	constexpr auto real_offset = ((offset % NANA_BUFFER) + NANA_BUFFER) % NANA_BUFFER;
+	constexpr auto real_offset = (((offset - 1) % NANA_BUFFER) + NANA_BUFFER) % NANA_BUFFER;
 	return detail::get_nana_input_impl(nana, real_offset);
 }
 
