@@ -198,18 +198,31 @@ static const auto patches = patch_list {
 	std::pair { (char*)Menu_RandomStageMenuThink+0x204,    0x2C19001Eu },
 	// cmpwi r25, 0x1E
 	std::pair { (char*)Menu_RandomStageMenuThink+0x23C,    0x2C19001Eu },
+#ifdef PAL
+	// cmpwi r0, 0x1E
+	std::pair { (char*)Menu_RandomStageMenuInput+0x98,     0x2800001Eu },
+	// li r0, 0x1E
+	std::pair { (char*)Menu_RandomStageMenuInput+0xB4,     0x3800001Eu },
+	// cmpwi r30, 0x1E
+	std::pair { (char*)Menu_RandomStageMenuInput+0x174,    0x2C1E001Eu },
+#else
 	// cmpwi r0, 0x1E
 	std::pair { (char*)Menu_RandomStageMenuInput+0x8C,     0x2800001Eu },
 	// li r0, 0x1E
 	std::pair { (char*)Menu_RandomStageMenuInput+0xA8,     0x3800001Eu },
 	// cmpwi r29, 0x1E
 	std::pair { (char*)Menu_RandomStageMenuInput+0x168,    0x2C1D001Eu },
+#endif
 	// cmpwi r25, 0x1E
 	std::pair { (char*)Menu_SetupRandomStageToggles+0x258, 0x2C19001Eu },
 
 	// Allow having all toggles disabled
 	// nop
+#ifdef PAL
+	std::pair { (char*)Menu_RandomStageMenuInput+0xE4,     0x60000000u },
+#else
 	std::pair { (char*)Menu_RandomStageMenuInput+0xD8,     0x60000000u },
+#endif
 };
 
 static int get_page_size(int page)
