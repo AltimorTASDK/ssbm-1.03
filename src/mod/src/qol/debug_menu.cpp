@@ -1,5 +1,6 @@
 #include "hsd/pad.h"
 #include "melee/menu.h"
+#include "melee/preferences.h"
 #include "melee/scene.h"
 #include <gctypes.h>
 
@@ -87,6 +88,6 @@ struct set_debug_language {
 	set_debug_language()
 	{
 		// Set default debug menu language to game language
-		*DebugMenuEntries[DebugEntry_Language].value = IsLanguageUS();
+		*DebugMenuEntries[DebugEntry_Language].value = GetSavedPreferences()->language;
 	}
 } set_debug_language;
