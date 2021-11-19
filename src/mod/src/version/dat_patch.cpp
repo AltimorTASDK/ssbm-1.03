@@ -3,65 +3,55 @@
 #include "hsd/gobj.h"
 #include "hsd/memory.h"
 #include "melee/player.h"
+#include "os/dvd.h"
 #include "util/diff.h"
-#include <array>
 #include <cstring>
 #include <gctypes.h>
-#include <string>
-#include <tuple>
 
-//#include "resources/patches/ntsc100/PlGn.diff.h"
+#include "resources/patches/ntsc100/PlGn.diff.h"
 
-/*const auto patch_table = std::array {
+struct PreloadEntry {
+	u8 used;
+	u8 type;
+	u8 heap;
+	u8 load_state;
+	u8 pad004;
+	u16 entry_num;
+	u16 pad008;
+	u32 size;
+	HSD_AllocEntry *raw_data;
+	HSD_AllocEntry *archive;
+	u32 effect_index;
+};
+
+struct patch_entry {
+	u32 entry_num;
+	const void *diff;
+};
+
+const patch_entry patch_table[] = {
 #ifdef NTSC100
-	std::pair { std::string("PlGn.dat"), PlGn_diff_data },
+	{ DVDConvertPathToEntrynum("PlGn.dat"), PlGn_diff_data },
 #endif
 };
 
-extern "C" void *orig_File_GetPreloaded(const char *filename);
-extern "C" void *hook_File_GetPreloaded(const char *filename)
+extern "C" void patch_preloaded_archive(PreloadEntry *entry)
 {
-	auto *buf = orig_File_GetPreloaded(filename);
-
-	if (buf == nullptr)
-		return nullptr;
-
-	for (const auto &pair : patch_table) {
-		if (strcmp(pair.first.c_str(), filename) != 0)
+	for (const auto &patch : patch_table) {
+		if (patch.entry_num != entry->entry_num)
 			continue;
 
-		OSReport("PlGn_diff_data %p\n", PlGn_diff_data);
-		OSReport("*PlGn_diff_data %02X\n", *(char*)PlGn_diff_data);
-		OSReport("pair.second %p\n", pair.second);
-		OSReport("*pair.second %02X\n", *(char*)pair.second);
-		const auto size = apply_diff((char*)buf, (char*)pair.second, nullptr);
-		OSReport("size %08X\n", size);
-		OSReport("buf %p\n", buf);
-		auto *out = HSD_MemAlloc(size);
-		apply_diff((char*)buf, (char*)pair.second, (char*)out);
-		memcpy(buf, out, size);
-		HSD_Free(out);
-		return buf;
+		const auto size = apply_diff(entry->raw_data->addr, patch.diff, nullptr);
+
+		auto *out = (HSD_AllocEntry*)HSD_MemAllocFromHeap(entry->heap, size);
+		apply_diff(entry->raw_data->addr, patch.diff, out->addr);
+
+		// Replace original buffer
+		HSD_FreeToHeap(entry->heap, entry->raw_data->addr);
+		entry->size = size;
+		entry->raw_data = out;
+		return;
 	}
-
-	return buf;
-}*/
-
-extern "C" void orig_Player_InitializeFromInfo(HSD_GObj *gobj, void *info);
-extern "C" void hook_Player_InitializeFromInfo(HSD_GObj *gobj, void *info)
-{
-	orig_Player_InitializeFromInfo(gobj, info);
-
-	auto *player = gobj->get<Player>();
-	char *buf = (char*)player->character_data->archive_base - 0x20;
-
-#ifdef NTSC100
-	if (player->character_id == CID_Ganondorf) {
-		*(u32*)((char*)buf + 0x4E24) = 0x08000014;
-		*(u16*)((char*)buf + 0x4E3E) = 0x03E8;
-		*(u16*)((char*)buf + 0x4E52) = 0x02BC;
-	}
-#endif
 }
 
 #endif

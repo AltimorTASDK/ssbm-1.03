@@ -1,4 +1,5 @@
 #include "hsd/memory.h"
+#include <cstddef>
 #include <new>
 
 void *operator new(size_t count)

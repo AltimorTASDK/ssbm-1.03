@@ -1,12 +1,18 @@
 #pragma once
 
-#include <cstddef>
+#include <gctypes.h>
+
+struct HSD_AllocEntry {
+	HSD_AllocEntry *next;
+	void *addr;
+	u32 size;
+};
 
 extern "C" {
 
-void *HSD_MemAlloc(size_t size);
-void *HSD_MemAllocFromHeap(int heap, size_t size);
+void *HSD_MemAlloc(u32 size);
+void *HSD_MemAllocFromHeap(u32 heap, u32 size);
 void HSD_Free(void *ptr);
-void HSD_FreeToHeap(int heap, void *ptr);
+void HSD_FreeToHeap(u32 heap, void *ptr);
 
 }

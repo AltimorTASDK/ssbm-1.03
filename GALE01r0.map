@@ -51,7 +51,7 @@
 80016be4 00000158 80016be4 0 HSD_ArchiveLoadAndGetSymbols
 80016d3c 00000140 80016d3c 0 HSD_ArchiveLoadAndTryGetSymbols
 80016e7c 00000084 80016e7c 0 HSD_ArchiveFree
-80017e3c 000002e0 80017e3c 0 DATfile_StageFileLoad_More?
+80017e3c 000002e0 80017e3c 0 Archive_GetPreloaded
 8001811c 00000090 8001811c 0 File_GetPreloaded
 80019228 000002b4 80019228 0 Ab_uk_RunsMultipleTimesAFrame
 8001957c 0000002c 8001957c 0 PadFetchCallback

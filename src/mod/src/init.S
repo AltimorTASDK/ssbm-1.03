@@ -318,7 +318,8 @@ add_hook Collision_AS_Bowser_FlameStartAir
 #endif
 # File patching
 #if defined(NTSC100) || defined(PAL)
-add_hook Player_InitializeFromInfo
+.set ParsePreloadedArchive, Archive_GetPreloaded+0x238
+add_hook ParsePreloadedArchive
 #endif
 
 hooks_end:
