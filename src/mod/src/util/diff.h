@@ -3,7 +3,7 @@
 #include <cstring>
 #include <gctypes.h>
 
-inline u32 apply_diff(const char *base, const char *diff, char *out)
+inline u32 apply_diff(const void *in_base, const void *in_diff, void *in_out)
 {
 	enum {
 		CMD_EOF              = 0,
@@ -18,6 +18,10 @@ inline u32 apply_diff(const char *base, const char *diff, char *out)
 	};
 
 	u32 offset = 0;
+
+	const auto *base = (u8*)in_base;
+	const auto *diff = (u8*)in_diff;
+	auto *out = (u8*)in_out;
 
 	while (*diff != CMD_EOF) {
 		switch (*diff) {
