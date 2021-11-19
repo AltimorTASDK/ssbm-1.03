@@ -40,16 +40,17 @@ hook_CheckIsCPUPuck:
 
 .global hook_CheckCSSPlayerCount
 hook_CheckCSSPlayerCount:
+        stwu    r1, -0x10(r1)
+        stw     r8, 0xC(r1)
+        stw     r7, 0x8(r1)
+
         cmpwi   r4, 1
         bgt     ready_2p
         bne     not_ready
 
-        # Back up r8
-        mr      r28, r8
         li      r3, 1
         bl      check_can_start_match
         cmpwi   r3, 0
-        mr      r8, r28
         beq     not_ready
 
         lis     r3, CSSReadyFrames@ha
@@ -60,18 +61,21 @@ hook_CheckCSSPlayerCount:
 
         # Hide banner without clearing ready state
         mr      r3, r29
+        lwz     r7, 0x8(r1)
+        lwz     r8, 0xC(r1)
+        addi    r1, r1, 0x10
         b       CSS_ReadyThink+0x290
 
 not_ready:
+        lwz     r7, 0x8(r1)
+        lwz     r8, 0xC(r1)
+        addi    r1, r1, 0x10
         b       CSS_ReadyThink+0x27C
 
 ready_2p:
-        # Back up r8
-        mr      r28, r8
         li      r3, 1
         bl      check_can_start_match
         cmpwi   r3, 0
-        mr      r8, r28
         beq     not_ready
 
         # Check for special 1p ready frames value
@@ -85,6 +89,10 @@ ready_2p:
         stb     r0, CSSReadyFrames@l(r3)
 
 1:
+        lwz     r7, 0x8(r1)
+        lwz     r8, 0xC(r1)
+        addi    r1, r1, 0x10
+
         # Skip overwritten instruction
         b       orig_CheckCSSPlayerCount+4
 
