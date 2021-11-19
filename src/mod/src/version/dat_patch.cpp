@@ -8,7 +8,9 @@
 #include <cstring>
 #include <gctypes.h>
 
+#ifdef NTSC100
 #include "resources/patches/ntsc100/PlGn.diff.h"
+#endif
 
 struct PreloadEntry {
 	u8 used;
