@@ -320,9 +320,11 @@ add_hook RoundReceivedDamage
 # Flame cancel
 add_hook Collision_AS_Bowser_FlameStartAir
 #endif
-# Fix Marth Whispy blink bug
 #if defined(NTSC100)
+# Fix Marth Whispy blink bug
 add_hook Player_UpdatePhysicsJointAnimFrameAndRate
+# Fix frozen turnip glitch
+add_hook Item_SetVisible
 #endif
 # File patching
 #if defined(NTSC100) || defined(PAL)

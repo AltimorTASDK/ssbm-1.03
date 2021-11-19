@@ -2241,7 +2241,7 @@
 8026a37c 00000020 8026a37c 0 Item_OnOpenPokeball?
 8026a39c 00000050 8026a39c 0 Item_Unknown_11
 8026a3f8 00000018 8026a3f8 0 Ab_Unknown_OnHitWithMovesUsingGeneratedObjects???
-8026a410 00000038 8026a410 0 Item_Unknown_12
+8026a410 00000038 8026a410 0 Item_SetVisible
 8026a430 00000030 8026a430 0 Item_Unknown_13
 8026a460 0000000c 8026a460 0 Item_Peach_Parasol_Related
 8026a46c 0000000c 8026a46c 0 EmissionController::IsLingering
