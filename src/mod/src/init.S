@@ -320,6 +320,10 @@ add_hook RoundReceivedDamage
 # Flame cancel
 add_hook Collision_AS_Bowser_FlameStartAir
 #endif
+# Fix Marth Whispy blink bug
+#if defined(NTSC100)
+add_hook Player_UpdatePhysicsJointAnimFrameAndRate
+#endif
 # File patching
 #if defined(NTSC100) || defined(PAL)
 .set ParsePreloadedArchive, Archive_GetPreloaded+0x238

@@ -297,6 +297,7 @@
 8006cc48 000001b8 8006cc48 0 Damage_DropItemCheck
 8006ce00 00000060 8006ce00 0 Heal_Percent&GFX_r4EqualToIntegerAmtToHeal
 8006ea48 00000044 8006ea48 0 AS_AnimationFrameUpdate&More
+8006ed78 00000044 8006ed78 0 Player_SetBoneAnimFrameAndRate
 8006f034 000000a8 8006f034 0 FrameSpeedChange_Landing
 8006f0dc 00000130 8006f0dc 0 FrameTimerCheck
 80070dcc 0000008c 80070dcc 0 Animation_SomethingDuringActionStatechange
@@ -702,6 +703,7 @@
 8009c120 00000044 8009c120 0 ch_DK_ThrowFAll_AnimationInterrupt
 8009c168 00000020 8009c168 0 ch_DK_ThrowFAll_ActionPhys
 8009c188 00000028 8009c188 0 ch_DK_ThrowFAll_CollisionInterrupt
+8009e1f4 0000008c 8009e1f4 0 Player_UpdatePhysicsJointAnimFrameAndRate
 8009ea9c 0000008c 8009ea9c 0 Interrupt_StopWall
 8009eb28 000000d4 8009eb28 0 AS_249_StopWall
 8009ec60 0000003c 8009ec60 0 Interrupt_StopCeil

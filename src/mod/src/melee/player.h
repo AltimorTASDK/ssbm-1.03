@@ -115,10 +115,29 @@ struct PopoData {
 	f32 direction;
 };
 
+struct PhysicsJointData {
+	u32 bone;
+	char pad004[0x18 - 0x04];
+};
+
+struct SubactionData {
+	char pad000[0x08];
+	f32 length;
+	char pad00C[0x14 - 0x0C];
+};
+
+struct JointData {
+	u32 phys_joint_count;
+	PhysicsJointData *phys_joints;
+	char pad008[0x18 - 0x08];
+};
+
 struct CharacterData {
 	char pad000[0x08];
 	u8 *archive_base;
-	char pad00C[0x54 - 0x0C];
+	char pad00C[0x2C - 0x0C];
+	JointData *joint_data;
+	char pad030[0x54 - 0x30];
 };
 
 struct Player {
@@ -157,7 +176,8 @@ struct Player {
 	f32 jostle_delta_z;
 	char pad0100[0x10C - 0x100];
 	CharacterData *character_data;
-	char pad0110[0x3E4 - 0x110];
+	char pad0110[0x3E0 - 0x110];
+	u32 physics_joint_count;
 	SubactionState subaction_state;
 	char pad0400[0x4B8 - 0x400];
 	f32 overlay_r;
@@ -170,7 +190,20 @@ struct Player {
 	f32 overlay_flash_rate_a;
 	char pad04D8[0x504 - 0x4D8];
 	u8 overlay_flags;
-	char pad0505[0x614 - 0x505];
+	char pad0505[0x58C - 0x505];
+	u32 subaction_count;
+	SubactionData *subaction_data;
+	struct {
+		u8 anim_flags_80 : 1;
+		u8 anim_flags_40 : 1;
+		u8 anim_flags_20 : 1;
+		u8 update_phys_joints : 1;
+		u8 override_phys_joints : 1;
+		u8 anim_flags_04 : 1;
+		u8 anim_flags_02 : 1;
+		u8 anim_flags_01 : 1;
+	};
+	char pad0595[0x614 - 0x595];
 	u8 override_color_r;
 	u8 override_color_g;
 	u8 override_color_b;
