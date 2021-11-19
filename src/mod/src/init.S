@@ -325,5 +325,10 @@ add_hook Collision_AS_Bowser_FlameStartAir
 .set ParsePreloadedArchive, Archive_GetPreloaded+0x238
 add_hook ParsePreloadedArchive
 #endif
+# DK loses charge when hit out of up B
+#if defined(PAL)
+add_hook Player_DK_NeutralBHitCallback
+add_hook Player_DK_UpBHitCallback
+#endif
 
 hooks_end:

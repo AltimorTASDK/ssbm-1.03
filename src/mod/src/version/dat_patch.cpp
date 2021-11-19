@@ -12,6 +12,24 @@
 #include "resources/patches/ntsc100/PlGn.diff.h"
 #endif
 
+#ifdef PAL
+#include "resources/patches/pal/PlCa.diff.h"
+#include "resources/patches/pal/PlCl.diff.h"
+#include "resources/patches/pal/PlFc.diff.h"
+#include "resources/patches/pal/PlFx.diff.h"
+#include "resources/patches/pal/PlGn.diff.h"
+#include "resources/patches/pal/PlKb.diff.h"
+#include "resources/patches/pal/PlKp.diff.h"
+#include "resources/patches/pal/PlLk.diff.h"
+#include "resources/patches/pal/PlMr.diff.h"
+#include "resources/patches/pal/PlMs.diff.h"
+#include "resources/patches/pal/PlMt.diff.h"
+#include "resources/patches/pal/PlNs.diff.h"
+#include "resources/patches/pal/PlPk.diff.h"
+#include "resources/patches/pal/PlSk.diff.h"
+#include "resources/patches/pal/PlYs.diff.h"
+#endif
+
 struct PreloadEntry {
 	u8 used;
 	u8 type;
@@ -34,6 +52,23 @@ struct patch_entry {
 const patch_entry patch_table[] = {
 #ifdef NTSC100
 	{ DVDConvertPathToEntrynum("PlGn.dat"), PlGn_diff_data },
+#endif
+#ifdef PAL
+	{ DVDConvertPathToEntrynum("PlCa.dat"), PlCa_diff_data },
+	{ DVDConvertPathToEntrynum("PlCl.dat"), PlCl_diff_data },
+	{ DVDConvertPathToEntrynum("PlFc.dat"), PlFc_diff_data },
+	{ DVDConvertPathToEntrynum("PlFx.dat"), PlFx_diff_data },
+	{ DVDConvertPathToEntrynum("PlGn.dat"), PlGn_diff_data },
+	{ DVDConvertPathToEntrynum("PlKb.dat"), PlKb_diff_data },
+	{ DVDConvertPathToEntrynum("PlKp.dat"), PlKp_diff_data },
+	{ DVDConvertPathToEntrynum("PlLk.dat"), PlLk_diff_data },
+	{ DVDConvertPathToEntrynum("PlMr.dat"), PlMr_diff_data },
+	{ DVDConvertPathToEntrynum("PlMs.dat"), PlMs_diff_data },
+	{ DVDConvertPathToEntrynum("PlMt.dat"), PlMt_diff_data },
+	{ DVDConvertPathToEntrynum("PlNs.dat"), PlNs_diff_data },
+	{ DVDConvertPathToEntrynum("PlPk.dat"), PlPk_diff_data },
+	{ DVDConvertPathToEntrynum("PlSk.dat"), PlSk_diff_data },
+	{ DVDConvertPathToEntrynum("PlYs.dat"), PlYs_diff_data },
 #endif
 };
 
