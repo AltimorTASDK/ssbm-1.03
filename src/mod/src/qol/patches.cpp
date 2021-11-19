@@ -41,10 +41,18 @@ static const auto patches = patch_list {
 	std::pair { (char*)CSS_PlayerThink+0x35C,     0x38C00003u },
 	// Allow setting any port to HMN at CSS
 	// li r3, SlotType_Human
+#ifdef PAL
+	std::pair { (char*)CSS_PlayerThink+0x1848,    0x38600000u },
+#else
 	std::pair { (char*)CSS_PlayerThink+0x183C,    0x38600000u },
+#endif
 	// Apply random CPU character when opening fake HMN port
-	// cmpwi r3, SlotType_Human
+	// cmplwi r3, SlotType_Human
+#ifdef PAL
+	std::pair { (char*)CSS_PlayerThink+0x1870,    0x28030000u },
+#else
 	std::pair { (char*)CSS_PlayerThink+0x1864,    0x28030000u },
+#endif
 	// Disable handicap display in CSS
 	// li r0, 0
 	std::pair { (char*)CSS_Setup+0x256C,          0x38000000u },
@@ -64,7 +72,11 @@ static const auto patches = patch_list {
 	std::pair { (char*)CSS_GObjCallback+0x3F8,    0x38000000u },
 	std::pair { (char*)CSS_PlayerThink+0xBA0,     0x38000000u },
 	std::pair { (char*)CSS_PlayerThink+0x1980,    0x38000000u },
+#ifdef PAL
+	std::pair { (char*)CSS_PlayerThink+0x1A58,    0x38000000u },
+#else
 	std::pair { (char*)CSS_PlayerThink+0x1A4C,    0x38000000u },
+#endif
 	// Disable score popups
 	// li r3, NULL
 	std::pair { (char*)CreateScorePopup,          0x38600000u },

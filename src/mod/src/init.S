@@ -278,7 +278,11 @@ add_hook Match_Init
 .set CheckCSSPlayerCount,        CSS_ReadyThink+0x124
 .set CheckCSSMatchStartCooldown, CSS_ReadyThink+0x310
 .set CheckCSSModeSwap,           CSS_PlayerThink+0x150C
+#ifdef PAL
+.set CheckIsCPUPuck,             CSS_PlayerThink+0x1D00
+#else
 .set CheckIsCPUPuck,             CSS_PlayerThink+0x1CF4
+#endif
 add_hook CreateCSSNameText
 add_hook CheckCSSPlayerCount
 add_hook CheckCSSMatchStartCooldown
