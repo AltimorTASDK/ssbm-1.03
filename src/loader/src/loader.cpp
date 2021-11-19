@@ -20,6 +20,7 @@ extern void *CardWorkArea;
 extern char SaveFileName[25];
 
 extern char __LOAD_BASE__;
+extern char __MOD_BASE__;
 extern char __COPY_START__;
 extern char __COPY_SIZE__;
 
@@ -34,8 +35,6 @@ void InitCardBuffers();
 u32 MemoryCard_DoLoadData();
 
 }
-
-static void *mod_init = (void*)0x817B1000;
 
 static card_file file;
 static card_stat stats;
@@ -158,7 +157,7 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 #endif
 
 #ifdef NTSC102
-	const auto code_size = card_read("103Code", mod_init);
+	const auto code_size = card_read("103Code", &__MOD_BASE__);
 #else
 	auto *base = alloc_and_read("103Code");
 #if defined(NTSC100)
@@ -168,7 +167,7 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 #elif defined(PAL)
 	auto *diff = alloc_and_read("103CodePAL");
 #endif
-	const auto code_size = apply_diff((char*)base, (char*)diff, (char*)mod_init);
+	const auto code_size = apply_diff(base, diff, &__MOD_BASE__);
 #endif
 
 #ifdef PAL
@@ -176,7 +175,7 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 	cardmap[0].gamecode[3] = 'P';
 #endif
 
-	ICInvalidateRange(mod_init, code_size);
+	ICInvalidateRange(&__MOD_BASE__, code_size);
 
 	// Use a different save file name
 	// Overwriting the end retains 20XX's modified save name
@@ -187,7 +186,7 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 
 	// Run mod init
 	OSReport("Running 1.03\n");
-	((void(*)())mod_init)();
+	((void(*)())&__MOD_BASE__)();
 
 	// Load new save file
 	MemoryCard_DoLoadData();
