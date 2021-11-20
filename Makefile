@@ -6,13 +6,13 @@ export CC  := powerpc-eabi-gcc
 export CXX := powerpc-eabi-g++
 export LD  := powerpc-eabi-ld
 
-export BINDIR   := $(abspath bin)
-export TOOLS    := $(abspath tools)
-export GCIDIR   := $(abspath gci)
+export BINDIR  := $(abspath bin)
+export TOOLS   := $(abspath tools)
+export GCIDIR  := $(abspath gci)
 
-export LDFLAGS  := -Wl,-Map=output.map -Wl,--gc-sections
+export LDFLAGS := -Wl,-Map=output.map -Wl,--gc-sections
 
-export DEFINES  := -DGEKKO
+export DEFINES := -DGEKKO
 
 ifeq ($(VERSION),)
 $(error Specify Melee version with VERSION)
