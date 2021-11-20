@@ -27,20 +27,20 @@ static bool should_use_simple_fod()
 	// Use simple FoD in low latency mode
 	if (get_latency() == latency_mode::low)
 		return true;
-	
+
 	// Use simple FoD in teams
 	if (MatchInfo_IsTeams() && SceneMajor != Scene_Training)
 		return true;
-		
+
 	// Use simple FoD if there's an ICs
 	for (auto i = 0; i < 6; i++) {
 		if (PlayerBlock_GetSlotType(i) == SlotType_None)
 			continue;
-			
+
 		if (PlayerBlock_GetCharacterID(i, 0) == CID_Popo)
 			return true;
 	}
-	
+
 	return false;
 }
 
@@ -90,7 +90,7 @@ extern "C" HSD_GObj *hook_Stage_Fountain_CreateReflection()
 	const auto *image = gobj->get<FountainReflectionData>()->image;
 	const auto size = GX_GetTexBufferSize(image->width, image->height, image->format, 0, 0);
 	memset(image->img_ptr, 0xFF, size);
-	
+
 	return gobj;
 }
 
@@ -116,7 +116,7 @@ extern "C" void hook_Stage_Fountain_SetupModel(HSD_GObj *gobj)
 
 	if (!should_use_simple_fod())
 		return;
-		
+
 	// Enable shadows on water with reflections disabled
 	auto *jobj = gobj->get_hsd_obj<HSD_JObj>();
 	auto *water_jobj = HSD_JObjGetFromTreeByIndex(jobj->child, 9);
@@ -131,6 +131,6 @@ extern "C" void hook_Stage_Setup(StageIDPair *id)
 		Stage.map_ptcl = nullptr;
 		Stage.map_texg = nullptr;
 	}
-	
+
 	orig_Stage_Setup(id);
 }
