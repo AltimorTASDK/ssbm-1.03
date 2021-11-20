@@ -43,7 +43,6 @@ static u64 frame_fetch_time;
 static u64 frame_interval;
 static u32 frame_end_line;
 
-static bool needs_depth_clear;
 static u32 efb_copy_late;
 static u32 efb_copy_line;
 static u64 efb_copy_poll_time[3];
@@ -54,6 +53,8 @@ static u64 retrace_poll_time;
 static DevText *text;
 static char text_buf[TEXT_WIDTH * TEXT_HEIGHT * 2];
 #endif
+
+static bool needs_depth_clear;
 
 static u32 frame_retrace_count;
 static u32 last_poll_retrace_count;
