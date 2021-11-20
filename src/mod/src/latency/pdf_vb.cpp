@@ -112,9 +112,6 @@ extern "C" void hook_SISetSamplingRate(u32 msecs)
 	orig_SISetSamplingRate(16);
 }
 
-#ifdef POLL_DEBUG
-#endif
-
 extern "C" void scene_loop_start()
 {
 	if (get_latency() != latency_mode::lcd || Si.poll.enable == 0)
