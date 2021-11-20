@@ -54,10 +54,10 @@ enum ActionStat {
 
 enum SlotType {
 	SlotType_Human = 0,
-	SlotType_CPU = 1,
-	SlotType_Unspecified = 2,
-	SlotType_None = 3,
-	SlotType_Boss = 4
+	SlotType_CPU   = 1,
+	SlotType_Demo  = 2,
+	SlotType_None  = 3,
+	SlotType_Boss  = 4
 };
 
 struct PlayerInput {
