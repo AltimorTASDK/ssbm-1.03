@@ -24,6 +24,8 @@ extern char __MOD_BASE__;
 extern char __COPY_START__;
 extern char __COPY_SIZE__;
 
+extern u8 CSSPendingSceneChange;
+
 void OSEnableScheduler();
 
 s32 OSSaveContext(OSContext *context);
@@ -191,7 +193,10 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 	// Load new save file
 	MemoryCard_DoLoadData();
 
-	// Boot to CSS
-	*(u8*)Scene_GetExitData() = Scene_VsMode;
+	if (SceneMajor == Scene_VsMode)
+		Scene_SetMajorPending(Scene_VsMode); // Reload CSS
+	else
+		*(u8*)Scene_GetExitData() = Scene_VsMode; // Boot to CSS
+
 	Scene_Exit();
 }

@@ -1,15 +1,28 @@
 .section .bootstrap, "ax"
 
 # Return past end of nametag load loop
-.set return_address, Menu_LoadNameTags+0x478
+.set return_address_vs, Menu_LoadNameTags+0x478
+#ifdef PAL
+.set return_address_css, CSS_LoadNameTags+0x65C
+#else
+.set return_address_css, CSS_LoadNameTags+0x680
+#endif
 
 /*
  * void _start()
  */
  .global _start
  _start:
-        lis     r0, return_address@h
-        ori     r0, r0, return_address@l
+ _start_vs:
+        lis     r0, return_address_vs@h
+        ori     r0, r0, return_address_vs@l
+        b       1f
+
+ _start_css:
+        lis     r0, return_address_css@h
+        ori     r0, r0, return_address_css@l
+
+1:
         mtlr    r0
 
         # Check if a memcard save is in progress
