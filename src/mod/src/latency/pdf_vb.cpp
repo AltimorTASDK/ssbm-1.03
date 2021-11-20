@@ -1,3 +1,4 @@
+#include "hsd/cobj.h"
 #include "hsd/gobj.h"
 #include "hsd/pad.h"
 #include "hsd/video.h"
@@ -42,6 +43,7 @@ static u64 frame_fetch_time;
 static u64 frame_interval;
 static u32 frame_end_line;
 
+static bool needs_depth_clear;
 static u32 efb_copy_late;
 static u32 efb_copy_line;
 static u64 efb_copy_poll_time[3];
@@ -151,10 +153,14 @@ extern "C" void hook_HSD_VICopyXFBASync(u32 pass)
 
 	// Skip EFB copy if no XFB is ready and process a new frame instead
 	if (HSD_VIGetXFBDrawEnable() == -1) {
+		// Force depth clear because we're skipping GX_CopyDisp
+		needs_depth_clear = true;
 		VIWaitForRetrace();
 		OSRestoreInterrupts(irq_enable);
 		return;
 	}
+
+	needs_depth_clear = false;
 
 	OSRestoreInterrupts(irq_enable);
 	orig_HSD_VICopyXFBASync(pass);
@@ -168,6 +174,15 @@ extern "C" void hook_HSD_VICopyXFBASync(u32 pass)
 			efb_copy_late = 10;
 	}
 #endif
+}
+
+extern "C" void orig_HSD_CObjEraseScreen(HSD_CObj *cobj, bool color, bool alpha, bool depth);
+extern "C" void hook_HSD_CObjEraseScreen(HSD_CObj *cobj, bool color, bool alpha, bool depth)
+{
+	if (needs_depth_clear)
+		depth = true;
+
+	orig_HSD_CObjEraseScreen(cobj, color, alpha, depth);
 }
 
 #ifdef POLL_DEBUG

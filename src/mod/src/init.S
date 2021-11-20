@@ -219,6 +219,7 @@ add_hook UpdatePlayerStick
 add_hook SceneLoopStart
 add_hook FirstEngineFrame
 add_hook HSD_VICopyXFBASync
+add_hook HSD_CObjEraseScreen
 add_hook UpdatePadFetchRate
 add_hook SISetSamplingRate
 #ifdef POLL_DEBUG
