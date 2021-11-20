@@ -33,20 +33,27 @@ struct XFB {
 	VIAll vi_all;
 };
 
+struct EFB {
+	u32 status;
+	VIAll vi_all;
+};
+
 struct HSD_VIInfo {
 	char pad0000[0x1458];
 	XFB xfb[3];
-	char pad1578[0x15F8 - 0x1578];
+	EFB efb;
+	u32 nb_xfb;
+	char pad15D8[0x15F8 - 0x15D8];
 };
 
 extern "C" {
-	
+
 extern HSD_VIInfo HSD_VIData;
-	
+
 s32 HSD_VISearchXFBByStatus(u32 status);
 s32 HSD_VIGetXFBDrawEnable();
 void HSD_VICopyXFBASync(u32 pass);
 VIRetraceCallback *HSD_VISetUserPreRetraceCallback(VIRetraceCallback *cb);
 VIRetraceCallback *HSD_VISetUserPostRetraceCallback(VIRetraceCallback *cb);
-	
+
 }
