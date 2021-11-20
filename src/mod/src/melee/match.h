@@ -12,8 +12,8 @@ enum MatchResult {
 struct MatchPlayerData {
 	u8 slot_type;
 	char pad001[0x05 - 0x01];
-	u8 is_big_loser;
-	u8 is_small_loser;
+	u8 rank;
+	u8 win;
 	u8 team;
 	u8 stocks;
 	char pad009[0x0C - 0x09];
@@ -32,7 +32,7 @@ struct MatchPlayerData {
 struct MatchTeamData {
 	int score;
 	int subscore;
-	u8 is_big_loser;
+	u8 rank;
 	char pad009;
 	u8 exists;
 	char pad00B;

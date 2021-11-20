@@ -17,7 +17,7 @@ static bool lgl_violated(const MatchPlayerData &player)
 	const auto lgl = get_ledge_grab_limit();
 	if (lgl == 0)
 		return 0;
-	
+
 	return player.ledge_grabs > lgl;
 }
 
@@ -26,7 +26,7 @@ static bool atl_violated(const MatchPlayerData &player)
 	const auto atl = get_air_time_limit();
 	if (atl == 0)
 		return 0;
-	
+
 	return player.air_time > atl;
 }
 
@@ -43,7 +43,7 @@ static bool is_score_better(const score &a, const score &b)
 
 	if (a.stocks < b.stocks)
 		return false;
-	
+
 	return a.percent < b.percent;
 }
 
@@ -79,10 +79,10 @@ static int get_player_scores(MatchController *match, score *scores)
 			.stocks = player.score,
 			.percent = player.percent
 		};
-		
+
 		count++;
 	}
-	
+
 	return count;
 }
 
@@ -97,29 +97,29 @@ static int get_team_scores(MatchController *match, score *team_scores)
 
 	for (auto i = 0; i < players; i++) {
 		const auto team = match->players[player_scores[i].id].team;
-		
+
 		if (!team_exists[team]) {
 			team_scores[count] = { .id = team };
 			team_exists[team] = true;
 			count++;
 		}
-			
+
 		team_scores[team] = add_score(team_scores[team], player_scores[i]);
 	}
-	
+
 	return count;
 }
 
 static void set_result(MatchController *match, bool teams, int slot, bool win)
 {
 	if (teams) {
-		match->teams[slot].is_big_loser = !win;
+		match->teams[slot].rank = !win;
 		if (win) {
 			match->team_winners[match->team_winner_count] = (u8)slot;
 			match->team_winner_count++;
 		}
 	} else {
-		match->players[slot].is_big_loser = !win;
+		match->players[slot].rank = !win;
 		if (win) {
 			match->winners[match->winner_count] = (u8)slot;
 			match->winner_count++;
@@ -132,7 +132,7 @@ static bool decide_winners(MatchController *match, bool teams)
 	// Only apply for timeouts
 	if (match->result != MatchResult_Timeout)
 		return false;
-		
+
 	// Don't check singles win conditions in teams and vice versa
 	if(match->is_teams != teams)
 		return false;
@@ -143,20 +143,20 @@ static bool decide_winners(MatchController *match, bool teams)
 
 	// We only care about the highest score
 	std::partial_sort(scores, scores + 1, scores + count, is_score_better);
-	
+
 	// Everyone tied for first wins
 	if (teams)
 		match->team_winner_count = 0;
 	else
 		match->winner_count = 0;
-	
+
 	set_result(match, teams, scores[0].id, true);
-	
+
 	for (auto i = 1; i < count; i++) {
 		const auto win = is_score_equal(scores[i], scores[0]);
 		set_result(match, teams, scores[i].id, win);
 	}
-	
+
 	return true;
 }
 
