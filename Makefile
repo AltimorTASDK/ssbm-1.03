@@ -17,17 +17,17 @@ export DEFINES := -DGEKKO
 ifeq ($(VERSION),)
 $(error Specify Melee version with VERSION)
 else ifeq ($(VERSION), 100)
-export MELEELD  := $(abspath GALE01r0.ld)
-export DEFINES  += -DNTSC100
+export MELEELD := $(abspath GALE01r0.ld)
+export DEFINES += -DNTSC100
 else ifeq ($(VERSION), 101)
-export MELEELD  := $(abspath GALE01r1.ld)
-export DEFINES  += -DNTSC101
+export MELEELD := $(abspath GALE01r1.ld)
+export DEFINES += -DNTSC101
 else ifeq ($(VERSION), 102)
-export MELEELD  := $(abspath GALE01r2.ld)
-export DEFINES  += -DNTSC102
+export MELEELD := $(abspath GALE01r2.ld)
+export DEFINES += -DNTSC102
 else ifeq ($(VERSION), PAL)
-export MELEELD  := $(abspath GALP01.ld)
-export DEFINES  += -DPAL
+export MELEELD := $(abspath GALP01.ld)
+export DEFINES += -DPAL
 else
 $(error Unsupported Melee version "$(VERSION)")
 endif
