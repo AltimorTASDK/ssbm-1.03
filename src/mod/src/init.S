@@ -326,6 +326,8 @@ add_hook Collision_AS_Bowser_FlameStartAir
 add_hook Player_UpdatePhysicsJointAnimFrameAndRate
 # Fix frozen turnip glitch
 add_hook Item_SetVisible
+# Fix Mewtwo fthrow projectiles being grabbable
+add_hook Player_Mewtwo_CreateFThrowBall
 #endif
 # File patching
 #if defined(NTSC100) || defined(PAL)

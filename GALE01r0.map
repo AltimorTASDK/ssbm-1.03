@@ -2417,6 +2417,8 @@
 802b4068 000001f4 802b4068 0 Samus_ChargeShot
 802bbcb0 00000130 802bbcb0 0 Peach_TurnipTypeDecide
 802c3964 0000019c 802c3964 0 Items_ProjectileSpawn
+802c3b00 0000019c 802c3b00 0 Player_Mewtwo_CreateFThrowBall
+8026a07c 0000019c 8026a07c 0 Item_SetUngrabbable
 802d6ee4 00000058 802d6ee4 0 Item_Target_PositionAdjust_EveryFrame
 802e4cc4 000001fc 802e4cc4 0 fk_CoinDrop?
 802e8bc0 00000024 802e8bc0 0 __OSUnlockSram_1
