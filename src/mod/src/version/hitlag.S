@@ -1,6 +1,7 @@
 #if defined(NTSC100) || defined(NTSC101)
 .section .rodata
 
+.balign 4
 zero: .float 0
 
 .section .text

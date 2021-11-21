@@ -1,5 +1,6 @@
 .section .rodata
 
+.balign 4
 zero: .float 0
 
 .section .text
@@ -10,7 +11,7 @@ hook_SetMenuRotation:
         lbz     r0, manual_open@l(r3)
         cmpwi   r0, 0
         beq     1f
-        
+
         # Prevent cstick rotation at the manual
         lis     r3, zero@ha
         lfs     f2, zero@l(r3)
