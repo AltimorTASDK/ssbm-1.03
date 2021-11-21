@@ -54,7 +54,7 @@ run_loader:
         ori     r3, r3, __LOAD_BASE__@l
         lis     r4, __COPY_SIZE__@h
         ori     r4, r4, __COPY_SIZE__@l
-        bl      ICInvalidateRange
+        bl      TRK_flush_cache
 
         lwz     r0, 0xC(r1)
         addi    r1, r1, 0x8

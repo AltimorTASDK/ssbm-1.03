@@ -36,6 +36,8 @@ void InitCardBuffers();
 
 u32 MemoryCard_DoLoadData();
 
+void TRK_flush_cache(const void *start, u32 size);
+
 }
 
 static card_file file;
@@ -109,7 +111,7 @@ static void patch_crash_screen()
 	auto *patch_location = (char*)DisplayCrashScreen+0x4C;
 	*(u32*)patch_location = 0x48000220u;
 
-	ICInvalidateRange(patch_location, 4);
+	TRK_flush_cache(patch_location, 4);
 }
 
 static u32 card_read(const char *file, void *dest)
@@ -177,7 +179,7 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 	cardmap[0].gamecode[3] = 'P';
 #endif
 
-	ICInvalidateRange(&__MOD_BASE__, code_size);
+	TRK_flush_cache(&__MOD_BASE__, code_size);
 
 	// Use a different save file name
 	// Overwriting the end retains 20XX's modified save name
@@ -192,6 +194,8 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 
 	// Load new save file
 	MemoryCard_DoLoadData();
+
+	TRK_flush_cache((void*)0x80000000, 0x3C0000);
 
 	if (SceneMajor == Scene_VsMode)
 		Scene_SetMajorPending(Scene_VsMode); // Reload CSS
