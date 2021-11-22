@@ -30,8 +30,10 @@ constexpr u32 BLR = 0x4E800020;
 static const auto patches = patch_list {
 	// Enable cstick in develop mode
 	std::pair { (char*)PlayerThink_Input+0x188,   NOP },
+	std::pair { (char*)PlayerThink_Input+0xF0,    NOP },
 	// Enable cstick in singleplayer
 	std::pair { (char*)PlayerThink_Input+0x194,   NOP },
+	std::pair { (char*)PlayerThink_Input+0xFC,    NOP },
 	// Disable develop mode camera control
 	std::pair { (char*)DevelopMode_SetCameraType, BLR },
 	// Disable cstick camera control
