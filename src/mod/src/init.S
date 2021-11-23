@@ -322,6 +322,9 @@ add_hook RoundDealtDamage
 add_hook RoundReceivedDamage
 # Flame cancel
 add_hook Collision_AS_Bowser_FlameStartAir
+# Remove PK Thunder when Ness is hit
+.set OnPKThunderOwnerChange, Item_PKThunder_CheckToRemove+0xFC
+add_hook OnPKThunderOwnerChange
 #endif
 #if defined(NTSC100)
 # Fix Marth Whispy blink bug
