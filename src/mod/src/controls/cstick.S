@@ -41,6 +41,17 @@ hook_CheckDTiltInput:
         lwz     r0, Player.instant_buttons(r3)
         b       orig_CheckDTiltInput
 
+.global hook_CheckDTiltInputIASA
+hook_CheckDTiltInputIASA:
+        bl      check_cstick_dtilt
+        cmpwi   r3, 0
+        beq     1f
+        b       Interrupt_AS_DTilt+0x124
+1:
+        # Restore r0
+        lwz     r0, Player.instant_buttons(r30)
+        b       orig_CheckDTiltInputIASA
+
 .global hook_CheckFTiltAngle
 hook_CheckFTiltAngle:
         mr      r3, r31
