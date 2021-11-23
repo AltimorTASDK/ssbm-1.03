@@ -2377,8 +2377,6 @@
 80281708 0000002c 80281708 0 Item_MrSaturn_GetHit_1
 8028241c 00000080 8028241c 0 Item_MrSaturn_OnHitPlayer
 8028264c 0000005c 8028264c 0 Item_Heart_Spawn
-802aa2c8 00000034 802aa2c8 0 Item_PKThunder_Destroy
-802aa56c 00000034 802aa56c 0 Item_PKThunder_Update
 802acfbc 00000034 802acfbc 0 Item_Heart_Heal
 80282988 000000f8 80282988 0 Item_Heart_Pickup
 80282d04 00000080 80282d04 0 Item_Tomato_Spawn
@@ -2416,6 +2414,9 @@
 80293138 00000060 80293138 0 Item_WarpStar_Pickup
 802967e8 00000050 802967e8 0 wP_FrameFunctionPokeballOpening?
 8029b08c 00000028 8029b08c 0 FoxFalco_LaserSpawn
+802aa2c8 00000034 802aa2c8 0 Item_PKThunder_Destroy
+802aa56c 00000034 802aa56c 0 Item_PKThunder_Update
+802ae558 00000034 802ae558 0 Item_PKFlash_Update
 802b4068 000001f4 802b4068 0 Samus_ChargeShot
 802bbcb0 00000130 802bbcb0 0 Peach_TurnipTypeDecide
 802c3964 0000019c 802c3964 0 Items_ProjectileSpawn
