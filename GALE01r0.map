@@ -2378,7 +2378,7 @@
 8028241c 00000080 8028241c 0 Item_MrSaturn_OnHitPlayer
 8028264c 0000005c 8028264c 0 Item_Heart_Spawn
 802aa2c8 00000034 802aa2c8 0 Item_PKThunder_Destroy
-802aa56c 00000034 802aa56c 0 Item_PKThunder_CheckToRemove
+802aa56c 00000034 802aa56c 0 Item_PKThunder_Update
 802acfbc 00000034 802acfbc 0 Item_Heart_Heal
 80282988 000000f8 80282988 0 Item_Heart_Pickup
 80282d04 00000080 80282d04 0 Item_Tomato_Spawn

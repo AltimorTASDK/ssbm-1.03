@@ -8,6 +8,6 @@ hook_OnPKThunderOwnerChange:
         mr      r3, r30
         bl      Item_PKThunder_Destroy
         li      r3, 1
-        b       Item_PKThunder_CheckToRemove+0x10C
+        b       Item_PKThunder_Update+0x10C
 
 #endif
