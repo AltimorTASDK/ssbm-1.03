@@ -76,7 +76,7 @@ struct DevText {
 };
 
 extern "C" {
-	
+
 extern Text *NameTagText;
 extern char **SISData[5];
 
@@ -84,9 +84,9 @@ void Text_FreeAll();
 
 int Text_CreateCanvas(u32 sis_id, HSD_GObj *camera_gobj, u8 classifier, u8 p_link, u8 p_prio,
                       u8 gx_link, u8 render_priority, u8 camera_prio);
-		      
+
 Text *Text_Create(u32 sis_id, s32 canvas_id,
-                  f32 trans_x, f32 trans_y, f32 trans_z, f32 aspect_x, f32 aspect_z);
+                  f32 trans_x, f32 trans_y, f32 trans_z, f32 aspect_x, f32 aspect_y);
 void Text_Free(Text *text);
 
 void Text_SetFromSIS(Text *text, u32 id);
