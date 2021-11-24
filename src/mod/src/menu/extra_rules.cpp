@@ -219,13 +219,8 @@ static void set_to_rotator(ExtraRulesMenuData *data, int index)
 	// Show black value background
 	HSD_JObjClearFlagsAll(background, HIDDEN);
 
-	// Update value animation
-	auto *value = cursor->next;
-	HSD_JObjReqAnimAll(value, 20.f * data->values[index] + 3.f);
-	HSD_JObjAnimAll(value);
-
 	// Initialize value jobj tree
-	HSD_JObjGetTree<2>(value, data->value_jobj_trees[index].tree);
+	HSD_JObjGetTree<2>(cursor->next, data->value_jobj_trees[index].tree);
 
 	if (data->selected == index) {
 		// Show scroll arrows
@@ -326,6 +321,7 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 
 	// Use rotator for last option
 	set_to_rotator(data, ExtraRule_Widescreen);
+	set_value_anim(data, ExtraRule_Widescreen);
 
 	return gobj;
 }
@@ -415,6 +411,10 @@ extern "C" void hook_Menu_UpdateExtraRuleDescriptionText(HSD_GObj *gobj,
 
 	const auto index = MenuSelectedIndex;
 	const auto value = MenuSelectedValue;
+
+	// Update rules from extra rotator value
+	if (value_changed && index == ExtraRule_Widescreen)
+		GetGameRules()->widescreen = value;
 
 	if (index == ExtraRule_Pause && !value) {
 		text->data = pause_auto_description.data();
