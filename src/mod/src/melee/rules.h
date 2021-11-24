@@ -6,18 +6,21 @@ enum class stage_mod_type : u8 {
 	all  = 0,
 	ps   = 1,
 	none = 2,
-	oss  = 3
+	oss  = 3,
+	max
 };
 
 enum class ucf_type : u8 {
 	hax = 0,
-	ucf = 1
+	ucf = 1,
+	max
 };
 
 enum class latency_mode : u8 {
 	crt = 0,
 	lcd = 1,
-	low = 2
+	low = 2,
+	max
 };
 
 enum Rule {
@@ -40,6 +43,7 @@ enum ExtraRule {
 	// Pause is moved up a row
 	ExtraRule_Pause               = 1,
 	ExtraRule_StageMods           = 2,
+	ExtraRule_FriendlyFire        = 2,
 	ExtraRule_ControllerFix       = 3,
 	ExtraRule_Latency             = 4,
 	ExtraRule_Widescreen          = 5,
@@ -73,16 +77,17 @@ struct GameRules {
 	u8 pause;
 	union {
 		u8 friendly_fire;
-		ucf_type controller_fix;
+		stage_mod_type stage_mods;
 	};
 	union {
 		u8 score_display;
-		latency_mode latency;
+		ucf_type controller_fix;
 	};
 	union {
 		u8 sd_penalty;
-		u8 widescreen;
+		latency_mode latency;
 	};
+	u8 widescreen;
 };
 
 extern "C" {

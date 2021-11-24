@@ -163,7 +163,6 @@ add_hook Interrupt_TurnOrDash
 add_hook Match_HandlePause
 add_hook MatchController_UpdateTeamWinners
 add_hook MatchController_UpdateWinners
-add_hook Menu_CreateRandomStageMenu
 add_hook Menu_CreateRuleDescriptionText
 add_hook Menu_ExitToRulesMenu
 add_hook Menu_GetBGM

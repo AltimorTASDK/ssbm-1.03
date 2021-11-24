@@ -2159,6 +2159,8 @@
 8023041c 000000d0 8023041c 0 Menu_EnterCustomRulesMenu
 8023050c 0000077c 8023050c 0 Menu_CreateRulesMenu
 80230d24 0000043c 80230d24 0 Menu_ExtraRulesMenuInput
+80231160 0000008c 80231160 0 Menu_GetExtraRuleValueAnimLoop
+802314ac 000005a8 802314ac 0 Menu_UpdateExtraRuleDisplay
 80231a54 000001f8 80231a54 0 Menu_UpdateExtraRuleDescriptionText
 80231f20 000007e4 80231f20 0 Menu_SetupExtraRulesMenu
 80232704 0000009c 80232704 0 Menu_CreateExtraRulesMenu

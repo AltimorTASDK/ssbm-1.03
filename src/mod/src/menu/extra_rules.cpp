@@ -33,13 +33,18 @@
 struct ExtraRulesMenuData {
 	u8 menu_type;
 	u8 selected;
-	u8 stock_time_limit;
-	// Pause is moved up a row
-	u8 pause;
-	stage_mod_type stage_mods;
-	ucf_type controller_fix;
-	latency_mode latency;
-	u8 widescreen;
+	union {
+		struct {
+			u8 stock_time_limit;
+			// Pause is moved up a row
+			u8 pause;
+			stage_mod_type stage_mods;
+			ucf_type controller_fix;
+			latency_mode latency;
+			u8 widescreen;
+		};
+		u8 values[ExtraRule_Max];
+	};
 	u8 state;
 	struct {
 		HSD_JObj *root1;
@@ -79,6 +84,9 @@ extern "C" struct {
 } ExtraRuleDescriptions[6];
 
 extern "C" HSD_GObj *Menu_SetupExtraRulesMenu(u8 state);
+extern "C" void Menu_ExtraRulesMenuInput(HSD_GObj *gobj);
+extern "C" void Menu_UpdateExtraRuleDisplay(HSD_GObj *gobj, bool index_changed, bool value_changed);
+extern "C" void Menu_GetExtraRuleValueAnimLoop(u8 index, u32 value, bool scroll_left);
 
 template<string_literal line1, string_literal line2>
 static constexpr auto make_description_text()
@@ -118,10 +126,14 @@ static constexpr auto make_description_text()
 		text_builder::end_color());
 }
 
+constexpr auto pause_auto_description =
+	make_description_text<"Players will not be able to",
+	                      "pause during 4-stock matches.">();
+
 constexpr auto stage_mod_descriptions = multi_array {
-	make_description_text<"Modify all tournament legal stages",
-	                      "except for Battlefield.">(),
-	make_description_text<"Freeze Pokémon Stadium.">(),
+	make_description_text<"Modify all tournament legal",
+	                      "stages except for Battlefield.">(),
+	make_description_text<u"Freeze Pokémon Stadium.">(),
 	make_description_text<"Play without stage modifications.">(),
 	make_description_text<"Use the original stage select screen",
 	                      "and play without stage modifications.">(),
@@ -150,10 +162,6 @@ constexpr auto widescreen_descriptions = multi_array {
 		              "ratio.">()
 };
 
-constexpr auto pause_auto_description =
-	make_description_text<"Players will not be able to",
-	                      "pause during 4-stock matches.">();
-
 static mempool pool;
 static texture_swap *decompressed_textures[ExtraRule_Max];
 
@@ -163,19 +171,33 @@ static const auto patches = patch_list {
 	std::pair { &ExtraRuleTextAnimFrames[ExtraRule_Pause].selected,          25.f },
 	std::pair { &ExtraRuleTextAnimFrames[ExtraRule_FriendlyFire].unselected, 22.f },
 	std::pair { &ExtraRuleTextAnimFrames[ExtraRule_FriendlyFire].selected,   23.f },
-
 	// Swap description for pause and friendly fire
 	std::pair { &ExtraRuleDescriptions[ExtraRule_Pause].values[1],           (u8)0x3B },
-
 	// Add a value model for index 5
 	// nop
 	std::pair { (char*)Menu_SetupExtraRulesMenu+0x558,                       0x60000000u },
-
-	// Apply 3-value model to index 3 instead of 4
-	// cmpwi r27, 3
-	std::pair { (char*)Menu_SetupExtraRulesMenu+0x574,                       0x2C1B0003u },
+	// Allow scrolling left/right on index 5
 	// nop
-	std::pair { (char*)Menu_SetupExtraRulesMenu+0x57C,                       0x60000000u },
+	std::pair { (char*)Menu_ExtraRulesMenuInput+0x394,                       0x60000000u },
+	// Don't allow pressing A on index 5
+	// b 0x3CC
+	std::pair { (char*)Menu_ExtraRulesMenuInput+0x50,                        0x480003CCu },
+	// Display index 5 as a rotator
+	// b 0x14
+	std::pair { (char*)Menu_UpdateExtraRuleDisplay+0x218,                    0x48000014u },
+	// nop
+	std::pair { (char*)Menu_UpdateExtraRuleDisplay+0x2B8,                    0x60000000u },
+	// b 0x28
+	std::pair { (char*)Menu_UpdateExtraRuleDisplay+0x330,                    0x48000028u },
+	// nop
+	std::pair { (char*)Menu_UpdateExtraRuleDisplay+0x388,                    0x60000000u },
+	std::pair { (char*)Menu_UpdateExtraRuleDisplay+0x38C,                    0x60000000u },
+	// nop
+	std::pair { (char*)Menu_UpdateExtraRuleDisplay+0x4FC,                    0x60000000u },
+	// b 0x20
+	std::pair { (char*)Menu_UpdateExtraRuleDisplay+0x510,                    0x48000020u },
+	// b 0x24
+	std::pair { (char*)Menu_GetExtraRuleValueAnimLoop+0x10,                  0x48000024u },
 };
 
 static void replace_toggle_texture(ExtraRulesMenuData *data, int index)
@@ -187,14 +209,21 @@ static void replace_toggle_texture(ExtraRulesMenuData *data, int index)
 static void set_to_rotator(ExtraRulesMenuData *data, int index)
 {
 	auto *cursor = data->jobj_tree.rules[index]->child;
-	auto [value, portal, scroll] = HSD_JObjGetFromTreeTuple<6, 8, 13>(cursor, tree);
+	auto [background, arrow, scroll] = HSD_JObjGetFromTreeTuple<6, 8, 13>(cursor);
 
 	// Show black value background
-	HSD_JObjClearFlagsAll(value, HIDDEN);
-	// Show scroll arrows
-	HSD_JObjClearFlagsAll(scroll, HIDDEN);
-	// Hide arrow used for portals
-	HSD_JObjSetFlagsAll(portal, HIDDEN);
+	HSD_JObjClearFlagsAll(background, HIDDEN);
+
+	// Update value animation
+	HSD_JObjReqAnimAll(cursor->child, 20.f * data->values[index] + 3.f);
+	HSD_JObjAnimAll(cursor->child);
+
+	if (data->selected == index) {
+		// Show scroll arrows
+		HSD_JObjClearFlagsAll(scroll, HIDDEN);
+		// Hide arrow used for portals
+		HSD_JObjSetFlagsAll(arrow, HIDDEN);
+	}
 }
 
 static void fix_value_position(ExtraRulesMenuData *data, int index)
@@ -234,15 +263,15 @@ static void load_textures()
 		pool.add(new texture_swap(latency_values_tex_data));
 }
 
-extern "C" const ArchiveModel &select_extra_rule_model(u32 index)
+extern "C" ArchiveModel *select_extra_rule_model(u32 index)
 {
 	return std::array {
-		MenMainCursorTr01_Top, // Stock Match Time Limit
-		MenMainCursorTr03_Top, // Pause
-		MenMainCursorRl01_Top, // Stage Modifications
-		MenMainCursorTr02_Top, // Controller Fix
-		MenMainCursorTr04_Top, // Latency
-		MenMainCursorTr03_Top, // Widescreen
+		&MenMainCursorTr01_Top, // Stock Match Time Limit
+		&MenMainCursorTr03_Top, // Pause
+		&MenMainCursorRl01_Top, // Stage Modifications
+		&MenMainCursorTr02_Top, // Controller Fix
+		&MenMainCursorTr04_Top, // Latency
+		&MenMainCursorTr03_Top, // Widescreen
 	}[index];
 }
 
@@ -255,6 +284,8 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 	auto *gobj = orig_Menu_SetupExtraRulesMenu(state);
 	auto *data = gobj->get<ExtraRulesMenuData>();
 
+	data->widescreen = GetGameRules()->widescreen;
+
 	// Free assets on menu exit
 	gobj->user_data_remove_func = pool_free;
 
@@ -263,6 +294,7 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 
 	// Replace rule value textures
 	replace_toggle_texture(data, ExtraRule_Pause);
+	replace_toggle_texture(data, ExtraRule_StageMods);
 	replace_toggle_texture(data, ExtraRule_ControllerFix);
 	replace_toggle_texture(data, ExtraRule_Latency);
 
@@ -291,50 +323,30 @@ extern "C" void hook_Menu_ExtraRulesMenuInput(HSD_GObj *gobj)
 	if (buttons & (MenuButton_B | MenuButton_Start))
 		save_config();
 
-	if ((buttons & MenuButton_A) && MenuSelectedIndex == ExtraRule_OldStageSelect) {
-		// Check for attempting to enter the OSS with no players
-		if (!check_can_start_match()) {
-			Menu_PlaySFX(MenuSFX_Denied);
-			return;
-		}
-
-		save_config();
-	}
-
-	if (settings_locked && MenuSelectedIndex < ExtraRule_OldStageSelect) {
-		if (buttons & (MenuButton_Left | MenuButton_Right)) {
-			// Don't allow changing rules with settings locked
-			Menu_PlaySFX(MenuSFX_Denied);
-			return;
-		}
+	if (settings_locked && (buttons & (MenuButton_Left | MenuButton_Right))) {
+		// Don't allow changing rules with settings locked
+		Menu_PlaySFX(MenuSFX_Denied);
+		return;
 	}
 
 	orig_Menu_ExtraRulesMenuInput(gobj);
 }
 
-extern "C" void orig_Menu_CreateRandomStageMenu();
-extern "C" void hook_Menu_CreateRandomStageMenu()
-{
-	if (MenuType != MenuType_ExtraRules)
-		return orig_Menu_CreateRandomStageMenu();
-
-	// Go to original stage select if coming from extra rules
-	use_og_stage_select = true;
-	Menu_ExitToMinorScene(VsScene_SSS);
-}
-
-extern "C" void orig_Menu_UpdateExtraRuleDescriptionText(HSD_GObj *gobj,
-                                                         bool index_changed, bool value_changed);
 extern "C" void hook_Menu_UpdateExtraRuleDescriptionText(HSD_GObj *gobj,
                                                          bool index_changed, bool value_changed)
 {
-	orig_Menu_UpdateExtraRuleDescriptionText(gobj, index_changed, value_changed);
-
-	if (!index_changed && !value_changed)
-		return;
-
 	auto *data = gobj->get<ExtraRulesMenuData>();
 	auto *text = data->description_text;
+
+	if (text == nullptr) {
+		// Create description text
+		text = Text_Create(0, 1, -9.5f, 8.0f, 17.f, 364.68331909f, 76.77543640f);
+		text->stretch = { 0.0512f, 0.0512f };
+		Text_SetFromSIS(text, 0);
+		data->description_text = text;
+	} else if (!index_changed && !value_changed) {
+		return;
+	}
 
 	const auto index = MenuSelectedIndex;
 	const auto value = MenuSelectedValue;
@@ -349,5 +361,12 @@ extern "C" void hook_Menu_UpdateExtraRuleDescriptionText(HSD_GObj *gobj,
 	case ExtraRule_ControllerFix:  text->data = ucf_type_descriptions[value]; break;
 	case ExtraRule_Latency:        text->data = latency_descriptions[value]; break;
 	case ExtraRule_Widescreen:     text->data = widescreen_descriptions[value]; break;
+	case ExtraRule_Pause:
+		if (!value) {
+			text->data = pause_auto_description.data();
+			break;
+		}
+	default:
+		Text_SetFromSIS(text, ExtraRuleDescriptions[index].values[value]);
 	}
 }

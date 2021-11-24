@@ -12,8 +12,10 @@ struct init_rules {
 		RuleValueBounds[Rule_LedgeGrabLimit] = { 0, ledge_grab_limit_values.size() - 1 };
 		RuleValueBounds[Rule_AirTimeLimit]   = { 0, air_time_limit_values.size() - 1 };
 
-		ExtraRuleValueBounds[ExtraRule_Latency]    = { 0, (u8)latency_mode::low };
-		ExtraRuleValueBounds[ExtraRule_Widescreen] = { 0, 1 };
+		ExtraRuleValueBounds[ExtraRule_StageMods]     = { 0, (u8)stage_mod_type::max - 1 };
+		ExtraRuleValueBounds[ExtraRule_ControllerFix] = { 0, (u8)ucf_type::max - 1 };
+		ExtraRuleValueBounds[ExtraRule_Latency]       = { 0, (u8)latency_mode::max - 1 };
+		ExtraRuleValueBounds[ExtraRule_Widescreen]    = { 0, 1 };
 
 		// Set default rules
 		auto *rules = GetGameRules();
@@ -25,9 +27,8 @@ struct init_rules {
 		rules->stage_selection_mode = 0;
 		rules->stock_time_limit = 6;
 		rules->pause = false;
+		rules->stage_mods = stage_mod_type::all;
 		rules->controller_fix = ucf_type::hax;
-		rules->latency = latency_mode::crt;
-		rules->widescreen = false;
 	}
 } init_rules;
 
