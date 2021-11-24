@@ -140,11 +140,13 @@ static bool saved_is_unplugged[4];
 
 static struct {
 	u32 z_jump;
+#if 0
 	u32 perfect_wavedash;
 	u32 c_up;
 	u32 c_horizontal;
 	u32 c_down;
 	u32 tap_jump;
+#endif
 } toggle_timers[4];
 
 #if 0
@@ -288,6 +290,7 @@ static void z_jump_toggle(u8 port)
 		});
 }
 
+#if 0
 static void perfect_wavedash_toggle(u8 port)
 {
 	auto *config = &controller_configs[port];
@@ -389,15 +392,18 @@ static void tap_jump_toggle(u8 port)
 			show_illegal_controls(port);
 		});
 }
+#endif
 
 static void reset_toggle_timers(u8 port)
 {
 	toggle_timers[port].z_jump = 0;
+#if 0
 	toggle_timers[port].perfect_wavedash = 0;
 	toggle_timers[port].c_up = 0;
 	toggle_timers[port].c_horizontal = 0;
 	toggle_timers[port].c_down = 0;
 	toggle_timers[port].tap_jump = 0;
+#endif
 }
 
 extern "C" void orig_CSS_PlayerThink(HSD_GObj *gobj);
@@ -414,11 +420,13 @@ extern "C" void hook_CSS_PlayerThink(HSD_GObj *gobj)
 	if (HSD_PadCopyStatus[data->port].err == 0) {
 		rumble_toggle(data->port);
 		z_jump_toggle(data->port);
+#if 0
 		perfect_wavedash_toggle(data->port);
 		c_up_toggle(data->port);
 		c_horizontal_toggle(data->port);
 		c_down_toggle(data->port);
 		tap_jump_toggle(data->port);
+#endif
 	} else {
 		reset_toggle_timers(data->port);
 	}
