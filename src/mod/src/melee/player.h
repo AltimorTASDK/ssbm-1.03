@@ -357,6 +357,16 @@ void SetPortRumbleFlag(u32 port, bool flag);
 
 }
 
+// Returns Popo's port if given a Nana pointer
+inline u8 Player_GetPort(const Player *player)
+{
+	if (!player->is_backup_climber)
+		return player->port;
+
+	const auto *gobj = PlayerBlock_GetSubCharGObj(player->slot, 0);
+	return gobj != nullptr ? gobj->get<Player>()->port : player->port;
+}
+
 // Like Player_IsCPU, but returns false for a synced human Nana
 inline bool Player_IsCPUControlled(const Player *player)
 {
