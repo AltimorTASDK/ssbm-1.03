@@ -2,6 +2,13 @@
 
 #include <gctypes.h>
 
+enum class stage_mod_type : u8 {
+	all  = 0,
+	ps   = 1,
+	none = 2,
+	oss  = 3
+};
+
 enum class ucf_type : u8 {
 	hax = 0,
 	ucf = 1
@@ -32,14 +39,10 @@ enum ExtraRule {
 	ExtraRule_StockMatchTimeLimit = 0,
 	// Pause is moved up a row
 	ExtraRule_Pause               = 1,
-	ExtraRule_FriendlyFire        = 2,
-	ExtraRule_ControllerFix       = 2,
-	ExtraRule_ScoreDisplay        = 3,
-	ExtraRule_Latency             = 3,
-	ExtraRule_SelfDestructs       = 4,
-	ExtraRule_Widescreen          = 4,
-	ExtraRule_RandomStage         = 5,
-	ExtraRule_OldStageSelect      = 5,
+	ExtraRule_StageMods           = 2,
+	ExtraRule_ControllerFix       = 3,
+	ExtraRule_Latency             = 4,
+	ExtraRule_Widescreen          = 5,
 	ExtraRule_Max                 = 6
 };
 

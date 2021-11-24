@@ -27,7 +27,8 @@
 #include "resources/rules/latency.tex.h"
 #include "resources/rules/latency_values.tex.h"
 #include "resources/rules/widescreen.tex.h"
-#include "resources/rules/og_stage_select.tex.h"
+#include "resources/rules/stage_mods.tex.h"
+#include "resources/rules/stage_mods_values.tex.h"
 
 struct ExtraRulesMenuData {
 	u8 menu_type;
@@ -35,19 +36,10 @@ struct ExtraRulesMenuData {
 	u8 stock_time_limit;
 	// Pause is moved up a row
 	u8 pause;
-	union {
-		u8 friendly_fire;
-		ucf_type controller_fix;
-	};
-	union {
-		u8 score_display;
-		latency_mode latency;
-	};
-	union {
-		u8 sd_penalty;
-		u8 widescreen;
-	};
-	u8 pad007;
+	stage_mod_type stage_mods;
+	ucf_type controller_fix;
+	latency_mode latency;
+	u8 widescreen;
 	u8 state;
 	struct {
 		HSD_JObj *root1;
@@ -64,11 +56,14 @@ struct ExtraRulesMenuData {
 // Rule name text
 extern "C" ArchiveModel MenMainCursorRl_Top;
 
-// Vanilla handicap values
-extern "C" ArchiveModel MenMainCursorRl03_Top;
+// Mode values model
+extern "C" ArchiveModel MenMainCursorRl01_Top;
 
-// Controller fix values
+// Extra rule values models
+extern "C" ArchiveModel MenMainCursorTr01_Top;
+extern "C" ArchiveModel MenMainCursorTr02_Top;
 extern "C" ArchiveModel MenMainCursorTr03_Top;
+extern "C" ArchiveModel MenMainCursorTr04_Top;
 
 extern "C" HSD_GObj *ExtraRulesMenuGObj;
 
@@ -105,6 +100,33 @@ static constexpr auto make_description_text()
 		text_builder::end_color());
 }
 
+template<string_literal line1>
+static constexpr auto make_description_text()
+{
+	return text_builder::build(
+		text_builder::kern(),
+		text_builder::left(),
+		text_builder::color<170, 170, 170>(),
+		text_builder::textbox<179, 179>(),
+		text_builder::offset<0, -10>(),
+		text_builder::br(),
+		text_builder::unk06<0, 0>(),
+		text_builder::fit(),
+		text_builder::ascii<line1>(),
+		text_builder::end_fit(),
+		text_builder::end_textbox(),
+		text_builder::end_color());
+}
+
+constexpr auto stage_mod_descriptions = multi_array {
+	make_description_text<"Modify all tournament legal stages",
+	                      "except for Battlefield.">(),
+	make_description_text<"Freeze Pokémon Stadium.">(),
+	make_description_text<"Play without stage modifications.">(),
+	make_description_text<"Use the original stage select screen",
+	                      "and play without stage modifications.">(),
+};
+
 constexpr auto ucf_type_descriptions = multi_array {
 	make_description_text<"Maximize shield drop's range and fix",
 		              "1.0 cardinal and dash out of crouch.">(),
@@ -128,37 +150,9 @@ constexpr auto widescreen_descriptions = multi_array {
 		              "ratio.">()
 };
 
-constexpr auto oss_description = text_builder::build(
-	text_builder::kern(),
-	text_builder::left(),
-	text_builder::color<170, 170, 170>(),
-	text_builder::textbox<179, 179>(),
-	text_builder::unk06<0, 0>(),
-	text_builder::fit(),
-	text_builder::ascii<"Open the original stage select screen">(),
-	text_builder::end_fit(),
-	text_builder::br(),
-	text_builder::fit(),
-	text_builder::ascii<"and play without stage modifications.">(),
-	text_builder::end_fit(),
-	text_builder::end_textbox(),
-	text_builder::end_color());
-
-constexpr auto pause_auto_description = text_builder::build(
-	text_builder::kern(),
-	text_builder::left(),
-	text_builder::color<170, 170, 170>(),
-	text_builder::textbox<179, 179>(),
-	text_builder::unk06<0, 0>(),
-	text_builder::fit(),
-	text_builder::ascii<"Players will not be able to">(),
-	text_builder::end_fit(),
-	text_builder::br(),
-	text_builder::fit(),
-	text_builder::ascii<"pause during 4-stock matches.">(),
-	text_builder::end_fit(),
-	text_builder::end_textbox(),
-	text_builder::end_color());
+constexpr auto pause_auto_description =
+	make_description_text<"Players will not be able to",
+	                      "pause during 4-stock matches.">();
 
 static mempool pool;
 static texture_swap *decompressed_textures[ExtraRule_Max];
@@ -173,6 +167,10 @@ static const auto patches = patch_list {
 	// Swap description for pause and friendly fire
 	std::pair { &ExtraRuleDescriptions[ExtraRule_Pause].values[1],           (u8)0x3B },
 
+	// Add a value model for index 5
+	// nop
+	std::pair { (char*)Menu_SetupExtraRulesMenu+0x558,                       0x60000000u },
+
 	// Apply 3-value model to index 3 instead of 4
 	// cmpwi r27, 3
 	std::pair { (char*)Menu_SetupExtraRulesMenu+0x574,                       0x2C1B0003u },
@@ -186,6 +184,27 @@ static void replace_toggle_texture(ExtraRulesMenuData *data, int index)
 	tobj->imagedesc = decompressed_textures[index]->image;
 }
 
+static void set_to_rotator(ExtraRulesMenuData *data, int index)
+{
+	auto *cursor = data->jobj_tree.rules[index]->child;
+	auto [value, portal, scroll] = HSD_JObjGetFromTreeTuple<6, 8, 13>(cursor, tree);
+
+	// Show black value background
+	HSD_JObjClearFlagsAll(value, HIDDEN);
+	// Show scroll arrows
+	HSD_JObjClearFlagsAll(scroll, HIDDEN);
+	// Hide arrow used for portals
+	HSD_JObjSetFlagsAll(portal, HIDDEN);
+}
+
+static void fix_value_position(ExtraRulesMenuData *data, int index)
+{
+	// Set to proper position for additional rules value
+	auto *jobj = data->value_jobj_trees[index].tree[1];
+	jobj->position.x = 4.8f;
+	HSD_JObjSetMtxDirty(jobj);
+}
+
 static void pool_free(void *data)
 {
 	HSD_Free(data); // Default free gobj data
@@ -196,20 +215,35 @@ static void load_textures()
 {
 	// Replace rule name textures
 	const auto *rule_names = MenMainCursorRl_Top.matanim_joint->child->child->next->matanim;
-	pool.add(new texture_swap(controller_fix_tex_data,  rule_names->texanim->imagetbl[ 9]));
-	pool.add(new texture_swap(latency_tex_data,         rule_names->texanim->imagetbl[11]));
-	pool.add(new texture_swap(widescreen_tex_data,      rule_names->texanim->imagetbl[12]));
-	pool.add(new texture_swap(og_stage_select_tex_data, rule_names->texanim->imagetbl[13]));
+	pool.add(new texture_swap(stage_mods_tex_data,      rule_names->texanim->imagetbl[ 9]));
+	pool.add(new texture_swap(controller_fix_tex_data,  rule_names->texanim->imagetbl[11]));
+	pool.add(new texture_swap(latency_tex_data,         rule_names->texanim->imagetbl[12]));
+	pool.add(new texture_swap(widescreen_tex_data,      rule_names->texanim->imagetbl[13]));
 
 	// Load rule value textures
 	decompressed_textures[ExtraRule_Pause] =
 		pool.add(new texture_swap(pause_values_tex_data));
+
+	decompressed_textures[ExtraRule_StageMods] =
+		pool.add(new texture_swap(stage_mods_values_tex_data));
 
 	decompressed_textures[ExtraRule_ControllerFix] =
 		pool.add(new texture_swap(controller_fix_values_tex_data));
 
 	decompressed_textures[ExtraRule_Latency] =
 		pool.add(new texture_swap(latency_values_tex_data));
+}
+
+extern "C" const ArchiveModel &select_extra_rule_model(u32 index)
+{
+	return std::array {
+		MenMainCursorTr01_Top, // Stock Match Time Limit
+		MenMainCursorTr03_Top, // Pause
+		MenMainCursorRl01_Top, // Stage Modifications
+		MenMainCursorTr02_Top, // Controller Fix
+		MenMainCursorTr04_Top, // Latency
+		MenMainCursorTr03_Top, // Widescreen
+	}[index];
 }
 
 extern "C" HSD_GObj *orig_Menu_SetupExtraRulesMenu(u8 state);
@@ -231,6 +265,12 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 	replace_toggle_texture(data, ExtraRule_Pause);
 	replace_toggle_texture(data, ExtraRule_ControllerFix);
 	replace_toggle_texture(data, ExtraRule_Latency);
+
+	// Make Rl01 use proper additional rules position
+	fix_value_position(data, ExtraRule_StageMods);
+
+	// Use rotator for last option
+	set_to_rotator(data, ExtraRule_Widescreen);
 
 	return gobj;
 }
@@ -305,9 +345,9 @@ extern "C" void hook_Menu_UpdateExtraRuleDescriptionText(HSD_GObj *gobj,
 	}
 
 	switch (index) {
+	case ExtraRule_StageMods:      text->data = stage_mod_descriptions[value]; break;
 	case ExtraRule_ControllerFix:  text->data = ucf_type_descriptions[value]; break;
 	case ExtraRule_Latency:        text->data = latency_descriptions[value]; break;
 	case ExtraRule_Widescreen:     text->data = widescreen_descriptions[value]; break;
-	case ExtraRule_OldStageSelect: text->data = oss_description.data(); break;
 	}
 }

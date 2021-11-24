@@ -163,23 +163,19 @@ add_hook Interrupt_TurnOrDash
 add_hook Match_HandlePause
 add_hook MatchController_UpdateTeamWinners
 add_hook MatchController_UpdateWinners
-add_hook Menu_CreateExtraRulesMenu
 add_hook Menu_CreateRandomStageMenu
 add_hook Menu_CreateRuleDescriptionText
 add_hook Menu_ExitToRulesMenu
-add_hook Menu_ExtraRulesMenuInput
 add_hook Menu_GetBGM
 add_hook Menu_ItemMenuInput
 add_hook Menu_MenuPanelThink
 add_hook Menu_RandomStageMenuInput
 add_hook Menu_RandomStageMenuScroll
 add_hook Menu_RulesMenuInput
-add_hook Menu_SetupExtraRulesMenu
 add_hook Menu_SetupItemToggles
 add_hook Menu_SetupRulesMenu
 add_hook Menu_SetupRandomStageMenu
 add_hook Menu_SetupRandomStageToggles
-add_hook Menu_UpdateExtraRuleDescriptionText
 add_hook Menu_UpdateItemDisplay
 add_hook Menu_UpdateRandomStageDisplay
 add_hook Menu_UpdateRuleDisplay
@@ -215,6 +211,13 @@ add_hook TrainingMenu_Think
 add_hook TumbleWiggleCheck
 add_hook UpdatePadButtons
 add_hook UpdatePlayerStick
+# Additional rules menu
+.set SelectExtraRuleModel, Menu_SetupExtraRulesMenu+0x55C
+add_hook SelectExtraRuleModel
+add_hook Menu_CreateExtraRulesMenu
+add_hook Menu_ExtraRulesMenuInput
+add_hook Menu_SetupExtraRulesMenu
+add_hook Menu_UpdateExtraRuleDescriptionText
 # PDF+Latency
 .set SceneLoopStart,   Scene_RunLoop+0x68
 .set FirstEngineFrame, Scene_RunLoop+0xA8
