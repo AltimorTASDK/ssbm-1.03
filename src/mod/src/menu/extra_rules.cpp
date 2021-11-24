@@ -83,10 +83,13 @@ extern "C" struct {
 	u8 values[3];
 } ExtraRuleDescriptions[6];
 
+extern "C" HSD_AnimLoop RuleValueAnimLoops[10];
+
 extern "C" HSD_GObj *Menu_SetupExtraRulesMenu(u8 state);
 extern "C" void Menu_ExtraRulesMenuInput(HSD_GObj *gobj);
 extern "C" void Menu_UpdateExtraRuleDisplay(HSD_GObj *gobj, bool index_changed, bool value_changed);
-extern "C" void Menu_GetExtraRuleValueAnimLoop(u8 index, u32 value, bool scroll_left);
+extern "C" const HSD_AnimLoop &Menu_GetExtraRuleValueAnimLoop(u8 index, u8 value, bool scroll_left);
+extern "C" void Menu_UpdateExtraRuleValueAnim(HSD_GObj *gobj, HSD_JObj *jobj, u8 index);
 
 template<string_literal line1, string_literal line2>
 static constexpr auto make_description_text()
@@ -133,10 +136,10 @@ constexpr auto pause_auto_description =
 constexpr auto stage_mod_descriptions = multi_array {
 	make_description_text<"Modify all tournament legal",
 	                      "stages except for Battlefield.">(),
-	make_description_text<u"Freeze Pokémon Stadium.">(),
-	make_description_text<"Play without stage modifications.">(),
 	make_description_text<"Use the original stage select screen",
 	                      "and play without stage modifications.">(),
+	make_description_text<"Play without stage modifications.">(),
+	make_description_text<u"Freeze Pokémon Stadium.">()
 };
 
 constexpr auto ucf_type_descriptions = multi_array {
@@ -182,7 +185,7 @@ static const auto patches = patch_list {
 	// Don't allow pressing A on index 5
 	// b 0x3CC
 	std::pair { (char*)Menu_ExtraRulesMenuInput+0x50,                        0x480003CCu },
-	// Display index 5 as a rotator
+	// Skip index 5 checks
 	// b 0x14
 	std::pair { (char*)Menu_UpdateExtraRuleDisplay+0x218,                    0x48000014u },
 	// nop
@@ -198,6 +201,8 @@ static const auto patches = patch_list {
 	std::pair { (char*)Menu_UpdateExtraRuleDisplay+0x510,                    0x48000020u },
 	// b 0x24
 	std::pair { (char*)Menu_GetExtraRuleValueAnimLoop+0x10,                  0x48000024u },
+	// b 0x8
+	std::pair { (char*)Menu_UpdateExtraRuleValueAnim+0x1C,                   0x48000008u },
 };
 
 static void replace_toggle_texture(ExtraRulesMenuData *data, int index)
@@ -215,8 +220,12 @@ static void set_to_rotator(ExtraRulesMenuData *data, int index)
 	HSD_JObjClearFlagsAll(background, HIDDEN);
 
 	// Update value animation
-	HSD_JObjReqAnimAll(cursor->child, 20.f * data->values[index] + 3.f);
-	HSD_JObjAnimAll(cursor->child);
+	auto *value = cursor->next;
+	HSD_JObjReqAnimAll(value, 20.f * data->values[index] + 3.f);
+	HSD_JObjAnimAll(value);
+
+	// Initialize value jobj tree
+	HSD_JObjGetTree<2>(value, data->value_jobj_trees[index].tree);
 
 	if (data->selected == index) {
 		// Show scroll arrows
@@ -232,6 +241,17 @@ static void fix_value_position(ExtraRulesMenuData *data, int index)
 	auto *jobj = data->value_jobj_trees[index].tree[1];
 	jobj->position.x = 4.8f;
 	HSD_JObjSetMtxDirty(jobj);
+}
+
+static void set_value_anim(ExtraRulesMenuData *data, int index)
+{
+	// Set initial value anim frame with support for more than 3 values
+	auto *jobj = data->value_jobj_trees[index].tree[0];
+	const auto value = data->values[index];
+
+	const auto anim_index = value == 0 ? ExtraRuleValueBounds[index].max : value - 1;
+	HSD_JObjReqAnimAll(jobj, RuleValueAnimLoops[anim_index].start);
+	HSD_JObjAnimAll(jobj);
 }
 
 static void pool_free(void *data)
@@ -301,6 +321,9 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 	// Make Rl01 use proper additional rules position
 	fix_value_position(data, ExtraRule_StageMods);
 
+	// Set anim frame correctly for 4-value model
+	set_value_anim(data, ExtraRule_StageMods);
+
 	// Use rotator for last option
 	set_to_rotator(data, ExtraRule_Widescreen);
 
@@ -332,11 +355,53 @@ extern "C" void hook_Menu_ExtraRulesMenuInput(HSD_GObj *gobj)
 	orig_Menu_ExtraRulesMenuInput(gobj);
 }
 
+extern "C" const HSD_AnimLoop &orig_Menu_GetExtraRuleValueAnimLoop(u8 index, u8 value,
+                                                                   bool scroll_left);
+extern "C" const HSD_AnimLoop &hook_Menu_GetExtraRuleValueAnimLoop(u8 index, u8 value,
+                                                                   bool scroll_left)
+{
+	if (index != ExtraRule_StageMods)
+		return orig_Menu_GetExtraRuleValueAnimLoop(index, value, scroll_left);
+
+	if (scroll_left)
+		return RuleValueAnimLoops[ExtraRuleValueBounds[index].max - value + 5];
+	else if (value == 0)
+		return RuleValueAnimLoops[ExtraRuleValueBounds[index].max];
+	else
+		return RuleValueAnimLoops[value - 1];
+}
+
+extern "C" void orig_Menu_UpdateExtraRuleValueAnim(HSD_GObj *gobj, HSD_JObj *jobj, u8 index);
+extern "C" void hook_Menu_UpdateExtraRuleValueAnim(HSD_GObj *gobj, HSD_JObj *jobj, u8 index)
+{
+	if (index != ExtraRule_StageMods)
+		return orig_Menu_UpdateExtraRuleValueAnim(gobj, jobj, index);
+
+	const auto frame = HSD_JObjGetAnimFrame(jobj);
+
+	for (u8 i = 0; i < 10; i++) {
+		const auto &loop = RuleValueAnimLoops[i];
+		if (frame >= loop.start && frame <= loop.end) {
+			HSD_JObjLoopAnim(jobj, loop);
+			return;
+		}
+	}
+}
+
 extern "C" void hook_Menu_UpdateExtraRuleDescriptionText(HSD_GObj *gobj,
                                                          bool index_changed, bool value_changed)
 {
 	auto *data = gobj->get<ExtraRulesMenuData>();
 	auto *text = data->description_text;
+
+	if (data->state == MenuState_ExitFrom || data->state == MenuState_EnterFrom) {
+		if (text != nullptr) {
+			// Free text when leaving menu
+			Text_Free(text);
+			data->description_text = nullptr;
+		}
+		return;
+	}
 
 	if (text == nullptr) {
 		// Create description text

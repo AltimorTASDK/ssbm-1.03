@@ -214,8 +214,10 @@ add_hook UpdatePlayerStick
 .set SelectExtraRuleModel, Menu_SetupExtraRulesMenu+0x55C
 add_hook SelectExtraRuleModel
 add_hook Menu_CreateExtraRulesMenu
-add_hook Menu_ExtraRulesMenuInput
 add_hook Menu_SetupExtraRulesMenu
+add_hook Menu_ExtraRulesMenuInput
+add_hook Menu_GetExtraRuleValueAnimLoop
+add_hook Menu_UpdateExtraRuleValueAnim
 add_hook Menu_UpdateExtraRuleDescriptionText
 # PDF+Latency
 .set SceneLoopStart,   Scene_RunLoop+0x68

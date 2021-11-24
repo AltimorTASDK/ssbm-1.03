@@ -4,9 +4,9 @@
 
 enum class stage_mod_type : u8 {
 	all  = 0,
-	ps   = 1,
+	oss  = 1,
 	none = 2,
-	oss  = 3,
+	ps   = 3,
 	max
 };
 

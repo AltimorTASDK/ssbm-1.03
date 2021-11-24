@@ -2160,6 +2160,7 @@
 8023050c 0000077c 8023050c 0 Menu_CreateRulesMenu
 80230d24 0000043c 80230d24 0 Menu_ExtraRulesMenuInput
 80231160 0000008c 80231160 0 Menu_GetExtraRuleValueAnimLoop
+80231368 00000144 80231368 0 Menu_UpdateExtraRuleValueAnim
 802314ac 000005a8 802314ac 0 Menu_UpdateExtraRuleDisplay
 80231a54 000001f8 80231a54 0 Menu_UpdateExtraRuleDescriptionText
 80231f20 000007e4 80231f20 0 Menu_SetupExtraRulesMenu
@@ -4060,6 +4061,7 @@
 803cf0e8 00000000 803cf0e8 0 YLinkActionStates
 803e8ffc 00000000 803e8ffc 0 MenuPanelAnimTable
 803e9820 00000000 803e9820 0 MenuTypeDataTable
+803ea8a4 00000000 803ea8a4 0 RuleValueAnimLoops
 803ea94c 00000000 803ea94c 0 RuleValueBounds
 803ea95c 00000000 803ea95c 0 MenuRuleValueModels
 803eb35c 00000000 803eb35c 0 ExtraRuleTextAnimFrames
