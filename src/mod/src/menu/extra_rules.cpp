@@ -356,7 +356,7 @@ extern "C" const HSD_AnimLoop &hook_Menu_GetExtraRuleValueAnimLoop(u8 index, u8 
                                                                    bool scroll_right)
 {
 	if (index != ExtraRule_StageMods)
-		return orig_Menu_GetExtraRuleValueAnimLoop(index, value, scroll_left);
+		return orig_Menu_GetExtraRuleValueAnimLoop(index, value, scroll_right);
 
 	if (!scroll_right)
 		return RuleValueAnimLoops[ExtraRuleValueBounds[index].max - value + 5];
