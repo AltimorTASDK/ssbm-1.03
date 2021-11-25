@@ -65,3 +65,15 @@ constexpr T operator--(T &value, int)
 	--value;
 	return result;
 }
+
+template<typename T, typename U = std::underlying_type_t<T>> requires std::is_scoped_enum_v<T>
+constexpr auto operator<=>(const T &a, const U &b)
+{
+    return static_cast<U>(a) <=> b;
+}
+
+template<typename T, typename U = std::underlying_type_t<T>> requires std::is_scoped_enum_v<T>
+constexpr auto operator==(const T &a, const U &b)
+{
+    return a <=> b == 0;
+}
