@@ -2,6 +2,7 @@
 #include "melee/player.h"
 #include "melee/scene.h"
 #include "melee/stage.h"
+#include "rules/values.h"
 #include "util/patch_list.h"
 #include "util/melee/ports.h"
 #include <gctypes.h>
