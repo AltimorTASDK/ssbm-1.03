@@ -415,22 +415,19 @@ extern "C" void hook_Menu_UpdateExtraRuleDescriptionText(HSD_GObj *gobj,
 	if (value_changed && index == ExtraRule_Widescreen)
 		GetGameRules()->widescreen = value;
 
-	if (index == ExtraRule_Pause && !value) {
-		text->data = pause_auto_description.data();
-		return;
-	}
-
 	switch (index) {
+	case ExtraRule_StockMatchTimeLimit:
+		Text_SetFromSIS(text, ExtraRuleDescriptions[index].values[0]);
+		break;
+	case ExtraRule_Pause:
+		if (value)
+			Text_SetFromSIS(text, ExtraRuleDescriptions[index].values[value]);
+		else
+			text->data = pause_auto_description.data();
+		break;
 	case ExtraRule_StageMods:      text->data = stage_mod_descriptions[value]; break;
 	case ExtraRule_ControllerFix:  text->data = ucf_type_descriptions[value]; break;
 	case ExtraRule_Latency:        text->data = latency_descriptions[value]; break;
 	case ExtraRule_Widescreen:     text->data = widescreen_descriptions[value]; break;
-	case ExtraRule_Pause:
-		if (!value) {
-			text->data = pause_auto_description.data();
-			break;
-		}
-	default:
-		Text_SetFromSIS(text, ExtraRuleDescriptions[index].values[value]);
 	}
 }
