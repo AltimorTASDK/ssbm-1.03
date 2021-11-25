@@ -186,8 +186,6 @@ add_hook Player_CheckCStickDSmashInput
 add_hook Player_GetAirdodgeAngle
 add_hook Scene_Match_Exit
 add_hook ShowNameTagCheck
-add_hook SSS_Init
-add_hook SSS_Think
 add_hook Stage_Dreamland_WhispyUpdate
 add_hook Stage_FinalDestination_BackgroundUpdate
 add_hook Stage_Fountain_CreateReflection
@@ -195,7 +193,6 @@ add_hook Stage_Fountain_CreateStars
 add_hook Stage_Fountain_SetupModel
 add_hook Stage_Fountain_UpdateReflection
 add_hook Stage_GetBGM
-add_hook Stage_IsValidRandomChoice
 add_hook Stage_PokemonStadium_TransformationDecide
 add_hook Stage_Setup
 add_hook Stage_YoshisStory_ShyGuyUpdate
@@ -210,6 +207,10 @@ add_hook TrainingMenu_Think
 add_hook TumbleWiggleCheck
 add_hook UpdatePadButtons
 add_hook UpdatePlayerStick
+# Stage select screen
+add_hook Stage_IsValidRandomChoice
+add_hook SSS_Init
+add_hook SSS_Think
 # Additional rules menu
 .set SelectExtraRuleModel, Menu_SetupExtraRulesMenu+0x55C
 add_hook SelectExtraRuleModel

@@ -7,10 +7,18 @@
 #include "hsd/robj.h"
 #include "melee/stage.h"
 #include "rules/values.h"
+#include "util/compression.h"
 #include "util/vector.h"
 #include <algorithm>
 #include <array>
 #include <gctypes.h>
+
+#include "resources/sss/bf.tex.h"
+#include "resources/sss/dl.tex.h"
+#include "resources/sss/fd.tex.h"
+#include "resources/sss/fod.tex.h"
+#include "resources/sss/ps.tex.h"
+#include "resources/sss/ys.tex.h"
 
 // TODO: Not compatible with 20XX striking
 
@@ -66,7 +74,7 @@ constexpr auto ICON_SCALE = 1.f;
 extern "C" StageSelectIcon StageSelectIcons[Icon_Max];
 
 // Back up select region/select box size
-static auto og_ss_icons = std::to_array(StageSelectIcons);
+static auto oss_icons = std::to_array(StageSelectIcons);
 
 static bool is_legal_stage(int id)
 {
@@ -237,12 +245,29 @@ extern "C" void hook_SSS_Think()
 	}
 }
 
+static void setup_stage_names()
+{
+	// Change upper text for frozen stages
+	auto *texanim = MnSlMapModels->StageName.matanim_joint->child->child->matanim->texanim;
+	unmanaged_texture_swap(bf_tex_data, texanim->imagetbl[24]);
+	if (is_stage_frozen(Stage_DL))
+		unmanaged_texture_swap(dl_tex_data, texanim->imagetbl[26]);
+	if (is_stage_frozen(Stage_FD))
+		unmanaged_texture_swap(fd_tex_data, texanim->imagetbl[25]);
+	if (is_stage_frozen(Stage_FoD))
+		unmanaged_texture_swap(fod_tex_data, texanim->imagetbl[10]);
+	if (is_stage_frozen(Stage_PS))
+		unmanaged_texture_swap(ps_tex_data, texanim->imagetbl[14]);
+	if (is_stage_frozen(Stage_YS))
+		unmanaged_texture_swap(ys_tex_data, texanim->imagetbl[8]);
+}
+
 extern "C" void orig_SSS_Init(void *menu);
 extern "C" void hook_SSS_Init(void *menu)
 {
 	// Restore old icon select boxes for OSS
 	if (should_use_oss())
-		std::copy(og_ss_icons.begin(), og_ss_icons.end(), StageSelectIcons);
+		std::copy(oss_icons.begin(), oss_icons.end(), StageSelectIcons);
 
 	orig_SSS_Init(menu);
 
@@ -254,6 +279,8 @@ extern "C" void hook_SSS_Init(void *menu)
 
 	if (should_use_oss())
 		return;
+
+	setup_stage_names();
 
 	// Create a matanimjoint to apply the top row of IconDouble to other types of icons. This
 	// has to be done because the top row's matanimjoint is the *2nd* child of the root.
