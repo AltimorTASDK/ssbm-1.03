@@ -21,6 +21,7 @@
 #include "resources/sss/fod.tex.h"
 #include "resources/sss/ps.tex.h"
 #include "resources/sss/ys.tex.h"
+#include "resources/sss/random.tex.h"
 
 // TODO: Not compatible with 20XX striking
 
@@ -81,12 +82,12 @@ static auto oss_icons = std::to_array(StageSelectIcons);
 static bool is_legal_stage(int id)
 {
 	switch (id) {
+	case Stage_BF:
+	case Stage_DL:
+	case Stage_FD:
 	case Stage_FoD:
 	case Stage_PS:
 	case Stage_YS:
-	case Stage_DL:
-	case Stage_BF:
-	case Stage_FD:
 		return true;
 	default:
 		return false;
@@ -277,7 +278,7 @@ static void mask_unfrozen_texture(HSD_ImageDesc *image)
 static void setup_stage_names()
 {
 	struct tex_swap {
-		u8 stage_id;
+		s32 stage_id;
 		u8 tex_id;
 		u8 *texture;
 	};
@@ -288,7 +289,8 @@ static void setup_stage_names()
 		{ Stage_FD,  25, fd_tex_data },
 		{ Stage_FoD, 10, fod_tex_data },
 		{ Stage_PS,  14, ps_tex_data },
-		{ Stage_YS,   8, ys_tex_data }
+		{ Stage_YS,   8, ys_tex_data },
+		{ -1,        29, random_tex_data }
 	};
 
 	// Change upper text for frozen stages and remove upper text if unfrozen
@@ -297,7 +299,7 @@ static void setup_stage_names()
 	for (const auto &swap : tex_swaps) {
 		unmanaged_texture_swap(swap.texture, texanim->imagetbl[swap.tex_id]);
 
-		if (!is_stage_frozen(swap.stage_id))
+		if (swap.stage_id != -1 && !is_stage_frozen(swap.stage_id))
 			mask_unfrozen_texture(texanim->imagetbl[swap.tex_id]);
 	}
 }
