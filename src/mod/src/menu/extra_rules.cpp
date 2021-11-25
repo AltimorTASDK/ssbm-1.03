@@ -351,14 +351,14 @@ extern "C" void hook_Menu_ExtraRulesMenuInput(HSD_GObj *gobj)
 }
 
 extern "C" const HSD_AnimLoop &orig_Menu_GetExtraRuleValueAnimLoop(u8 index, u8 value,
-                                                                   bool scroll_left);
+                                                                   bool scroll_right);
 extern "C" const HSD_AnimLoop &hook_Menu_GetExtraRuleValueAnimLoop(u8 index, u8 value,
-                                                                   bool scroll_left)
+                                                                   bool scroll_right)
 {
 	if (index != ExtraRule_StageMods)
 		return orig_Menu_GetExtraRuleValueAnimLoop(index, value, scroll_left);
 
-	if (scroll_left)
+	if (!scroll_right)
 		return RuleValueAnimLoops[ExtraRuleValueBounds[index].max - value + 5];
 	else if (value == 0)
 		return RuleValueAnimLoops[ExtraRuleValueBounds[index].max];
