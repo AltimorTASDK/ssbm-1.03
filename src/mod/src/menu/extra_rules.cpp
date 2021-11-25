@@ -115,7 +115,7 @@ static constexpr auto make_description_text()
 {
 	return text_builder::build(
 		text_builder::kern(),
-		text_builder::left(),
+		text_builder::center(),
 		text_builder::color<170, 170, 170>(),
 		text_builder::textbox<179, 179>(),
 		text_builder::offset<0, -10>(),
