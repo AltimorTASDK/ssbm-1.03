@@ -2,12 +2,16 @@
 #include "melee/match.h"
 #include "melee/scene.h"
 
+static constexpr auto LRAS_HOLD_TIME = 20;
+
 static bool released_start = false;
+static int lras_timer = 0;
 
 bool check_lras_macro()
 {
 	if  (!Scene_CheckPauseFlag(PauseBit_Pause)) {
 		released_start = false;
+		lras_timer = 0;
 		return false;
 	} else if (released_start) {
 		return false;
@@ -23,8 +27,12 @@ bool check_lras_macro()
 		released_start = true;
 		return false;
 	}
-	
-	return match_info->pause_timer == 0;
+
+	if (++lras_timer < LRAS_HOLD_TIME - 1)
+		return false;
+
+	lras_timer = 0;
+	return true;
 }
 
 extern "C" void orig_Match_HandlePause();
