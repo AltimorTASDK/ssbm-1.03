@@ -78,6 +78,11 @@ constexpr s8 popo_to_nana(float x)
 	return x >= 0 ? (s8)(x * 127) : (s8)(x * 128);
 }
 
+constexpr float popo_to_nana_float(float x)
+{
+	return x >= 0 ? (float)((s8)(x * 127)) / 127 : (float)((s8)(x * 128)) / 128;
+}
+
 constexpr vec2c popo_to_nana(const vec2 &coords)
 {
 	return coords.map<vec2c>([](auto x) { return popo_to_nana(x); });
