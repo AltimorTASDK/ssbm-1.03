@@ -36,9 +36,9 @@ enum VsScene {
 };
 
 enum PauseBit {
-	PauseBit_DevelopPause,
-	PauseBit_Pause,
-	PauseBit_TrainingMenu
+	PauseBit_DevelopPause = 0,
+	PauseBit_Pause        = 1,
+	PauseBit_TrainingMenu = 2
 };
 
 using SceneProc = void(SceneMinorData*);

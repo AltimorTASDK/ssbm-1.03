@@ -1,11 +1,14 @@
 #include "hsd/pad.h"
 #include "melee/player.h"
+#include "melee/scene.h"
 #include "util/melee/pad.h"
 #include <cstddef>
 #include <gctypes.h>
 
 // Manually maintain a buffer of hardware values for Nana
 static PADStatus nana_hw_buffer[4][NANA_BUFFER];
+
+static bool develop_pause[6];
 
 static ptrdiff_t get_nana_read_index(const Player *nana)
 {
@@ -34,7 +37,7 @@ const PADStatus &get_nana_input_impl(const Player *nana, int offset)
 	auto index = get_nana_read_index(nana) + offset;
 	if (index >= NANA_BUFFER)
 		index -= NANA_BUFFER;
-		
+
 	return nana_hw_buffer[nana->port][index];
 }
 }
@@ -43,7 +46,13 @@ extern "C" void orig_Player_Nana_RecordPopoData(Player *popo, Player *nana);
 extern "C" void hook_Player_Nana_RecordPopoData(Player *popo, Player *nana)
 {
 	orig_Player_Nana_RecordPopoData(popo, nana);
-	
+
 	const auto index = get_nana_write_index(nana);
 	nana_hw_buffer[nana->port][index] = get_input<0>(nana->port);
+
+	// Prevent Nana from grabbing when exiting develop pause
+	if (develop_pause[nana->slot])
+		nana->popo_data_write->buttons &= ~Button_Z;
+
+	develop_pause[nana->slot] = Scene_CheckPauseFlag(PauseBit_DevelopPause);
 }
