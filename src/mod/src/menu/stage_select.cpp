@@ -8,10 +8,12 @@
 #include "melee/stage.h"
 #include "rules/values.h"
 #include "util/compression.h"
+#include "util/math.h"
 #include "util/vector.h"
 #include <algorithm>
 #include <array>
 #include <gctypes.h>
+#include <ogc/gx.h>
 
 #include "resources/sss/bf.tex.h"
 #include "resources/sss/dl.tex.h"
@@ -245,21 +247,59 @@ extern "C" void hook_SSS_Think()
 	}
 }
 
+static void mask_unfrozen_texture(HSD_ImageDesc *image)
+{
+	if (image->format != GX_TF_I4)
+		return;
+
+	constexpr auto block_size = 64;
+	constexpr auto block_width = 8;
+	constexpr auto block_height = 8;
+	const auto width = align_up(image->width, block_width);
+	const auto height = align_up(image->height, block_height);
+	const auto block_num_x = width / block_width;
+	auto *texture = (u8*)image->img_ptr;
+
+	for (auto i = 0; i < width * height / 2; i++) {
+		const auto pixel = i * 2; // 4bpp
+		const auto block_index = pixel / block_size;
+		const auto block_y = (block_index / block_num_x) * block_height;
+		const auto offset = pixel % block_size;
+		const auto offset_y = offset / block_width;
+		const auto y = block_y + offset_y;
+
+		// Black out top text
+		if (y <= height / 3)
+			texture[i] = 0;
+	}
+}
+
 static void setup_stage_names()
 {
-	// Change upper text for frozen stages
+	struct tex_swap {
+		u8 stage_id;
+		u8 tex_id;
+		u8 *texture;
+	};
+
+	constexpr tex_swap tex_swaps[] = {
+		{ Stage_BF,  24, bf_tex_data },
+		{ Stage_DL,  26, dl_tex_data },
+		{ Stage_FD,  25, fd_tex_data },
+		{ Stage_FoD, 10, fod_tex_data },
+		{ Stage_PS,  14, ps_tex_data },
+		{ Stage_YS,   8, ys_tex_data }
+	};
+
+	// Change upper text for frozen stages and remove upper text if unfrozen
 	auto *texanim = MnSlMapModels->StageName.matanim_joint->child->child->matanim->texanim;
-	unmanaged_texture_swap(bf_tex_data, texanim->imagetbl[24]);
-	if (is_stage_frozen(Stage_DL))
-		unmanaged_texture_swap(dl_tex_data, texanim->imagetbl[26]);
-	if (is_stage_frozen(Stage_FD))
-		unmanaged_texture_swap(fd_tex_data, texanim->imagetbl[25]);
-	if (is_stage_frozen(Stage_FoD))
-		unmanaged_texture_swap(fod_tex_data, texanim->imagetbl[10]);
-	if (is_stage_frozen(Stage_PS))
-		unmanaged_texture_swap(ps_tex_data, texanim->imagetbl[14]);
-	if (is_stage_frozen(Stage_YS))
-		unmanaged_texture_swap(ys_tex_data, texanim->imagetbl[8]);
+
+	for (const auto &swap : tex_swaps) {
+		unmanaged_texture_swap(swap.texture, texanim->imagetbl[swap.tex_id]);
+
+		if (!is_stage_frozen(swap.stage_id))
+			mask_unfrozen_texture(texanim->imagetbl[swap.tex_id]);
+	}
 }
 
 extern "C" void orig_SSS_Init(void *menu);
