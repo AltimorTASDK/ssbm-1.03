@@ -10,7 +10,6 @@
 #include "melee/player.h"
 #include "melee/scene.h"
 #include "melee/stage.h"
-#include "menu/stage_select.h"
 #include "rules/values.h"
 #include "util/math.h"
 #include "util/matrix.h"
@@ -105,7 +104,7 @@ extern "C" void hook_Stage_Fountain_CreateStars()
 extern "C" void orig_Stage_Fountain_SetupModel(HSD_GObj *gobj);
 extern "C" void hook_Stage_Fountain_SetupModel(HSD_GObj *gobj)
 {
-	if (!use_og_stage_select) {
+	if (is_stage_frozen(Stage_FoD)) {
 		// Use the average of the default platform heights (20 and 28)
 		auto *params = Stage_GetParameters();
 		params->fod.left_plat_height = 24.f;

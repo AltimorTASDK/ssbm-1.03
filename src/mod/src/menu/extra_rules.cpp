@@ -10,7 +10,6 @@
 #include "melee/scene.h"
 #include "melee/text.h"
 #include "menu/character_select.h"
-#include "menu/stage_select.h"
 #include "rules/saved_config.h"
 #include "rules/settings_lock.h"
 #include "util/compression.h"

@@ -2,6 +2,7 @@
 
 #include <array>
 #include "melee/rules.h"
+#include "melee/stage.h"
 
 constexpr auto ledge_grab_limit_values = std::array {
 	0, 30, 35, 40, 45, 50, 55, 60
@@ -33,6 +34,31 @@ inline bool is_widescreen()
 {
 	const auto *rules = GetGameRules();
 	return rules->widescreen;
+}
+
+inline bool should_use_oss()
+{
+	const auto *rules = GetGameRules();
+	return rules->stage_mods == stage_mod_type::oss;
+}
+
+inline bool is_stage_frozen(u8 id)
+{
+	const auto *rules = GetGameRules();
+
+	switch (id) {
+	case Stage_PS:
+		if (rules->stage_mods == stage_mod_type::ps)
+			return true;
+	case Stage_FoD:
+	case Stage_YS:
+	case Stage_DL:
+	case Stage_FD:
+		if (rules->stage_mods == stage_mod_type::all)
+			return true;
+	default:
+		return false;
+	}
 }
 
 inline latency_mode get_latency()

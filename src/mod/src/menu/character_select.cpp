@@ -13,7 +13,6 @@
 #include "melee/player.h"
 #include "melee/scene.h"
 #include "menu/character_select.h"
-#include "menu/stage_select.h"
 #include "rules/values.h"
 #include "util/compression.h"
 #include "util/mempool.h"
@@ -476,9 +475,6 @@ extern "C" void hook_CSS_UpdatePortrait(u8 port)
 extern "C" void orig_CSS_Init(void *menu);
 extern "C" void hook_CSS_Init(void *menu)
 {
-	// Reset original stage select flag when re-entering CSS
-	use_og_stage_select = false;
-
 	// Forget unplugged state on entry from main menu
 	if (SceneMinorPrevious == 0) {
 		for (auto i = 0; i < 4; i++)

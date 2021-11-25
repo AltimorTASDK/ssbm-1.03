@@ -60,15 +60,13 @@ extern "C" struct {
 	ArchiveModel Background;
 	ArchiveModel NowLoading;
 } *MnSlMapModels;
-	
+
 constexpr auto ICON_SCALE = 1.f;
 
 extern "C" StageSelectIcon StageSelectIcons[Icon_Max];
 
 // Back up select region/select box size
 static auto og_ss_icons = std::to_array(StageSelectIcons);
-
-bool use_og_stage_select;
 
 static bool is_legal_stage(int id)
 {
@@ -94,7 +92,7 @@ static void random_icon_proc(HSD_GObj *gobj)
 	GObj_ProcAnimate(gobj);
 	HSD_JObjSetupMatrix(jobj);
 	jobj->flags |= USER_DEF_MTX;
-	
+
 	// Place random at (16.4, -9.5), opposite to the stage name
 	jobj->mtx.get<0, 3>() = jobj->position.x += 14.1f + 16.4f;
 	jobj->mtx.get<1, 3>() = jobj->position.y = -9.5f;
@@ -109,7 +107,7 @@ static void stage_icon_proc(HSD_GObj *gobj)
 	GObj_ProcAnimate(gobj);
 	HSD_JObjSetupMatrix(jobj);
 	jobj->flags |= USER_DEF_MTX;
-	
+
 	jobj->mtx.get<0, 3>() = jobj->position.x *= ICON_SCALE;
 	jobj->mtx.get<1, 3>() = jobj->position.y = 3.8f;
 }
@@ -125,22 +123,22 @@ static void setup_icon(StageSelectIcon *icon, HSD_JObj *constraint,
 	GObj_InitKindObj(gobj, GOBJ_KIND_JOBJ, jobj);
 	GObj_SetupGXLink(gobj, GObj_GXProcJoint, GOBJ_GXLINK_MENU_TOP, 0x83);
 	GObj_AddProc(gobj, stage_icon_proc, 3);
-	
+
 	// Set anims with given matanim_joint and frame
 	HSD_JObjAddAnimAll(jobj, model.animjoint, matanim_joint, model.shapeanim_joint);
 	HSD_JObjReqAnimAll(jobj, frame);
 	HSD_JObjAnimAll(jobj);
-	
+
 	HSD_AObjWalkTree(jobj, ObjType_JObj, ObjMask_TObj, HSD_AObjStopAnim,
 	                 CbType_AObj_Obj_Ptr, nullptr);
-			 
+
 	// Constrain position to given jobj
 	HSD_JObjAddConstraintPos(jobj, constraint);
-	
+
 	// Replace icon jobj
 	HSD_JObjRemoveAll(icon->jobj);
 	icon->jobj = jobj;
-	
+
 	// Update sizes
 	jobj->scale *= ICON_SCALE;
 
@@ -154,7 +152,7 @@ static void setup_random_icon(HSD_JObj *random_joint)
 	for (auto *gobj = plinkhigh_gobjs[5]; gobj != nullptr; gobj = gobj->next) {
 		if (gobj->obj_kind != GOBJ_KIND_JOBJ)
 			continue;
-			
+
 		auto *jobj = gobj->get_hsd_obj<HSD_JObj>();
 		if (jobj == nullptr)
 			continue;
@@ -162,7 +160,7 @@ static void setup_random_icon(HSD_JObj *random_joint)
 		auto *robj = jobj->robj;
 		if (robj == nullptr)
 			continue;
-			
+
 		if ((robj->flags & TYPE_MASK) != REFTYPE_JOBJ)
 			continue;
 
@@ -178,7 +176,7 @@ static void reset_striking(int port)
 	// Show all legal stages
 	for (auto i = 0; i < Icon_Random; i++) {
 		auto *icon = &StageSelectIcons[i];
-		if (is_legal_stage(icon->stage_id) || use_og_stage_select) {
+		if (is_legal_stage(icon->stage_id) || should_use_oss()) {
 			HSD_JObjClearFlagsAll(icon->jobj, HIDDEN);
 			icon->unlocked = UnlockType_Unlocked;
 		}
@@ -203,7 +201,7 @@ static void strike_stage(int port)
 	auto *icon = &StageSelectIcons[SelectedStageIcon];
 	HSD_JObjSetFlagsAll(icon->jobj, HIDDEN);
 	icon->unlocked = UnlockType_Hidden;
-	
+
 	SelectedStageIcon = Icon_None;
 }
 
@@ -216,7 +214,7 @@ extern "C" bool hook_Stage_IsValidRandomChoice(u16 index)
 		if (icon.stage_index == index && icon.unlocked != UnlockType_Unlocked)
 			return false;
 	}
-	
+
 	return true;
 }
 
@@ -224,11 +222,11 @@ extern "C" void orig_SSS_Think();
 extern "C" void hook_SSS_Think()
 {
 	orig_SSS_Think();
-	
+
 	// Don't allow striking after picking a stage
 	if (StageLoadingState != 0)
 		return;
-	
+
 	for (auto port = 0; port < 4; port++) {
 		const auto &pad = HSD_PadMasterStatus[port];
 
@@ -243,20 +241,20 @@ extern "C" void orig_SSS_Init(void *menu);
 extern "C" void hook_SSS_Init(void *menu)
 {
 	// Restore old icon select boxes for OSS
-	if (use_og_stage_select)
+	if (should_use_oss())
 		std::copy(og_ss_icons.begin(), og_ss_icons.end(), StageSelectIcons);
 
 	orig_SSS_Init(menu);
-	
+
 	if (is_widescreen()) {
 		// Shift the dark overlay towards the camera so it covers the whole screen
 		MnSlMapModels->NowLoading.joint->position.z += 32.f;
 		MnSlMapModels->NowLoading.joint->child->position.z -= 32.f;
 	}
 
-	if (use_og_stage_select)
+	if (should_use_oss())
 		return;
-	
+
 	// Create a matanimjoint to apply the top row of IconDouble to other types of icons. This
 	// has to be done because the top row's matanimjoint is the *2nd* child of the root.
 	const HSD_MatAnimJoint matanim_double_top_row = {
@@ -264,9 +262,9 @@ extern "C" void hook_SSS_Init(void *menu)
 		.next = nullptr,
 		.matanim = nullptr
 	};
-	
+
 	const auto *matanim_special = MnSlMapModels->IconSpecial.matanim_joint;
-	
+
 	// Get stage icon position joints starting at root of Position model
 	const auto *position_jobj = StageSelectIcons[Icon_BF].jobj->robj->u.jobj->parent;
 	HSD_JObj *icon_joints[7];

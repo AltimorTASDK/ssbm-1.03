@@ -2,7 +2,6 @@
 #include "melee/player.h"
 #include "melee/scene.h"
 #include "melee/stage.h"
-#include "menu/stage_select.h"
 #include "util/patch_list.h"
 #include "util/melee/ports.h"
 #include <gctypes.h>
@@ -68,7 +67,7 @@ extern "C" void hook_Stage_GetSpawnPoint(u32 port, vec3 *result)
 	result->y = spawns[spawn_index].y;
 
 	// Adjust spawns for platform heights if using modded FoD
-	if (Stage_GetID() == Stage_FoD && !use_og_stage_select) {
+	if (Stage_GetID() == Stage_FoD && is_stage_frozen(Stage_FoD)) {
 		if (spawn_index == 0)
 			result->y += 4.f;
 		else if (spawn_index == 1)
