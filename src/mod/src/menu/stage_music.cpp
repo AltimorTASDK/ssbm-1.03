@@ -9,7 +9,7 @@
 #include "melee/stage.h"
 #include "melee/text.h"
 #include "rules/saved_config.h"
-#include "rules/settings_lock.h"
+#include "rules/values.h"
 #include "util/compression.h"
 #include "util/math.h"
 #include "util/mempool.h"
@@ -140,7 +140,7 @@ static int get_selected_bgm_id(ItemMenuData *data, u8 stage)
 	const auto bgm = config.stage_bgm[stage];
 	if (bgm != -1)
 		return bgm_ids[bgm];
-		
+
 	return std::array {
 		BGM_YoshisStory,
 		BGM_PokemonStadium,
@@ -158,11 +158,11 @@ static void play_selected_bgm(ItemMenuData *data, u8 stage)
 
 	PlayBGM(get_selected_bgm_id(data, stage));
 }
-	
+
 static void set_toggle(ItemMenuData *data, u8 index, bool toggle)
 {
 	data->toggles[index] = toggle;
-	
+
 	if (index == MenuSelectedIndex)
 		MenuSelectedValue = toggle;
 
@@ -177,7 +177,7 @@ static void change_stage(ItemMenuData *data, u8 stage)
 	// Copy selection for stage
 	for (u8 i = 0; i < 31; i++)
 		set_toggle(data, i, i == config.stage_bgm[stage]);
-		
+
 	play_selected_bgm(data, stage);
 }
 
@@ -185,9 +185,9 @@ extern "C" void orig_Menu_UpdateItemDisplay(HSD_GObj *gobj, bool index_changed, 
 extern "C" void hook_Menu_UpdateItemDisplay(HSD_GObj *gobj, bool index_changed, bool value_changed)
 {
 	orig_Menu_UpdateItemDisplay(gobj, index_changed, value_changed);
-	
+
 	auto *data = gobj->get<ItemMenuData>();
-	
+
 	if (MenuSelectedIndex >= 31 && value_changed) {
 		change_stage(data, MenuSelectedValue);
 		return;
@@ -196,15 +196,15 @@ extern "C" void hook_Menu_UpdateItemDisplay(HSD_GObj *gobj, bool index_changed, 
 	// Hide selection indicator
 	auto *jobj = Menu_GetItemToggle(data, (u8)MenuSelectedIndex);
 	HSD_JObjSetFlagsAll(HSD_JObjGetFromTreeByIndex(jobj, 4), HIDDEN);
-	
+
 	if (!value_changed)
 		return;
-		
+
 	if (MenuSelectedValue)
 		config.stage_bgm[data->selected_stage] = MenuSelectedIndex;
 	else
 		config.stage_bgm[data->selected_stage] = -1;
-		
+
 	for (u8 i = 0; i < 31; i++) {
 		// Disable all other songs
 		if (i != MenuSelectedIndex)
@@ -266,13 +266,13 @@ static void replace_textures()
 		pool.add(new texture_swap(music_stages_tex_data, matanim->texanim->imagetbl[i]));
 
 	const auto *mask = decompress(music_stages_mask_tex_data);
-	
+
 	for (auto i = 0; i < 6; i++) {
 		apply_texture_mask((u8*)matanim->texanim->imagetbl[i]->img_ptr, mask,
 		                   tex_width, tex_height,
 		                   mask_width * i, 0, mask_width, tex_height);
 	}
-	
+
 	delete[] mask;
 }
 
@@ -280,7 +280,7 @@ extern "C" void orig_Menu_SetupItemToggles(HSD_GObj *gobj);
 extern "C" void hook_Menu_SetupItemToggles(HSD_GObj *gobj)
 {
 	orig_Menu_SetupItemToggles(gobj);
-	
+
 	replace_textures();
 
 	auto *data = gobj->get<ItemMenuData>();
@@ -290,7 +290,7 @@ extern "C" void hook_Menu_SetupItemToggles(HSD_GObj *gobj)
 		// Hide item image
 		HSD_JObjSetFlagsAll(HSD_JObjGetFromTreeByIndex(jobj, 7), HIDDEN);
 	}
-	
+
 	// Replace item names
 	data->text_left->data = text_left.data();
 	data->text_right->data = text_right.data();
@@ -303,18 +303,18 @@ extern "C" void orig_Menu_ItemMenuInput(HSD_GObj *gobj);
 extern "C" void hook_Menu_ItemMenuInput(HSD_GObj *gobj)
 {
 	const auto buttons = Menu_GetButtonsHelper(PORT_ALL);
-	
+
 	if (buttons & (MenuButton_B | MenuButton_Start))
 		config.save();
 
-	if (settings_locked && (buttons & MenuButton_A) && MenuSelectedIndex < 31) {
+	if (get_settings_lock() && (buttons & MenuButton_A) && MenuSelectedIndex < 31) {
 		// Don't allow changing music with settings locked
 		Menu_PlaySFX(MenuSFX_Denied);
 		return;
 	}
 
 	orig_Menu_ItemMenuInput(gobj);
-	
+
 	auto *data = ItemMenuGObj->get<ItemMenuData>();
 
 	// Allow cycling through stages with L/R
@@ -324,15 +324,15 @@ extern "C" void hook_Menu_ItemMenuInput(HSD_GObj *gobj)
 		data->selected_stage = (u8)mod((int)data->selected_stage - 1, 6);
 	else
 		return;
-		
+
 	change_stage(data, data->selected_stage);
-		
+
 	if (MenuSelectedIndex >= 31) {
 		MenuSelectedValue = data->selected_stage;
 		hook_Menu_UpdateItemDisplay(ItemMenuGObj, false, true);
 		return;
 	}
-		
+
 	// Force the stage selection to update
 	const auto old_index = MenuSelectedIndex;
 	const auto old_value = MenuSelectedValue;
@@ -346,7 +346,7 @@ extern "C" void hook_Menu_ItemMenuInput(HSD_GObj *gobj)
 	MenuSelectedValue = old_value;
 	data->selected = 31;
 	hook_Menu_UpdateItemDisplay(ItemMenuGObj, true, false);
-	
+
 	data->selected = old_selected;
 }
 
@@ -360,7 +360,7 @@ extern "C" void hook_Menu_ExitToRulesMenu()
 
 		PlayBGM(Menu_GetBGM());
 	}
-	
+
 	orig_Menu_ExitToRulesMenu();
 }
 
@@ -377,10 +377,10 @@ extern "C" bool hook_Stage_GetBGM(u32 stage_id, u32 flags, u32 *result)
 	               : stage_id == Stage_PS  ? config.stage_bgm[1]
 	               : stage_id == Stage_YS  ? config.stage_bgm[0]
 	                                       : -1;
-					      
+
 	if (bgm_index == -1)
 		return orig_Stage_GetBGM(stage_id, flags, result);
-		
+
 	*result = bgm_ids[bgm_index];
 	return false;
 }

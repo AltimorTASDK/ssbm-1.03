@@ -11,7 +11,7 @@
 #include "melee/text.h"
 #include "menu/character_select.h"
 #include "rules/saved_config.h"
-#include "rules/settings_lock.h"
+#include "rules/values.h"
 #include "util/compression.h"
 #include "util/mempool.h"
 #include "util/meta.h"
@@ -341,7 +341,7 @@ extern "C" void hook_Menu_ExtraRulesMenuInput(HSD_GObj *gobj)
 	if (buttons & (MenuButton_B | MenuButton_Start))
 		save_config();
 
-	if (settings_locked && (buttons & (MenuButton_Left | MenuButton_Right))) {
+	if (get_settings_lock() && (buttons & (MenuButton_Left | MenuButton_Right))) {
 		// Don't allow changing rules with settings locked
 		Menu_PlaySFX(MenuSFX_Denied);
 		return;

@@ -12,6 +12,8 @@ constexpr auto air_time_limit_values = std::array {
 	0, 120, 150, 180, 210, 240, 270, 300, 330, 360
 };
 
+bool get_settings_lock();
+
 inline int get_ledge_grab_limit()
 {
 	const auto *rules = GetGameRules();

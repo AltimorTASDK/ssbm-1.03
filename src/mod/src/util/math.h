@@ -49,6 +49,18 @@ constexpr T mod(T value, T modulus)
 }
 
 template<typename T>
+constexpr T decrement_mod(T value, T modulus)
+{
+	return value != 0 ? value - 1 : modulus;
+}
+
+template<typename T>
+constexpr T increment_mod(T value, T modulus)
+{
+	return value != modulus - 1 ? value + 1 : 0;
+}
+
+template<typename T>
 constexpr T copysign_int(T value, T sign)
 {
 	const auto mask = sign >> (sizeof(T) * CHAR_BIT - 1);

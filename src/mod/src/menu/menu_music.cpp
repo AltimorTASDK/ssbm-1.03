@@ -9,7 +9,7 @@
 #include "melee/text.h"
 #include "os/gx.h"
 #include "rules/saved_config.h"
-#include "rules/settings_lock.h"
+#include "rules/values.h"
 #include "util/compression.h"
 #include "util/math.h"
 #include "util/matrix.h"
@@ -380,7 +380,7 @@ extern "C" void hook_Menu_RandomStageMenuInput(HSD_GObj *gobj)
 	if (buttons & (MenuButton_B | MenuButton_Start))
 		config.save();
 
-	if (settings_locked && (buttons & MenuButton_A)) {
+	if (get_settings_lock() && (buttons & MenuButton_A)) {
 		// Don't allow changing music with settings locked
 		Menu_PlaySFX(MenuSFX_Denied);
 		return;

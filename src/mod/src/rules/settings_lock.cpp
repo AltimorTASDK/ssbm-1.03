@@ -1,5 +1,5 @@
 #include "melee/scene.h"
-#include "rules/settings_lock.h"
+#include "rules/values.h"
 #include "util/patch_list.h"
 #include <ogc/card.h>
 #include <gctypes.h>
@@ -12,6 +12,13 @@ static const auto patches = patch_list {
 	std::pair { (char*)Scene_Execute+0x244, 0x38600002u },
 };
 
+static bool settings_lock = false;
+
+bool get_settings_lock()
+{
+	return settings_lock;
+}
+
 extern "C" void orig_InitializeSaveData(u32 status);
 extern "C" void hook_InitializeSaveData(u32 status)
 {
@@ -22,7 +29,7 @@ extern "C" void hook_InitializeGlobalData();
 extern "C" void hook_InitializeGlobalData()
 {
 	if (!CARD_Probe(CARD_SLOTA))
-		settings_locked = true;
-		
+		settings_lock = true;
+
 	// Prevent global data reset
 }
