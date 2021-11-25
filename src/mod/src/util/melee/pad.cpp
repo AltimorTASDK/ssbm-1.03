@@ -49,7 +49,7 @@ extern "C" void hook_Player_Nana_RecordPopoData(Player *popo, Player *nana)
 	orig_Player_Nana_RecordPopoData(popo, nana);
 
 	const auto index = get_nana_write_index(nana);
-	nana_hw_buffer[nana->slot][index] = get_input<0>(nana->port);
+	nana_hw_buffer[nana->slot][index] = get_input<0>(popo->port);
 
 	// Prevent Nana from grabbing when exiting develop pause
 	if (develop_pause[nana->slot])
