@@ -6,6 +6,7 @@
 #include "util/patch_list.h"
 #include <ogc/card.h>
 #include <gctypes.h>
+#include <type_traits>
 
 extern "C" void Scene_Execute(struct SceneMajorData *major);
 
@@ -37,9 +38,9 @@ extern "C" void hook_InitializeGlobalData()
 
 	settings_lock = true;
 
-	for (auto &config : controller_configs)
-		config.make_legal();
+	for (auto &controls : controller_configs)
+		controls.make_legal();
 
-	for (auto &bgm : config.stage_bgm)
-		bgm = BGM_Undefined;
+	for (size_t i = 0; i < std::extent_v<decltype(config.stage_bgm)>; i++)
+		config.stage_bgm[i] = BGM_Undefined;
 }
