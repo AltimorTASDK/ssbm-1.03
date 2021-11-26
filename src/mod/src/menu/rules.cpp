@@ -374,7 +374,7 @@ static bool is_rule_locked(u16 index)
 		return true;
 
 	// Lock stock count, but not time/coin timer
-	const auto RulesMenuGObj->get<RulesMenuData>()->mode;
+	const auto mode = RulesMenuGObj->get<RulesMenuData>()->mode;
 	return mode == Mode_Stock || mode == Mode_Crew;
 }
 
