@@ -36,7 +36,8 @@ export MELEEMAP := $(MELEELD:.ld=.map)
 
 export CFLAGS   := $(DEFINES) -mogc -mcpu=750 -meabi -mhard-float -Os \
 				   -Wall -Wno-register -Wno-unused-value -Wconversion -Warith-conversion \
-				   -ffunction-sections -fdata-sections -mno-sdata
+				   -ffunction-sections -fdata-sections -mno-sdata \
+				   -fno-builtin-sqrt -fno-builtin-sqrtf
 export ASFLAGS  := $(DEFINES) -Wa,-mregnames -Wa,-mgekko
 export CXXFLAGS := $(CFLAGS) -std=c++2b -fconcepts -fno-rtti -fno-exceptions
 export INCLUDE  := -Isrc -I$(abspath src/mod/src) -I$(DEVKITPATH)/libogc/include
