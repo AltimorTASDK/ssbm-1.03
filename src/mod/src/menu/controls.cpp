@@ -138,7 +138,7 @@ constexpr auto value_text_data = multi_array {
 	}
 };
 
-constexpr auto value_counts = for_range<value_text_data.size()>([]<size_t ...I>() {
+constexpr auto value_counts = for_range<value_text_data.size()>([]<size_t ...I> {
 	return std::array { (int)value_text_data.size(I)... };
 });
 

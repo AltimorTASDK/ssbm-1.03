@@ -15,25 +15,25 @@ public:
 
 	template<T factor>
 	static constexpr matrix scale = std::make_from_tuple<matrix>(
-		for_range_product<N, M>([]<typename... pairs>() {
-			return std::make_tuple(([]() {
+		for_range_product<N, M>([]<typename... pairs> {
+			return std::make_tuple([] {
 				constexpr auto i = tuple_constant<0, pairs>;
 				constexpr auto j = tuple_constant<1, pairs>;
 				return i == j ? factor : 0;
-			}())...);
+			}()...);
 		}));
-	
+
 	static constexpr matrix identity = scale<(T)1>;
 
 	T elems[N * M];
 
 	constexpr matrix() : elems({ 0 }) {}
-	
+
 	constexpr matrix(auto ...values) : elems(values...)
 	{
 		static_assert(sizeof...(values) == N * M);
 	}
-	
+
 	template<size_t i, size_t j>
 	constexpr T &get()
 	{
@@ -55,11 +55,11 @@ public:
 	{
 		return elems[i * M + j];
 	}
-	
+
 	template<size_t i>
 	constexpr auto row()
 	{
-		return for_range<M>([&]<size_t ...J>() {
+		return for_range<M>([&]<size_t ...J> {
 			return std::tie(get<i, J>()...);
 		});
 	}
@@ -67,21 +67,21 @@ public:
 	template<size_t i>
 	constexpr auto row() const
 	{
-		return for_range<M>([&]<size_t ...J>() {
+		return for_range<M>([&]<size_t ...J> {
 			return std::make_tuple(get<i, J>()...);
 		});
 	}
 
 	constexpr auto rows()
 	{
-		return for_range<N>([&]<size_t ...I>() {
+		return for_range<N>([&]<size_t ...I> {
 			return std::make_tuple(row<I>()...);
 		});
 	}
 
 	constexpr auto rows() const
 	{
-		return for_range<N>([&]<size_t ...I>() {
+		return for_range<N>([&]<size_t ...I> {
 			return std::make_tuple(row<I>()...);
 		});
 	}
@@ -89,7 +89,7 @@ public:
 	template<size_t j>
 	constexpr auto col()
 	{
-		return for_range<N>([&]<size_t ...I>() {
+		return for_range<N>([&]<size_t ...I> {
 			return std::tie(get<I, j>()...);
 		});
 	}
@@ -97,39 +97,39 @@ public:
 	template<size_t j>
 	constexpr auto col() const
 	{
-		return for_range<N>([&]<size_t ...I>() {
+		return for_range<N>([&]<size_t ...I> {
 			return std::make_tuple(get<I, j>()...);
 		});
 	}
 
 	constexpr auto cols()
 	{
-		return for_range<M>([&]<size_t ...J>() {
+		return for_range<M>([&]<size_t ...J> {
 			return std::make_tuple(col<J>()...);
 		});
 	}
 
 	constexpr auto cols() const
 	{
-		return for_range<M>([&]<size_t ...J>() {
+		return for_range<M>([&]<size_t ...J> {
 			return std::make_tuple(col<J>()...);
 		});
 	}
 
 	constexpr auto as_tuple()
 	{
-		return for_range<N * M>([&]<size_t ...I>() {
+		return for_range<N * M>([&]<size_t ...I> {
 			return std::tie(elems[I]...);
 		});
 	}
 
 	constexpr auto as_tuple() const
 	{
-		return for_range<N * M>([&]<size_t ...I>() {
+		return for_range<N * M>([&]<size_t ...I> {
 			return std::make_tuple(elems[I]...);
 		});
 	}
-	
+
 	constexpr auto as_multidimensional() const
 	{
 		return (float(*)[M])elems;
@@ -141,8 +141,8 @@ public:
 		using result_type = matrix<T, N, otherM>;
 
 		return std::make_from_tuple<result_type>(
-			for_range_product<N, otherM>([&]<typename... pairs>() {
-				return std::make_tuple(([&]() {
+			for_range_product<N, otherM>([&]<typename... pairs> {
+				return std::make_tuple(([&] {
 					constexpr auto i = tuple_constant<0, pairs>;
 					constexpr auto j = tuple_constant<1, pairs>;
 					return sum_tuple(zip_apply(

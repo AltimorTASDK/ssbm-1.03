@@ -32,13 +32,13 @@ constexpr auto sum_tuple(auto &&tuple)
 // Cartesian product of two tuples
 constexpr auto tuple_product(auto &&a, auto &&b)
 {
-	return for_range<sizeof_tuple<decltype(a)>>([&]<size_t ...I>() {
-		return std::tuple_cat(([&]<size_t n>() {
-			return for_range<sizeof_tuple<decltype(b)>>([&]<size_t ...J>() {
+	return for_range<sizeof_tuple<decltype(a)>>([&]<size_t ...I> {
+		return std::tuple_cat([&]<size_t n> {
+			return for_range<sizeof_tuple<decltype(b)>>([&]<size_t ...J> {
 				return std::make_tuple(
 					std::make_tuple(std::get<n>(a), std::get<J>(b))...);
 			});
-		}.template operator()<I>())...);
+		}.template operator()<I>()...);
 	});
 }
 
@@ -147,7 +147,7 @@ constexpr auto slice_tuple(auto &&tuple)
 		? std::min(end, size)
 		: std::max((size_t)0, size + end);
 
-	return for_range<real_start, real_end>([&]<size_t ...I>() {
+	return for_range<real_start, real_end>([&]<size_t ...I> {
 		return std::forward_as_tuple(std::get<I>(tuple)...);
 	});
 }
@@ -163,7 +163,7 @@ constexpr auto slice(auto &&...args)
 template<size_t N>
 constexpr auto zip_at_index(auto &&...tuples)
 {
-	return std::tuple_cat([&]() {
+	return std::tuple_cat([&] {
 		if constexpr (N < sizeof_tuple<decltype(tuples)>)
 			return std::forward_as_tuple(std::get<N>(tuples));
 		else
@@ -177,14 +177,14 @@ constexpr auto zip(auto &&...tuples)
 	if constexpr (sizeof...(tuples) > 1) {
 		constexpr auto longest = std::max(sizeof_tuple<decltype(tuples)>...);
 
-		return for_range<longest>([&]<size_t ...I>() {
+		return for_range<longest>([&]<size_t ...I> {
 			return std::make_tuple(zip_at_index<I>(tuples...)...);
 		});
 	} else {
 		// If only one tuple, wrap each element in a tuple
 		constexpr auto size = sizeof_tuple<decltype(tuples)...>;
 
-		return for_range<size>([&]<size_t ...I>() {
+		return for_range<size>([&]<size_t ...I> {
 			return std::make_tuple(std::forward_as_tuple(std::get<I>(tuples...))...);
 		});
 	}
@@ -203,7 +203,7 @@ constexpr auto chain(auto &&tuple)
 // this function returns void.
 constexpr auto apply_multi(auto &&callable, auto &&...tuples)
 {
-	return tuple_or_void(std::tuple_cat([&]() {
+	return tuple_or_void(std::tuple_cat([&] {
 		if constexpr (!is_void<decltype(std::apply(callable, tuples))>) {
 			return std::make_tuple(std::apply(callable, tuples));
 		} else {
@@ -229,7 +229,7 @@ constexpr auto zip_apply(auto &&callable, auto &&...tuples)
 		return apply_multi(callable, std::forward<decltype(args)>(args)...);
 	}, zip(tuples...));
 }
-	
+
 namespace detail {
 constexpr auto array_cat_impl(size_t offset, auto &result, auto &&head, auto &&...tail) {
 	std::copy(head.begin(), head.end(), result.begin() + offset);
@@ -283,7 +283,7 @@ public:
 	constexpr multi_array(multi_array<component_types...> &&other) :
 		sizes(std::move(other.sizes)),
 		tuple(std::move(other.tuple)),
-		array(for_range<sizeof...(component_types)>([&]<size_t ...I>() {
+		array(for_range<sizeof...(component_types)>([&]<size_t ...I> {
 			return std::array { std::get<I>(tuple).data()... };
 		}))
 	{
@@ -292,7 +292,7 @@ public:
 	constexpr multi_array(component_types &&...components) :
 		sizes { components.size()... },
 		tuple(std::forward_as_tuple(std::move(components)...)),
-		array(for_range<sizeof...(components)>([&]<size_t ...I>() {
+		array(for_range<sizeof...(components)>([&]<size_t ...I> {
 			return std::array { std::get<I>(tuple).data()... };
 		}))
 	{
