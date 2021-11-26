@@ -33,8 +33,8 @@ class vec_impl : public base {
 public:
 	using base::elems;
 
-	static constexpr vec_impl zero = vec_impl(fill_tuple<elem_count>(elem_type{}));
-	static constexpr vec_impl one = vec_impl(fill_tuple<elem_count>(elem_type{1}));
+	static constexpr vec_impl zero = vec_impl(fill_tuple<elem_count>(elem_type { 0 }));
+	static constexpr vec_impl one = vec_impl(fill_tuple<elem_count>(elem_type { 1 }));
 
 	static constexpr elem_type dot(const vec_impl &a, const vec_impl &b)
 	{
@@ -125,6 +125,15 @@ public:
 	constexpr auto length() const
 	{
 		return std::sqrt(length_sqr());
+	}
+
+	constexpr auto normalized() const
+	{
+		const auto len = length();
+		if (len != 0)
+			return *this * (decltype(len) { 1 } / len);
+		else
+			return *this;
 	}
 
 	// Create a new vector by applying a function to each component
