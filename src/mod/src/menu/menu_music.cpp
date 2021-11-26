@@ -380,12 +380,6 @@ extern "C" void hook_Menu_RandomStageMenuInput(HSD_GObj *gobj)
 	if (buttons & (MenuButton_B | MenuButton_Start))
 		config.save();
 
-	if (get_settings_lock() && (buttons & MenuButton_A)) {
-		// Don't allow changing music with settings locked
-		Menu_PlaySFX(MenuSFX_Error);
-		return;
-	}
-
 	auto *data = RandomStageMenuGObj->get<RandomStageMenuData>();
 
 	if (buttons & MenuButton_L) {
