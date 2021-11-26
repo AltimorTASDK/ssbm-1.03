@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <array>
 #include <gctypes.h>
+#include <ogc/cache.h>
 #include <ogc/gx.h>
 
 #include "resources/sss/bf.tex.h"
@@ -258,6 +259,7 @@ static void mask_unfrozen_texture(HSD_ImageDesc *image)
 	constexpr auto block_height = 8;
 	const auto width = align_up(image->width, block_width);
 	const auto height = align_up(image->height, block_height);
+	const auto size = width * height / 2;
 	const auto block_num_x = width / block_width;
 	auto *texture = (u8*)image->img_ptr;
 
@@ -273,6 +275,8 @@ static void mask_unfrozen_texture(HSD_ImageDesc *image)
 		if (y <= height / 3)
 			texture[i] = 0;
 	}
+
+	DCStoreRange(texture, size);
 }
 
 static void setup_stage_names()

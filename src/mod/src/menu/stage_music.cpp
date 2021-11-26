@@ -18,6 +18,7 @@
 #include "util/melee/text_builder.h"
 #include <cstring>
 #include <gctypes.h>
+#include <ogc/cache.h>
 
 #include "resources/music/music_stages.tex.h"
 #include "resources/music/music_stages_mask.tex.h"
@@ -220,9 +221,10 @@ static void apply_texture_mask(u8 *texture, const u8 *mask, int width, int heigh
 	constexpr auto block_size = 64;
 	constexpr auto block_width = 8;
 	constexpr auto block_height = 8;
+	const auto size = width * height / 2;
 	const auto block_num_x = width / block_width;
 
-	for (auto i = 0; i < width * height / 2; i++) {
+	for (auto i = 0; i < size; i++) {
 		const auto pixel = i * 2; // 4bpp
 		const auto block_index = pixel / block_size;
 		const auto block_x = (block_index % block_num_x) * block_width;
@@ -242,6 +244,8 @@ static void apply_texture_mask(u8 *texture, const u8 *mask, int width, int heigh
 
 		texture[i] ^= mask[i];
 	}
+
+	DCStoreRange(texture, size);
 }
 
 static void replace_textures()
