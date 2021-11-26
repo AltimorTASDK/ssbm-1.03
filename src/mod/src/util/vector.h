@@ -40,13 +40,13 @@ public:
 	{
 		return sum_tuple(a.foreach(operators::mul, b.elems()));
 	}
-	
+
 	// Component-wise min of two vectors
 	static constexpr vec_impl min(const vec_impl &a, const vec_impl &b)
 	{
 		return vec_impl(a.foreach(operators::min, b.elems()));
 	}
-	
+
 	// Component-wise max of two vectors
 	static constexpr vec_impl max(const vec_impl &a, const vec_impl &b)
 	{
@@ -124,9 +124,9 @@ public:
 
 	constexpr auto length() const
 	{
-		return sqrt(length_sqr());
+		return std::sqrt(length_sqr());
 	}
-	
+
 	// Create a new vector by applying a function to each component
 	template<typename T = vec_impl> requires is_vector_type<T>
 	constexpr T map(auto &&callable) const
@@ -299,9 +299,9 @@ struct color_rgba_base {
 		std::is_same_v<T, f64> ? 1.0 :
 		                         255;
 
-	static constexpr vec_impl<color_rgba_base> white = 
+	static constexpr vec_impl<color_rgba_base> white =
 		{ max_value, max_value, max_value, max_value };
-		
+
 	static constexpr auto hex(u32 value)
 	{
 		const auto r = (T)((value >> 24) & 0xFF) * (max_value / 255);
