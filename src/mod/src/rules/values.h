@@ -44,7 +44,7 @@ inline bool should_use_oss()
 	return rules->stage_mods == stage_mod_type::oss;
 }
 
-inline bool is_stage_frozen(u8 id)
+inline bool is_stage_frozen(int id)
 {
 	const auto *rules = GetGameRules();
 
