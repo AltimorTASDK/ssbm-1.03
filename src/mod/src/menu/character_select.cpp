@@ -568,6 +568,8 @@ extern "C" void hook_CSS_Setup()
 		if (is_unplugged[i])
 			CSSPlayers[i]->state = CSSPlayerState_Unplugged;
 
+		player_states[CSSPlayers[i]->port] = CSSPlayers[i]->state;
+
 		// Initialize toggle timers
 		reset_toggle_timers(i);
 	}
