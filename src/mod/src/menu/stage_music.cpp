@@ -323,9 +323,9 @@ extern "C" void hook_Menu_ItemMenuInput(HSD_GObj *gobj)
 
 	// Allow cycling through stages with L/R
 	if (buttons & MenuButton_L)
-		data->selected_stage = (u8)mod((int)data->selected_stage + 1, 6);
+		data->selected_stage = (u8)increment_mod((int)data->selected_stage, 6);
 	else if (buttons & MenuButton_R)
-		data->selected_stage = (u8)mod((int)data->selected_stage - 1, 6);
+		data->selected_stage = (u8)decrement_mod((int)data->selected_stage, 6);
 	else
 		return;
 

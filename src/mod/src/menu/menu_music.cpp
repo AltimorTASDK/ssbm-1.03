@@ -409,21 +409,18 @@ extern "C" void hook_Menu_RandomStageMenuScroll(RandomStageMenuData *data, u32 b
 	int row = MenuSelectedIndex % max_row_count;
 	int col = MenuSelectedIndex / max_row_count;
 
-	if (buttons & MenuButton_Up)
-		row--;
-	else if (buttons & MenuButton_Down)
-		row++;
-	else if (buttons & MenuButton_Left)
-		col--;
-	else if (buttons & MenuButton_Right)
-		col++;
-
 	const auto page_size = get_page_size(data->page);
 	const auto row_count = std::min(page_size, max_row_count);
 	const auto col_count = (page_size + max_row_count - 1) / max_row_count;
 
-	col = clamp(col, 0, col_count - 1);
-	row = mod(row, row_count);
+	if (buttons & MenuButton_Up)
+		decrement_mod(row, row_count);
+	else if (buttons & MenuButton_Down)
+		increment_mod(row, row_count);
+	else if (buttons & MenuButton_Left)
+		col = clamp(col - 1, 0, col_count - 1);
+	else if (buttons & MenuButton_Right)
+		col = clamp(col + 1, 0, col_count - 1);
 
 	MenuSelectedIndex = (u16)std::min(col * max_row_count + row, get_page_size(data->page) - 1);
 	MenuSelectedValue = data->toggles[MenuSelectedIndex];
