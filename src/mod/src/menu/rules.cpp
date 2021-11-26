@@ -9,6 +9,7 @@
 #include "melee/menu.h"
 #include "melee/rules.h"
 #include "melee/text.h"
+#include "rules/saved_config.h"
 #include "rules/values.h"
 #include "util/compression.h"
 #include "util/mempool.h"
@@ -397,6 +398,9 @@ extern "C" void hook_Menu_RulesMenuInput(HSD_GObj *gobj)
 	}
 
 	orig_Menu_RulesMenuInput(gobj);
+
+	if (!(buttons & MenuButton_A) && (buttons & (MenuButton_B | MenuButton_Start)))
+		config.save();
 }
 
 extern "C" void orig_Menu_UpdateRuleDisplay(HSD_GObj *gobj, bool index_changed, bool value_changed);

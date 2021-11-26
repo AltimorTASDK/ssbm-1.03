@@ -213,19 +213,18 @@ static void card_io(s32 card, const char *filename, void *buffer, u32 size, bool
 		card_error("CARD_MountAsync failed (%d)\n", op.error);
 }
 
-s32 card_read(s32 card, const char *filename, void *out, u32 max_size)
+void card_read(s32 card, const char *filename, void *out, u32 max_size)
 {
 	card_io(card, filename, out, max_size, true);
-	return op.error < 0 ? op.error : (s32)op.stats.len;
 }
 
-s32 card_write(s32 card, const char *filename, void *in, u32 size)
+void card_write(s32 card, const char *filename, void *in, u32 size)
 {
 	card_io(card, filename, in, size, false);
-	return op.error;
 }
 
-void card_sync()
+s32 card_sync()
 {
 	op.wait.sleep();
+	return !op.read || op.error < 0 ? op.error : (s32)op.stats.len;
 }

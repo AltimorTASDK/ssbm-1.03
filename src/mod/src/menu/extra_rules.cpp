@@ -325,21 +325,10 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 	return gobj;
 }
 
-static void save_config()
-{
-	const auto *data = ExtraRulesMenuGObj->get<ExtraRulesMenuData>();
-	config.widescreen = data->widescreen;
-	config.latency = data->latency;
-	config.save();
-}
-
 extern "C" void orig_Menu_ExtraRulesMenuInput(HSD_GObj *gobj);
 extern "C" void hook_Menu_ExtraRulesMenuInput(HSD_GObj *gobj)
 {
 	const auto buttons = Menu_GetButtonsHelper(PORT_ALL);
-
-	if (buttons & (MenuButton_B | MenuButton_Start))
-		save_config();
 
 	if (get_settings_lock() && (buttons & (MenuButton_Left | MenuButton_Right))) {
 		// Don't allow changing rules with settings locked
@@ -348,6 +337,9 @@ extern "C" void hook_Menu_ExtraRulesMenuInput(HSD_GObj *gobj)
 	}
 
 	orig_Menu_ExtraRulesMenuInput(gobj);
+
+	if (!(buttons & MenuButton_A) && (buttons & (MenuButton_B | MenuButton_Start)))
+		config.save();
 }
 
 extern "C" const HSD_AnimLoop &orig_Menu_GetExtraRuleValueAnimLoop(u8 index, u8 value,
