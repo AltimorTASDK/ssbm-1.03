@@ -343,7 +343,7 @@ extern "C" void hook_Menu_ExtraRulesMenuInput(HSD_GObj *gobj)
 
 	if (get_settings_lock() && (buttons & (MenuButton_Left | MenuButton_Right))) {
 		// Don't allow changing rules with settings locked
-		Menu_PlaySFX(MenuSFX_Denied);
+		Menu_PlaySFX(MenuSFX_Error);
 		return;
 	}
 

@@ -4,7 +4,7 @@
 
 .set Mode_Crew, 3
 
-.set MenuSFX_Denied, 3
+.set MenuSFX_Error, 3
 
 .set GameRules.mode, 0x02
 
@@ -145,7 +145,7 @@ hook_CheckCSSModeSwap:
         cmpwi   r0, Mode_Crew
         bne     1f
 
-        li      r3, MenuSFX_Denied
+        li      r3, MenuSFX_Error
         bl      Menu_PlaySFX
 
         # Set cr0.eq to prevent changing to teams

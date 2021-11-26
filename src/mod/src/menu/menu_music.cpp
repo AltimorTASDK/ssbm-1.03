@@ -382,7 +382,7 @@ extern "C" void hook_Menu_RandomStageMenuInput(HSD_GObj *gobj)
 
 	if (get_settings_lock() && (buttons & MenuButton_A)) {
 		// Don't allow changing music with settings locked
-		Menu_PlaySFX(MenuSFX_Denied);
+		Menu_PlaySFX(MenuSFX_Error);
 		return;
 	}
 

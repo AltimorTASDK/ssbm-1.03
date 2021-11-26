@@ -141,7 +141,7 @@ extern "C" void hook_VsMenu_Think(HSD_GObj *gobj)
 	case VsMenu_DebugMenu:
 		if (get_settings_lock()) {
 			// Don't allow using the debug menu when tournament lock is on
-			Menu_PlaySFX(MenuSFX_Denied);
+			Menu_PlaySFX(MenuSFX_Error);
 			break;
 		}
 		Menu_PlaySFX(MenuSFX_Activate);
