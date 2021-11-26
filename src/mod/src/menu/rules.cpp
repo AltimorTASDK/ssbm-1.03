@@ -365,27 +365,38 @@ extern "C" HSD_GObj *hook_Menu_SetupRulesMenu(u8 state)
 	return gobj;
 }
 
+static bool is_rule_locked(u16 index)
+{
+	if (!get_settings_lock() || index == Rule_Mode || index >= Rule_MenuMusic)
+		return false;
+
+	if (index != Rule_StockCount)
+		return true;
+
+	// Lock stock count, but not time/coin timer
+	const auto RulesMenuGObj->get<RulesMenuData>()->mode;
+	return mode == Mode_Stock || mode == Mode_Crew;
+}
+
 extern "C" void orig_Menu_RulesMenuInput(HSD_GObj *gobj);
 extern "C" void hook_Menu_RulesMenuInput(HSD_GObj *gobj)
 {
 	const auto buttons = Menu_GetButtonsHelper(PORT_ALL);
 
-	if (get_settings_lock() && MenuSelectedIndex < Rule_MenuMusic) {
-		if (buttons & (MenuButton_Left | MenuButton_Right)) {
-			// Don't allow changing rules with settings locked
-			Menu_PlaySFX(MenuSFX_Error);
-			return;
-		}
+	if (is_rule_locked(MenuSelectedIndex) && (buttons & (MenuButton_Left | MenuButton_Right))) {
+		// Don't allow changing rules with settings locked
+		Menu_PlaySFX(MenuSFX_Error);
+		return;
+	}
+
+	if (MenuSelectedIndex == Rule_MenuMusic && (buttons & MenuButton_A)) {
+		// Open menu music
+		Menu_CreateRandomStageMenu();
+		GObj_Free(gobj);
+		return;
 	}
 
 	orig_Menu_RulesMenuInput(gobj);
-
-	if (MenuSelectedIndex != Rule_MenuMusic || !(buttons & MenuButton_A))
-		return;
-
-	// Open menu music
-	Menu_CreateRandomStageMenu();
-	GObj_Free(gobj);
 }
 
 extern "C" void orig_Menu_UpdateRuleDisplay(HSD_GObj *gobj, bool index_changed, bool value_changed);
