@@ -1,5 +1,6 @@
 #pragma once
 
+#include "melee/music.h"
 #include "melee/rules.h"
 #include <gctypes.h>
 
@@ -17,7 +18,8 @@ template<>
 struct [[gnu::packed]] config_values<config_version::a1> {
 	u8 widescreen        = false;
 	latency_mode latency = latency_mode::crt;
-	int stage_bgm[6]     = { -1, -1, -1, -1, -1, -1 };
+	int stage_bgm[6]     = { BGM_Undefined, BGM_Undefined, BGM_Undefined,
+	                         BGM_Undefined, BGM_Undefined, BGM_Undefined };
 	int menu_bgm         = -1;
 };
 

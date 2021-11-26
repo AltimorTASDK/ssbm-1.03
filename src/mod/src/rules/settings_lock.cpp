@@ -1,4 +1,5 @@
 #include "controls/config.h"
+#include "melee/music.h"
 #include "melee/scene.h"
 #include "rules/saved_config.h"
 #include "rules/values.h"
@@ -40,5 +41,5 @@ extern "C" void hook_InitializeGlobalData()
 		config.make_legal();
 
 	for (auto &bgm : config.stage_bgm)
-		bgm = -1;
+		bgm = BGM_Undefined;
 }

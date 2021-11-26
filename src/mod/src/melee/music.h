@@ -3,6 +3,8 @@
 #include <gctypes.h>
 
 enum BGM {
+	BGM_Undefined            = -1,
+
 	BGM_BalloonFight         = 2,
 	BGM_BigBlue              = 3,
 	BGM_Brinstar             = 97,
@@ -35,7 +37,7 @@ enum BGM {
 	BGM_Venom                = 84,
 	BGM_YoshisIsland         = 95,
 	BGM_YoshisIslandN64      = 59,
-	
+
 	// Legal stage themes
 	BGM_Battlefield          = 81,
 	BGM_BattleTheme          = 63,
@@ -46,7 +48,7 @@ enum BGM {
 	BGM_MultiManMelee2       = 39,
 	BGM_PokemonStadium       = 64,
 	BGM_YoshisStory          = 96,
-	
+
 	// Additional menu only music
 	BGM_AllStarIntro         = 0,
 	BGM_Targets              = 83,
@@ -54,10 +56,10 @@ enum BGM {
 };
 
 extern "C" {
-	
+
 extern char CurrentBGMPath[64];
 
 s32 PlayBGM(s32 bgm);
 s32 Menu_GetBGM();
-	
+
 }

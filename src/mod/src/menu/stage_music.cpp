@@ -139,7 +139,7 @@ static const auto patches = patch_list {
 static int get_selected_bgm_id(ItemMenuData *data, u8 stage)
 {
 	const auto bgm = config.stage_bgm[stage];
-	if (bgm != -1)
+	if (bgm != BGM_Undefined)
 		return bgm_ids[bgm];
 
 	return std::array {
@@ -204,7 +204,7 @@ extern "C" void hook_Menu_UpdateItemDisplay(HSD_GObj *gobj, bool index_changed, 
 	if (MenuSelectedValue)
 		config.stage_bgm[data->selected_stage] = MenuSelectedIndex;
 	else
-		config.stage_bgm[data->selected_stage] = -1;
+		config.stage_bgm[data->selected_stage] = BGM_Undefined;
 
 	for (u8 i = 0; i < 31; i++) {
 		// Disable all other songs
@@ -380,9 +380,9 @@ extern "C" bool hook_Stage_GetBGM(u32 stage_id, u32 flags, u32 *result)
 	               : stage_id == Stage_FoD ? config.stage_bgm[2]
 	               : stage_id == Stage_PS  ? config.stage_bgm[1]
 	               : stage_id == Stage_YS  ? config.stage_bgm[0]
-	                                       : -1;
+	                                       : BGM_Undefined;
 
-	if (bgm_index == -1)
+	if (bgm_index == BGM_Undefined)
 		return orig_Stage_GetBGM(stage_id, flags, result);
 
 	*result = bgm_ids[bgm_index];

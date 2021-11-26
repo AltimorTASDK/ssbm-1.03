@@ -285,7 +285,7 @@ extern "C" void hook_Menu_UpdateRandomStageDisplay(HSD_GObj *gobj,
 	if (MenuSelectedValue)
 		config.menu_bgm = MenuSelectedIndex + data->page * max_page_size;
 	else
-		config.menu_bgm = -1;
+		config.menu_bgm = BGM_Undefined;
 
 	for (u8 i = 0; i < max_page_size; i++) {
 		// Disable all other songs
@@ -440,7 +440,7 @@ extern "C" void hook_Menu_RandomStageMenuScroll(RandomStageMenuData *data, u32 b
 extern "C" s32 orig_Menu_GetBGM();
 extern "C" s32 hook_Menu_GetBGM()
 {
-	if (config.menu_bgm == -1)
+	if (config.menu_bgm == BGM_Undefined)
 		return orig_Menu_GetBGM();
 
 	return bgm_ids[config.menu_bgm];
