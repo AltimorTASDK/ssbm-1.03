@@ -50,11 +50,18 @@ run_loader:
         li      r5, __COPY_SIZE__
         bl      memcpy
 
+        # Update instruction cache
         lis     r3, __LOAD_BASE__@h
         ori     r3, r3, __LOAD_BASE__@l
         lis     r4, __COPY_SIZE__@h
         ori     r4, r4, __COPY_SIZE__@l
-        bl      TRK_flush_cache
+        bl      DCStoreRange
+
+        lis     r3, __LOAD_BASE__@h
+        ori     r3, r3, __LOAD_BASE__@l
+        lis     r4, __COPY_SIZE__@h
+        ori     r4, r4, __COPY_SIZE__@l
+        bl      ICInvalidateRange
 
         lwz     r0, 0xC(r1)
         addi    r1, r1, 0x8

@@ -92,7 +92,10 @@ write_branch:
         oris    r0, r0, 0x4800
         stw     r0, 0(r3)
 
-        # Clear cache for overwritten instruction
+        # Update instruction cache
+        li      r4, 4
+        bl      DCStoreRange
+        mr      r3, r31
         li      r4, 4
         bl      ICInvalidateRange
 
