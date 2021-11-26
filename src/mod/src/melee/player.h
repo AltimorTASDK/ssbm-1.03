@@ -241,7 +241,9 @@ struct Player {
 	s16 damage_shake_frames;
 	char pad18FC[0x1900 - 0x18FC];
 	vec2 hit_ground_normal;
-	char pad1908[0x1988 - 0x1908];
+	char pad1908[0x1974 - 0x1908];
+	HSD_GObj *held_item;
+	char pad1978[0x1988 - 0x1978];
 	u32 body_state_subaction;
 	u32 body_state_timed;
 	s32 intangible_frames;
