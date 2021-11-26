@@ -88,9 +88,6 @@ static const auto patches = patch_list {
 	std::pair { (char*)NameTag_Think+0x80,        NOP },
 	// li r3, 0
 	std::pair { (char*)NameTag_Think+0x88,        0x38600000u },
-	// Replace tournament melee with debug menu
-	// li r0, 6
-	std::pair { (char*)VsMenu_Think+0xA4,         0x38000006u },
 	// Enable damage staling in develop mode
 	// b 0x8
 	std::pair { (char*)Damage_DamageStale+0x28,   0x48000008u },

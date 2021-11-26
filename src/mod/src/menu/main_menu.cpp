@@ -6,6 +6,8 @@
 #include "melee/menu.h"
 #include "melee/scene.h"
 #include "melee/text.h"
+#include "menu/controls.h"
+#include "rules/values.h"
 #include "util/compression.h"
 #include "util/meta.h"
 #include "util/patch_list.h"
@@ -24,7 +26,6 @@
 enum VsMenuPortalID {
 	VsMenu_TournamentMelee = 1,
 	VsMenu_Controls = 1,
-	VsMenu_SpecialMelee = 2,
 	VsMenu_DebugMenu = 2,
 	VsMenu_CustomRules = 3,
 	VsMenu_Manual = 3
@@ -84,6 +85,22 @@ static constexpr auto make_description_text()
 		text_builder::end_color());
 }
 
+template<string_literal line1>
+static constexpr auto make_description_text()
+{
+	return text_builder::build(
+		text_builder::kern(),
+		text_builder::center(),
+		text_builder::color<170, 170, 170>(),
+		text_builder::textbox<179, 179>(),
+		text_builder::unk06<0, 0>(),
+		text_builder::fit(),
+		text_builder::ascii<line1>(),
+		text_builder::end_fit(),
+		text_builder::end_textbox(),
+		text_builder::end_color());
+}
+
 constexpr auto debug_menu_description = make_description_text<
 	"Toggle DEVELOP mode and",
 	"other options.">();
@@ -91,6 +108,9 @@ constexpr auto debug_menu_description = make_description_text<
 constexpr auto controls_description = make_description_text<
 	"Remap buttons and change",
 	"other controller settings.">();
+
+constexpr auto controls_locked_description = make_description_text<
+	"Remap buttons.">();
 
 constexpr auto manual_description = make_description_text<
 	"Read the 1.03 memory card",
@@ -104,12 +124,33 @@ static const auto patches = patch_list {
 	std::pair { &MenuTypeDataTable[MenuType_VsMode].preview_anims[2], HSD_AnimLoop {
 		750, 799, 770
 	} },
-	// Swap branches for entering debug menu and controls
-	// beq 0x44
-	std::pair { (char*)VsMenu_Think+0x54, 0x41820044 },
-	// bge 0x50
-	std::pair { (char*)VsMenu_Think+0x64, 0x40800050 },
 };
+
+extern "C" void orig_VsMenu_Think(HSD_GObj *gobj);
+extern "C" void hook_VsMenu_Think(HSD_GObj *gobj)
+{
+	if (!(Menu_GetButtonsHelper(PORT_ALL) & MenuButton_Confirm))
+		return orig_VsMenu_Think(gobj);
+
+	switch (MenuSelectedIndex) {
+	case VsMenu_Controls:
+		Menu_PlaySFX(MenuSFX_Activate);
+		store_controls_menu_port();
+		Menu_ExitToScene(Scene_Controls);
+		break;
+	case VsMenu_DebugMenu:
+		if (get_settings_lock()) {
+			// Don't allow using the debug menu when tournament lock is on
+			Menu_PlaySFX(MenuSFX_Denied);
+			break;
+		}
+		Menu_PlaySFX(MenuSFX_Activate);
+		Menu_ExitToScene(Scene_DebugMenu);
+		break;
+	default:
+		orig_VsMenu_Think(gobj);
+	}
+}
 
 extern "C" void orig_MainMenu_Enter(SceneMinorData *minor);
 extern "C" void hook_MainMenu_Enter(SceneMinorData *minor)
@@ -120,20 +161,20 @@ extern "C" void hook_MainMenu_Enter(SceneMinorData *minor)
 
 	// Hover over controls portal when returning from controls menu
 	if (SceneMajorPrevious == Scene_Controls)
-		data->selected = 1;
-	
+		data->selected = VsMenu_Controls;
+
 	// Go back to debug menu portal when returning from debug menu
 	if (SceneMajorPrevious == Scene_DebugMenu) {
 		data->menu_type = MenuType_VsMode;
-		data->selected = 2;
+		data->selected = VsMenu_DebugMenu;
 	}
 }
-	
+
 extern "C" void orig_MainMenu_Init(void *menu);
 extern "C" void hook_MainMenu_Init(void *menu)
 {
 	orig_MainMenu_Init(menu);
-	
+
 	// Replace portal textures
 	const auto *names = MenMainCursor_Top.matanim_joint->child->child->next->matanim;
 	unmanaged_texture_swap(controls_tex_data,   names->texanim->imagetbl[11]);
@@ -146,7 +187,7 @@ extern "C" void hook_MainMenu_Init(void *menu)
 	unmanaged_texture_swap(vs_mode_preview_tex_data,  previews->texanim->imagetbl[1]);
 	unmanaged_texture_swap(controls_preview_tex_data, previews->texanim->imagetbl[7]);
 	unmanaged_texture_swap(manual_preview_tex_data,   previews->texanim->imagetbl[8]);
-	
+
 	// Replace menu panel header
 	const auto *header = MenMainPanel_Top.matanim_joint->child->next->next->child->
 		next->next->next->next->matanim;
@@ -164,12 +205,12 @@ extern "C" void orig_Menu_UpdateMainMenuPreview(HSD_GObj *gobj, u8 index_changed
 extern "C" void hook_Menu_UpdateMainMenuPreview(HSD_GObj *gobj, u8 index_changed)
 {
 	orig_Menu_UpdateMainMenuPreview(gobj, index_changed);
-	
+
 	const auto *data = gobj->get<MainMenuData>();
-	
+
 	if (data->menu_type != MenuType_VsMode || MenuSelectedIndex != VsMenu_DebugMenu)
 		return;
-		
+
 	// Hide controllers
 	HSD_JObjSetFlagsAll(data->jobj_tree[36], HIDDEN);
 }
@@ -178,11 +219,13 @@ static void update_portal_description(MainMenuData *data, u32 menu_type, u32 ind
 {
 	if (menu_type != MenuType_VsMode)
 		return;
-	
+
 	if (index == VsMenu_DebugMenu)
 		data->description_text->data = debug_menu_description.data();
-	else if (index == VsMenu_Controls)
+	else if (index == VsMenu_Controls && !get_settings_lock())
 		data->description_text->data = controls_description.data();
+	else if (index == VsMenu_Controls && get_settings_lock())
+		data->description_text->data = controls_locked_description.data();
 	else if (index == VsMenu_Manual)
 		data->description_text->data = manual_description.data();
 }
@@ -194,7 +237,7 @@ extern "C" HSD_GObj *hook_Menu_SetupMainMenu(u8 state)
 	auto *data = gobj->get<MainMenuData>();
 
 	update_portal_description(data, data->menu_type, data->selected);
-	
+
 	return gobj;
 }
 

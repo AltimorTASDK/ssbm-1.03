@@ -22,7 +22,10 @@ enum class option {
 	min,
 
 	z_jump = min,
-	perfect_wavedash,
+
+	max_locked,
+
+	perfect_wavedash = max_locked,
 	c_up,
 	c_horizontal,
 	c_down,
@@ -47,7 +50,7 @@ struct TournamentModels {
 
 using scene_type = ArchiveScene<TournamentModels>;
 
-constexpr auto toggle_count = std::to_underlying(option::max_toggle);
+constexpr auto max_toggle_count = std::to_underlying(option::max_toggle);
 
 template<string_literal str, u16 scale_x, u16 scale_y>
 static consteval auto make_text()
@@ -135,7 +138,7 @@ constexpr auto value_text_data = multi_array {
 	}
 };
 
-constexpr auto value_counts = for_range<toggle_count>([]<size_t ...I>() {
+constexpr auto value_counts = for_range<value_text_data.size()>([]<size_t ...I>() {
 	return std::array { (int)value_text_data.size(I)... };
 });
 
@@ -146,6 +149,7 @@ static int canvas;
 
 static struct {
 	u8 port;
+	option max_toggle;
 	option selected;
 	int left_arrow_timer;
 	int right_arrow_timer;
@@ -158,14 +162,16 @@ static struct {
 		Text *value_text;
 		int left_arrow_timer;
 		int right_arrow_timer;
-	} toggles[toggle_count];
+	} toggles[max_toggle_count];
 
 	void init()
 	{
+		max_toggle = !get_settings_lock() ? option::max_toggle : option::max_locked;
+
 		selected = option::min;
 		footer_timer = 0;
 
-		for (auto index = 0; index < std::to_underlying(option::max_toggle); index++) {
+		for (auto index = 0; index < max_toggle; index++) {
 			toggles[index].left_arrow_timer = 0;
 			toggles[index].right_arrow_timer = 0;
 		}
@@ -202,7 +208,7 @@ static struct {
 
 	void redo()
 	{
-		for (auto index = 0; index < std::to_underlying(option::max_toggle); index++) {
+		for (auto index = 0; index < max_toggle; index++) {
 			toggles[index].value = 0;
 			update_value_text(index);
 		}
@@ -214,8 +220,8 @@ static struct {
 	{
 		if (selected == option::min)
 			set_selected(option::ok);
-		else if (selected >= option::max_toggle)
-			set_selected(option::max_toggle - 1);
+		else if (selected >= max_toggle)
+			set_selected(max_toggle - 1);
 		else
 			set_selected(selected - 1);
 
@@ -224,8 +230,10 @@ static struct {
 
 	void scroll_down()
 	{
-		if (selected >= option::max_toggle)
+		if (selected >= max_toggle)
 			set_selected(option::min);
+		else if (selected == max_toggle - 1)
+			set_selected(option::ok);
 		else
 			set_selected(selected + 1);
 
@@ -261,7 +269,7 @@ static struct {
 		}
 
 		const auto index = std::to_underlying(selected);
-		toggles[index].value = mod(toggles[index].value - 1, value_counts[index]);
+		toggles[index].value = decrement_mod(toggles[index].value, value_counts[index]);
 		toggles[index].left_arrow_timer = 5;
 		update_value_text(index);
 	}
@@ -277,7 +285,7 @@ static struct {
 		}
 
 		const auto index = std::to_underlying(selected);
-		toggles[index].value = mod(toggles[index].value + 1, value_counts[index]);
+		toggles[index].value = increment_mod(toggles[index].value, value_counts[index]);
 		toggles[index].right_arrow_timer = 5;
 		update_value_text(index);
 	}
@@ -289,6 +297,9 @@ static struct {
 		get_toggle(option::z_jump)->value =
 			config->z_jump_bit == __builtin_ctz(Button_X) ? 1 :
 			config->z_jump_bit == __builtin_ctz(Button_Y) ? 2 : 0;
+
+		if (get_settings_lock())
+			return;
 
 		get_toggle(option::perfect_wavedash)->value =
 			config->perfect_wavedash ? 1 : 0;
@@ -315,6 +326,9 @@ static struct {
 			__builtin_ctz(Button_X),
 			__builtin_ctz(Button_Y)
 		}[get_toggle(option::z_jump)->value];
+
+		if (get_settings_lock())
+			return;
 
 		config->perfect_wavedash = std::array {
 			false,
@@ -400,7 +414,7 @@ static HSD_GObj *create_model(ArchiveModelScene *model, GObjProcCallback callbac
 
 static float calc_toggle_y_position(option index)
 {
-	return 11.5f - (float)index * 3.5f;
+	return 11.5f - (!get_settings_lock() ? (float)index : 2.5f) * 3.5f;
 }
 
 static void set_y_position(HSD_GObj *gobj, float y)
@@ -464,7 +478,7 @@ static void update_selection(HSD_GObj *gobj)
 
 static void create_toggles()
 {
-	for (auto index = option::min; index < option::max_toggle; index++) {
+	for (auto index = option::min; index < menu_state.max_toggle; index++) {
 		const auto position = calc_toggle_y_position(index);
 
 		auto *arrows = create_model(scene->models->arrows, update_arrows);
@@ -526,8 +540,8 @@ static void create_text()
 	Text_SetFromSIS(menu_state.description_text, 0);
 	menu_state.update_description();
 
-	for (auto index = 0; index < std::to_underlying(option::max_toggle); index++) {
-		const auto y_pos = 113.f + (float)index * 35.7f;
+	for (auto index = 0; index < menu_state.max_toggle; index++) {
+		const auto y_pos = 113.f + (!get_settings_lock() ? (float)index : 2.5f) * 35.7f;
 		auto *toggle = &menu_state.toggles[index];
 
 		toggle->label_text = Text_Create(0, canvas, 123, y_pos, 0, 360, 40);
@@ -617,10 +631,8 @@ static void Controls_Free(void *exit_data)
 	Text_FreeAll();
 }
 
-extern "C" void store_controls_menu_port()
+void store_controls_menu_port()
 {
-	MenuInputCooldown = 0;
-
 	// Remember who entered the Controls menu
 	for (u8 i = 0; i < 4; i++) {
 		if (Menu_GetButtons(i) & MenuButton_Confirm) {
@@ -628,8 +640,6 @@ extern "C" void store_controls_menu_port()
 			break;
 		}
 	}
-
-	MenuInputCooldown = 5;
 }
 
 struct set_menu_callbacks {

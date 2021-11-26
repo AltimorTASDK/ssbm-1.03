@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <bit>
 #include <climits>
 #include <cmath>
 
@@ -48,16 +49,24 @@ constexpr T mod(T value, T modulus)
 	return ((value % modulus) + modulus) % modulus;
 }
 
+// Returns mod(value - 1, modulus) given value is in range [0, modulus)
 template<typename T>
 constexpr T decrement_mod(T value, T modulus)
 {
-	return value != 0 ? value - 1 : modulus;
+	constexpr auto shift = sizeof(T) * CHAR_BIT - 1;
+	const auto dec = value - 1;
+	const auto mask = std::bit_cast<std::make_signed_t<T>>(dec) >> shift;
+	return dec ^ (-modulus & mask);
 }
 
+// Returns mod(value + 1, modulus) given value is in range [0, modulus)
 template<typename T>
 constexpr T increment_mod(T value, T modulus)
 {
-	return value != modulus - 1 ? value + 1 : 0;
+	constexpr auto shift = sizeof(T) * CHAR_BIT - 1;
+	const auto inc = value - modulus + 1;
+	const auto mask = std::bit_cast<std::make_signed_t<T>>(inc) >> shift;
+	return modulus + (inc ^ (-modulus & ~mask));
 }
 
 template<typename T>

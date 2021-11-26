@@ -119,7 +119,6 @@ hooks_start:
 .set ShowNameTagCheck,        NameTag_Think+0x28
 .set CheckStockStealInput,    Match_CheckStockSteal+0xF8
 .set GetDebugMenuButtons,     DebugMenu_Input+0x1C
-.set EnterSpecialMelee,       VsMenu_Think+0xBC
 .set TapJumpCheck_Jump,       Interrupt_Jump+0x40
 .set TapJumpCheck_JumpAerial, Interrupt_JumpAerial+0x44
 .set TapJumpCheck_JumpInput,  Player_CheckJumpInput+0x14
@@ -151,7 +150,6 @@ add_hook CmSubject_WorldToScreen
 add_hook CObjLoad
 add_hook DebugMenu_Exit
 add_hook DevelopText_Draw
-add_hook EnterSpecialMelee
 add_hook GetDebugMenuButtons
 add_hook HSD_ResetScene
 add_hook HUD_GetStockIconPosition
@@ -309,6 +307,7 @@ add_hook InitializeSaveData
 add_hook SetMenuRotation
 add_hook Menu_EnterCustomRulesMenu
 # Main menu
+add_hook VsMenu_Think
 add_hook MainMenu_Enter
 add_hook MainMenu_Init
 add_hook Menu_SetupMainMenu

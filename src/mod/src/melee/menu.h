@@ -83,7 +83,7 @@ extern u8 IsEnteringMenu;
 
 MenuCallbacks *Menu_GetCallbacks(u8 id);
 
-void Menu_ExitToMinorScene(u8 scene);
+void Menu_ExitToScene(u8 scene);
 u32 Menu_GetButtons(u32 port);
 void Menu_PlaySFX(s32 sfx);
 
