@@ -339,6 +339,9 @@ add_hook Player_UpdatePhysicsJointAnimFrameAndRate
 add_hook Item_SetVisible
 # Fix Mewtwo fthrow projectiles being grabbable
 add_hook Player_Mewtwo_CreateFThrowBall
+# Fix item/projectile bounce math
+.set NormalizeItemBounceVelocity, Item_ElasticCollision+0x300
+add_hook NormalizeItemBounceVelocity
 #endif
 # File patching
 #if defined(NTSC100) || defined(PAL)

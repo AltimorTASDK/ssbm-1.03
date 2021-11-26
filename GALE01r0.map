@@ -2339,6 +2339,7 @@
 80273b50 00000010 80273b50 0 cCameraManager::PushWorldUpVector
 80273b60 00000010 80273b60 0 cCameraManager::PushWorldUpVector
 80274f28 0000000c 80274f28 0 cAIPad::__ct
+80276494 00000424 80276494 0 Item_ElasticCollision
 80277d34 00000484 80277d34 0 SubactionEvent_0x2C_HitboxProjectile_StoreInfoToDataOffset
 80278830 00000024 80278830 0 TimeoutCallback
 80278fd8 000002ac 80278fd8 0 Item_PokeBall_ChooseRandomPokemon

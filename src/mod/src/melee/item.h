@@ -1,9 +1,15 @@
 #pragma once
 
+#include "util/vector.h"
 #include <gctypes.h>
 
 struct Item {
-	char pad000[0xDC8];
+	char pad000[0x040];
+	vec3 velocity;
+	vec3 position;
+	vec3 push_vel;
+	vec3 surface_vel;
+	char pad070[0xDC8 - 0x070];
 	struct {
 		u8 flags1_80 : 1;
 		u8 flags1_40 : 1;
