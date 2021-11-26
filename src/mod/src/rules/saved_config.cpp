@@ -1,4 +1,5 @@
 #include "rules/saved_config.h"
+#include "rules/values.h"
 #include "util/gc/memcard.h"
 
 constexpr char filename[] = "103Config";
@@ -38,6 +39,9 @@ void saved_config::load()
 
 void saved_config::save()
 {
+	if (get_settings_lock())
+		return;
+
 	widescreen       = GetGameRules()->widescreen;
 	latency          = GetGameRules()->latency;
 	ledge_grab_limit = GetGameRules()->ledge_grab_limit;

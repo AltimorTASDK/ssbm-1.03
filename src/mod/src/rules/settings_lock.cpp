@@ -1,5 +1,6 @@
 #include "controls/config.h"
 #include "melee/scene.h"
+#include "rules/saved_config.h"
 #include "rules/values.h"
 #include "util/patch_list.h"
 #include <ogc/card.h>
@@ -37,4 +38,7 @@ extern "C" void hook_InitializeGlobalData()
 
 	for (auto &config : controller_configs)
 		config.make_legal();
+
+	for (auto &bgm : config.stage_bgm)
+		bgm = -1;
 }
