@@ -366,32 +366,47 @@ extern "C" HSD_GObj *hook_Menu_SetupRulesMenu(u8 state)
 	return gobj;
 }
 
-static bool is_rule_locked(u16 index)
+static bool is_rule_locked(u16 index, u32 buttons)
 {
-	if (!get_settings_lock() || index == Rule_Mode || index >= Rule_MenuMusic)
+	if (!get_settings_lock())
 		return false;
 
-	if (index != Rule_StockCount)
-		return true;
-
-	// Lock stock count, but not time/coin timer
-	const auto mode = RulesMenuGObj->get<RulesMenuData>()->mode;
-	return mode == Mode_Stock || mode == Mode_Crew;
+	switch (index) {
+	case Rule_StockCount: {
+		// Lock stock count, but not time/coin timer
+		const auto mode = RulesMenuGObj->get<RulesMenuData>()->mode;
+		if (mode != Mode_Stock && mode != Mode_Crew)
+			break;
+	}
+	case Rule_LedgeGrabLimit:
+	case Rule_AirTimeLimit:
+		// Lock LGL/ATL
+		return buttons & (MenuButton_Left | MenuButton_Right);
+	case Rule_StageMusic:
+		// Lock Stage Music
+		return buttons & MenuButton_A;
+	default:
+		return false;
+	}
 }
 
 extern "C" void orig_Menu_RulesMenuInput(HSD_GObj *gobj);
 extern "C" void hook_Menu_RulesMenuInput(HSD_GObj *gobj)
 {
 	const auto buttons = Menu_GetButtonsHelper(PORT_ALL);
+	const auto index = MenuSelectedIndex;
 
-	if (is_rule_locked(MenuSelectedIndex) && (buttons & (MenuButton_Left | MenuButton_Right))) {
-		// Don't allow changing rules with settings locked
+	if (is_rule_locked(index, buttons)) {
+		// Enforce tournament lock
 		Menu_PlaySFX(MenuSFX_Error);
 		return;
 	}
 
-	if (MenuSelectedIndex == Rule_MenuMusic && (buttons & MenuButton_A)) {
+	if (index == Rule_MenuMusic && (buttons & MenuButton_A)) {
 		// Open menu music
+		Menu_PlaySFX(MenuSFX_Activate);
+		IsEnteringMenu = true;
+		MenuInputCooldown = 5;
 		Menu_CreateRandomStageMenu();
 		GObj_Free(gobj);
 		return;
