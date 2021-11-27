@@ -22,7 +22,7 @@
 #include "resources/screens/manual_border.tex.h"
 #include "resources/screens/scrollbar.tex.h"
 
-constexpr auto MAX_SCROLL = 2.f;
+constexpr auto MAX_SCROLL = 1.9786f;
 
 static texture texture_p1;
 static texture texture_p2;
