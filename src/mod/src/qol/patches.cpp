@@ -22,6 +22,8 @@ extern "C" void VsMenu_Think();
 
 extern "C" void Damage_DamageStale();
 
+extern "C" void MessageBox_CheckData();
+
 extern "C" double CSSAnimStartFrame;
 
 constexpr u32 NOP = 0x60000000;
@@ -91,6 +93,17 @@ static const auto patches = patch_list {
 	// Enable damage staling in develop mode
 	// b 0x8
 	std::pair { (char*)Damage_DamageStale+0x28,   0x48000008u },
+#ifdef PAL
+	#error "fix MessageBox_Think patch on PAL"
+#else
+	// Skip save data creation prompt
+	// li r3, false
+	std::pair { (char*)MessageBox_CheckData+0x15C,0x38600000u },
+	// li r4, SdMsgBox_CreateData
+	std::pair { (char*)MessageBox_CheckData+0x160,0x3880000Bu },
+	// li r0, MsgBox_CreateData
+	std::pair { (char*)MessageBox_CheckData+0x168,0x38000006u },
+#endif
 #if 0
 	// Clone characters slide out from behind CSS
 	std::pair { (char*)&CSSAnimStartFrame,        0.0 },

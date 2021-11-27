@@ -1544,6 +1544,7 @@
 801a9a6c 00000034 801a9a6c 0 Credits_ShootingGame_CheckToTransition
 801ade58 00000114 801ade58 0 Ab_TextDraw_Unknown_OnStartup
 801ae114 00000268 801ae114 0 MessageBox_Display
+801ae4f8 00000318 801ae4f8 0 MessageBox_CheckData
 801af5f0 0000012c 801af5f0 0 fk_Teams_ChooseCharTints
 801afb34 00000100 801afb34 0 SceneFunction_StartScreenExit
 801afc58 00000038 801afc58 0 DebugMenu_MainMenuInitialize

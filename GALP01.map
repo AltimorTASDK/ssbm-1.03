@@ -1566,6 +1566,8 @@
 801AB2C8 00000034 801AB2C8 0 Credits_ShootingGame_CheckToTransition
 801AFD78 00000114 801AFD78 0 Ab_TextDraw_Unknown_OnStartup
 801B0180 00000268 801B0180 0 MessageBox_Display
+801b056c 00000318 801b056c 0 MessageBox_CheckData
+801b08d4 00000cfc 801b08d4 0 MessageBox_Think
 801B1EB4 0000012C 801B1EB4 0 fk_Teams_ChooseCharTints
 801B23E8 00000020 801B23E8 0 Ab_SceneFunction_StartScreenEnter?
 801B2408 00000100 801B2408 0 SceneFunction_StartScreenExit
