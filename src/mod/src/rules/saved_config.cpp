@@ -50,5 +50,6 @@ void saved_config::save()
 	controller_fix   = GetGameRules()->controller_fix;
 	stage_mods       = GetGameRules()->stage_mods;
 
+	card_cancel();
 	card_write(CARD_SLOTA, filename, this, sizeof(*this));
 }

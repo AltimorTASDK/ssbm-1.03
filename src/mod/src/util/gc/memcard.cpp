@@ -223,6 +223,11 @@ void card_write(s32 card, const char *filename, void *in, u32 size)
 	card_io(card, filename, in, size, false);
 }
 
+void card_cancel()
+{
+	op.file.len = -1;
+}
+
 s32 card_sync()
 {
 	op.wait.sleep();
