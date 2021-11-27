@@ -414,9 +414,9 @@ extern "C" void hook_Menu_RandomStageMenuScroll(RandomStageMenuData *data, u32 b
 	const auto col_count = (page_size + max_row_count - 1) / max_row_count;
 
 	if (buttons & MenuButton_Up)
-		decrement_mod(row, row_count);
+		row = decrement_mod(row, row_count);
 	else if (buttons & MenuButton_Down)
-		increment_mod(row, row_count);
+		row = increment_mod(row, row_count);
 	else if (buttons & MenuButton_Left)
 		col = clamp(col - 1, 0, col_count - 1);
 	else if (buttons & MenuButton_Right)
