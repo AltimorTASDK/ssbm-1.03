@@ -376,7 +376,7 @@ static bool is_rule_locked(u16 index, u32 buttons)
 		// Lock stock count, but not time/coin timer
 		const auto mode = RulesMenuGObj->get<RulesMenuData>()->mode;
 		if (mode != Mode_Stock && mode != Mode_Crew)
-			break;
+			return false;
 	}
 	case Rule_LedgeGrabLimit:
 	case Rule_AirTimeLimit:
