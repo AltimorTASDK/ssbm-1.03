@@ -130,6 +130,7 @@ hooks_start:
 .set CheckUTiltInput,         Interrupt_UTilt+0x24
 .set CheckFTiltInput,         Interrupt_FTilt+0x24
 .set CheckDTiltInput,         Interrupt_DTilt+0x24
+.set CheckDTiltInputRapid,    Interrupt_AS_DTilt+0x80
 .set CheckDTiltInputIASA,     Interrupt_AS_DTilt+0xE8
 .set CheckJabInput,           Interrupt_Jab+0x20
 .set CheckJab2Input,          Interrupt_Jab2+0x40
@@ -143,6 +144,7 @@ add_hook CheckStockStealInput
 add_hook CheckUTiltInput
 add_hook CheckFTiltInput
 add_hook CheckDTiltInput
+add_hook CheckDTiltInputRapid
 add_hook CheckDTiltInputIASA
 add_hook CheckJabInput
 add_hook CheckJab2Input

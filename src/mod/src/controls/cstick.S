@@ -41,6 +41,19 @@ hook_CheckDTiltInput:
         lwz     r0, Player.instant_buttons(r3)
         b       orig_CheckDTiltInput
 
+.global hook_CheckDTiltInputRapid
+hook_CheckDTiltInputRapid:
+        bl      check_cstick_dtilt
+        cmpwi   r3, 0
+        # Restore r3
+        lwz     r3, HSD_GObj.data(r31)
+        beq     1f
+        b       Interrupt_AS_DTilt+0x88
+1:
+        # Restore r0
+        lwz     r0, Player.instant_buttons(r3)
+        b       orig_CheckDTiltInputRapid
+
 .global hook_CheckDTiltInputIASA
 hook_CheckDTiltInputIASA:
         bl      check_cstick_dtilt
