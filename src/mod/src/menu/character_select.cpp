@@ -226,7 +226,7 @@ static void rumble_toggle(u8 port)
 
 	const auto nametag = CSSData->data.players[port].nametag;
 
-	if (nametag == NO_NAMETAG) {
+	if (nametag == NAMETAG_MAX) {
 		// Toggle port rumble setting
 		const auto rumble = !GetPortRumbleFlag(port);
 		SetPortRumbleFlag(port, rumble);

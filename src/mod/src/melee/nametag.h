@@ -2,7 +2,7 @@
 
 #include <gctypes.h>
 
-constexpr auto NO_NAMETAG = 0x78;
+constexpr auto NAMETAG_MAX = 120;
 
 struct NameTagEntry {
 	char pad000[0x1A1];

@@ -186,7 +186,7 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 	strcpy(SaveFileName + strlen(SaveFileName) - 4, "_103");
 
 	// Clear nametags
-	memset(NameTag_GetEntry(0), 0, sizeof(NameTagEntry) * 120);
+	memset(NameTag_GetEntry(0), 0, sizeof(NameTagEntry) * NAMETAG_MAX);
 
 	// Run mod init
 	OSReport("Running 1.03\n");
