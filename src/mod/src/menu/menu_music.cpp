@@ -418,9 +418,9 @@ extern "C" void hook_Menu_RandomStageMenuScroll(RandomStageMenuData *data, u32 b
 	else if (buttons & MenuButton_Down)
 		row = increment_mod(row, row_count);
 	else if (buttons & MenuButton_Left)
-		col = clamp(col - 1, 0, col_count - 1);
+		col = std::max(col - 1, 0);
 	else if (buttons & MenuButton_Right)
-		col = clamp(col + 1, 0, col_count - 1);
+		col = std::min(col + 1, col_count - 1);
 
 	MenuSelectedIndex = (u16)std::min(col * max_row_count + row, get_page_size(data->page) - 1);
 	MenuSelectedValue = data->toggles[MenuSelectedIndex];
