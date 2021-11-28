@@ -144,8 +144,8 @@ constexpr auto stage_mod_descriptions = multi_array {
 constexpr auto ucf_type_descriptions = multi_array {
 	make_description_text<"Improve shield drop and wiggle and fix",
 		              "1.0 cardinal and dash out of crouch.">(),
-	make_description_text<"Reduce shield drop's range and remove 1.0",
-		              "cardinal and dash out of crouch fixes.">()
+	make_description_text<"Reduce shield drop and wiggle and remove",
+		              "1.0 cardinal and dash out of crouch fixes.">()
 };
 
 constexpr auto latency_descriptions = multi_array {
