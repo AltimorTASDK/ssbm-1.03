@@ -223,9 +223,9 @@ void card_write(s32 card, const char *filename, void *in, u32 size)
 	card_io(card, filename, in, size, false);
 }
 
-void card_cancel()
+bool is_card_busy()
 {
-	op.file.len = -1;
+	return !op.wait.is_complete();
 }
 
 s32 card_sync()

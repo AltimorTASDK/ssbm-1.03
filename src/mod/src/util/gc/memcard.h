@@ -10,8 +10,8 @@ void card_read(s32 card, const char *filename, void *out, u32 max_size);
 // Sets result to negative error.
 void card_write(s32 card, const char *filename, void *in, u32 size);
 
-// Cancel any current read/write operation.
-void card_cancel();
+// Check if a card operation is in progress.
+bool is_card_busy();
 
 // Wait for card operations to complete. Returns operation result.
 s32 card_sync();

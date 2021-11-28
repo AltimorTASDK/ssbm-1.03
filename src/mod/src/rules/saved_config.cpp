@@ -4,6 +4,8 @@
 
 constexpr char filename[] = "103Config";
 
+static bool save_pending = false;
+
 saved_config::saved_config()
 {
 	load();
@@ -50,6 +52,19 @@ void saved_config::save()
 	controller_fix   = GetGameRules()->controller_fix;
 	stage_mods       = GetGameRules()->stage_mods;
 
-	card_cancel();
-	card_write(CARD_SLOTA, filename, this, sizeof(*this));
+	if (is_card_busy())
+		save_pending = true;
+	else
+		card_write(CARD_SLOTA, filename, this, sizeof(*this));
+}
+
+extern "C" void orig_MemoryCard_CheckToSaveData();
+extern "C" void hook_MemoryCard_CheckToSaveData()
+{
+	if (save_pending && !is_card_busy()) {
+		save_pending = false;
+		card_write(CARD_SLOTA, filename, &config, sizeof(config));
+	}
+
+	orig_MemoryCard_CheckToSaveData();
 }
