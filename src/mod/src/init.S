@@ -244,6 +244,7 @@ add_hook Player_Nana_RecordPopoData
 # Memcard
 add_hook MemoryCard_RequestSave
 add_hook MemoryCard_DoLoadData
+add_hook MemoryCard_CheckToSaveData
 add_hook UpdateMemCardState
 add_hook GetNextSceneMajorCallback
 # 1P camera
