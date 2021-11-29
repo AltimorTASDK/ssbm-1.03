@@ -3,6 +3,7 @@
 #include "melee/player.h"
 #include "melee/rules.h"
 #include "melee/scene.h"
+#include "rules/values.h"
 #include "util/melee/match.h"
 #include <gctypes.h>
 
@@ -15,7 +16,7 @@ static u8 get_lras_override_scene()
 	// Hold B for salty runback
 	if (pad.buttons & Button_B)
 		return VsScene_Game;
-		
+
 	return VsScene_CSS;
 }
 
@@ -39,9 +40,9 @@ extern "C" void hook_Scene_Match_Exit(SceneMinorData *data, u8 victory_screen, u
 
 	// Override next scene and remove sudden death
 	const auto next_scene = get_next_scene(exit_data);
-		
+
 	// Store crew stock count for next game
-	if (GetGameRules()->mode == Mode_Crew)
+	if (is_match_crew(GetMatchInfo()->rules))
 		update_crew_stocks(exit_data->match);
 
 	orig_Scene_Match_Exit(data, next_scene, next_scene);

@@ -89,7 +89,7 @@ extern "C" void hook_Match_Init(StartMeleeData *data)
 		data->players[i].defense_ratio = 1.f;
 
 		// Carry over winner stock counts for crew
-		if (GetGameRules()->mode == Mode_Crew)
+		if (is_match_crew(data->rules))
 			data->players[i].stocks = (u8)get_crew_stocks(i);
 	}
 

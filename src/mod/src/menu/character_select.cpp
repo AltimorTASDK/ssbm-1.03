@@ -12,7 +12,6 @@
 #include "melee/nametag.h"
 #include "melee/player.h"
 #include "melee/scene.h"
-#include "menu/character_select.h"
 #include "rules/values.h"
 #include "util/compression.h"
 #include "util/mempool.h"
@@ -177,6 +176,7 @@ extern "C" bool check_is_cpu_puck(u8 port)
 extern "C" bool check_can_start_match(bool check_crew)
 {
 	auto player_count = 0;
+	auto human_count = 0;
 
 	for (auto i = 0; i < CSSPortCount; i++) {
 		if (CSSPorts[i].slot_type == SlotType_None)
@@ -191,21 +191,19 @@ extern "C" bool check_can_start_match(bool check_crew)
 			return false;
 
 		player_count++;
+
+		// Check if there's a real HMN port before starting a match
+		if (CSSPorts[i].slot_type != SlotType_Human)
+			continue;
+
+		if (player_states[i] != CSSPlayerState_Unplugged)
+			human_count++;
 	}
 
 	if (check_crew && GetGameRules()->mode == Mode_Crew && player_count > 2)
 		return false;
 
-	// Check if there's a real HMN port before starting a match
-	for (auto i = 0; i < CSSPortCount; i++) {
-		if (CSSPorts[i].slot_type != SlotType_Human)
-			continue;
-
-		if (player_states[i] != CSSPlayerState_Unplugged)
-			return true;
-	}
-
-	return false;
+	return human_count > 0;
 }
 
 extern "C" bool check_if_any_players()

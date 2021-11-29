@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include "melee/match.h"
 #include "melee/rules.h"
 #include "melee/stage.h"
 
@@ -13,6 +14,12 @@ constexpr auto air_time_limit_values = std::array {
 };
 
 bool get_settings_lock();
+
+inline bool is_match_crew(const StartMeleeRules &rules)
+{
+	// Check whether the currently running match is crew and not 1p mode
+	return GetGameRules()->mode == Mode_Crew && rules.is_stock_match;
+}
 
 inline int get_ledge_grab_limit()
 {
@@ -38,6 +45,12 @@ inline bool is_widescreen()
 	return rules->widescreen;
 }
 
+inline latency_mode get_latency()
+{
+	const auto *rules = GetGameRules();
+	return rules->latency;
+}
+
 inline bool should_use_oss()
 {
 	const auto *rules = GetGameRules();
@@ -61,10 +74,4 @@ inline bool is_stage_frozen(int id)
 	default:
 		return false;
 	}
-}
-
-inline latency_mode get_latency()
-{
-	const auto *rules = GetGameRules();
-	return rules->latency;
 }
