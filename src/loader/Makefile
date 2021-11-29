@@ -16,7 +16,7 @@ BINFILE  := $(GCIDIR)/1.03_data/loader-pal.bin
 endif
 
 OBJDIR   := obj/$(VERSION)
-DEPDIR   := dep
+DEPDIR   := dep/$(VERSION)
 SOURCES  := src
 
 CFILES   := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.c'))

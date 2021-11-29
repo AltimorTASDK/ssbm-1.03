@@ -19,7 +19,7 @@ GCIFILE  := $(BINDIR)/ssbm-1.03.gci
 DIFFSRC  := bin/mod.bin
 
 OBJDIR   := obj/$(VERSION)
-DEPDIR   := dep
+DEPDIR   := dep/$(VERSION)
 SOURCES  := src
 
 CFILES   := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.c'))
