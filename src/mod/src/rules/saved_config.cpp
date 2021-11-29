@@ -10,13 +10,15 @@ saved_config::saved_config()
 {
 	load();
 
-	GetGameRules()->widescreen       = widescreen;
-	GetGameRules()->latency          = latency;
-	GetGameRules()->ledge_grab_limit = ledge_grab_limit;
-	GetGameRules()->air_time_limit   = air_time_limit;
-	GetGameRules()->stock_time_limit = stock_time_limit;
-	GetGameRules()->controller_fix   = controller_fix;
-	GetGameRules()->stage_mods       = stage_mods;
+	auto *rules = GetGameRules();
+
+	rules->widescreen       = widescreen;
+	rules->latency          = latency;
+	rules->ledge_grab_limit = ledge_grab_limit;
+	rules->air_time_limit   = air_time_limit;
+	rules->stock_time_limit = stock_time_limit;
+	rules->controller_fix   = controller_fix;
+	rules->stage_mods       = stage_mods;
 }
 
 void saved_config::load()
@@ -44,13 +46,15 @@ void saved_config::save()
 	if (get_settings_lock())
 		return;
 
-	widescreen       = GetGameRules()->widescreen;
-	latency          = GetGameRules()->latency;
-	ledge_grab_limit = GetGameRules()->ledge_grab_limit;
-	air_time_limit   = GetGameRules()->air_time_limit;
-	stock_time_limit = GetGameRules()->stock_time_limit;
-	controller_fix   = GetGameRules()->controller_fix;
-	stage_mods       = GetGameRules()->stage_mods;
+	const auto *rules = GetGameRules();
+
+	widescreen       = rules->widescreen;
+	latency          = rules->latency;
+	ledge_grab_limit = rules->ledge_grab_limit;
+	air_time_limit   = rules->air_time_limit;
+	stock_time_limit = rules->stock_time_limit;
+	controller_fix   = rules->controller_fix;
+	stage_mods       = rules->stage_mods;
 
 	if (is_card_busy())
 		save_pending = true;
