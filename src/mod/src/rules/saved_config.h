@@ -20,7 +20,7 @@ struct [[gnu::packed]] config_values<config_version::a1> {
 	latency_mode latency = latency_mode::crt;
 	int stage_bgm[6]     = { BGM_Undefined, BGM_Undefined, BGM_Undefined,
 	                         BGM_Undefined, BGM_Undefined, BGM_Undefined };
-	int menu_bgm         = -1;
+	int menu_bgm         = BGM_Undefined;
 };
 
 template<>
