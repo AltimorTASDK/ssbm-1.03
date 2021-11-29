@@ -79,22 +79,8 @@ extern "C" u32 hook_GetNextSceneMajorCallback()
 	}
 }
 
-static void card_error(const char *fmt, auto &&...args)
+static void card_done()
 {
-	if (op.error != CARD_ERROR_NOFILE)
-		OSReport(fmt, args...);
-
-	CARD_Unmount(op.card);
-	op.wait.wake();
-}
-
-static void card_callback(s32 chan, s32 result)
-{
-	op.error = result;
-
-	if (result < 0)
-		return card_error("Card operation failed (%d)\n", result);
-
 	if (op.buffer != op.src_buffer) {
 		if (op.read && op.error >= 0)
 			memcpy(op.src_buffer, op.buffer, op.src_size);
@@ -102,7 +88,7 @@ static void card_callback(s32 chan, s32 result)
 		HSD_Free(op.buffer);
 	}
 
-	CARD_Unmount(chan);
+	CARD_Unmount(op.card);
 
 	// Wake up the main thread
 	op.wait.wake();
@@ -112,6 +98,24 @@ static void card_callback(s32 chan, s32 result)
 		orig_MemoryCard_RequestSave();
 		op.save_pending = false;
 	}
+}
+
+static void card_error(const char *fmt, auto &&...args)
+{
+	if (op.error != CARD_ERROR_NOFILE)
+		OSReport(fmt, args...);
+
+	card_done();
+}
+
+static void card_callback(s32 chan, s32 result)
+{
+	op.error = result;
+
+	if (result >= 0)
+		card_done();
+	else
+		card_error("Card operation failed (%d)\n", result);
 }
 
 static void read_callback(s32 chan, s32 result)
