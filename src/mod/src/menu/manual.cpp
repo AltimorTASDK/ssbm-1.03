@@ -93,17 +93,20 @@ static void draw_manual(HSD_GObj *gobj, u32 pass)
 	rs.set_scissor(0, scissor_y, 640, scissor_h);
 
 	constexpr auto scale = 25.f;
+	const auto scale_p1 = vec2(1, -texture_p1.inv_ratio()) * scale;
+	const auto scale_p2 = vec2(1, -texture_p2.inv_ratio()) * scale;
+	const auto scale_p3 = vec2(1, -texture_p3.inv_ratio()) * scale;
 	const auto pos_p1 = vec3(0, 7.5f + scroll_offset * scale, 17);
-	const auto pos_p2 = pos_p1 - vec3(0, scale, 0);
-	const auto pos_p3 = pos_p2 - vec3(0, scale, 0);
+	const auto pos_p2 = pos_p1 - vec3(scale_p1);
+	const auto pos_p3 = pos_p2 - vec3(scale_p2);
 
-	rs.fill_rect(pos_p1, vec2(1, -1) * scale, color_rgba::white, texture_p1,
+	rs.fill_rect(pos_p1, scale_p1, color_rgba::white, texture_p1,
 	             uv_coord::zero, uv_coord::one, align::top);
 
-	rs.fill_rect(pos_p2, vec2(1, -1) * scale, color_rgba::white, texture_p2,
+	rs.fill_rect(pos_p2, scale_p2, color_rgba::white, texture_p2,
 	             uv_coord::zero, uv_coord::one, align::top);
 
-	rs.fill_rect(pos_p3, vec2(1, -1) * scale, color_rgba::white, texture_p3,
+	rs.fill_rect(pos_p3, scale_p3, color_rgba::white, texture_p3,
 	             uv_coord::zero, uv_coord::one, align::top);
 
 	rs.reset_2d();

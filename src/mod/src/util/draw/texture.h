@@ -27,7 +27,7 @@ public:
 	{
 		render_state::get().load_tex_obj(&tex_obj);
 	}
-	
+
 	u16 width() const
 	{
 		return GX_GetTexObjWidth(&tex_obj);
@@ -41,5 +41,15 @@ public:
 	vec2i size() const
 	{
 		return vec2i(width(), height());
+	}
+
+	float ratio() const
+	{
+		return (float)width() / (float)height();
+	}
+
+	float inv_ratio() const
+	{
+		return (float)height() / (float)width();
 	}
 };
