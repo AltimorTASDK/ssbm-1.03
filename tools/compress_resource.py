@@ -118,7 +118,7 @@ def main():
 
     print(f"{name} compression rate: "
           f"{compression_rate:.02f}% "
-          f"({total_size:X} b)")
+          f"({total_size} bytes)")
 
     with open(out_path, "wb") as f:
         # Include the size of the header_size field itself
