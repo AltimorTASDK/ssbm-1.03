@@ -49,13 +49,13 @@ inline bool is_stage_frozen(int id)
 	const auto *rules = GetGameRules();
 
 	switch (id) {
+	case Stage_FD:
 	case Stage_PS:
-		if (rules->stage_mods == stage_mod_type::ps)
+		if (rules->stage_mods == stage_mod_type::fdps)
 			return true;
 	case Stage_FoD:
 	case Stage_YS:
 	case Stage_DL:
-	case Stage_FD:
 		if (rules->stage_mods == stage_mod_type::all)
 			return true;
 	default:

@@ -6,7 +6,7 @@ enum class stage_mod_type : u8 {
 	all  = 0,
 	oss  = 1,
 	none = 2,
-	ps   = 3,
+	fdps = 3,
 	max
 };
 

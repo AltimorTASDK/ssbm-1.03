@@ -138,7 +138,8 @@ constexpr auto stage_mod_descriptions = multi_array {
 	make_description_text<"Use the original stage select screen",
 	                      "and play without stage modifications.">(),
 	make_description_text<"Play without stage modifications.">(),
-	make_description_text<u"Freeze Pokémon Stadium.">()
+	make_description_text<u"Freeze Final Destination and",
+	                      u"Pokémon Stadium.">()
 };
 
 constexpr auto ucf_type_descriptions = multi_array {
