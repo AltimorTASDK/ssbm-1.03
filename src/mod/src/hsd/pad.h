@@ -25,11 +25,11 @@ struct PADStatus {
 	u16 buttons;
 	vec2c stick;
 	vec2c cstick;
-	s8 analog_l;
-	s8 analog_r;
-	s8 analog_a;
-	s8 analog_b;
-	s8 err;
+	u8 analog_l;
+	u8 analog_r;
+	u8 analog_a;
+	u8 analog_b;
+	u8 err;
 };
 
 struct HSD_PadData {
