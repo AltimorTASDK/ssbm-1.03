@@ -10,20 +10,21 @@ struct init_rules {
 	{
 		// Set new rule value bounds
 		RuleValueBounds[Rule_LedgeGrabLimit] = { 0, ledge_grab_limit_values.size() - 1 };
-		RuleValueBounds[Rule_AirTimeLimit]   = { 0, air_time_limit_values.size() - 1 };
+		RuleValueBounds[Rule_AirTimeLimit]   = { 0, air_time_limit_values.size()   - 1 };
 
 		ExtraRuleValueBounds[ExtraRule_StageMods]     = { 0, (u8)stage_mod_type::max - 1 };
-		ExtraRuleValueBounds[ExtraRule_ControllerFix] = { 0, (u8)ucf_type::max - 1 };
-		ExtraRuleValueBounds[ExtraRule_Latency]       = { 0, (u8)latency_mode::max - 1 };
+		ExtraRuleValueBounds[ExtraRule_ControllerFix] = { 0, (u8)ucf_type::max       - 1 };
+		ExtraRuleValueBounds[ExtraRule_Latency]       = { 0, (u8)latency_mode::max   - 1 };
 		ExtraRuleValueBounds[ExtraRule_Widescreen]    = { 0, 1 };
 
-		// Set default rules
 		auto *rules = GetGameRules();
-		rules->mode = Mode_Stock;
-		rules->time_limit = 0;
-		rules->stock_count = 4;
+
+		// Set default rules
+		rules->mode                 = Mode_Stock;
+		rules->time_limit           = 0;
+		rules->stock_count          = 4;
 		rules->stage_selection_mode = 0;
-		rules->pause = false;
+		rules->pause                = false;
 	}
 } init_rules;
 
@@ -69,21 +70,21 @@ extern "C" void hook_Match_Init(StartMeleeData *data)
 	if (is_singleplayer(data)) {
 		// Force infinite time match + pause
 		data->rules.is_stock_match = false;
-		data->rules.is_coin_match = false;
-		data->rules.timer_enabled = false;
+		data->rules.is_coin_match  = false;
+		data->rules.timer_enabled  = false;
 		data->rules.pause_disabled = false;
 	} else {
 		data->rules.pause_disabled = is_pause_disabled(data);
 	}
 
-	data->rules.damage_ratio = 1.f;
+	data->rules.damage_ratio   = 1;
 	data->rules.item_frequency = -1;
-	data->rules.friendly_fire = true;
-	data->rules.score_display = false;
-	data->rules.sd_penalty = -2;
+	data->rules.friendly_fire  = true;
+	data->rules.score_display  = false;
+	data->rules.sd_penalty     = -2;
 
 	for (auto i = 0; i < 6; i++) {
-		data->players[i].handicap = 9;
+		data->players[i].handicap      = 9;
 		data->players[i].offense_ratio = 1.f;
 		data->players[i].defense_ratio = 1.f;
 
