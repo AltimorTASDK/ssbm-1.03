@@ -97,8 +97,8 @@ static void draw_manual(HSD_GObj *gobj, u32 pass)
 	const auto scale_p2 = vec2(1, -texture_p2.inv_ratio()) * scale;
 	const auto scale_p3 = vec2(1, -texture_p3.inv_ratio()) * scale;
 	const auto pos_p1 = vec3(0, 7.5f + scroll_offset * scale, 17);
-	const auto pos_p2 = pos_p1 - vec3(scale_p1);
-	const auto pos_p3 = pos_p2 - vec3(scale_p2);
+	const auto pos_p2 = pos_p1 + vec3(0, scale_p1.y, 0);
+	const auto pos_p3 = pos_p2 + vec3(0, scale_p2.y, 0);
 
 	rs.fill_rect(pos_p1, scale_p1, color_rgba::white, texture_p1,
 	             uv_coord::zero, uv_coord::one, align::top);
