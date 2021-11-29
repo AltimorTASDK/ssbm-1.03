@@ -22,13 +22,8 @@ struct init_rules {
 		rules->mode = Mode_Stock;
 		rules->time_limit = 0;
 		rules->stock_count = 4;
-		rules->ledge_grab_limit = 0; // LGL
-		rules->air_time_limit = 0; // ATL
 		rules->stage_selection_mode = 0;
-		rules->stock_time_limit = 6;
 		rules->pause = false;
-		rules->stage_mods = stage_mod_type::all;
-		rules->controller_fix = ucf_type::hax;
 	}
 } init_rules;
 
