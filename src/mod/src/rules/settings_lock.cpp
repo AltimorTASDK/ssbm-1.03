@@ -43,4 +43,11 @@ extern "C" void hook_InitializeGlobalData()
 
 	for (size_t i = 0; i < std::extent_v<decltype(config.stage_bgm)>; i++)
 		config.stage_bgm[i] = BGM_Undefined;
+
+	auto *rules = GetGameRules();
+
+	rules->mode        = Mode_Stock;
+	rules->time_limit  = 0;
+	rules->stock_count = 4;
+	rules->pause       = false;
 }

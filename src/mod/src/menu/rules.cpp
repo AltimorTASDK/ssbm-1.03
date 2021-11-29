@@ -372,15 +372,10 @@ static bool is_rule_locked(u16 index, u32 buttons)
 		return false;
 
 	switch (index) {
-	case Rule_StockCount: {
-		// Lock stock count, but not time/coin timer
-		const auto mode = RulesMenuGObj->get<RulesMenuData>()->mode;
-		if (mode != Mode_Stock && mode != Mode_Crew)
-			return false;
-	}
+	case Rule_StockCount:
 	case Rule_LedgeGrabLimit:
 	case Rule_AirTimeLimit:
-		// Lock LGL/ATL
+		// Lock stocks/LGL/ATL
 		return buttons & (MenuButton_Left | MenuButton_Right);
 	case Rule_StageMusic:
 		// Lock Stage Music
