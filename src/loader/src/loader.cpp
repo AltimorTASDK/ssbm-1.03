@@ -133,7 +133,6 @@ static u32 card_read(const char *file, void *dest)
 	return stats.len;
 }
 
-#ifndef NTSC102
 static void *alloc_and_read(const char *file)
 {
 	const auto size = card_read(file, nullptr);
@@ -141,7 +140,19 @@ static void *alloc_and_read(const char *file)
 	card_read(file, buf);
 	return buf;
 }
-#endif
+
+struct file_entry {
+	u32 size;
+	char data[];
+};
+
+void get_files(void *data, file_entry **entries, int count)
+{
+	for (auto i = 0; i < count; i++) {
+		entries[i] = (file_entry*)data;
+		data = (char*)data + entries[i]->size + 4;
+	}
+}
 
 extern "C" [[gnu::section(".loader")]] void load_mod()
 {
@@ -159,18 +170,28 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 	cardmap[0].gamecode[3] = 'E';
 #endif
 
-#ifdef NTSC102
-	const auto code_size = card_read("103Code", &__MOD_BASE__);
+	auto *data = alloc_and_read("103Code");
+
+#ifdef PAL
+	file_entry *files[4];
+	get_files(data, files, 4);
 #else
-	auto *base = alloc_and_read("103Code");
-#if defined(NTSC100)
-	auto *diff = alloc_and_read("103CodeNTSC100");
-#elif defined(NTSC101)
-	auto *diff = alloc_and_read("103CodeNTSC101");
-#elif defined(PAL)
-	auto *diff = alloc_and_read("103CodePAL");
+	file_entry *files[3];
+	get_files(data, files, 3);
 #endif
-	const auto code_size = apply_diff(base, diff, &__MOD_BASE__);
+
+#ifndef NTSC102
+#if defined(NTSC100)
+	auto *diff = files[1]->data;
+#elif defined(NTSC101)
+	auto *diff = files[2]->data;
+#elif defined(PAL)
+	auto *diff = files[3]->data;
+#endif
+	const auto code_size = apply_diff(files[0]->data, diff, &__MOD_BASE__);
+#else
+	const auto code_size = files[0]->size;
+	memcpy(&__MOD_BASE__, files[0]->data, code_size);
 #endif
 
 #ifdef PAL

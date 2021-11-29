@@ -26,15 +26,20 @@ def write_gci_header(file, filename, block_count):
 
 def main():
     if len(sys.argv) < 4:
-        print("Usage: bin_to_gci.py <in> <out> <gci filename>", file=sys.stderr)
+        print("Usage: bin_to_gci.py <out> <gci filename> <input files...>",
+              file=sys.stderr)
         sys.exit(1)
 
-    in_path = sys.argv[1]
-    out_path = sys.argv[2]
-    filename = sys.argv[3]
+    out_path = sys.argv[1]
+    filename = sys.argv[2]
+    in_files = sys.argv[3:]
 
-    with open(in_path, "rb") as f:
-        data = f.read()
+    data = b""
+
+    for path in in_files:
+        with open(path, "rb") as f:
+            in_data = f.read()
+            data += struct.pack(">I", len(in_data)) + in_data
 
     block_count = (len(data) + BLOCK_SIZE - 1) // BLOCK_SIZE
 

@@ -15,7 +15,7 @@ ELFFILE  := $(GCIDIR)/1.03_data/loader-pal.elf
 BINFILE  := $(GCIDIR)/1.03_data/loader-pal.bin
 endif
 
-OBJDIR   := obj
+OBJDIR   := obj/$(VERSION)
 DEPDIR   := dep
 SOURCES  := src
 

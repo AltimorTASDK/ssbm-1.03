@@ -1,28 +1,24 @@
 ifeq ($(VERSION), 100)
 ELFFILE := bin/mod-ntsc100.elf
 BINFILE := bin/mod-ntsc100.bin
-GCINAME := 103CodeNTSC100
-GCIFILE := $(BINDIR)/ssbm-1.03-ntsc100.gci
 else ifeq ($(VERSION), 101)
 ELFFILE := bin/mod-ntsc101.elf
 BINFILE := bin/mod-ntsc101.bin
-GCINAME := 103CodeNTSC101
-GCIFILE := $(BINDIR)/ssbm-1.03-ntsc101.gci
 else ifeq ($(VERSION), 102)
 ELFFILE := bin/mod.elf
 BINFILE := bin/mod.bin
-GCINAME := 103Code
-GCIFILE := $(BINDIR)/ssbm-1.03.gci
 else ifeq ($(VERSION), PAL)
 ELFFILE := bin/mod-pal.elf
 BINFILE := bin/mod-pal.bin
-GCINAME := 103CodePAL
-GCIFILE := $(BINDIR)/ssbm-1.03-pal.gci
 endif
+
+ALLBINS  := bin/mod.bin bin/mod-ntsc100.bin.diff bin/mod-ntsc101.bin.diff
+GCINAME  := 103Code
+GCIFILE  := $(BINDIR)/ssbm-1.03.gci
 
 DIFFSRC  := bin/mod.bin
 
-OBJDIR   := obj
+OBJDIR   := obj/$(VERSION)
 DEPDIR   := dep
 SOURCES  := src
 
@@ -45,11 +41,11 @@ LDFLAGS += -flto
 ifeq ($(VERSION), 102)
 $(GCIFILE): $(BINFILE) $(TOOLS)/bin_to_gci.py
 	@[ -d $(@D) ] || mkdir -p $(@D)
-	python $(TOOLS)/bin_to_gci.py $< $@ $(GCINAME)
+	python $(TOOLS)/bin_to_gci.py $@ $(GCINAME) $(ALLBINS)
 else
 $(GCIFILE): $(BINFILE).diff $(TOOLS)/bin_to_gci.py
 	@[ -d $(@D) ] || mkdir -p $(@D)
-	python $(TOOLS)/bin_to_gci.py $< $@ $(GCINAME)
+	python $(TOOLS)/bin_to_gci.py $@ $(GCINAME) $(ALLBINS)
 
 $(BINFILE).diff: $(BINFILE) $(TOOLS)/diff.py
 	@[ -d $(@D) ] || mkdir -p $(@D)
