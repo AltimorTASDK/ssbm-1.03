@@ -216,9 +216,16 @@ add_hook SSS_Init
 add_hook SSS_Think
 # Additional rules menu
 .set SelectExtraRuleModel, Menu_SetupExtraRulesMenu+0x55C
+.set CheckExtraRuleVisible1, Menu_UpdateExtraRuleDisplay+0xE8
+.set CheckExtraRuleVisible2, Menu_UpdateExtraRuleDisplay+0x44C
+.set CheckExtraRuleVisible3, Menu_SetupExtraRulesMenu+0x3B4
 add_hook SelectExtraRuleModel
+add_hook CheckExtraRuleVisible1
+add_hook CheckExtraRuleVisible2
+add_hook CheckExtraRuleVisible3
 add_hook Menu_CreateExtraRulesMenu
 add_hook Menu_SetupExtraRulesMenu
+add_hook Menu_IsExtraRuleVisible
 add_hook Menu_ExtraRulesMenuInput
 add_hook Menu_GetExtraRuleValueAnimLoop
 add_hook Menu_UpdateExtraRuleValueAnim

@@ -5,6 +5,7 @@
 #include "hsd/memory.h"
 #include "hsd/mobj.h"
 #include "hsd/tobj.h"
+#include "latency/pdf_vb.h"
 #include "melee/menu.h"
 #include "melee/rules.h"
 #include "melee/scene.h"
@@ -204,6 +205,15 @@ static const auto patches = patch_list {
 	std::pair { (char*)Menu_UpdateExtraRuleValueAnim+0x1C,                   0x48000008u },
 };
 
+static int get_jobj_index(int index)
+{
+	// Fix up indices if latency is hidden
+	if (!is_faster_melee() || index < ExtraRule_Latency)
+		return index;
+	else
+		return index - 1;
+}
+
 static void replace_toggle_texture(ExtraRulesMenuData *data, int index)
 {
 	auto *tobj = data->value_jobj_trees[index].tree[1]->u.dobj->mobj->tobj;
@@ -212,7 +222,7 @@ static void replace_toggle_texture(ExtraRulesMenuData *data, int index)
 
 static void set_to_rotator(ExtraRulesMenuData *data, int index)
 {
-	auto *cursor = data->jobj_tree.rules[index]->child;
+	auto *cursor = data->jobj_tree.rules[get_jobj_index(index)]->child;
 	auto [background, arrow, scroll] = HSD_JObjGetFromTreeTuple<6, 8, 13>(cursor);
 
 	// Show black value background
@@ -310,7 +320,8 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 	replace_toggle_texture(data, ExtraRule_Pause);
 	replace_toggle_texture(data, ExtraRule_StageMods);
 	replace_toggle_texture(data, ExtraRule_ControllerFix);
-	replace_toggle_texture(data, ExtraRule_Latency);
+	if (!is_faster_melee())
+		replace_toggle_texture(data, ExtraRule_Latency);
 
 	// Make Rl01 use proper additional rules position
 	fix_value_position(data, ExtraRule_StageMods);
@@ -323,6 +334,12 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 	set_value_anim(data, ExtraRule_Widescreen);
 
 	return gobj;
+}
+
+extern "C" bool orig_Menu_IsExtraRuleVisible(u8 index);
+extern "C" bool hook_Menu_IsExtraRuleVisible(u8 index)
+{
+	return index != ExtraRule_Latency || !is_faster_melee();
 }
 
 extern "C" void orig_Menu_ExtraRulesMenuInput(HSD_GObj *gobj);
@@ -340,6 +357,18 @@ extern "C" void hook_Menu_ExtraRulesMenuInput(HSD_GObj *gobj)
 
 	if (!(buttons & MenuButton_A) && (buttons & (MenuButton_B | MenuButton_Start)))
 		config.save();
+
+	if (!is_faster_melee() || MenuSelectedIndex != ExtraRule_Latency)
+		return;
+
+	// Skip over the nonexistent latency rotator on FM
+	if (buttons & MenuButton_Up)
+		MenuSelectedIndex--;
+	else
+		MenuSelectedIndex++;
+
+	const auto *data = ExtraRulesMenuGObj->get<ExtraRulesMenuData>();
+	MenuSelectedValue = data->values[MenuSelectedIndex];
 }
 
 extern "C" const HSD_AnimLoop &orig_Menu_GetExtraRuleValueAnimLoop(u8 index, u8 value,

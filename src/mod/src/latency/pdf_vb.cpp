@@ -2,6 +2,7 @@
 #include "hsd/gobj.h"
 #include "hsd/pad.h"
 #include "hsd/video.h"
+#include "latency/pdf_vb.h"
 #include "melee/text.h"
 #include "os/alarm.h"
 #include "os/os.h"
@@ -54,6 +55,8 @@ static DevText *text;
 static char text_buf[TEXT_WIDTH * TEXT_HEIGHT * 2];
 #endif
 
+static bool faster_melee;
+
 static bool needs_depth_clear;
 
 static u32 frame_retrace_count;
@@ -61,6 +64,11 @@ static u32 last_poll_retrace_count;
 
 static u32 half_vb_retrace_count;
 static OSThreadQueue half_vb_thread_queue;
+
+extern "C" bool is_faster_melee()
+{
+	return faster_melee;
+}
 
 static void pad_sample_callback()
 {
@@ -103,6 +111,9 @@ static void post_retrace_callback(u32 retrace_count)
 extern "C" void orig_UpdatePadFetchRate();
 extern "C" void hook_UpdatePadFetchRate()
 {
+	if (is_faster_melee())
+		return;
+
 	// Don't use the fetch timer
 	orig_UpdatePadFetchRate();
 	OSCancelAlarm(&PadFetchAlarm);
@@ -111,12 +122,18 @@ extern "C" void hook_UpdatePadFetchRate()
 extern "C" void orig_SISetSamplingRate(u32 msecs);
 extern "C" void hook_SISetSamplingRate(u32 msecs)
 {
+	if (is_faster_melee())
+		return;
+
 	// Always use default polling rate/interval
 	orig_SISetSamplingRate(16);
 }
 
 extern "C" void scene_loop_start()
 {
+	if (is_faster_melee())
+		return;
+
 	if (get_latency() != latency_mode::lcd || Si.poll.enable == 0)
 		return;
 
@@ -141,6 +158,9 @@ extern "C" void first_engine_frame()
 extern "C" void orig_HSD_VICopyXFBASync(u32 pass);
 extern "C" void hook_HSD_VICopyXFBASync(u32 pass)
 {
+	if (is_faster_melee())
+		return orig_HSD_VICopyXFBASync(pass);
+
 #ifdef POLL_DEBUG
 	frame_interval = OSGetTime() - frame_time;
 	frame_end_line = VIGetCurrentLine();
@@ -295,9 +315,50 @@ extern "C" void hook_Scene_RunLoop(void(*think_callback)())
 }
 #endif
 
+static bool detect_fm_impl()
+{
+	constexpr auto magic = 0xFFFFFFFF;
+
+	SICHANNEL[0].in.lo = magic;
+
+	if (SICHANNEL[0].in.lo != magic) {
+		// Console ignores writes to SIC0INBUF
+		OSReport("Detected console\n");
+		return false;
+	}
+
+	SICHANNEL[0].in.hi = magic;
+
+	if (SICHANNEL[0].in.hi == magic) {
+		// Mainline Dolphin allows SIC0INBUFH writes to persist
+		OSReport("Detected mainline Dolphin\n");
+		return false;
+	} else {
+		// FM renews inputs when SIC0INBUFH is read
+		OSReport("Detected FM Dolphin\n");
+		return true;
+	}
+}
+
+static bool detect_fm()
+{
+	const auto irq_enable = OSDisableInterrupts();
+	const auto sipoll = SIDisablePolling(0b11110000 << 24);
+	const auto result = detect_fm_impl();
+	SIEnablePolling(sipoll << 24);
+	OSRestoreInterrupts(irq_enable);
+
+	return result;
+}
+
 struct set_callbacks {
 	set_callbacks()
 	{
+		if (detect_fm()) {
+			faster_melee = true;
+			return;
+		}
+
 		PADSetSamplingCallback(pad_sample_callback);
 		HSD_VISetUserPostRetraceCallback(post_retrace_callback);
 	}

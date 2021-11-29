@@ -7,6 +7,7 @@
 #include "hsd/mobj.h"
 #include "hsd/pad.h"
 #include "hsd/tobj.h"
+#include "latency/pdf_vb.h"
 #include "melee/constants.h"
 #include "melee/match.h"
 #include "melee/nametag.h"
@@ -494,6 +495,9 @@ static void replace_textures()
 		pool.add(new texture_swap(banner_ucf_tex_data,      banner->texanim->imagetbl[0]));
 		pool.add(new texture_swap(banner_ucf_team_tex_data, banner->texanim->imagetbl[1]));
 	}
+
+	if (is_faster_melee())
+		return;
 
 	// Replace VS text with latency mode
 	auto *top_panel = MnSlChrModels->Menu.joint->child->u.dobj->mobjdesc;
