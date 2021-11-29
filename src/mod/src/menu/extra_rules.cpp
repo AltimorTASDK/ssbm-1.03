@@ -9,7 +9,6 @@
 #include "melee/rules.h"
 #include "melee/scene.h"
 #include "melee/text.h"
-#include "menu/character_select.h"
 #include "rules/saved_config.h"
 #include "rules/values.h"
 #include "util/compression.h"

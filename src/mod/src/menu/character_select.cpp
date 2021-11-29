@@ -193,7 +193,7 @@ extern "C" bool check_can_start_match(bool check_crew)
 		player_count++;
 	}
 
-	if (check_crew && GetGameRules()->mode == Mode_Crew && player_count != 2)
+	if (check_crew && GetGameRules()->mode == Mode_Crew && player_count > 2)
 		return false;
 
 	// Check if there's a real HMN port before starting a match
