@@ -5,6 +5,7 @@
 #include "hsd/video.h"
 #include "melee/menu.h"
 #include "melee/music.h"
+#include "melee/preferences.h"
 #include "melee/rules.h"
 #include "melee/text.h"
 #include "os/gx.h"
@@ -301,6 +302,12 @@ extern "C" void orig_Menu_SetupRandomStageToggles(RandomStageMenuData *data);
 extern "C" void hook_Menu_SetupRandomStageToggles(RandomStageMenuData *data)
 {
 	orig_Menu_SetupRandomStageToggles(data);
+
+	if (!IsLanguageUS()) {
+		// Load accented E
+		for (auto i = 0; i < 30; i++)
+			data->text[i]->sis_id = 1;
+	}
 
 	// Set up toggles
 	set_page(data, 0);

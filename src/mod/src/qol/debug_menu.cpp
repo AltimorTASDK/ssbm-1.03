@@ -1,12 +1,9 @@
 #include "hsd/pad.h"
+#include "melee/debug.h"
 #include "melee/menu.h"
 #include "melee/preferences.h"
 #include "melee/scene.h"
 #include <gctypes.h>
-
-enum DebugEntry {
-	DebugEntry_Language = 3
-};
 
 enum DebugButton {
 	DebugButton_Up    = 0x10000000,
@@ -14,19 +11,6 @@ enum DebugButton {
 	DebugButton_Left  = 0x40000000,
 	DebugButton_Right = 0x80000000
 };
-
-struct DebugMenuEntry {
-	u32 type;
-	void(*on_change)();
-	char *label;
-	char **options;
-	u32 *value;
-	char pad014[0x20 - 0x14];
-};
-
-extern "C" DebugMenuEntry DebugMenuEntries[10];
-
-extern "C" bool IsLanguageUS();
 
 static s32 repeat_timer[4];
 

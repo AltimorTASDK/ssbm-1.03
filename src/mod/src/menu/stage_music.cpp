@@ -6,6 +6,7 @@
 #include "hsd/tobj.h"
 #include "melee/menu.h"
 #include "melee/music.h"
+#include "melee/preferences.h"
 #include "melee/stage.h"
 #include "melee/text.h"
 #include "rules/saved_config.h"
@@ -292,6 +293,12 @@ extern "C" void hook_Menu_SetupItemToggles(HSD_GObj *gobj)
 		auto *jobj = Menu_GetItemToggle(data, i);
 		// Hide item image
 		HSD_JObjSetFlagsAll(HSD_JObjGetFromTreeByIndex(jobj, 7), HIDDEN);
+	}
+
+	if (!IsLanguageUS()) {
+		// Load accented E
+		data->text_left->sis_id = 1;
+		data->text_right->sis_id = 1;
 	}
 
 	// Replace item names

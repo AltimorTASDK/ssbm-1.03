@@ -12,7 +12,9 @@
 #include "melee/match.h"
 #include "melee/nametag.h"
 #include "melee/player.h"
+#include "melee/preferences.h"
 #include "melee/scene.h"
+#include "melee/text.h"
 #include "rules/values.h"
 #include "util/compression.h"
 #include "util/mempool.h"
@@ -481,6 +483,15 @@ extern "C" void hook_CSS_Init(void *menu)
 	}
 
 	orig_CSS_Init(menu);
+
+	if (!IsLanguageUS()) {
+		// Always load English text for accented E
+#ifdef PAL
+		LoadSIS(1, "SdSlChr.ukd", "SIS_SelCharData");
+#else
+		LoadSIS(1, "SdSlChr.usd", "SIS_SelCharData");
+#endif
+	}
 }
 
 static void replace_textures()

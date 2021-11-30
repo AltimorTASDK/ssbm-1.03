@@ -7,6 +7,7 @@
 #include "hsd/tobj.h"
 #include "latency/pdf_vb.h"
 #include "melee/menu.h"
+#include "melee/preferences.h"
 #include "melee/rules.h"
 #include "melee/scene.h"
 #include "melee/text.h"
@@ -258,6 +259,24 @@ static void set_value_anim(ExtraRulesMenuData *data, int index)
 	HSD_JObjAnimAll(jobj);
 }
 
+static void fix_rule_scale(ExtraRulesMenuData *data, int index)
+{
+	auto *cursor = data->jobj_tree.rules[get_jobj_index(index)]->child;
+	auto *label = HSD_JObjGetFromTreeByIndex(cursor, 7);
+	label->scale.x = 1.5f;
+	HSD_JObjSetMtxDirty(label);
+}
+
+static void fix_rule_anims(ExtraRulesMenuData *data)
+{
+	// Force same label scale for all languages
+	fix_rule_scale(data, ExtraRule_StageMods);
+	fix_rule_scale(data, ExtraRule_ControllerFix);
+	if (!is_faster_melee())
+		fix_rule_scale(data, ExtraRule_Latency);
+	fix_rule_scale(data, ExtraRule_Widescreen);
+}
+
 static void pool_free(void *data)
 {
 	HSD_Free(data); // Default free gobj data
@@ -293,7 +312,7 @@ extern "C" ArchiveModel *select_extra_rule_model(u32 index)
 		&MenMainCursorTr01_Top, // Stock Match Time Limit
 		&MenMainCursorTr03_Top, // Pause
 		&MenMainCursorRl01_Top, // Stage Modifications
-		&MenMainCursorTr02_Top, // Controller Fix
+		&MenMainCursorTr03_Top, // Controller Fix
 		&MenMainCursorTr04_Top, // Latency
 		&MenMainCursorTr03_Top, // Widescreen
 	}[index];
@@ -332,6 +351,8 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 	// Use rotator for last option
 	set_to_rotator(data, ExtraRule_Widescreen);
 	set_value_anim(data, ExtraRule_Widescreen);
+
+	fix_rule_anims(data);
 
 	return gobj;
 }
@@ -410,6 +431,9 @@ extern "C" void hook_Menu_UpdateExtraRuleDescriptionText(HSD_GObj *gobj,
 	auto *data = gobj->get<ExtraRulesMenuData>();
 	auto *text = data->description_text;
 
+	// Fix all rule anims since changes will have been overridden
+	fix_rule_anims(data);
+
 	if (data->state == MenuState_ExitFrom || data->state == MenuState_EnterFrom) {
 		if (text != nullptr) {
 			// Free text when leaving menu
@@ -435,6 +459,12 @@ extern "C" void hook_Menu_UpdateExtraRuleDescriptionText(HSD_GObj *gobj,
 	// Update rules from extra rotator value
 	if (value_changed && index == ExtraRule_Widescreen)
 		GetGameRules()->widescreen = value;
+
+	// Stage mods description needs accented E
+	if (index == ExtraRule_StageMods && !IsLanguageUS())
+		text->sis_id = 1;
+	else
+		text->sis_id = 0;
 
 	switch (index) {
 	case ExtraRule_StockMatchTimeLimit:

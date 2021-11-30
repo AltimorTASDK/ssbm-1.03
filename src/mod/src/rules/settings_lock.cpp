@@ -1,4 +1,5 @@
 #include "controls/config.h"
+#include "melee/debug.h"
 #include "melee/music.h"
 #include "melee/scene.h"
 #include "rules/saved_config.h"
@@ -50,4 +51,8 @@ extern "C" void hook_InitializeGlobalData()
 	rules->time_limit  = 0;
 	rules->stock_count = 4;
 	rules->pause       = false;
+
+	*DebugMenuEntries[DebugEntry_DbLevel].value     = DbLKind_Master;
+	*DebugMenuEntries[DebugEntry_IKDebugFlag].value = true;
+	*DebugMenuEntries[DebugEntry_NewDefCalc].value  = false;
 }

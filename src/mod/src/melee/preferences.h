@@ -8,4 +8,9 @@ struct SavedPreferences {
 	char pad017[0x20 - 0x17];
 };
 
-extern "C" SavedPreferences *GetSavedPreferences();
+extern "C" {
+
+SavedPreferences *GetSavedPreferences();
+bool IsLanguageUS();
+
+}

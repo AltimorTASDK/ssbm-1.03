@@ -49,7 +49,11 @@ struct Text {
 	vec2 default_spacing;
 	char pad044[0x4D - 0x44];
 	u8 hidden;
-	char pad04E[0x5C - 0x4E];
+	bool pad04E;
+	u8 sis_id;
+	Text *next;
+	HSD_GObj *gobj;
+	void *callback;
 	const char *data;
 	char pad060[0x80 - 0x60];
 	vec2 scale;
@@ -79,6 +83,8 @@ extern "C" {
 
 extern Text *NameTagText;
 extern char **SISData[5];
+
+void LoadSIS(u32 id, const char *name, const char *symbol);
 
 void Text_FreeAll();
 

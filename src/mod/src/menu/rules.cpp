@@ -309,6 +309,23 @@ static void hide_rule_value(RulesMenuData *data, int index)
 	HSD_JObjSetFlagsAll(cursor->next, HIDDEN);
 }
 
+static void fix_rule_scale(RulesMenuData *data, int index)
+{
+	auto *cursor = data->jobj_tree.rules[index]->child;
+	auto *label = HSD_JObjGetFromTreeByIndex(cursor, 7);
+	label->scale.x = 1.5f;
+	HSD_JObjSetMtxDirty(label);
+}
+
+static void fix_rule_anims(RulesMenuData *data)
+{
+	// Force same scale for all languages
+	fix_rule_scale(data, Rule_LedgeGrabLimit);
+	fix_rule_scale(data, Rule_AirTimeLimit);
+	fix_rule_scale(data, Rule_MenuMusic);
+	fix_rule_scale(data, Rule_StageMusic);
+}
+
 static void pool_free(void *data)
 {
 	HSD_Free(data); // Default free gobj data
@@ -362,6 +379,8 @@ extern "C" HSD_GObj *hook_Menu_SetupRulesMenu(u8 state)
 	update_atl_value(gobj, data->air_time_limit);
 
 	hide_rule_value(data, Rule_MenuMusic);
+
+	fix_rule_anims(data);
 
 	return gobj;
 }
@@ -417,6 +436,10 @@ extern "C" void orig_Menu_UpdateRuleDisplay(HSD_GObj *gobj, bool index_changed, 
 extern "C" void hook_Menu_UpdateRuleDisplay(HSD_GObj *gobj, bool index_changed, bool value_changed)
 {
 	orig_Menu_UpdateRuleDisplay(gobj, index_changed, value_changed);
+
+	// Fix all rule anims since changes will have been overridden
+	auto *data = gobj->get<RulesMenuData>();
+	fix_rule_anims(data);
 
 	if (!value_changed)
 		return;
