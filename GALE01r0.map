@@ -1547,7 +1547,7 @@
 801ae4f8 00000318 801ae4f8 0 MessageBox_CheckData
 801af5f0 0000012c 801af5f0 0 fk_Teams_ChooseCharTints
 801afb34 00000100 801afb34 0 SceneFunction_StartScreenExit
-801afc58 00000038 801afc58 0 DebugMenu_MainMenuInitialize
+801afc58 00000038 801afc58 0 DebugMenu_Init
 801afc90 0000003c 801afc90 0 DebugMenu_Exit
 801afd24 0000003c 801afd24 0 DebugMenu_SubmenuExit
 801afeb0 00000038 801afeb0 0 LCEnable

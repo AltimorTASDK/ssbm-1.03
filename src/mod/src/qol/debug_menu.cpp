@@ -68,10 +68,11 @@ extern "C" u32 hook_DebugMenu_Exit(u32 arg)
 	return 0;
 }
 
-struct set_debug_language {
-	set_debug_language()
-	{
-		// Set default debug menu language to game language
-		*DebugMenuEntries[DebugEntry_Language].value = GetSavedPreferences()->language;
-	}
-} set_debug_language;
+extern "C" void orig_DebugMenu_Init(SceneMinorData *data);
+extern "C" void hook_DebugMenu_Init(SceneMinorData *data)
+{
+	// Set debug menu language to game language
+	*DebugMenuEntries[DebugEntry_Language].value = GetSavedPreferences()->language;
+
+	orig_DebugMenu_Init(data);
+}

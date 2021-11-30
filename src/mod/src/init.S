@@ -154,6 +154,7 @@ add_hook CheckFTiltAngle
 add_hook CmSubject_WorldToScreen
 add_hook CObjLoad
 add_hook DebugMenu_Exit
+add_hook DebugMenu_Init
 add_hook DevelopText_Draw
 add_hook GetDebugMenuButtons
 add_hook HSD_ResetScene
