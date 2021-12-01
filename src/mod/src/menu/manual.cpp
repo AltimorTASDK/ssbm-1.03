@@ -67,14 +67,15 @@ static void manual_input(HSD_GObj *gobj)
 	}
 
 	auto total_y = 0.f;
-	for (auto i = 0; i < 4; i++)
-		total_y += HSD_PadCopyStatus[i].stick.y;
+
+	for (auto i = 0; i < 4; i++) {
+		const auto y = HSD_PadCopyStatus[i].stick.y;
+		// Check deadzone
+		if (std::abs(y) >= .2875f)
+			total_y += y;
+	}
 
 	total_y = clamp(total_y, -1.f, 1.f);
-
-	// Check deadzone
-	if (std::abs(total_y) < .2875f)
-		return;
 
 	scroll_offset = clamp(scroll_offset - total_y * .0125f, 0.f, MAX_SCROLL);
 }
