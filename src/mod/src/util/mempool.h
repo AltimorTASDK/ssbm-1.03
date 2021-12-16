@@ -1,9 +1,5 @@
 #pragma once
 
-#include <list>
-
-#include "melee/scene.h"
-
 class mempool {
 	struct allocation {
 		allocation *prev;
