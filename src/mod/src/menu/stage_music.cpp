@@ -189,8 +189,9 @@ extern "C" void hook_Menu_UpdateItemDisplay(HSD_GObj *gobj, bool index_changed, 
 
 	auto *data = gobj->get<ItemMenuData>();
 
-	if (MenuSelectedIndex >= 31 && value_changed) {
-		change_stage(data, MenuSelectedValue);
+	if (MenuSelectedIndex >= 31) {
+		if (value_changed)
+			change_stage(data, MenuSelectedValue);
 		return;
 	}
 
