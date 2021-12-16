@@ -1,5 +1,4 @@
 #include "hsd/tobj.h"
-#include "util/mempool.h"
 #include "util/draw/texture.h"
 #include <gctypes.h>
 
