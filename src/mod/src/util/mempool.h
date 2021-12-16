@@ -1,5 +1,8 @@
 #pragma once
 
+#include "util/objpool.h"
+#include <new>
+
 class mempool {
 	struct allocation {
 		allocation *prev;
@@ -10,6 +13,8 @@ class mempool {
 
 public:
 	static mempool *pool_list_head;
+
+	inline static objpool<allocation, 32> entry_pool;
 
 	mempool *prev = nullptr;
 	mempool *next = nullptr;
@@ -53,7 +58,7 @@ public:
 			entry->free(entry->ptr);
 
 			auto *next = entry->next;
-			delete entry;
+			entry_pool.free(entry);
 			entry = next;
 		}
 
@@ -63,7 +68,7 @@ public:
 	template<typename T>
 	T *add(T *ptr)
 	{
-		head = new allocation {
+		head = new (entry_pool.alloc_uninitialized()) allocation {
 			.prev = nullptr,
 			.next = head,
 			.ptr = ptr,
@@ -74,6 +79,23 @@ public:
 			head->next->prev = head;
 
 		return ptr;
+	}
+
+	// Only call destructor for statically allocated memory
+	template<typename T>
+	T *add_static(T *ptr)
+	{
+		head = new allocation {
+			.prev = nullptr,
+			.next = head,
+			.ptr = ptr,
+			.free = [](const void *ptr) { ((T*)ptr)->~T(); }
+		};
+
+		if (head->next != nullptr)
+			head->next->prev = head;
+
+		return head->ptr;
 	}
 
 	void remove(const void *ptr)
@@ -95,7 +117,7 @@ public:
 			if (entry->next != nullptr)
 				entry->next->prev = entry->prev;
 
-			delete entry;
+			entry_pool.free(entry);
 			return;
 		}
 	}

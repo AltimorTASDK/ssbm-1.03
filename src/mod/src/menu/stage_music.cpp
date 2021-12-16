@@ -249,11 +249,16 @@ static void apply_texture_mask(u8 *texture, const u8 *mask, int width, int heigh
 	DCStoreRange(texture, size);
 }
 
+static void pool_free(void *data)
+{
+	HSD_Free(data); // Default free gobj data
+	pool.dec_ref();
+}
+
 static void replace_textures()
 {
-	// Free everything from rules menu to avoid OOM
-	mempool::free_all();
-	pool.inc_ref();
+	if (pool.inc_ref() != 0)
+		return;
 
 	// Replace menu header name
 	const auto *name = MenMainPanel_Top.matanim_joint->child->next->next->child->next->matanim;
@@ -287,6 +292,9 @@ extern "C" void hook_Menu_SetupItemToggles(HSD_GObj *gobj)
 	orig_Menu_SetupItemToggles(gobj);
 
 	replace_textures();
+
+	// Free assets on menu exit
+	gobj->user_data_remove_func = pool_free;
 
 	auto *data = gobj->get<ItemMenuData>();
 
