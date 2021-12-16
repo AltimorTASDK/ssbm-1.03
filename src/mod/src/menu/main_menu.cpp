@@ -69,19 +69,19 @@ static constexpr auto make_description_text()
 		text_builder::kern(),
 		text_builder::left(),
 		text_builder::color<170, 170, 170>(),
-		text_builder::textbox<179, 128>(),
+		text_builder::scale<179, 128>(),
 		text_builder::offset<0, -20>(),
 		text_builder::br(),
-		text_builder::unk06<0, 0>(),
+		text_builder::fade_interval<0, 0>(),
 		text_builder::fit(),
 		text_builder::ascii<line1>(),
 		text_builder::end_fit(),
 		text_builder::br(),
-		text_builder::unk06<0, 0>(),
+		text_builder::fade_interval<0, 0>(),
 		text_builder::fit(),
 		text_builder::ascii<line2>(),
 		text_builder::end_fit(),
-		text_builder::end_textbox(),
+		text_builder::reset_scale(),
 		text_builder::end_color());
 }
 
@@ -92,12 +92,12 @@ static constexpr auto make_description_text()
 		text_builder::kern(),
 		text_builder::center(),
 		text_builder::color<170, 170, 170>(),
-		text_builder::textbox<179, 179>(),
-		text_builder::unk06<0, 0>(),
+		text_builder::scale<179, 179>(),
+		text_builder::fade_interval<0, 0>(),
 		text_builder::fit(),
 		text_builder::ascii<line1>(),
 		text_builder::end_fit(),
-		text_builder::end_textbox(),
+		text_builder::reset_scale(),
 		text_builder::end_color());
 }
 

@@ -52,9 +52,9 @@ static constexpr auto stage_text()
 {
 	return text_builder::build(
 		text_builder::kern(),
-		text_builder::textbox<138, 138>(),
+		text_builder::scale<138, 138>(),
 		text_builder::ascii<str>(),
-		text_builder::end_textbox());
+		text_builder::reset_scale());
 }
 
 constexpr auto bgm_text = multi_array {

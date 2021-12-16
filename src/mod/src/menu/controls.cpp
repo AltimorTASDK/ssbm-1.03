@@ -57,11 +57,11 @@ static consteval auto make_text()
 {
 	return text_builder::build(
 		text_builder::kern(),
-		text_builder::textbox<scale_x, scale_y>(),
+		text_builder::scale<scale_x, scale_y>(),
 		text_builder::fit(),
 		text_builder::ascii<str>(),
 		text_builder::end_fit(),
-		text_builder::end_textbox());
+		text_builder::reset_scale());
 }
 
 template<string_literal str, u16 scale_x = 153>
@@ -80,14 +80,14 @@ template<string_literal str, u16 scale_x = 225>
 static consteval auto make_description_text()
 {
 	return text_builder::build(
-		text_builder::unk05<10>(),
-		text_builder::textbox<scale_x, 202>(),
+		text_builder::pause<10>(),
+		text_builder::scale<scale_x, 202>(),
 		text_builder::center(),
 		text_builder::kern(),
 		text_builder::fit(),
 		text_builder::ascii<str>(),
 		text_builder::end_fit(),
-		text_builder::end_textbox());
+		text_builder::reset_scale());
 }
 
 constexpr auto label_text_data = multi_array {

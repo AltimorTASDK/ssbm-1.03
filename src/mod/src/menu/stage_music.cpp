@@ -48,9 +48,9 @@ template<string_literal str, u16 scale = 138>
 static constexpr auto item_text()
 {
 	return array_cat(
-		text_builder::textbox<scale, 138>(),
+		text_builder::scale<scale, 138>(),
 		text_builder::ascii<str>(),
-		text_builder::end_textbox(),
+		text_builder::reset_scale(),
 		text_builder::br());
 }
 

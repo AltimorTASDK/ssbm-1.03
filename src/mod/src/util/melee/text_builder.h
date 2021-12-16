@@ -114,16 +114,16 @@ constexpr auto end_fit()
 };
 
 template<u16 x, u16 y>
-constexpr auto textbox()
+constexpr auto scale()
 {
-	return std::array { (char)text_opcode::set_textbox,
+	return std::array { (char)text_opcode::scale,
 			    (char)(x >> 8), (char)(x & 0xFF),
 			    (char)(y >> 8), (char)(y & 0xFF) };
 };
 
-constexpr auto end_textbox()
+constexpr auto reset_scale()
 {
-	return std::array { (char)text_opcode::reset_textbox };
+	return std::array { (char)text_opcode::reset_scale };
 };
 
 template<s16 x, s16 y>
@@ -134,18 +134,18 @@ constexpr auto offset()
 			    (char)(y >> 8), (char)(y & 0xFF) };
 };
 
-template<u16 a>
-constexpr auto unk05()
+template<u16 delay>
+constexpr auto pause()
 {
-	return std::array { (char)text_opcode::unknown_05, (char)(a >> 8), (char)(a & 0xFF) };
+	return std::array { (char)text_opcode::pause, (char)(delay >> 8), (char)(delay & 0xFF) };
 };
 
-template<u16 a, u16 b>
-constexpr auto unk06()
+template<u16 per_char, u16 per_line>
+constexpr auto fade_interval()
 {
-	return std::array { (char)text_opcode::unknown_06,
-			    (char)(a >> 8), (char)(a & 0xFF),
-			    (char)(b >> 8), (char)(b & 0xFF) };
+	return std::array { (char)text_opcode::fade_interval,
+			    (char)(per_char >> 8), (char)(per_char & 0xFF),
+			    (char)(per_line >> 8), (char)(per_line & 0xFF) };
 };
 
 constexpr auto br()
