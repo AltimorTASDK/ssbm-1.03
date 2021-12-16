@@ -12,13 +12,17 @@ static void apply_perfect_up_b_coords(Player *player)
 		return;
 
 	const auto &pad = HSD_PadMasterStatus[player->port];
+
 	if (!is_rim_coord(pad.stick))
 		return;
 
-	if (std::abs(pad.stick.x) < .9875f && std::abs(pad.stick.y) < .2875f) {
+	const auto abs_x = std::abs(pad.stick.x);
+	const auto abs_y = std::abs(pad.stick.y);
+
+	if (abs_x < .9875f && abs_y < .2875f) {
 		player->input.stick = { pad.stick.x > 0 ? .9500f : -.9500f,
 		                        pad.stick.y > 0 ? .2875f : -.2875f };
-	} else if (std::abs(pad.stick.y) < .9875f && std::abs(pad.stick.x) < .2875f) {
+	} else if (abs_y < .9875f && abs_x < .2875f) {
 		player->input.stick = { pad.stick.x > 0 ? .2875f : -.2875f,
 		                        pad.stick.y > 0 ? .9500f : -.9500f };
 	}
