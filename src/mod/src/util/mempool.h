@@ -1,5 +1,7 @@
 #pragma once
 
+#include "hsd/tobj.h"
+#include "util/compression.h"
 #include "util/objpool.h"
 #include <new>
 
@@ -15,6 +17,7 @@ public:
 	static mempool *pool_list_head;
 
 	inline static objpool<allocation, 32> entry_pool;
+	inline static objpool<texture_swap, 32> texture_swap_pool;
 
 	mempool *prev = nullptr;
 	mempool *next = nullptr;
@@ -81,21 +84,21 @@ public:
 		return ptr;
 	}
 
-	// Only call destructor for statically allocated memory
-	template<typename T>
-	T *add_static(T *ptr)
+	texture_swap *add_texture_swap(const u8 *data, HSD_ImageDesc *image = nullptr)
 	{
-		head = new allocation {
+		auto *ptr = texture_swap_pool.alloc(data, image);
+
+		head = new (entry_pool.alloc_uninitialized()) allocation {
 			.prev = nullptr,
 			.next = head,
 			.ptr = ptr,
-			.free = [](const void *ptr) { ((T*)ptr)->~T(); }
+			.free = [](const void *ptr) { texture_swap_pool.free((texture_swap*)ptr); }
 		};
 
 		if (head->next != nullptr)
 			head->next->prev = head;
 
-		return head->ptr;
+		return ptr;
 	}
 
 	void remove(const void *ptr)

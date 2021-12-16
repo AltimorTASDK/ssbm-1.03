@@ -287,23 +287,23 @@ static void load_textures()
 {
 	// Replace rule name textures
 	const auto *rule_names = MenMainCursorRl_Top.matanim_joint->child->child->next->matanim;
-	pool.add(new texture_swap(stage_mods_tex_data,      rule_names->texanim->imagetbl[ 9]));
-	pool.add(new texture_swap(controller_fix_tex_data,  rule_names->texanim->imagetbl[11]));
-	pool.add(new texture_swap(latency_tex_data,         rule_names->texanim->imagetbl[12]));
-	pool.add(new texture_swap(widescreen_tex_data,      rule_names->texanim->imagetbl[13]));
+	pool.add_texture_swap(stage_mods_tex_data,      rule_names->texanim->imagetbl[ 9]);
+	pool.add_texture_swap(controller_fix_tex_data,  rule_names->texanim->imagetbl[11]);
+	pool.add_texture_swap(latency_tex_data,         rule_names->texanim->imagetbl[12]);
+	pool.add_texture_swap(widescreen_tex_data,      rule_names->texanim->imagetbl[13]);
 
 	// Load rule value textures
 	decompressed_textures[ExtraRule_Pause] =
-		pool.add(new texture_swap(pause_values_tex_data));
+		pool.add_texture_swap(pause_values_tex_data);
 
 	decompressed_textures[ExtraRule_StageMods] =
-		pool.add(new texture_swap(stage_mods_values_tex_data));
+		pool.add_texture_swap(stage_mods_values_tex_data);
 
 	decompressed_textures[ExtraRule_ControllerFix] =
-		pool.add(new texture_swap(controller_fix_values_tex_data));
+		pool.add_texture_swap(controller_fix_values_tex_data);
 
 	decompressed_textures[ExtraRule_Latency] =
-		pool.add(new texture_swap(latency_values_tex_data));
+		pool.add_texture_swap(latency_values_tex_data);
 }
 
 extern "C" ArchiveModel *select_extra_rule_model(u32 index)

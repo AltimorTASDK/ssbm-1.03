@@ -262,7 +262,7 @@ static void replace_textures()
 
 	// Replace menu header name
 	const auto *name = MenMainPanel_Top.matanim_joint->child->next->next->child->next->matanim;
-	pool.add(new texture_swap(stage_music_header_tex_data, name->texanim->imagetbl[2]));
+	pool.add_texture_swap(stage_music_header_tex_data, name->texanim->imagetbl[2]);
 
 	// Replace item frequency toggle textures
 	const auto *matanim = MenMainConIs_Top.matanim_joint->child->child->next->matanim->next;
@@ -273,7 +273,7 @@ static void replace_textures()
 	constexpr auto mask_width = tex_width / 6;
 
 	for (auto i = 0; i < 6; i++)
-		pool.add(new texture_swap(music_stages_tex_data, matanim->texanim->imagetbl[i]));
+		pool.add_texture_swap(music_stages_tex_data, matanim->texanim->imagetbl[i]);
 
 	const auto *mask = decompress(music_stages_mask_tex_data);
 
