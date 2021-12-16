@@ -12,7 +12,7 @@ struct controller_config {
 	static const controller_config defaults;
 
 	u8 z_jump_bit            = 0;
-	bool perfect_wavedash    = false;
+	bool perfect_angles      = false;
 	cstick_type c_up         = cstick_type::smash;
 	cstick_type c_horizontal = cstick_type::smash;
 	cstick_type c_down       = cstick_type::smash;
@@ -25,7 +25,7 @@ struct controller_config {
 
 	void make_legal()
 	{
-		perfect_wavedash = defaults.perfect_wavedash;
+		perfect_angles   = defaults.perfect_angles;
 		c_up             = defaults.c_up;
 		c_horizontal     = defaults.c_horizontal;
 		c_down           = defaults.c_down;
@@ -34,10 +34,10 @@ struct controller_config {
 
 	bool is_illegal() const
 	{
-		return perfect_wavedash
-		    || c_up != cstick_type::smash
+		return perfect_angles
+		    || c_up         != cstick_type::smash
 		    || c_horizontal != cstick_type::smash
-		    || c_down != cstick_type::smash
+		    || c_down       != cstick_type::smash
 		    || !tap_jump;
 	}
 };

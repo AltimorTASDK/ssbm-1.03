@@ -7,7 +7,7 @@
 extern "C" float orig_Player_GetAirdodgeAngle(Player *player);
 extern "C" float hook_Player_GetAirdodgeAngle(Player *player)
 {
-	if (!get_player_config(player).perfect_wavedash)
+	if (!get_player_config(player).perfect_angles)
 		return orig_Player_GetAirdodgeAngle(player);
 
 	const auto &pad = get_character_input<0>(player);

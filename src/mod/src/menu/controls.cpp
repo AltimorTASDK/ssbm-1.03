@@ -25,7 +25,7 @@ enum class option {
 
 	max_locked,
 
-	perfect_wavedash = max_locked,
+	perfect_angles = max_locked,
 	c_up,
 	c_horizontal,
 	c_down,
@@ -92,7 +92,7 @@ static consteval auto make_description_text()
 
 constexpr auto label_text_data = multi_array {
 	make_label_text<"Z Jump">(),
-	make_label_text<"Perfect Wavedash", 134>(),
+	make_label_text<"Perfect Angles">(),
 	make_label_text<"C-Stick Up">(),
 	make_label_text<"C-Stick Horizontal", 124>(),
 	make_label_text<"C-Stick Down">(),
@@ -101,7 +101,7 @@ constexpr auto label_text_data = multi_array {
 
 constexpr auto description_text_data = multi_array {
 	make_description_text<"Jump with the Z button.">(),
-	make_description_text<"Wavedash perfectly.">(),
+	make_description_text<"Wavedash and up-B perfectly.">(),
 	make_description_text<"Customize the C-stick.">(),
 	make_description_text<"Customize the C-stick.">(),
 	make_description_text<"Customize the C-stick.">(),
@@ -263,8 +263,7 @@ static struct {
 		Menu_PlaySFX(MenuSFX_Scroll);
 
 		if (selected >= option::max_toggle) {
-			selected = clamp(selected - 1, option::max_toggle,
-			                               option::max - 1);
+			selected = clamp(selected - 1, option::max_toggle, option::max - 1);
 			return;
 		}
 
@@ -279,8 +278,7 @@ static struct {
 		Menu_PlaySFX(MenuSFX_Scroll);
 
 		if (selected >= option::max_toggle) {
-			selected = clamp(selected + 1, option::max_toggle,
-			                               option::max - 1);
+			selected = clamp(selected + 1, option::max_toggle, option::max - 1);
 			return;
 		}
 
@@ -301,8 +299,8 @@ static struct {
 		if (get_settings_lock())
 			return;
 
-		get_toggle(option::perfect_wavedash)->value =
-			config->perfect_wavedash ? 1 : 0;
+		get_toggle(option::perfect_angles)->value =
+			config->perfect_angles ? 1 : 0;
 
 		get_toggle(option::c_up)->value =
 			config->c_up         == cstick_type::tilt ? 1 : 0;
@@ -330,10 +328,10 @@ static struct {
 		if (get_settings_lock())
 			return;
 
-		config->perfect_wavedash = std::array {
+		config->perfect_angles = std::array {
 			false,
 			true
-		}[get_toggle(option::perfect_wavedash)->value];
+		}[get_toggle(option::perfect_angles)->value];
 
 		config->c_up = std::array {
 			cstick_type::smash,

@@ -142,7 +142,7 @@ static bool saved_is_unplugged[4];
 static struct {
 	u32 z_jump;
 #if 0
-	u32 perfect_wavedash;
+	u32 perfect_angles;
 	u32 c_up;
 	u32 c_horizontal;
 	u32 c_down;
@@ -291,14 +291,14 @@ static void z_jump_toggle(u8 port)
 }
 
 #if 0
-static void perfect_wavedash_toggle(u8 port)
+static void perfect_angles_toggle(u8 port)
 {
 	auto *config = &controller_configs[port];
 
-	check_css_toggle(port, &toggle_timers[port].perfect_wavedash,
+	check_css_toggle(port, &toggle_timers[port].perfect_angles,
 		[&] {
 			// Check if already using PWD
-			if (config->perfect_wavedash)
+			if (config->perfect_angles)
 				return false;
 
 			// Must be holding L/R only
@@ -307,7 +307,7 @@ static void perfect_wavedash_toggle(u8 port)
 			return (pad.buttons & mask) != 0 && (pad.buttons & ~mask) == 0;
 		},
 		[&] {
-			config->perfect_wavedash = true;
+			config->perfect_angles = true;
 			show_illegal_controls(port);
 		});
 }
@@ -398,7 +398,7 @@ static void reset_toggle_timers(u8 port)
 {
 	toggle_timers[port].z_jump = 0;
 #if 0
-	toggle_timers[port].perfect_wavedash = 0;
+	toggle_timers[port].perfect_angles = 0;
 	toggle_timers[port].c_up = 0;
 	toggle_timers[port].c_horizontal = 0;
 	toggle_timers[port].c_down = 0;
@@ -421,7 +421,7 @@ extern "C" void hook_CSS_PlayerThink(HSD_GObj *gobj)
 		rumble_toggle(data->port);
 		z_jump_toggle(data->port);
 #if 0
-		perfect_wavedash_toggle(data->port);
+		perfect_angles_toggle(data->port);
 		c_up_toggle(data->port);
 		c_horizontal_toggle(data->port);
 		c_down_toggle(data->port);
