@@ -80,7 +80,6 @@ template<string_literal str, u16 scale_x = 225>
 static consteval auto make_description_text()
 {
 	return text_builder::build(
-		text_builder::pause<10>(),
 		text_builder::scale<scale_x, 202>(),
 		text_builder::center(),
 		text_builder::kern(),
