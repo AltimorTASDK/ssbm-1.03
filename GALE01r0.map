@@ -1083,6 +1083,7 @@
 800d6a24 00000028 800d6a24 0 Interrupt_Fox_AS_NeutralB_CheckForBbuttonPress
 800d6a24 00000028 800d6a24 0 ch_FoxFalco_SpecialAirNStart_IASA
 800d6a24 00000028 800d6a24 0 ch_FoxFalco_SpecialAirNLoop_IASA
+800e77f0 000001a4 800e77f0 0 AS_356_Spacie_UpBAirMiddle
 800e80b8 0000008c 800e80b8 0 $AS_ShineGround
 800e8144 000000a8 800e8144 0 $AS_ShineAir
 800e9a2c 00000014 800e9a2c 0 cAnimInventory::GetBlendTime
@@ -1156,6 +1157,7 @@
 8010f908 000000b4 8010f908 0 ch_DK_SpecialHi_CollisionInterrupt
 8010f9bc 00000160 8010f9bc 0 ch_DK_SpecialAirHi_CollisionInterrupt
 80112bd4 00000068 80112bd4 0 Sheik_AS_358_UpB_Vanish
+801134d8 00000210 801134d8 0 AS_359_Sheik_UpBAirMiddle
 80113c08 000000c4 80113c08 0 Sheik_AS_361_Transform_Grounded
 80113ccc 000000c4 80113ccc 0 Sheik_AS_363_Transform_Aerial
 80113dd0 00000040 80113dd0 0 fk_SheikToZeldaAir1
@@ -1236,7 +1238,8 @@
 80123870 0000009c 80123870 0 ch_ICs_NanaSpecialAirS2_ActionPhys
 8012390c 00000208 8012390c 0 ch_ICs_NanaSpecialS2_CollisionInterrupt
 80123b14 0000020c 80123b14 0 ch_ICs_NanaSpecialAirS2_CollisionInterrupt
-80126d00 00000048 80126d00 0 OSRestoreInterrupts
+80126790 00000248 80126790 0 AS_357_Pika_UpBAirMiddle
+801269d8 00000134 801269d8 0 Player_Pika_CheckDoubleUpB
 80127f9c 0000005c 80127f9c 0 ch_Samus_SpecialN_Charge
 8012b840 00000164 8012b840 0 Yoshi_AS_341_GuardOn
 8012be10 000000b0 8012be10 0 ch_Yoshi_343_GuardOff
@@ -1293,12 +1296,14 @@
 80135768 0000006c 80135768 0 ch_Bowser_SpecialAirHi_ActionPhysics
 801357d4 00000120 801357d4 0 ch_Bowser_SpecialHi_CollisionInterrupt
 801358f4 000002ec 801358f4 0 ch_Bowser_SpecialAirHi_CollisionInterrupt
+80139b64 00000204 80139b64 0 AS_353_Zelda_UpBAirMiddle
 8013a7e8 000000c4 8013a7e8 0 Zelda_AS_355_Transform_Grounded
 8013a8ac 000000c4 8013a8ac 0 Zelda_AS_357_Transform_Aerial
 8013a9b0 00000040 8013a9b0 0 fk_ZeldaToSheikAir1zz_013b0a8_
 8013abe8 0000003c 8013abe8 0 fk_SheikToZeldaAir2
 80142338 000000b8 80142338 0 Luigi_MisfireCalc
 80144834 0000005c 80144834 0 wP_CalledOnBPress?
+80145470 0000021c 80145470 0 AS_357_Mewtwo_UpBAirMiddle
 80145acc 00000074 80145acc 0 ch_Mewtwo_DownB_InitGround
 80145fa0 000000b8 80145fa0 0 ch_Mewtwo_SideB_InitGround
 80148bf4 0000003c 80148bf4 0 YoungLink_AS_342_Taunt
