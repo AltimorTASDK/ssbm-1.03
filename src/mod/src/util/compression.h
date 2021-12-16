@@ -1,3 +1,5 @@
+#pragma once
+
 #include "hsd/tobj.h"
 #include "util/draw/texture.h"
 #include <gctypes.h>
