@@ -1,7 +1,6 @@
 #pragma once
 
 #include "os/os.h"
-#include "util/math.h"
 #include "util/meta.h"
 #include <array>
 #include <cstddef>
