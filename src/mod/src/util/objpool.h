@@ -1,60 +1,34 @@
 #pragma once
 
 #include "os/os.h"
-#include "util/bitmask.h"
 #include "util/math.h"
+#include "util/meta.h"
 #include <array>
 #include <cstddef>
 #include <new>
 #include <utility>
 
-#include "os/os.h"
-
 template<typename T, size_t N>
 class objpool {
-	static constexpr auto HINT_COUNT = 8;
-	static constexpr auto HINT_MASK = HINT_COUNT - 1;
-	static constexpr auto NO_HINT = -1;
+	using index_type = smallest_int_t<0, N>;
 
-	static_assert(is_pow2(HINT_COUNT));
+	static constexpr auto NO_INDEX = 0;
+
+	static constexpr auto index_list = for_range<N>([]<size_t ...I> {
+		return std::array { (index_type)(I + 1)... };
+	});
 
 	union {
 		T pool[N];
 	};
 
-	// Store bits indicating whether a pool index is in use
-	bitmask<N> usage;
-
-	// Store recently freed indices
-	std::array<ssize_t, HINT_COUNT> hints;
-	size_t hint_index;
-
-	// Reserve an index in the pool
-	size_t acquire_free_index()
-	{
-		const auto hint = hints[hint_index];
-
-		if (hint != NO_HINT) {
-			hints[hint_index] = NO_HINT;
-			hint_index = (hint_index - 1) & HINT_MASK;
-			usage.set(hint, true);
-			return hint;
-		}
-
-		for (size_t index = 0; index < N; index++) {
-			if (!usage.get(index)) {
-				usage.set(index, true);
-				return index;
-			}
-		}
-
-		PANIC("Failed to alloc from objpool");
-	}
+	// Store free indices
+	index_type free_index;
+	std::array<index_type, N> free_list = index_list;
 
 public:
 	objpool()
 	{
-		hints.fill(NO_HINT);
 	}
 
 	~objpool()
@@ -64,35 +38,46 @@ public:
 
 	T *alloc_uninitialized()
 	{
-		const auto index = acquire_free_index();
+		if (free_index >= N)
+			PANIC("Failed to alloc from objpool");
 
-		if (index + 1 < N && hints[hint_index] == NO_HINT && !usage.get(index + 1)) {
-			// Use next index for next allocation if available
-			hints[hint_index] = index + 1;
-		}
+		const auto index = free_list[free_index];
 
-		return &pool[index];
+		if (index == NO_INDEX)
+			PANIC("Failed to alloc from objpool");
+
+		free_list[free_index++] = NO_INDEX;
+		return &pool[index - 1];
 	}
 
 	T *alloc(auto &&...params)
 	{
-		auto *object = alloc_uninitialized();
-		return new (object) T(std::forward<decltype(params)>(params)...);
+		return new (alloc_uninitialized()) T(std::forward<decltype(params)>(params)...);
 	}
 
 	void free(T *object)
 	{
+		if (free_index == 0)
+			PANIC("Failed to free to objpool");
+
 		const auto index = object - pool;
-		usage.set(index, false);
-		hint_index = (hint_index + 1) & HINT_MASK;
-		hints[hint_index] = index;
+		free_list[--free_index] = (index_type)(index + 1);
 		object->~T();
 	}
 
 	void free_all()
 	{
-		for (size_t index = 0; index < N; index++) {
-			if (usage.get(index))
+		auto indices = index_list;
+
+		for (size_t i = 0; i < N; i++) {
+			const auto index = free_list[i];
+			if (index != NO_INDEX)
+				indices[index - 1] = NO_INDEX;
+		}
+
+		for (size_t i = 0; i < N; i++) {
+			const auto index = indices[i];
+			if (index != NO_INDEX)
 				free(&pool[index]);
 		}
 	}

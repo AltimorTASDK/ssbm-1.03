@@ -3,7 +3,9 @@
 #include <algorithm>
 #include <climits>
 #include <cmath>
+#include <cstdint>
 #include <functional>
+#include <limits>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -21,6 +23,23 @@ constexpr auto sizeof_tuple = std::tuple_size_v<std::remove_reference_t<T>>;
 // Extract values from a tuple of std::integral_constants
 template<size_t N, typename T>
 constexpr auto tuple_constant = std::tuple_element_t<N, T>::value;
+
+template<auto min, auto max, typename head, typename ...tail>
+constexpr auto smallest_int_impl()
+{
+	using ulimits = std::numeric_limits<std::make_unsigned_t<head>>;
+	using slimits = std::numeric_limits<std::make_signed_t<head>>;
+
+	if constexpr (min >= ulimits::lowest() && max <= ulimits::max())
+		return std::make_unsigned_t<head>{};
+	else if constexpr (min >= slimits::lowest() && max <= slimits::max())
+		return std::make_signed_t<head>{};
+	else
+		return smallest_int_impl<min, max, tail...>();
+}
+
+template<auto min, auto max>
+using smallest_int_t = decltype(smallest_int_impl<min, max, int8_t, int16_t, int32_t, int64_t>());
 
 constexpr auto sum_tuple(auto &&tuple)
 {
