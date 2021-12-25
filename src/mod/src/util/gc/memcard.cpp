@@ -15,6 +15,7 @@
 struct buffer_wrapper;
 
 extern "C" void *CardWorkArea;
+extern "C" void(*MemCardErrorCallback)(u32);
 extern "C" u32 MemCardState;
 
 extern "C" void InitCardBuffers();
@@ -229,7 +230,7 @@ void card_write(s32 card, const char *filename, void *in, u32 size)
 
 bool is_card_busy()
 {
-	return !op.wait.is_complete();
+	return MemCardErrorCallback != nullptr || !op.wait.is_complete();
 }
 
 s32 card_sync()
