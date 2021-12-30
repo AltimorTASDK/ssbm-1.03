@@ -14,6 +14,17 @@ export LDFLAGS := -Wl,-Map=output.map -Wl,--gc-sections
 
 export DEFINES := -DGEKKO
 
+ifeq ($(findstring $(MODVERSION), a),)
+export NOPAL   := 1
+export DEFINES += -DNOPAL
+endif
+
+ifneq ($(MODVERSION),)
+export MODNAME := ssbm-1.03-$(MODVERSION)
+else
+export MODNAME := ssbm-1.03
+endif
+
 ifeq ($(VERSION),)
 $(error Specify Melee version with VERSION)
 else ifeq ($(VERSION), 100)

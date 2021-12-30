@@ -12,9 +12,13 @@ ELFFILE := bin/mod-pal.elf
 BINFILE := bin/mod-pal.bin
 endif
 
+ifeq ($(NOPAL), 1)
 ALLBINS  := bin/mod.bin bin/mod-ntsc100.bin.diff bin/mod-ntsc101.bin.diff
+else
+ALLBINS  := bin/mod.bin bin/mod-ntsc100.bin.diff bin/mod-ntsc101.bin.diff bin/mod-pal.bin.diff
+endif
 GCINAME  := 103Code
-GCIFILE  := $(BINDIR)/ssbm-1.03.gci
+GCIFILE  := $(BINDIR)/$(MODNAME).gci
 
 DIFFSRC  := bin/mod.bin
 
@@ -77,17 +81,21 @@ $(OBJDIR)/%.S.o: %.S
 
 RESOURCE_DIR_IN  := resources
 RESOURCE_DIR_OUT := $(SOURCES)/resources
-RESOURCES        := $(foreach dir, $(RESOURCE_DIR_IN), $(shell find $(dir) -type f))
+ifdef NOPAL
+RESOURCES        := $(foreach dir, $(RESOURCE_DIR_IN), $(shell find $(dir) -type f -not -name *.b.*))
+else
+RESOURCES        := $(foreach dir, $(RESOURCE_DIR_IN), $(shell find $(dir) -type f -not -name *.a.*))
+endif
 RESOURCES        := $(filter-out %.docx, $(filter-out %.psd, $(RESOURCES)))
 TEXTURES         := $(filter     %.png, $(RESOURCES))
 RESOURCES        := $(filter-out %.png, $(RESOURCES))
 
 define get_resource_out
-$(subst $(RESOURCE_DIR_IN), $(RESOURCE_DIR_OUT), $1)
+$(shell echo $(subst $(RESOURCE_DIR_IN), $(RESOURCE_DIR_OUT), $1) | sed -r "s/\\.[ab]\\././")
 endef
 
 define get_texture_out
-$(shell echo $(subst $(RESOURCE_DIR_IN), $(RESOURCE_DIR_OUT), $1) | sed -r "s/([^.]*)\\.?.*\\.png/\\1.tex/")
+$(shell echo $(call get_resource_out, $1) | sed -r "s/([^.]*)\\.?.*\\.png/\\1.tex/")
 endef
 
 define make_resource_rule

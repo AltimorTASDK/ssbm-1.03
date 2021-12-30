@@ -146,12 +146,12 @@ struct file_entry {
 	char data[];
 };
 
-void get_files(void *data, file_entry **entries, int count)
+const file_entry *get_file(void *data, int index)
 {
-	for (auto i = 0; i < count; i++) {
-		entries[i] = (file_entry*)data;
-		data = (char*)data + entries[i]->size + 4;
-	}
+	for (auto i = 0; i < index; i++)
+		data = (char*)data + ((file_entry*)data)->size + 4;
+
+	return (file_entry*)data;
 }
 
 extern "C" [[gnu::section(".loader")]] void load_mod()
@@ -172,26 +172,20 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 
 	auto *data = alloc_and_read("103Code");
 
-#ifdef PAL
-	file_entry *files[4];
-	get_files(data, files, 4);
-#else
-	file_entry *files[3];
-	get_files(data, files, 3);
-#endif
+	auto *base = get_file(data, 0);
 
 #ifndef NTSC102
 #if defined(NTSC100)
-	auto *diff = files[1]->data;
+	auto *diff = get_file(data, 1);
 #elif defined(NTSC101)
-	auto *diff = files[2]->data;
+	auto *diff = get_file(data, 2);
 #elif defined(PAL)
-	auto *diff = files[3]->data;
+	auto *diff = get_file(data, 3);
 #endif
-	const auto code_size = apply_diff(files[0]->data, diff, &__MOD_BASE__);
+	const auto code_size = apply_diff(base->data, diff->data, &__MOD_BASE__);
 #else
-	const auto code_size = files[0]->size;
-	memcpy(&__MOD_BASE__, files[0]->data, code_size);
+	const auto code_size = base->size;
+	memcpy(&__MOD_BASE__, base->data, code_size);
 #endif
 
 #ifdef PAL
