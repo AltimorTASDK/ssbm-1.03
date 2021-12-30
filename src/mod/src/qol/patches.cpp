@@ -94,10 +94,18 @@ static const auto patches = patch_list {
 	// b 0x8
 	std::pair { (char*)Damage_DamageStale+0x28,   0x48000008u },
 #ifdef PAL
-	#error "fix MessageBox_Think patch on PAL"
+	// Skip save data creation prompt
+	// li r4, SdMsgBox_CreateData
+	std::pair { (char*)MessageBox_CheckData+0x110,0x38600009u },
+	// li r3, MsgBoxPrompt_None
+	std::pair { (char*)MessageBox_CheckData+0x11C,0x38600000u },
+	// li r4, SdMsgBox_CreateData
+	std::pair { (char*)MessageBox_CheckData+0x120,0x38800009u },
+	// li r0, MsgBox_CreateData
+	std::pair { (char*)MessageBox_CheckData+0x128,0x38000006u },
 #else
 	// Skip save data creation prompt
-	// li r3, false
+	// li r3, MsgBoxPrompt_None
 	std::pair { (char*)MessageBox_CheckData+0x15C,0x38600000u },
 	// li r4, SdMsgBox_CreateData
 	std::pair { (char*)MessageBox_CheckData+0x160,0x3880000Bu },
