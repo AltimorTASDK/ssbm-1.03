@@ -19,10 +19,7 @@ extern void *CardWorkArea;
 
 extern char SaveFileName[25];
 
-extern char __LOAD_BASE__;
 extern char __MOD_BASE__;
-extern char __COPY_START__;
-extern char __COPY_SIZE__;
 
 extern u8 CSSPendingSceneChange;
 
