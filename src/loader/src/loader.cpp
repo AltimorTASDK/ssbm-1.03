@@ -146,12 +146,12 @@ struct file_entry {
 	char data[];
 };
 
-const file_entry *get_file(void *data, int index)
+const file_entry *get_file(const void *data, int index)
 {
 	for (auto i = 0; i < index; i++)
-		data = (char*)data + ((file_entry*)data)->size + 4;
+		data = (const char*)data + ((const file_entry*)data)->size + 4;
 
-	return (file_entry*)data;
+	return (const file_entry*)data;
 }
 
 extern "C" [[gnu::section(".loader")]] void load_mod()
@@ -170,9 +170,8 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 	cardmap[0].gamecode[3] = 'E';
 #endif
 
-	auto *data = alloc_and_read("103Code");
-
-	auto *base = get_file(data, 0);
+	const auto *data = alloc_and_read("103Code");
+	const auto *base = get_file(data, 0);
 
 #ifndef NTSC102
 #if defined(NTSC100)
