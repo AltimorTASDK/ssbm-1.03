@@ -14,7 +14,7 @@ export LDFLAGS := -Wl,-Map=output.map -Wl,--gc-sections
 
 export DEFINES := -DGEKKO
 
-ifeq ($(findstring $(MODVERSION), a),)
+ifneq ($(findstring $(MODVERSION), a),)
 export NOPAL   := 1
 export DEFINES += -DNOPAL
 endif
