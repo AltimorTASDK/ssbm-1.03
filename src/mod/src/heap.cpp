@@ -19,10 +19,10 @@ void fix_heap(OSHeap *heap)
 				chunk->prev->next = chunk->next;
 			else
 				heap->free_list = chunk->next;
-				
+
 			if (chunk->next != nullptr)
 				chunk->next->prev = chunk->prev;
-				
+
 			break;
 		} else if (chunk_end > load_base) {
 			// Chunk is partially within code space, reduce size
@@ -41,7 +41,7 @@ struct manage_heaps {
 			if (heap->size >= 0)
 				fix_heap(heap);
 		}
-		
+
 		if (hsd_heap_arena_hi > load_base)
 			hsd_heap_arena_hi = load_base;
 
