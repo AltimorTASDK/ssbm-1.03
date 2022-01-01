@@ -45,20 +45,11 @@ struct MainMenuEnterData {
 	u8 pad002;
 };
 
-struct MenuTypeData {
-	HSD_AnimLoop *preview_anims;
-	f32 anim_frame;
-	void *pad008;
-	u8 option_count;
-	void(*think)();
-};
-
 // Menu frame
 extern "C" ArchiveModel MenMainPanel_Top;
 
 extern "C" ArchiveModel MenMainCursor_Top;
 extern "C" ArchiveModel MenMainConTop_Top;
-extern "C" MenuTypeData MenuTypeDataTable[MenuType_Max];
 
 extern "C" void VsMenu_Think();
 

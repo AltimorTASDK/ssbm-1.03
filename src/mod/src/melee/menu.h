@@ -1,6 +1,7 @@
 #pragma once
 
 #include "hsd/gobj.h"
+#include "hsd/jobj.h"
 #include <gctypes.h>
 
 constexpr auto PORT_ALL = 4;
@@ -67,6 +68,14 @@ struct MenuCallbacks {
 	void *pad010;
 };
 
+struct MenuTypeData {
+	HSD_AnimLoop *preview_anims;
+	f32 anim_frame;
+	void *pad008;
+	u8 option_count;
+	void(*think)();
+};
+
 extern "C" {
 
 extern u16 MenuInputCooldown;
@@ -80,6 +89,8 @@ extern u8 MenuSelectedValue;
 extern u32 MenuButtons;
 
 extern u8 IsEnteringMenu;
+
+extern MenuTypeData MenuTypeDataTable[MenuType_Max];
 
 MenuCallbacks *Menu_GetCallbacks(u8 id);
 

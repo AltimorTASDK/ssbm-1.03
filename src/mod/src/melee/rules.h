@@ -10,6 +10,13 @@ enum class stage_mod_type : u8 {
 	max
 };
 
+enum class controls_type : u8 {
+	z_jump = 0,
+	angles = 1,
+	all = 2,
+	max
+};
+
 enum class ucf_type : u8 {
 	hax = 0,
 	ucf = 1,
@@ -44,10 +51,11 @@ enum ExtraRule {
 	ExtraRule_Pause               = 1,
 	ExtraRule_StageMods           = 2,
 	ExtraRule_FriendlyFire        = 2,
-	ExtraRule_ControllerFix       = 3,
-	ExtraRule_Latency             = 4,
-	ExtraRule_Widescreen          = 5,
-	ExtraRule_Max                 = 6
+	ExtraRule_Controls            = 3,
+	ExtraRule_ControllerFix       = 4,
+	ExtraRule_Latency             = 5,
+	ExtraRule_Widescreen          = 6,
+	ExtraRule_Max                 = 7
 };
 
 enum Mode {
@@ -81,12 +89,13 @@ struct GameRules {
 	};
 	union {
 		u8 score_display;
-		ucf_type controller_fix;
+		controls_type controls;
 	};
 	union {
 		u8 sd_penalty;
-		latency_mode latency;
+		ucf_type controller_fix;
 	};
+	latency_mode latency;
 	u8 widescreen;
 };
 

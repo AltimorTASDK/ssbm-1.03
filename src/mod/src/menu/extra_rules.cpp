@@ -39,6 +39,7 @@ struct ExtraRulesMenuData {
 			// Pause is moved up a row
 			u8 pause;
 			stage_mod_type stage_mods;
+			controls_type controls;
 			ucf_type controller_fix;
 			latency_mode latency;
 			u8 widescreen;
@@ -79,14 +80,11 @@ extern "C" struct {
 	f32 selected;
 } ExtraRuleTextAnimFrames[6];
 
-extern "C" struct {
-	u8 values[3];
-} ExtraRuleDescriptions[6];
-
 extern "C" HSD_AnimLoop RuleValueAnimLoops[10];
 
 extern "C" HSD_GObj *Menu_SetupExtraRulesMenu(u8 state);
 extern "C" void Menu_ExtraRulesMenuInput(HSD_GObj *gobj);
+extern "C" void Menu_ExtraRulesMenuThink(HSD_GObj *gobj);
 extern "C" void Menu_UpdateExtraRuleDisplay(HSD_GObj *gobj, bool index_changed, bool value_changed);
 extern "C" const HSD_AnimLoop &Menu_GetExtraRuleValueAnimLoop(u8 index, u8 value, bool scroll_left);
 extern "C" void Menu_UpdateExtraRuleValueAnim(HSD_GObj *gobj, HSD_JObj *jobj, u8 index);
@@ -175,8 +173,6 @@ static const auto patches = patch_list {
 	std::pair { &ExtraRuleTextAnimFrames[ExtraRule_Pause].selected,          25.f },
 	std::pair { &ExtraRuleTextAnimFrames[ExtraRule_FriendlyFire].unselected, 22.f },
 	std::pair { &ExtraRuleTextAnimFrames[ExtraRule_FriendlyFire].selected,   23.f },
-	// Swap description for pause and friendly fire
-	std::pair { &ExtraRuleDescriptions[ExtraRule_Pause].values[1],           (u8)0x3B },
 	// Add a value model for index 5
 	// nop
 	std::pair { (char*)Menu_SetupExtraRulesMenu+0x558,                       0x60000000u },
@@ -204,6 +200,55 @@ static const auto patches = patch_list {
 	std::pair { (char*)Menu_GetExtraRuleValueAnimLoop+0x10,                  0x48000024u },
 	// b 0x8
 	std::pair { (char*)Menu_UpdateExtraRuleValueAnim+0x1C,                   0x48000008u },
+
+	// Add a 7th rotator to extra rules
+	std::pair { &MenuTypeDataTable[MenuType_ExtraRules].option_count,        (u8)7 },
+	// cmpwi r31, 7
+	std::pair { (char*)Menu_SetupExtraRulesMenu+0x388,                       0x2C1F0007u },
+	// li r0, 6
+	std::pair { (char*)Menu_ExtraRulesMenuInput+0x214,                       0x38000006u },
+	// cmpwi r3, 6
+	std::pair { (char*)Menu_ExtraRulesMenuInput+0x2D8,                       0x2C030006u },
+	// cmplwi r5, 6
+	std::pair { (char*)Menu_ExtraRulesMenuInput+0x390,                       0x28050006u },
+
+	// Move data->state from 0x08 to 0x09
+	// stb r16, 0x9(r25)
+	std::pair { (char*)Menu_SetupExtraRulesMenu+0x220,                       0x9A190009u },
+	// lbz r0, 0x9(r25)
+	std::pair { (char*)Menu_SetupExtraRulesMenu+0x27C,                       0x88190008u },
+	// lbz r0, 0x9(r31)
+	std::pair { (char*)Menu_ExtraRulesMenuThink+0x2C,                        0x881F0009u },
+	// stb r0, 0x9(r31)
+	std::pair { (char*)Menu_ExtraRulesMenuThink+0x6C,                        0x981F0009u },
+	// stb r0, 0x9(r31)
+	std::pair { (char*)Menu_ExtraRulesMenuThink+0x78,                        0x981F0009u },
+	// lbz r0, 0x9(r31)
+	std::pair { (char*)Menu_ExtraRulesMenuThink+0x7C,                        0x881F0009u },
+	// lbz r0, 0x9(r31)
+	std::pair { (char*)Menu_ExtraRulesMenuThink+0xDC,                        0x881F0009u },
+	// lbz r0, 0x9(r31)
+	std::pair { (char*)Menu_ExtraRulesMenuThink+0x104,                       0x881F0009u },
+	// lbz r0, 0x9(r31)
+	std::pair { (char*)Menu_ExtraRulesMenuThink+0x170,                       0x881F0009u },
+	// stb r0, 0x9(r31)
+	std::pair { (char*)Menu_ExtraRulesMenuThink+0x1A0,                       0x981F0009u },
+	// lbz r0, 0x9(r31)
+	std::pair { (char*)Menu_ExtraRulesMenuThink+0x1BC,                       0x881F0009u },
+
+	// Increase ExtraRulesMenuData size from 0xE0 to 0xE4
+	// li r3, 0xE4
+	std::pair { (char*)Menu_SetupExtraRulesMenu+0x180,                       0x386000E4u },
+
+	// Move data->description_text from 0xDC to 0xE0
+	// stw r24, 0xE0(r25)
+	std::pair { (char*)Menu_SetupExtraRulesMenu+0x224,                       0x931900E0u },
+	// lwz r3, 0xE0(r25)
+	std::pair { (char*)Menu_SetupExtraRulesMenu+0x72C,                       0x807900E0u },
+	// stw r0, 0xE0(r25)
+	std::pair { (char*)Menu_SetupExtraRulesMenu+0x748,                       0x901900E0u },
+	// stw r3, 0xE0(r25)
+	std::pair { (char*)Menu_SetupExtraRulesMenu+0x79C,                       0x907900E0u },
 };
 
 static int get_jobj_index(int index)
@@ -312,6 +357,7 @@ extern "C" ArchiveModel *select_extra_rule_model(u32 index)
 		&MenMainCursorTr01_Top, // Stock Match Time Limit
 		&MenMainCursorTr03_Top, // Pause
 		&MenMainCursorRl01_Top, // Stage Modifications
+		&MenMainCursorTr04_Top, // Controls
 		&MenMainCursorTr03_Top, // Controller Fix
 		&MenMainCursorTr04_Top, // Latency
 		&MenMainCursorTr03_Top, // Widescreen
@@ -456,7 +502,10 @@ extern "C" void hook_Menu_UpdateExtraRuleDescriptionText(HSD_GObj *gobj,
 	const auto index = MenuSelectedIndex;
 	const auto value = MenuSelectedValue;
 
-	// Update rules from extra rotator value
+	// Update rules from extra rotator values
+	if (value_changed && index == ExtraRule_Latency)
+		GetGameRules()->latency = (latency_mode)value;
+
 	if (value_changed && index == ExtraRule_Widescreen)
 		GetGameRules()->widescreen = value;
 
@@ -468,11 +517,13 @@ extern "C" void hook_Menu_UpdateExtraRuleDescriptionText(HSD_GObj *gobj,
 
 	switch (index) {
 	case ExtraRule_StockMatchTimeLimit:
-		Text_SetFromSIS(text, ExtraRuleDescriptions[index].values[0]);
+		// Has to be hard coded because ExtraRuleDescriptions gets clobbered by extra
+		// rotator bounds
+		Text_SetFromSIS(text, 0x37);
 		break;
 	case ExtraRule_Pause:
 		if (value)
-			Text_SetFromSIS(text, ExtraRuleDescriptions[index].values[value]);
+			Text_SetFromSIS(text, 0x3B);
 		else
 			text->data = pause_auto_description.data();
 		break;

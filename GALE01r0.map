@@ -2170,6 +2170,7 @@
 80231368 00000144 80231368 0 Menu_UpdateExtraRuleValueAnim
 802314ac 000005a8 802314ac 0 Menu_UpdateExtraRuleDisplay
 80231a54 000001f8 80231a54 0 Menu_UpdateExtraRuleDescriptionText
+80231c4c 000002d4 80231c4c 0 Menu_ExtraRulesMenuThink
 80231f20 000007e4 80231f20 0 Menu_SetupExtraRulesMenu
 80232704 0000009c 80232704 0 Menu_CreateExtraRulesMenu
 80232870 000002a8 80232870 0 Menu_ItemMenuScroll
