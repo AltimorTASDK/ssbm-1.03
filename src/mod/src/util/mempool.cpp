@@ -8,7 +8,7 @@ extern "C" void hook_HSD_ResetScene()
 {
 	// Wait for memcard operations to complete so the buffers don't get freed
 	card_sync();
-	
+
 	// Run destructors and clear pool refcounts on heap destruction
 	mempool::free_all();
 
