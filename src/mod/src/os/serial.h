@@ -61,6 +61,8 @@ extern "C" {
 u32 SIDisablePolling(u32 mask);
 u32 SIEnablePolling(u32 mask);
 
+bool SIEnablePollingInterrupt(bool enable);
+
 extern SIData Si;
 
 }

@@ -238,8 +238,9 @@ add_hook SceneLoopStart
 add_hook FirstEngineFrame
 add_hook HSD_VICopyXFBASync
 add_hook HSD_CObjEraseScreen
-add_hook UpdatePadFetchRate
+add_hook SIGetResponseRaw
 add_hook SISetSamplingRate
+add_hook UpdatePadFetchRate
 #ifdef POLL_DEBUG
 add_hook PadFetchCallback
 add_hook HSD_PerfSetStartTime

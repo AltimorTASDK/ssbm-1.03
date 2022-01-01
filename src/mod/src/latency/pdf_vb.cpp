@@ -14,7 +14,6 @@
 
 extern "C" OSAlarm PadFetchAlarm;
 
-extern "C" void *PADSetSamplingCallback(void(*callback)());
 extern "C" void PadFetchCallback();
 
 #ifdef POLL_DEBUG
@@ -70,8 +69,35 @@ extern "C" bool is_faster_melee()
 	return faster_melee;
 }
 
-static void pad_sample_callback()
+static void post_retrace_callback(u32 retrace_count)
 {
+	if (get_latency() == latency_mode::crt) {
+		// Fetch on retrace in CRT mode
+		PadFetchCallback();
+		return;
+	}
+
+	// Check poll retrace count as well to catch Dolphin/Nintendont hacks
+	if (Si.poll.enable != 0 || last_poll_retrace_count >= retrace_count - 1)
+		return;
+
+	// Fetch on retrace in LCD/LOW if there are no SI reads
+	PadFetchCallback();
+
+	// Wake game thread when polling is disabled so it doesn't hang
+	if (get_latency() == latency_mode::lcd)
+		OSWakeupThread(&half_vb_thread_queue);
+}
+
+extern "C" bool orig_SIGetResponseRaw(u32 port);
+extern "C" bool hook_SIGetResponseRaw(u32 port)
+{
+	const auto result = orig_SIGetResponseRaw(port);
+
+	// Wait until all ports are polled
+	if (port != 3)
+		return result;
+
 #ifdef POLL_DEBUG
 	const auto current_poll_time = OSGetTime();
 	const auto current_poll_line = VIGetCurrentLine();
@@ -95,26 +121,8 @@ static void pad_sample_callback()
 		half_vb_retrace_count = VIGetRetraceCount();
 		OSWakeupThread(&half_vb_thread_queue);
 	}
-}
 
-static void post_retrace_callback(u32 retrace_count)
-{
-	if (get_latency() == latency_mode::crt) {
-		// Fetch on retrace in CRT mode
-		PadFetchCallback();
-		return;
-	}
-
-	// Check poll retrace count as well to catch Dolphin/Nintendont hacks
-	if (Si.poll.enable != 0 || last_poll_retrace_count >= retrace_count - 1)
-		return;
-
-	// Fetch on retrace in LCD/LOW if there are no SI reads
-	PadFetchCallback();
-
-	// Wake game thread when polling is disabled so it doesn't hang
-	if (get_latency() == latency_mode::lcd)
-		OSWakeupThread(&half_vb_thread_queue);
+	return result;
 }
 
 extern "C" void orig_UpdatePadFetchRate();
@@ -369,7 +377,7 @@ struct set_callbacks {
 			return;
 		}
 
-		PADSetSamplingCallback(pad_sample_callback);
+		SIEnablePollingInterrupt(true);
 		HSD_VISetUserPostRetraceCallback(post_retrace_callback);
 	}
 } set_callbacks;
