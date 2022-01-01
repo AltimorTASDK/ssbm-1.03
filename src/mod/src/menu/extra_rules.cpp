@@ -22,13 +22,15 @@
 #include <ogc/gx.h>
 
 #include "resources/rules/pause_values.tex.h"
+#include "resources/rules/stage_mods.tex.h"
+#include "resources/rules/stage_mods_values.tex.h"
+#include "resources/rules/controls.tex.h"
+#include "resources/rules/controls_values.tex.h"
 #include "resources/rules/controller_fix.tex.h"
 #include "resources/rules/controller_fix_values.tex.h"
 #include "resources/rules/latency.tex.h"
 #include "resources/rules/latency_values.tex.h"
 #include "resources/rules/widescreen.tex.h"
-#include "resources/rules/stage_mods.tex.h"
-#include "resources/rules/stage_mods_values.tex.h"
 
 struct ExtraRulesMenuData {
 	u8 menu_type;
@@ -64,6 +66,9 @@ extern "C" ArchiveModel MenMainCursorRl_Top;
 
 // Mode values model
 extern "C" ArchiveModel MenMainCursorRl01_Top;
+
+// Stage selection values model
+extern "C" ArchiveModel MenMainCursorRl05_Top;
 
 // Extra rule values models
 extern "C" ArchiveModel MenMainCursorTr01_Top;
@@ -141,6 +146,14 @@ constexpr auto stage_mod_descriptions = multi_array {
 	                      u"Pokémon Stadium.">()
 };
 
+constexpr auto controls_descriptions = multi_array {
+	make_description_text<"Allow the use of Z jump.">(),
+	make_description_text<"Allow the use of Z jump and",
+	                      "perfect angles.">(),
+	make_description_text<"Allow the use of all control",
+	                      "options.">()
+};
+
 constexpr auto ucf_type_descriptions = multi_array {
 	make_description_text<"Improve shield drop and wiggle and fix",
 		              "1.0 cardinal and dash out of crouch.">(),
@@ -216,7 +229,7 @@ static const auto patches = patch_list {
 	// stb r16, 0x9(r25)
 	std::pair { (char*)Menu_SetupExtraRulesMenu+0x220,                       0x9A190009u },
 	// lbz r0, 0x9(r25)
-	std::pair { (char*)Menu_SetupExtraRulesMenu+0x27C,                       0x88190008u },
+	std::pair { (char*)Menu_SetupExtraRulesMenu+0x27C,                       0x88190009u },
 	// lbz r0, 0x9(r31)
 	std::pair { (char*)Menu_ExtraRulesMenuThink+0x2C,                        0x881F0009u },
 	// stb r0, 0x9(r31)
@@ -236,19 +249,23 @@ static const auto patches = patch_list {
 	// lbz r0, 0x9(r31)
 	std::pair { (char*)Menu_ExtraRulesMenuThink+0x1BC,                       0x881F0009u },
 
-	// Increase ExtraRulesMenuData size from 0xE0 to 0xE4
+	// Increase ExtraRulesMenuData size from 0xE0 to 0xFC
 	// li r3, 0xE4
-	std::pair { (char*)Menu_SetupExtraRulesMenu+0x180,                       0x386000E4u },
+	std::pair { (char*)Menu_SetupExtraRulesMenu+0x180,                       0x386000FCu },
 
-	// Move data->description_text from 0xDC to 0xE0
+	// Move data->description_text from 0xDC to 0xF8
 	// stw r24, 0xE0(r25)
-	std::pair { (char*)Menu_SetupExtraRulesMenu+0x224,                       0x931900E0u },
+	std::pair { (char*)Menu_SetupExtraRulesMenu+0x224,                       0x931900F8u },
 	// lwz r3, 0xE0(r25)
-	std::pair { (char*)Menu_SetupExtraRulesMenu+0x72C,                       0x807900E0u },
+	std::pair { (char*)Menu_SetupExtraRulesMenu+0x72C,                       0x807900F8u },
 	// stw r0, 0xE0(r25)
-	std::pair { (char*)Menu_SetupExtraRulesMenu+0x748,                       0x901900E0u },
+	std::pair { (char*)Menu_SetupExtraRulesMenu+0x748,                       0x901900F8u },
 	// stw r3, 0xE0(r25)
-	std::pair { (char*)Menu_SetupExtraRulesMenu+0x79C,                       0x907900E0u },
+	std::pair { (char*)Menu_SetupExtraRulesMenu+0x79C,                       0x907900F8u },
+
+	// Always use count of 7 to populate value_jobj_trees to avoid overread from extra rotator
+	// li r0, 7
+	std::pair { (char*)Menu_SetupExtraRulesMenu+0x600,                       0x38000007u },
 };
 
 static int get_jobj_index(int index)
@@ -274,9 +291,6 @@ static void set_to_rotator(ExtraRulesMenuData *data, int index)
 	// Show black value background
 	HSD_JObjClearFlagsAll(background, HIDDEN);
 
-	// Initialize value jobj tree
-	HSD_JObjGetTree<2>(cursor->next, data->value_jobj_trees[index].tree);
-
 	if (data->selected == index) {
 		// Show scroll arrows
 		HSD_JObjClearFlagsAll(scroll, HIDDEN);
@@ -293,13 +307,23 @@ static void fix_value_position(ExtraRulesMenuData *data, int index)
 	HSD_JObjSetMtxDirty(jobj);
 }
 
+static u8 get_model_max_value(int index)
+{
+	// Use max value corresponding to 5-value model for controls
+	if (index == ExtraRule_Controls)
+		return 4;
+	else
+		return ExtraRuleValueBounds[index].max;
+
+}
+
 static void set_value_anim(ExtraRulesMenuData *data, int index)
 {
 	// Set initial value anim frame with support for more than 3 values
 	auto *jobj = data->value_jobj_trees[index].tree[0];
 	const auto value = data->values[index];
 
-	const auto anim_index = value == 0 ? ExtraRuleValueBounds[index].max : value - 1;
+	const auto anim_index = value == 0 ? get_model_max_value(index) : value - 1;
 	HSD_JObjReqAnimAll(jobj, RuleValueAnimLoops[anim_index].start);
 	HSD_JObjAnimAll(jobj);
 }
@@ -333,9 +357,10 @@ static void load_textures()
 	// Replace rule name textures
 	const auto *rule_names = MenMainCursorRl_Top.matanim_joint->child->child->next->matanim;
 	pool.add_texture_swap(stage_mods_tex_data,      rule_names->texanim->imagetbl[ 9]);
-	pool.add_texture_swap(controller_fix_tex_data,  rule_names->texanim->imagetbl[11]);
-	pool.add_texture_swap(latency_tex_data,         rule_names->texanim->imagetbl[12]);
-	pool.add_texture_swap(widescreen_tex_data,      rule_names->texanim->imagetbl[13]);
+	pool.add_texture_swap(controls_tex_data,        rule_names->texanim->imagetbl[11]);
+	pool.add_texture_swap(controller_fix_tex_data,  rule_names->texanim->imagetbl[12]);
+	pool.add_texture_swap(latency_tex_data,         rule_names->texanim->imagetbl[13]);
+	//pool.add_texture_swap(widescreen_tex_data,      rule_names->texanim->imagetbl[14]);
 
 	// Load rule value textures
 	decompressed_textures[ExtraRule_Pause] =
@@ -343,6 +368,9 @@ static void load_textures()
 
 	decompressed_textures[ExtraRule_StageMods] =
 		pool.add_texture_swap(stage_mods_values_tex_data);
+
+	decompressed_textures[ExtraRule_Controls] =
+		pool.add_texture_swap(controls_values_tex_data);
 
 	decompressed_textures[ExtraRule_ControllerFix] =
 		pool.add_texture_swap(controller_fix_values_tex_data);
@@ -357,118 +385,11 @@ extern "C" ArchiveModel *select_extra_rule_model(u32 index)
 		&MenMainCursorTr01_Top, // Stock Match Time Limit
 		&MenMainCursorTr03_Top, // Pause
 		&MenMainCursorRl01_Top, // Stage Modifications
-		&MenMainCursorTr04_Top, // Controls
+		&MenMainCursorRl05_Top, // Controls
 		&MenMainCursorTr03_Top, // Controller Fix
 		&MenMainCursorTr04_Top, // Latency
 		&MenMainCursorTr03_Top, // Widescreen
 	}[index];
-}
-
-extern "C" HSD_GObj *orig_Menu_SetupExtraRulesMenu(u8 state);
-extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
-{
-	// Ensure all of the options always get populated
-	FeatureUnlockMask = 0xFF;
-
-	auto *gobj = orig_Menu_SetupExtraRulesMenu(state);
-	auto *data = gobj->get<ExtraRulesMenuData>();
-
-	data->widescreen = GetGameRules()->widescreen;
-
-	// Free assets on menu exit
-	gobj->user_data_remove_func = pool_free;
-
-	if (pool.inc_ref() == 0)
-		load_textures();
-
-	// Replace rule value textures
-	replace_toggle_texture(data, ExtraRule_Pause);
-	replace_toggle_texture(data, ExtraRule_StageMods);
-	replace_toggle_texture(data, ExtraRule_ControllerFix);
-	if (!is_faster_melee())
-		replace_toggle_texture(data, ExtraRule_Latency);
-
-	// Make Rl01 use proper additional rules position
-	fix_value_position(data, ExtraRule_StageMods);
-
-	// Set anim frame correctly for 4-value model
-	set_value_anim(data, ExtraRule_StageMods);
-
-	// Use rotator for option replacing random stage select
-	set_to_rotator(data, ExtraRule_RandomStage);
-	set_value_anim(data, ExtraRule_RandomStage);
-
-	fix_rule_anims(data);
-
-	return gobj;
-}
-
-extern "C" bool orig_Menu_IsExtraRuleVisible(u8 index);
-extern "C" bool hook_Menu_IsExtraRuleVisible(u8 index)
-{
-	return index != ExtraRule_Latency || !is_faster_melee();
-}
-
-extern "C" void orig_Menu_ExtraRulesMenuInput(HSD_GObj *gobj);
-extern "C" void hook_Menu_ExtraRulesMenuInput(HSD_GObj *gobj)
-{
-	const auto buttons = Menu_GetButtonsHelper(PORT_ALL);
-
-	if (get_settings_lock() && (buttons & (MenuButton_Left | MenuButton_Right))) {
-		// Don't allow changing rules with settings locked
-		Menu_PlaySFX(MenuSFX_Error);
-		return;
-	}
-
-	orig_Menu_ExtraRulesMenuInput(gobj);
-
-	if (!(buttons & MenuButton_A) && (buttons & (MenuButton_B | MenuButton_Start)))
-		config.save();
-
-	if (!is_faster_melee() || MenuSelectedIndex != ExtraRule_Latency)
-		return;
-
-	// Skip over the nonexistent latency rotator on FM
-	if (buttons & MenuButton_Up)
-		MenuSelectedIndex--;
-	else
-		MenuSelectedIndex++;
-
-	const auto *data = ExtraRulesMenuGObj->get<ExtraRulesMenuData>();
-	MenuSelectedValue = data->values[MenuSelectedIndex];
-}
-
-extern "C" const HSD_AnimLoop &orig_Menu_GetExtraRuleValueAnimLoop(u8 index, u8 value,
-                                                                   bool scroll_right);
-extern "C" const HSD_AnimLoop &hook_Menu_GetExtraRuleValueAnimLoop(u8 index, u8 value,
-                                                                   bool scroll_right)
-{
-	if (index != ExtraRule_StageMods)
-		return orig_Menu_GetExtraRuleValueAnimLoop(index, value, scroll_right);
-
-	if (!scroll_right)
-		return RuleValueAnimLoops[ExtraRuleValueBounds[index].max - value + 5];
-	else if (value == 0)
-		return RuleValueAnimLoops[ExtraRuleValueBounds[index].max];
-	else
-		return RuleValueAnimLoops[value - 1];
-}
-
-extern "C" void orig_Menu_UpdateExtraRuleValueAnim(HSD_GObj *gobj, HSD_JObj *jobj, u8 index);
-extern "C" void hook_Menu_UpdateExtraRuleValueAnim(HSD_GObj *gobj, HSD_JObj *jobj, u8 index)
-{
-	if (index != ExtraRule_StageMods)
-		return orig_Menu_UpdateExtraRuleValueAnim(gobj, jobj, index);
-
-	const auto frame = HSD_JObjGetAnimFrame(jobj);
-
-	for (u8 i = 0; i < 10; i++) {
-		const auto &loop = RuleValueAnimLoops[i];
-		if (frame >= loop.start && frame <= loop.end) {
-			HSD_JObjLoopAnim(jobj, loop);
-			return;
-		}
-	}
 }
 
 extern "C" void hook_Menu_UpdateExtraRuleDescriptionText(HSD_GObj *gobj,
@@ -527,9 +448,126 @@ extern "C" void hook_Menu_UpdateExtraRuleDescriptionText(HSD_GObj *gobj,
 		else
 			text->data = pause_auto_description.data();
 		break;
-	case ExtraRule_StageMods:      text->data = stage_mod_descriptions[value]; break;
-	case ExtraRule_ControllerFix:  text->data = ucf_type_descriptions[value]; break;
-	case ExtraRule_Latency:        text->data = latency_descriptions[value]; break;
+	case ExtraRule_StageMods:      text->data = stage_mod_descriptions[value];  break;
+	case ExtraRule_Controls:       text->data = controls_descriptions[value];   break;
+	case ExtraRule_ControllerFix:  text->data = ucf_type_descriptions[value];   break;
+	case ExtraRule_Latency:        text->data = latency_descriptions[value];    break;
 	case ExtraRule_Widescreen:     text->data = widescreen_descriptions[value]; break;
+	}
+}
+
+extern "C" HSD_GObj *orig_Menu_SetupExtraRulesMenu(u8 state);
+extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
+{
+	// Ensure all of the options always get populated
+	FeatureUnlockMask = 0xFF;
+
+	auto *gobj = orig_Menu_SetupExtraRulesMenu(state);
+	auto *data = gobj->get<ExtraRulesMenuData>();
+
+	// Initialize extra rotators
+	data->latency = GetGameRules()->latency;
+	data->widescreen = GetGameRules()->widescreen;
+
+	// Free assets on menu exit
+	gobj->user_data_remove_func = pool_free;
+
+	if (pool.inc_ref() == 0)
+		load_textures();
+
+	// Replace rule value textures
+	replace_toggle_texture(data, ExtraRule_Pause);
+	replace_toggle_texture(data, ExtraRule_StageMods);
+	replace_toggle_texture(data, ExtraRule_Controls);
+	replace_toggle_texture(data, ExtraRule_ControllerFix);
+	if (!is_faster_melee())
+		replace_toggle_texture(data, ExtraRule_Latency);
+
+	// Make Rl01 and Rl05 use proper additional rules position
+	fix_value_position(data, ExtraRule_StageMods);
+	fix_value_position(data, ExtraRule_Controls);
+
+	// Set anim frame correctly for 4/5-value model
+	set_value_anim(data, ExtraRule_StageMods);
+	set_value_anim(data, ExtraRule_Controls);
+
+	// Use rotator for option replacing random stage select
+	set_to_rotator(data, ExtraRule_RandomStage);
+	set_value_anim(data, ExtraRule_RandomStage);
+
+	// Initialize description with custom handling
+	hook_Menu_UpdateExtraRuleDescriptionText(gobj, true, false);
+
+	return gobj;
+}
+
+extern "C" bool orig_Menu_IsExtraRuleVisible(u8 index);
+extern "C" bool hook_Menu_IsExtraRuleVisible(u8 index)
+{
+	return index != ExtraRule_Latency || !is_faster_melee();
+}
+
+extern "C" void orig_Menu_ExtraRulesMenuInput(HSD_GObj *gobj);
+extern "C" void hook_Menu_ExtraRulesMenuInput(HSD_GObj *gobj)
+{
+	const auto buttons = Menu_GetButtonsHelper(PORT_ALL);
+
+	if (get_settings_lock() && (buttons & (MenuButton_Left | MenuButton_Right))) {
+		// Don't allow changing rules with settings locked
+		Menu_PlaySFX(MenuSFX_Error);
+		return;
+	}
+
+	orig_Menu_ExtraRulesMenuInput(gobj);
+
+	if (!(buttons & MenuButton_A) && (buttons & (MenuButton_B | MenuButton_Start)))
+		config.save();
+
+	if (!is_faster_melee() || MenuSelectedIndex != ExtraRule_Latency)
+		return;
+
+	// Skip over the nonexistent latency rotator on FM
+	if (buttons & MenuButton_Up)
+		MenuSelectedIndex--;
+	else
+		MenuSelectedIndex++;
+
+	const auto *data = ExtraRulesMenuGObj->get<ExtraRulesMenuData>();
+	MenuSelectedValue = data->values[MenuSelectedIndex];
+}
+
+extern "C" const HSD_AnimLoop &orig_Menu_GetExtraRuleValueAnimLoop(u8 index, u8 value,
+                                                                   bool scroll_right);
+extern "C" const HSD_AnimLoop &hook_Menu_GetExtraRuleValueAnimLoop(u8 index, u8 value,
+                                                                   bool scroll_right)
+{
+	if (index != ExtraRule_StageMods && index != ExtraRule_Controls)
+		return orig_Menu_GetExtraRuleValueAnimLoop(index, value, scroll_right);
+
+	// Use max value corresponding to 5-value model for controls
+	const auto max = get_model_max_value(index);
+
+	if (!scroll_right)
+		return RuleValueAnimLoops[max - value + 5];
+	else if (value == 0)
+		return RuleValueAnimLoops[max];
+	else
+		return RuleValueAnimLoops[value - 1];
+}
+
+extern "C" void orig_Menu_UpdateExtraRuleValueAnim(HSD_GObj *gobj, HSD_JObj *jobj, u8 index);
+extern "C" void hook_Menu_UpdateExtraRuleValueAnim(HSD_GObj *gobj, HSD_JObj *jobj, u8 index)
+{
+	if (index != ExtraRule_StageMods && index != ExtraRule_Controls)
+		return orig_Menu_UpdateExtraRuleValueAnim(gobj, jobj, index);
+
+	const auto frame = HSD_JObjGetAnimFrame(jobj);
+
+	for (u8 i = 0; i < 10; i++) {
+		const auto &loop = RuleValueAnimLoops[i];
+		if (frame >= loop.start && frame <= loop.end) {
+			HSD_JObjLoopAnim(jobj, loop);
+			return;
+		}
 	}
 }

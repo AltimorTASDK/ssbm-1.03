@@ -19,6 +19,7 @@ saved_config::saved_config()
 	rules->stock_time_limit = stock_time_limit;
 	rules->controller_fix   = controller_fix;
 	rules->stage_mods       = stage_mods;
+	rules->controls         = controls;
 }
 
 void saved_config::load()
@@ -32,7 +33,9 @@ void saved_config::load()
 	using v = config_version;
 
 	// Copy values for the highest matching version
-	if (read.version >= v::a2)
+	if (read.version >= v::a3)
+		(config_values<v::a3>&)*this = (config_values<v::a3>&)read;
+	else if (read.version >= v::a2)
 		(config_values<v::a2>&)*this = (config_values<v::a2>&)read;
 	else
 		(config_values<v::a1>&)*this = (config_values<v::a1>&)read;
@@ -55,6 +58,7 @@ void saved_config::save()
 	stock_time_limit = rules->stock_time_limit;
 	controller_fix   = rules->controller_fix;
 	stage_mods       = rules->stage_mods;
+	controls         = rules->controls;
 
 	if (is_card_busy())
 		save_pending = true;
