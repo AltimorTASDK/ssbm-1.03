@@ -28,13 +28,13 @@ struct controller_config {
 	void make_legal()
 	{
 		switch (get_controls()) {
+		case controls_type::z_jump:
+			perfect_angles   = defaults.perfect_angles;
 		case controls_type::z_angles:
 			c_up             = defaults.c_up;
 			c_horizontal     = defaults.c_horizontal;
 			c_down           = defaults.c_down;
 			tap_jump         = defaults.tap_jump;
-		case controls_type::z_jump:
-			perfect_angles   = defaults.perfect_angles;
 		}
 	}
 
