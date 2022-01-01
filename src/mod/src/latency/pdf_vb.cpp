@@ -99,12 +99,21 @@ static void pad_sample_callback()
 
 static void post_retrace_callback(u32 retrace_count)
 {
-	// Fetch on retrace in normal latency mode or if there won't be SI reads
-	if (get_latency() == latency_mode::crt || Si.poll.enable == 0)
+	if (get_latency() == latency_mode::crt) {
+		// Fetch on retrace in CRT mode
 		PadFetchCallback();
+		return;
+	}
+
+	// Check poll retrace count as well to catch Dolphin/Nintendont hacks
+	if (Si.poll.enable != 0 || last_poll_retrace_count >= retrace_count - 1)
+		return;
+
+	// Fetch on retrace in LCD/LOW if there are no SI reads
+	PadFetchCallback();
 
 	// Wake game thread when polling is disabled so it doesn't hang
-	if (get_latency() == latency_mode::lcd && Si.poll.enable == 0)
+	if (get_latency() == latency_mode::lcd)
 		OSWakeupThread(&half_vb_thread_queue);
 }
 
