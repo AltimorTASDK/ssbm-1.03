@@ -1510,7 +1510,7 @@
 8019fe18 0000010c 8019fe18 0 DebugMenu_ComingSoon_ScreenThink
 8019ff24 000001a0 8019ff24 0 DebugMenu_ComingSoon_ScreenLoad_FileLoad
 801a00c4 00000028 801a00c4 0 DebugMenu_StopMusicOnIfComSnExit
-801a0ed0 00000120 801a0ed0 0 TitleScreenThink
+801a0ed0 00000120 801a0ed0 0 TitleScreen_Think
 801a10d8 00000404 801a10d8 0 TitleScreen_Load
 801a15ec 00000208 801a15ec 0 Ab_Menu_TextDraw_CameraMode_4
 801a1908 00000070 801a1908 0 Ab_Menu_TextDrawn_CameraMode_2

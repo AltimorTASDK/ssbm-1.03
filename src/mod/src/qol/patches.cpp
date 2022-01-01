@@ -19,6 +19,8 @@ extern "C" void SSS_Think();
 
 extern "C" void MainMenu_Think();
 
+extern "C" void TitleScreen_Think();
+
 extern "C" void CreateScorePopup(u8 port);
 
 extern "C" void NameTag_Think(HSD_GObj *gobj);
@@ -135,4 +137,8 @@ static const auto patches = patch_list {
 	std::pair { (char*)CSS_Input+0x1F0,           0x38600002u },
 	// li r0, Scene_VsMode
 	std::pair { (char*)MainMenu_Think+0x54,       0x38000002u },
+
+	// Disable attract mode
+	// b 0x18
+	std::pair { (char*)TitleScreen_Think+0x48,    0x48000018u },
 };
