@@ -256,6 +256,7 @@ static void check_css_toggle(u8 port, u32 *timer, auto &&check_callback, auto &&
 	HSD_PadRumble(port, 0, 0, 60);
 }
 
+#if 0
 static void show_illegal_controls(u8 port)
 {
 	if (SceneMajor != Scene_VsMode)
@@ -269,6 +270,7 @@ static void show_illegal_controls(u8 port)
 	auto *mobj = jobj->u.dobj->next->mobj;
 	mobj->mat->diffuse = color_rgba::hex(0xFF3333FFu);
 }
+#endif
 
 static void z_jump_toggle(u8 port)
 {
@@ -464,6 +466,7 @@ extern "C" void hook_CSS_PlayerThink(HSD_GObj *gobj)
 	data->state = CSSPlayerState_Idle;
 }
 
+#if 0
 extern "C" void orig_CSS_UpdatePortrait(u8 port);
 extern "C" void hook_CSS_UpdatePortrait(u8 port)
 {
@@ -472,6 +475,7 @@ extern "C" void hook_CSS_UpdatePortrait(u8 port)
 	if (CSSPorts[port].slot_type == SlotType_Human && controller_configs[port].is_illegal())
 		show_illegal_controls(port);
 }
+#endif
 
 extern "C" void orig_CSS_Init(void *menu);
 extern "C" void hook_CSS_Init(void *menu)

@@ -315,7 +315,9 @@ add_hook CSS_ChooseTopString
 add_hook CSS_Init
 add_hook CSS_PlayerThink
 add_hook CSS_Setup
+#if 0
 add_hook CSS_UpdatePortrait
+#endif
 # Settings lock
 #ifdef PAL
 add_hook Scene_Reset
