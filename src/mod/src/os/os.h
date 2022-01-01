@@ -10,7 +10,7 @@ extern "C" {
 void OSReport(const char *fmt, ...);
 u64 OSGetTime();
 
-u32 OSDisableInterrupts();
-void OSRestoreInterrupts(u32 mask);
+bool OSDisableInterrupts();
+void OSRestoreInterrupts(bool level);
 
 }
