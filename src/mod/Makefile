@@ -12,7 +12,7 @@ ELFFILE := bin/mod-pal.elf
 BINFILE := bin/mod-pal.bin
 endif
 
-ifeq ($(NOPAL), 1)
+ifdef NOPAL
 ALLBINS  := bin/mod.bin bin/mod-ntsc100.bin.diff bin/mod-ntsc101.bin.diff
 else
 ALLBINS  := bin/mod.bin bin/mod-ntsc100.bin.diff bin/mod-ntsc101.bin.diff bin/mod-pal.bin.diff

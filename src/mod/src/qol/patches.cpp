@@ -10,9 +10,14 @@ extern "C" void Camera_CStickControl();
 extern "C" void DevelopMode_SetCameraType();
 
 extern "C" void CSS_PlayerThink(HSD_GObj *gobj);
+extern "C" void CSS_Input();
 extern "C" void CSS_Setup();
 extern "C" void CSS_UpdatePortrait(u8 port);
 extern "C" void CSS_GObjCallback(u8 port);
+
+extern "C" void SSS_Think();
+
+extern "C" void MainMenu_Think();
 
 extern "C" void CreateScorePopup(u8 port);
 
@@ -123,4 +128,11 @@ static const auto patches = patch_list {
 	// Clone characters slide out from behind CSS
 	std::pair { (char*)&CSSAnimStartFrame,        0.0 },
 #endif
+	// LRAStart at menu goes back to CSS
+	// li r3, Scene_VsMode
+	std::pair { (char*)SSS_Think+0x6C,            0x38600002u },
+	// li r3, Scene_VsMode
+	std::pair { (char*)CSS_Input+0x1F0,           0x38600002u },
+	// li r0, Scene_VsMode
+	std::pair { (char*)MainMenu_Think+0x54,       0x38000002u },
 };
