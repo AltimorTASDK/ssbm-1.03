@@ -94,6 +94,11 @@ static void card_done()
 	// Wake up the main thread
 	op.wait.wake();
 
+#ifdef PAL
+	// Restore PAL gamecode
+	cardmap[0].gamecode[3] = 'P';
+#endif
+
 	// Check if the game is waiting to use the memcard
 	if (op.save_pending) {
 		orig_MemoryCard_RequestSave();
@@ -213,6 +218,11 @@ static void card_io(s32 card, const char *filename, void *buffer, u32 size, bool
 	const auto callback = read ? read_callback : write_callback;
 
 	InitCardBuffers();
+
+#ifdef PAL
+	// Use GALE01 saves
+	cardmap[0].gamecode[3] = 'E';
+#endif
 
 	if (op.error = CARD_MountAsync(card, CardWorkArea, nullptr, callback); op.error < 0)
 		card_error("CARD_MountAsync failed (%d)\n", op.error);
