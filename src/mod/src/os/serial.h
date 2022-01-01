@@ -3,12 +3,15 @@
 #include <gctypes.h>
 #include "util/vector.h"
 
-struct SIPoll {
-	u32 : 6;
-	u32 x : 10;
-	u32 y : 8;
-	u32 enable : 4;
-	u32 vblank_copy : 4;
+union SIPoll {
+	u32 raw;
+	struct {
+		u32 : 6;
+		u32 x : 10;
+		u32 y : 8;
+		u32 enable : 4;
+		u32 vblank_copy : 4;
+	};
 };
 
 struct SIData {

@@ -352,7 +352,8 @@ static bool detect_fm_impl()
 static bool detect_fm()
 {
 	const auto irq_enable = OSDisableInterrupts();
-	const auto sipoll = SIDisablePolling(0b11110000 << 24);
+	const auto sipoll = Si.poll.raw;
+	SIDisablePolling(0b11110000 << 24);
 	const auto result = detect_fm_impl();
 	SIEnablePolling(sipoll << 24);
 	OSRestoreInterrupts(irq_enable);
