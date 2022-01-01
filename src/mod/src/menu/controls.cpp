@@ -421,7 +421,7 @@ static float get_y_index(auto index)
 	switch (get_controls()) {
 	case controls_type::z_jump:   return 2.5f;               break;
 	case controls_type::z_angles: return (float)index + 2.f; break;
-	case controls_type::all:      return (float)index;       break;
+	default:                      return (float)index;       break;
 	}
 }
 
