@@ -1,5 +1,6 @@
 #pragma once
 
+#include "hsd/gobj.h"
 #include "util/vector.h"
 #include <gctypes.h>
 
