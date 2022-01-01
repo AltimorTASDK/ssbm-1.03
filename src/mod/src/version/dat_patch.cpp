@@ -13,6 +13,7 @@
 #endif
 
 #ifdef PAL
+#include "resources/patches/pal/IfAll.diff.h"
 #include "resources/patches/pal/PlCa.diff.h"
 #include "resources/patches/pal/PlCl.diff.h"
 #include "resources/patches/pal/PlFc.diff.h"
@@ -54,6 +55,7 @@ const patch_entry patch_table[] = {
 	{ DVDConvertPathToEntrynum("PlGn.dat"), PlGn_diff_data },
 #endif
 #ifdef PAL
+	{ DVDConvertPathToEntrynum("IfAll.ukd"), IfAll_diff_data },
 	{ DVDConvertPathToEntrynum("PlCa.dat"), PlCa_diff_data },
 	{ DVDConvertPathToEntrynum("PlCl.dat"), PlCl_diff_data },
 	{ DVDConvertPathToEntrynum("PlFc.dat"), PlFc_diff_data },
@@ -80,11 +82,16 @@ extern "C" void patch_preloaded_archive(PreloadEntry *entry)
 
 		const auto size = apply_diff(entry->raw_data->addr, patch.diff, nullptr);
 
-		auto *out = (HSD_AllocEntry*)HSD_MemAllocFromHeap(entry->heap, size);
-		apply_diff(entry->raw_data->addr, patch.diff, out->addr);
-
-		// Replace original buffer
+		// Move original buffer onto main heap to avoid OOM on preload heap
+		auto *original = new char[entry->size];
+		memcpy(original, entry->raw_data->addr, entry->size);
 		HSD_FreeToHeap(entry->heap, entry->raw_data->addr);
+
+		auto *out = (HSD_AllocEntry*)HSD_MemAllocFromHeap(entry->heap, size);
+		apply_diff(original, patch.diff, out->addr);
+
+		delete[] original;
+
 		entry->size = size;
 		entry->raw_data = out;
 		return;
