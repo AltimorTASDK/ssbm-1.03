@@ -24,12 +24,13 @@
 #include "resources/music/music_stages_mask.tex.h"
 #include "resources/rules/stage_music_header.tex.h"
 
+constexpr auto toggle_count = 32;
+
 struct ItemMenuData {
 	u8 menu_type;
 	u8 selected;
-	u8 toggles[31];
+	u8 toggles[toggle_count];
 	u8 selected_stage;
-	char pad022;
 	u8 state;
 	HSD_JObj *jobj_tree[7];
 	Text *text_left;
@@ -42,7 +43,11 @@ extern "C" ArchiveModel MenMainPanel_Top;
 extern "C" HSD_GObj *ItemMenuGObj;
 
 extern "C" HSD_GObj *Menu_SetupItemMenu(u32 entry_point);
+extern "C" void Menu_SetupItemToggles(HSD_GObj *gobj);
 extern "C" HSD_JObj *Menu_GetItemToggle(ItemMenuData *data, u8 index);
+extern "C" void Menu_UpdateItemDisplay(HSD_GObj *gobj, bool index_changed, bool value_changed);
+extern "C" void Menu_ItemMenuThink(HSD_GObj *gobj);
+extern "C" void Menu_ItemMenuInput(HSD_GObj *gobj);
 
 template<string_literal str, u16 scale = 138>
 static constexpr auto item_text()
@@ -66,17 +71,18 @@ constexpr auto text_left = text_builder::build(
 	item_text<"Earthbound">(),
 	item_text<"Fire Emblem">(),
 	item_text<"Flat Zone">(),
+	item_text<"Giga Bowser">(),
 	item_text<"Great Bay">(),
 	item_text<"Green Greens">(),
 	item_text<"Icicle Mountain">(),
 	item_text<"Jungle Japes">(),
 	item_text<"Kongo Jungle">(),
-	item_text<"Kongo Jungle N64">(),
-	item_text<"Mach Rider">());
+	item_text<"Kongo Jungle N64">());
 
 constexpr auto text_right = text_builder::build(
 	text_builder::right(),
 	text_builder::kern(),
+	item_text<"Mach Rider">(),
 	item_text<"Metal Battle">(),
 	item_text<"Mother">(),
 	item_text<"Mother 2">(),
@@ -103,14 +109,15 @@ constexpr int bgm_ids[] = {
 	BGM_Earthbound,
 	BGM_FireEmblem,
 	BGM_FlatZone,
+	BGM_GigaBowser,
 	BGM_GreatBay,
 	BGM_GreenGreens,
 	BGM_IcicleMountain,
 	BGM_JungleJapes,
 	BGM_KongoJungle,
 	BGM_KongoJungleN64,
-	BGM_MachRider,
 
+	BGM_MachRider,
 	BGM_MetalBattle,
 	BGM_Mother,
 	BGM_Mother2,
@@ -133,7 +140,79 @@ static mempool pool;
 static const auto patches = patch_list {
 	// Start cursor on BF
 	// li r3, 5
-	std::pair { (char*)Menu_SetupItemMenu+0x154, 0x38600005u },
+	std::pair { (char*)Menu_SetupItemMenu+0x154,     0x38600005u },
+
+	// Change item frequency index/toggle count checks from 31/32 to 32/33
+	// cmplwi r27, 33
+	std::pair { (char*)Menu_UpdateItemDisplay+0x38,  0x281B0021u },
+	// cmplwi r0, 33
+	std::pair { (char*)Menu_UpdateItemDisplay+0x64,  0x28000021u },
+	// cmplwi r27, 33
+	std::pair { (char*)Menu_UpdateItemDisplay+0x168, 0x281B0021u },
+	// cmplwi r0, 33
+	std::pair { (char*)Menu_UpdateItemDisplay+0x188, 0x28000021u },
+	// subi r0, r27, 32
+	std::pair { (char*)Menu_UpdateItemDisplay+0x28C, 0x381BFFE0u },
+	// cmplwi r0, 33
+	std::pair { (char*)Menu_UpdateItemDisplay+0x5A0, 0x28000021u },
+	// cmplwi r0, 33
+	std::pair { (char*)Menu_UpdateItemDisplay+0x5C0, 0x28000021u },
+	// cmplwi r4, 33
+	std::pair { (char*)Menu_UpdateItemDisplay+0x66C, 0x28040021u },
+	// subi r0, r4, 32
+	std::pair { (char*)Menu_ItemMenuThink+0x2DC,     0x3804FFE0u },
+	// cmplwi r4, 33
+	std::pair { (char*)Menu_ItemMenuThink+0x37C,     0x28040021u },
+	// cmpwi r26, 32
+	std::pair { (char*)Menu_ItemMenuThink+0x3BC,     0x2C1A0020u },
+	// cmplwi r0, 32
+	std::pair { (char*)Menu_SetupItemMenu+0x13C,     0x28000020u },
+	// cmplwi r0, 33
+	std::pair { (char*)Menu_SetupItemMenu+0x190,     0x28000021u },
+	// cmpwi r27, 32
+	std::pair { (char*)Menu_SetupItemMenu+0x370,     0x2C1B0020u },
+	// cmplwi r27, 33
+	std::pair { (char*)Menu_SetupItemMenu+0x398,     0x281B0021u },
+	// cmplwi r0, 33
+	std::pair { (char*)Menu_SetupItemMenu+0x6B0,     0x28000021u },
+	// cmpwi r27, 32
+	std::pair { (char*)Menu_SetupItemToggles+0x100,  0x2C1B0020u },
+	// cmplwi r29, 33
+	std::pair { (char*)Menu_SetupItemToggles+0x114,  0x281D0021u },
+	// cmpwi r30, 32
+	std::pair { (char*)Menu_ItemMenuInput+0x78,      0x2C1E0020u },
+	// cmplwi r0, 32
+	std::pair { (char*)Menu_ItemMenuInput+0xC8,      0x28000020u },
+	// cmpwi r27, 32
+	std::pair { (char*)Menu_ItemMenuInput+0x118,     0x2C1B0020u },
+	// cmpwi r30, 32
+	std::pair { (char*)Menu_ItemMenuInput+0x17C,     0x2C1E0020u },
+	// cmpwi r30, 32
+	std::pair { (char*)Menu_ItemMenuInput+0x1C8,     0x2C1E0020u },
+
+	// Move data->selected_stage from 0x21 to 0x22
+	// lbz r4, 0x22(r28)
+	std::pair { (char*)Menu_UpdateItemDisplay+0x50,  0x889C0022u },
+	// lbz r4, 0x22(r30)
+	std::pair { (char*)Menu_ItemMenuThink+0x2F0,     0x889E0022u },
+	// stb r0, 0x22(r30)
+	std::pair { (char*)Menu_ItemMenuThink+0x3A0,     0x981E0022u },
+	// lbz r3, 0x22(r25)
+	std::pair { (char*)Menu_ItemMenuThink+0x3C8,     0x88790022u },
+	// stb r3, 0x22(r25)
+	std::pair { (char*)Menu_SetupItemMenu+0x158,     0x98790022u },
+	// lbz r0, 0x22(r25)
+	std::pair { (char*)Menu_SetupItemMenu+0x1A4,     0x88190022u },
+	// lbz r3, 0x22(r25)
+	std::pair { (char*)Menu_SetupItemMenu+0x6A4,     0x88790022u },
+	// lbz r3, 0x22(r29)
+	std::pair { (char*)Menu_ItemMenuInput+0x84,      0x887D0022u },
+	// lbz r3, 0x22(r29)
+	std::pair { (char*)Menu_ItemMenuInput+0x124,     0x887D0022u },
+	// lbz r3, 0x22(r28)
+	std::pair { (char*)Menu_ItemMenuInput+0x188,     0x887C0022u },
+	// lbz r3, 0x22(r28)
+	std::pair { (char*)Menu_ItemMenuInput+0x1D4,     0x887C0022u },
 };
 
 static int get_selected_bgm_id(ItemMenuData *data, u8 stage)
@@ -176,7 +255,7 @@ static void set_toggle(ItemMenuData *data, u8 index, bool toggle)
 static void change_stage(ItemMenuData *data, u8 stage)
 {
 	// Copy selection for stage
-	for (u8 i = 0; i < 31; i++)
+	for (u8 i = 0; i < toggle_count; i++)
 		set_toggle(data, i, i == config.stage_bgm[stage]);
 
 	play_selected_bgm(data, stage);
@@ -189,7 +268,7 @@ extern "C" void hook_Menu_UpdateItemDisplay(HSD_GObj *gobj, bool index_changed, 
 
 	auto *data = gobj->get<ItemMenuData>();
 
-	if (MenuSelectedIndex >= 31) {
+	if (MenuSelectedIndex >= toggle_count) {
 		if (value_changed)
 			change_stage(data, MenuSelectedValue);
 		return;
@@ -207,7 +286,7 @@ extern "C" void hook_Menu_UpdateItemDisplay(HSD_GObj *gobj, bool index_changed, 
 	else
 		config.stage_bgm[data->selected_stage] = BGM_Undefined;
 
-	for (u8 i = 0; i < 31; i++) {
+	for (u8 i = 0; i < toggle_count; i++) {
 		// Disable all other songs
 		if (i != MenuSelectedIndex)
 			set_toggle(data, i, false);
@@ -298,7 +377,7 @@ extern "C" void hook_Menu_SetupItemToggles(HSD_GObj *gobj)
 
 	auto *data = gobj->get<ItemMenuData>();
 
-	for (u8 i = 0; i < 31; i++) {
+	for (u8 i = 0; i < toggle_count; i++) {
 		auto *jobj = Menu_GetItemToggle(data, i);
 		// Hide item image
 		HSD_JObjSetFlagsAll(HSD_JObjGetFromTreeByIndex(jobj, 7), HIDDEN);
@@ -340,7 +419,7 @@ extern "C" void hook_Menu_ItemMenuInput(HSD_GObj *gobj)
 
 	change_stage(data, data->selected_stage);
 
-	if (MenuSelectedIndex >= 31) {
+	if (MenuSelectedIndex >= toggle_count) {
 		MenuSelectedValue = data->selected_stage;
 		hook_Menu_UpdateItemDisplay(ItemMenuGObj, false, true);
 		return;
@@ -351,16 +430,87 @@ extern "C" void hook_Menu_ItemMenuInput(HSD_GObj *gobj)
 	const auto old_value = MenuSelectedValue;
 	const auto old_selected = data->selected;
 
-	MenuSelectedIndex = 31;
+	MenuSelectedIndex = toggle_count;
 	MenuSelectedValue = data->selected_stage;
 	hook_Menu_UpdateItemDisplay(ItemMenuGObj, true, true);
 
 	MenuSelectedIndex = old_index;
 	MenuSelectedValue = old_value;
-	data->selected = 31;
+	data->selected = toggle_count;
 	hook_Menu_UpdateItemDisplay(ItemMenuGObj, true, false);
 
 	data->selected = old_selected;
+}
+
+static int get_scroll_index(ItemMenuData *data, u32 buttons)
+{
+	constexpr auto row_count = 16;
+
+	// Stage rotator accessed from left or right side
+	constexpr auto stage_left = toggle_count;
+	constexpr auto stage_right = toggle_count + 1;
+
+	// Toggle wrap around points
+	constexpr auto top_left = 0;
+	constexpr auto top_right = row_count;
+	constexpr auto bottom_left = row_count - 1;
+	constexpr auto bottom_right = toggle_count - 1;
+
+	if (buttons & MenuButton_Up) {
+		switch (MenuSelectedIndex) {
+		case stage_left:   return bottom_left;
+		case stage_right:  return bottom_right;
+		case top_left:     return stage_left;
+		case top_right:    return stage_right;
+		default:           return MenuSelectedIndex - 1;
+		}
+	} else if (buttons & MenuButton_Down) {
+		switch (MenuSelectedIndex) {
+		case stage_left:   return top_left;
+		case stage_right:  return top_right;
+		case bottom_left:  return stage_left;
+		case bottom_right: return stage_right;
+		default:           return MenuSelectedIndex + 1;
+		}
+	} else if (buttons & MenuButton_Left) {
+		switch (MenuSelectedIndex) {
+		case stage_left:
+		case stage_right:
+			MenuSelectedValue = (u8)increment_mod((int)MenuSelectedValue, 6);
+			return MenuSelectedIndex;
+		default:
+			if (MenuSelectedIndex >= row_count)
+				return MenuSelectedIndex - row_count;
+		}
+	} else if (buttons & MenuButton_Right) {
+		switch (MenuSelectedIndex) {
+		case stage_left:
+		case stage_right:
+			MenuSelectedValue = (u8)decrement_mod((int)MenuSelectedValue, 6);
+			return MenuSelectedIndex;
+		default:
+			if (MenuSelectedIndex < row_count)
+				return MenuSelectedIndex + row_count;
+		}
+	}
+
+	return MenuSelectedIndex;
+}
+
+extern "C" void orig_Menu_ItemMenuScroll(ItemMenuData *data, u32 buttons);
+extern "C" void hook_Menu_ItemMenuScroll(ItemMenuData *data, u32 buttons)
+{
+	const auto index = (u16)get_scroll_index(data, buttons);
+
+	if (index == MenuSelectedIndex)
+		return;
+
+	MenuSelectedIndex = index;
+
+	if (index < toggle_count)
+		MenuSelectedValue = data->toggles[index];
+	else
+		MenuSelectedValue = data->selected_stage;
 }
 
 extern "C" void orig_Menu_ExitToRulesMenu();

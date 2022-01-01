@@ -168,18 +168,14 @@ add_hook Match_HandlePause
 add_hook MatchController_UpdateTeamWinners
 add_hook MatchController_UpdateWinners
 add_hook Menu_CreateRuleDescriptionText
-add_hook Menu_ExitToRulesMenu
 add_hook Menu_GetBGM
-add_hook Menu_ItemMenuInput
 add_hook Menu_MenuPanelThink
 add_hook Menu_RandomStageMenuInput
 add_hook Menu_RandomStageMenuScroll
 add_hook Menu_RulesMenuInput
-add_hook Menu_SetupItemToggles
 add_hook Menu_SetupRulesMenu
 add_hook Menu_SetupRandomStageMenu
 add_hook Menu_SetupRandomStageToggles
-add_hook Menu_UpdateItemDisplay
 add_hook Menu_UpdateRandomStageDisplay
 add_hook Menu_UpdateRuleDisplay
 add_hook Menu_UpdateRuleValue
@@ -196,7 +192,6 @@ add_hook Stage_Fountain_CreateReflection
 add_hook Stage_Fountain_CreateStars
 add_hook Stage_Fountain_SetupModel
 add_hook Stage_Fountain_UpdateReflection
-add_hook Stage_GetBGM
 add_hook Stage_PokemonStadium_TransformationDecide
 add_hook Stage_Setup
 add_hook Stage_YoshisStory_ShyGuyUpdate
@@ -215,6 +210,13 @@ add_hook UpdatePlayerStick
 add_hook Stage_IsValidRandomChoice
 add_hook SSS_Init
 add_hook SSS_Think
+# Stage music menu
+add_hook Menu_ExitToRulesMenu
+add_hook Menu_ItemMenuInput
+add_hook Menu_ItemMenuScroll
+add_hook Menu_SetupItemToggles
+add_hook Menu_UpdateItemDisplay
+add_hook Stage_GetBGM
 # Additional rules menu
 .set SelectExtraRuleModel, Menu_SetupExtraRulesMenu+0x55C
 .set CheckExtraRuleVisible1, Menu_UpdateExtraRuleDisplay+0xE8
