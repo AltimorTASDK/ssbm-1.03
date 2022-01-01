@@ -16,13 +16,23 @@
 #include "util/melee/text_builder.h"
 #include <gctypes.h>
 
-#include "resources/screens/manual_p1.tex.h"
-#include "resources/screens/manual_p2.tex.h"
-#include "resources/screens/manual_p3.tex.h"
+#ifdef NOPAL
+#include "resources/screens/a/manual_p1.tex.h"
+#include "resources/screens/a/manual_p2.tex.h"
+#include "resources/screens/a/manual_p3.tex.h"
+#else
+#include "resources/screens/b/manual_p1.tex.h"
+#include "resources/screens/b/manual_p2.tex.h"
+#include "resources/screens/b/manual_p3.tex.h"
+#endif
 #include "resources/screens/manual_border.tex.h"
 #include "resources/screens/scrollbar.tex.h"
 
+#ifdef NOPAL
 constexpr auto MAX_SCROLL = 2.114f;
+#else
+constexpr auto MAX_SCROLL = 2.138f;
+#endif
 
 static texture texture_p1;
 static texture texture_p2;
