@@ -394,9 +394,9 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 	// Set anim frame correctly for 4-value model
 	set_value_anim(data, ExtraRule_StageMods);
 
-	// Use rotator for last option
-	set_to_rotator(data, ExtraRule_Widescreen);
-	set_value_anim(data, ExtraRule_Widescreen);
+	// Use rotator for option replacing random stage select
+	set_to_rotator(data, ExtraRule_RandomStage);
+	set_value_anim(data, ExtraRule_RandomStage);
 
 	fix_rule_anims(data);
 

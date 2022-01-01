@@ -1,6 +1,6 @@
 .section .text
 
-.set ExtraRule_Latency, 4
+.set ExtraRule_Latency, 5
 
 .global hook_SelectExtraRuleModel
 hook_SelectExtraRuleModel:
