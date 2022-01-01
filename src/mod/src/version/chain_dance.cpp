@@ -2,7 +2,6 @@
 
 #include "melee/action_state.h"
 #include "util/patch_list.h"
-#include <gctypes.h>
 
 extern "C" ActionStateInfo LinkActionStates[21];
 extern "C" ActionStateInfo YLinkActionStates[21];
