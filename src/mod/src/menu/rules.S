@@ -91,4 +91,4 @@ hook_CheckToSetStockCountValue4:
 hook_CheckToSetStockCountValue5:
         bl      check_mode
         # Skip overwritten instruction
-        b       orig_CheckToSetStockCountValue5+5
+        b       orig_CheckToSetStockCountValue5+4
