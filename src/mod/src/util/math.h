@@ -23,6 +23,12 @@ constexpr auto is_pow2(auto value)
 }
 
 template<typename T>
+constexpr T prev_pow2(T value)
+{
+	return (T)(((std::make_unsigned_t<T>)-1 >> (__builtin_clz(value) + 1)) + 1);
+}
+
+template<typename T>
 constexpr T next_pow2(T value)
 {
 	return (T)(((std::make_unsigned_t<T>)-1 >> __builtin_clz(value - 1)) + 1);
