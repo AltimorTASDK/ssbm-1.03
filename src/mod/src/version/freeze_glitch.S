@@ -3,11 +3,11 @@
 
 .set Player.held_player, 0x1A5C
 
-.global hook_Player_ICs_SyncSideB
-hook_Player_ICs_SyncSideB:
+.global hook_ThrowSyncSideB
+hook_ThrowSyncSideB:
         # Apply freeze glitch
         li      r0, 0
         stw     r0, Player.held_player(r30)
-        b       orig_Player_ICs_SyncSideB
+        b       orig_ThrowSyncSideB
 
 #endif
