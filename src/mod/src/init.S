@@ -382,6 +382,9 @@ add_hook Item_GrappleBeam_Active
 # Restore freeze glitch
 .set ThrowSyncSideB, Player_ICs_SyncSideB+0x50
 add_hook ThrowSyncSideB
+# Disable item hitboxes when colliding with a triggerbox
+.set OnTriggerboxHitItem, Player_ItemHitDetection+0x484
+add_hook OnTriggerboxHitItem
 #endif
 
 hooks_end:
