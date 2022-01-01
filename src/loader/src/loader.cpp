@@ -172,11 +172,11 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 
 #ifndef NTSC102
 #if defined(NTSC100)
-	auto *diff = get_file(data, 1);
+	const auto *diff = get_file(data, 1);
 #elif defined(NTSC101)
-	auto *diff = get_file(data, 2);
+	const auto *diff = get_file(data, 2);
 #elif defined(PAL)
-	auto *diff = get_file(data, 3);
+	const auto *diff = get_file(data, 3);
 #endif
 	const auto code_size = apply_diff(base->data, diff->data, &__MOD_BASE__);
 #else
