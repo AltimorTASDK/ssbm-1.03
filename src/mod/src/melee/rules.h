@@ -11,9 +11,9 @@ enum class stage_mod_type : u8 {
 };
 
 enum class controls_type : u8 {
-	z_jump = 0,
-	angles = 1,
-	all = 2,
+	z_jump   = 0,
+	z_angles = 1,
+	all      = 2,
 	max
 };
 
