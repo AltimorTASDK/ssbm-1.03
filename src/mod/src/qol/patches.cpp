@@ -86,10 +86,17 @@ static const auto patches = patch_list {
 	std::pair { (char*)CreateScorePopup,          0x38600000u },
 	std::pair { (char*)CreateScorePopup+4,        BLR },
 	// Remove in-game port tags (P1/P2 etc)
+#ifdef PAL
+	std::pair { (char*)NameTag_Think+0x7C,        NOP },
+	std::pair { (char*)NameTag_Think+0x9C,        NOP },
+	// li r3, 0
+	std::pair { (char*)NameTag_Think+0xA4,        0x38600000u },
+#else
 	std::pair { (char*)NameTag_Think+0x60,        NOP },
 	std::pair { (char*)NameTag_Think+0x80,        NOP },
 	// li r3, 0
 	std::pair { (char*)NameTag_Think+0x88,        0x38600000u },
+#endif
 	// Enable damage staling in develop mode
 	// b 0x8
 	std::pair { (char*)Damage_DamageStale+0x28,   0x48000008u },
