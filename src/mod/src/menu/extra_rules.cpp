@@ -178,6 +178,7 @@ constexpr auto widescreen_descriptions = multi_array {
 };
 
 static mempool pool;
+static texture_swap *widescreen_text;
 static texture_swap *decompressed_textures[ExtraRule_Max];
 
 static const auto patches = patch_list {
@@ -283,6 +284,13 @@ static void replace_toggle_texture(ExtraRulesMenuData *data, int index)
 	tobj->imagedesc = decompressed_textures[index]->image;
 }
 
+static void fix_widescreen_text(ExtraRulesMenuData *data)
+{
+	auto *cursor = data->jobj_tree.rules[get_jobj_index(ExtraRule_Widescreen)]->child;
+	auto *text = HSD_JObjGetFromTreeByIndex(cursor, 7);
+	text->u.dobj->mobj->tobj->imagedesc = widescreen_text->image;
+}
+
 static void set_to_rotator(ExtraRulesMenuData *data, int index)
 {
 	auto *cursor = data->jobj_tree.rules[get_jobj_index(index)]->child;
@@ -360,7 +368,7 @@ static void load_textures()
 	pool.add_texture_swap(controls_tex_data,        rule_names->texanim->imagetbl[11]);
 	pool.add_texture_swap(controller_fix_tex_data,  rule_names->texanim->imagetbl[12]);
 	pool.add_texture_swap(latency_tex_data,         rule_names->texanim->imagetbl[13]);
-	//pool.add_texture_swap(widescreen_tex_data,      rule_names->texanim->imagetbl[14]);
+	widescreen_text = pool.add_texture_swap(widescreen_tex_data);
 
 	// Load rule value textures
 	decompressed_textures[ExtraRule_Pause] =
@@ -400,6 +408,9 @@ extern "C" void hook_Menu_UpdateExtraRuleDescriptionText(HSD_GObj *gobj,
 
 	// Fix all rule anims since changes will have been overridden
 	fix_rule_anims(data);
+
+	// Manually apply widescreen rotator texture since there's normally no 7th texture
+	fix_widescreen_text(data);
 
 	if (data->state == MenuState_ExitFrom || data->state == MenuState_EnterFrom) {
 		if (text != nullptr) {
@@ -467,7 +478,9 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 
 	// Initialize extra rotators
 	data->latency = GetGameRules()->latency;
+	set_value_anim(data, ExtraRule_Latency);
 	data->widescreen = GetGameRules()->widescreen;
+	set_value_anim(data, ExtraRule_Widescreen);
 
 	// Free assets on menu exit
 	gobj->user_data_remove_func = pool_free;
@@ -494,6 +507,9 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 	// Use rotator for option replacing random stage select
 	set_to_rotator(data, ExtraRule_RandomStage);
 	set_value_anim(data, ExtraRule_RandomStage);
+
+	// Manually apply widescreen rotator texture since there's normally no 7th texture
+	fix_widescreen_text(data);
 
 	// Initialize description with custom handling
 	hook_Menu_UpdateExtraRuleDescriptionText(gobj, true, false);
