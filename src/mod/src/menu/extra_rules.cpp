@@ -1,3 +1,4 @@
+#include "controls/config.h"
 #include "hsd/archive.h"
 #include "hsd/dobj.h"
 #include "hsd/gobj.h"
@@ -523,6 +524,15 @@ extern "C" bool hook_Menu_IsExtraRuleVisible(u8 index)
 	return index != ExtraRule_Latency || !is_faster_melee();
 }
 
+static void on_exit()
+{
+	config.save();
+
+	// Apply controls settings
+	for (auto &controls : controller_configs)
+		controls.make_legal();
+}
+
 extern "C" void orig_Menu_ExtraRulesMenuInput(HSD_GObj *gobj);
 extern "C" void hook_Menu_ExtraRulesMenuInput(HSD_GObj *gobj)
 {
@@ -537,7 +547,7 @@ extern "C" void hook_Menu_ExtraRulesMenuInput(HSD_GObj *gobj)
 	orig_Menu_ExtraRulesMenuInput(gobj);
 
 	if (!(buttons & MenuButton_A) && (buttons & (MenuButton_B | MenuButton_Start)))
-		config.save();
+		on_exit();
 
 	if (!is_faster_melee() || MenuSelectedIndex != ExtraRule_Latency)
 		return;

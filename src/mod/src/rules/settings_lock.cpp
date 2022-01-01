@@ -49,9 +49,6 @@ extern "C" void hook_InitializeGlobalData()
 
 	settings_lock = true;
 
-	for (auto &controls : controller_configs)
-		controls.make_legal();
-
 	for (size_t i = 0; i < std::extent_v<decltype(config.stage_bgm)>; i++)
 		config.stage_bgm[i] = BGM_Undefined;
 

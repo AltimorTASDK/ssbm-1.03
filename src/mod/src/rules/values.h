@@ -51,6 +51,12 @@ inline latency_mode get_latency()
 	return rules->latency;
 }
 
+inline controls_type get_controls()
+{
+	const auto *rules = GetGameRules();
+	return rules->controls;
+}
+
 inline bool should_use_oss()
 {
 	const auto *rules = GetGameRules();

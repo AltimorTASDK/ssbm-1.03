@@ -22,10 +22,7 @@ enum class option {
 	min,
 
 	z_jump = min,
-
-	max_locked,
-
-	perfect_angles = max_locked,
+	perfect_angles,
 	c_up,
 	c_horizontal,
 	c_down,
@@ -165,7 +162,11 @@ static struct {
 
 	void init()
 	{
-		max_toggle = !get_settings_lock() ? option::max_toggle : option::max_locked;
+		switch (get_controls()) {
+		case controls_type::z_jump:   max_toggle = option::z_jump + 1;         break;
+		case controls_type::z_angles: max_toggle = option::perfect_angles + 1; break;
+		case controls_type::all:      max_toggle = option::max_toggle;         break;
+		}
 
 		selected = option::min;
 		footer_timer = 0;
@@ -295,11 +296,14 @@ static struct {
 			config->z_jump_bit == __builtin_ctz(Button_X) ? 1 :
 			config->z_jump_bit == __builtin_ctz(Button_Y) ? 2 : 0;
 
-		if (get_settings_lock())
+		if (get_controls() == controls_type::z_jump)
 			return;
 
 		get_toggle(option::perfect_angles)->value =
 			config->perfect_angles ? 1 : 0;
+
+		if (get_controls() == controls_type::z_angles)
+			return;
 
 		get_toggle(option::c_up)->value =
 			config->c_up         == cstick_type::tilt ? 1 : 0;
@@ -324,13 +328,16 @@ static struct {
 			__builtin_ctz(Button_Y)
 		}[get_toggle(option::z_jump)->value];
 
-		if (get_settings_lock())
+		if (get_controls() == controls_type::z_jump)
 			return;
 
 		config->perfect_angles = std::array {
 			false,
 			true
 		}[get_toggle(option::perfect_angles)->value];
+
+		if (get_controls() == controls_type::z_angles)
+			return;
 
 		config->c_up = std::array {
 			cstick_type::smash,
@@ -409,9 +416,18 @@ static HSD_GObj *create_model(ArchiveModelScene *model, GObjProcCallback callbac
 	return gobj;
 }
 
+static float get_y_index(option index)
+{
+	switch (get_controls()) {
+	case controls_type::z_jump:   return 2.5f;               break;
+	case controls_type::z_angles: return (float)index + 2.f; break;
+	case controls_type::all:      return (float)index;       break;
+	}
+}
+
 static float calc_toggle_y_position(option index)
 {
-	return 11.5f - (!get_settings_lock() ? (float)index : 2.5f) * 3.5f;
+	return 11.5f - get_y_index(index) * 3.5f;
 }
 
 static void set_y_position(HSD_GObj *gobj, float y)
@@ -538,7 +554,7 @@ static void create_text()
 	menu_state.update_description();
 
 	for (auto index = 0; index < menu_state.max_toggle; index++) {
-		const auto y_pos = 113.f + (!get_settings_lock() ? (float)index : 2.5f) * 35.7f;
+		const auto y_pos = 113.f + get_y_index(index) * 35.7f;
 		auto *toggle = &menu_state.toggles[index];
 
 		toggle->label_text = Text_Create(0, canvas, 123, y_pos, 0, 360, 40);
