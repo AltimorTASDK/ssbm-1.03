@@ -15,7 +15,7 @@
 #include <gctypes.h>
 
 #include "resources/portals/vs_mode_preview.tex.h"
-#include "resources/portals/controls.tex.h"
+#include "resources/portals/controls_portal.tex.h"
 #include "resources/portals/controls_preview.tex.h"
 #include "resources/portals/debug_menu.tex.h"
 #include "resources/portals/debug_menu_preview.tex.h"
@@ -168,9 +168,9 @@ extern "C" void hook_MainMenu_Init(void *menu)
 
 	// Replace portal textures
 	const auto *names = MenMainCursor_Top.matanim_joint->child->child->next->matanim;
-	unmanaged_texture_swap(controls_tex_data,   names->texanim->imagetbl[11]);
-	unmanaged_texture_swap(debug_menu_tex_data, names->texanim->imagetbl[12]);
-	unmanaged_texture_swap(manual_tex_data,     names->texanim->imagetbl[13]);
+	unmanaged_texture_swap(controls_portal_tex_data, names->texanim->imagetbl[11]);
+	unmanaged_texture_swap(debug_menu_tex_data,      names->texanim->imagetbl[12]);
+	unmanaged_texture_swap(manual_tex_data,          names->texanim->imagetbl[13]);
 
 	// Replace preview textures
 	const auto *previews =
