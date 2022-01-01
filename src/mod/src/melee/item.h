@@ -9,7 +9,9 @@ struct Item {
 	vec3 position;
 	vec3 push_vel;
 	vec3 surface_vel;
-	char pad070[0xDC8 - 0x070];
+	char pad070[0x518 - 0x070];
+	HSD_GObj *owner;
+	char pad51C[0xDC8 - 0x51C];
 	struct {
 		u8 flags1_80 : 1;
 		u8 flags1_40 : 1;

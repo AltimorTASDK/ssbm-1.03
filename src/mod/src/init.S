@@ -364,15 +364,18 @@ add_hook Player_Mewtwo_CreateFThrowBall
 .set NormalizeItemBounceVelocity, Item_ElasticCollision+0x300
 add_hook NormalizeItemBounceVelocity
 #endif
-# File patching
 #if defined(NTSC100) || defined(PAL)
+# File patching
 .set ParsePreloadedArchive, Archive_GetPreloaded+0x238
 add_hook ParsePreloadedArchive
 #endif
-# DK loses charge when hit out of up B
 #if defined(PAL)
+# DK loses charge when hit out of up B
 add_hook Player_DK_NeutralBHitCallback
 add_hook Player_DK_UpBHitCallback
+# Enable Samus extender
+add_hook Item_GrappleBeam_Startup
+add_hook Item_GrappleBeam_Active
 #endif
 
 hooks_end:

@@ -314,7 +314,13 @@ struct Player {
 	u8 flags18;
 	u8 flags19;
 	char pad2226[0x222C - 0x222B];
-	char char_specific_data[0xD0];
+	union {
+		char raw[0xD0];
+		struct {
+			char pad000[0x14];
+			u8 extender_state;
+		} samus;
+	} char_data;
 	char pad22FC[0x2340 - 0x22FC];
 	union {
 		char raw[0xAC];
