@@ -440,17 +440,6 @@ extern "C" void hook_Menu_UpdateRuleDisplay(HSD_GObj *gobj, bool index_changed, 
 	// Fix all rule anims since changes will have been overridden
 	auto *data = gobj->get<RulesMenuData>();
 	fix_rule_anims(data);
-
-	if (!value_changed)
-		return;
-
-	// Reset crew stock count when switching modes
-	if (MenuSelectedIndex == Rule_Mode && MenuSelectedValue != Mode_Crew)
-		reset_crew_stocks();
-
-	// Reset crew stock count when changing stock count
-	if (MenuSelectedIndex == Rule_StockCount)
-		reset_crew_stocks();
 }
 
 extern "C" void orig_Menu_UpdateRuleValue(HSD_GObj *gobj, HSD_JObj *jobj, u8 index, u32 value);

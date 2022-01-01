@@ -568,9 +568,19 @@ extern "C" void hook_CSS_Setup()
 		}
 	}
 
-	// Force teams mode off in crews
+	// Force teams mode off in crews and reset crew stock count when switching modes
 	if (GetGameRules()->mode == Mode_Crew)
 		CSSData->data.rules.is_teams = false;
+	else
+		reset_crew_stocks();
+
+	// Reset crew stock count when changing stock count
+	if (GetGameRules()->stock_count != last_stock_count)
+		reset_crew_stocks();
+
+	// Apply controls settings
+	for (auto &controls : controller_configs)
+		controls.make_legal();
 
 	orig_CSS_Setup();
 

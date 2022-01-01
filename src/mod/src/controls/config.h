@@ -1,6 +1,8 @@
 #pragma once
 
 #include "melee/player.h"
+#include "melee/rules.h"
+#include "rules/values.h"
 #include <gctypes.h>
 
 enum class cstick_type {

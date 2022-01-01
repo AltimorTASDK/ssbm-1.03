@@ -416,7 +416,7 @@ static HSD_GObj *create_model(ArchiveModelScene *model, GObjProcCallback callbac
 	return gobj;
 }
 
-static float get_y_index(option index)
+static float get_y_index(auto index)
 {
 	switch (get_controls()) {
 	case controls_type::z_jump:   return 2.5f;               break;
