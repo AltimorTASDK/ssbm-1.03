@@ -46,7 +46,7 @@ endif
 export MELEEMAP := $(MELEELD:.ld=.map)
 
 export CFLAGS   := $(DEFINES) -mogc -mcpu=750 -meabi -mhard-float -Os \
-				   -Wall -Wno-register -Wno-unused-value -Wconversion -Warith-conversion \
+				   -Wall -Wno-switch -Wno-register -Wno-unused-value -Wconversion -Warith-conversion \
 				   -ffunction-sections -fdata-sections -mno-sdata \
 				   -fno-builtin-sqrt -fno-builtin-sqrtf
 export ASFLAGS  := $(DEFINES) -Wa,-mregnames -Wa,-mgekko
