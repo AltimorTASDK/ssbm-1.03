@@ -323,7 +323,6 @@ static u8 get_model_max_value(int index)
 		return 4;
 	else
 		return ExtraRuleValueBounds[index].max;
-
 }
 
 static void set_value_anim(ExtraRulesMenuData *data, int index)
