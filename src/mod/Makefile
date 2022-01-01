@@ -91,7 +91,7 @@ TEXTURES         := $(filter     %.png, $(RESOURCES))
 RESOURCES        := $(filter-out %.png, $(RESOURCES))
 
 define get_resource_out
-$(shell echo $(subst $(RESOURCE_DIR_IN), $(RESOURCE_DIR_OUT), $1) | sed -r "s/\\.[ab]\\././")
+$(subst $(RESOURCE_DIR_IN), $(RESOURCE_DIR_OUT), $1)
 endef
 
 define get_texture_out
@@ -99,7 +99,7 @@ $(shell echo $(call get_resource_out, $1) | sed -r "s/([^.]*)\\.?.*\\.png/\\1.te
 endef
 
 define make_resource_rule
-$(call get_resource_out, $1): $1 $(TOOLS)/compress_resource.py
+$(call get_resource_out, $1): $1
 	@mkdir -p $$(dir $$@)
 	cp $$< $$@
 endef
