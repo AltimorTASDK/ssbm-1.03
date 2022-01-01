@@ -314,6 +314,9 @@ add_hook CSS_PlayerThink
 add_hook CSS_Setup
 add_hook CSS_UpdatePortrait
 # Settings lock
+#ifdef PAL
+add_hook Scene_Reset
+#endif
 add_hook InitializeGlobalData
 add_hook InitializeSaveData
 # Manual
@@ -376,6 +379,9 @@ add_hook Player_DK_UpBHitCallback
 # Enable Samus extender
 add_hook Item_GrappleBeam_Startup
 add_hook Item_GrappleBeam_Active
+# Restore freeze glitch
+.set ThrowSyncSideB, Player_ICs_SyncSideB+0x50
+add_hook ThrowSyncSideB
 #endif
 
 hooks_end:

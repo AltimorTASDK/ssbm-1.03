@@ -1229,7 +1229,7 @@
 80122f30 0000003c 80122f30 0 ch_ICs_NanaSpecialHiThrow_CollisionInterrupt
 80122f6c 00000128 80122f6c 0 ch_ICs_NanaSpecialAirHiThrow_CollisionInterrupt
 8012316c 000000ec 8012316c 0 Ab_ICs_NanaUpBThrowPopo?
-801232c8 000001bc 801232c8 0 Ab_ICs_OnSycedSideBStart
+801232c8 000001bc 801232c8 0 Player_ICs_SyncSideB
 80123484 0000002c 80123484 0 Ab_ICs_OnSyncedSideBEachFrame
 801234b0 000000b4 801234b0 0 Ab_ICs_OnGroundedSyncedSideBStart
 80123618 000000c4 80123618 0 ch_ICs_NanaSpecialS2_AnimationInterrupt
