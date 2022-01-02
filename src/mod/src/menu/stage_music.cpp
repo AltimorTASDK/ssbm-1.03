@@ -159,12 +159,21 @@ static const auto patches = patch_list {
 	std::pair { (char*)Menu_UpdateItemDisplay+0x5C0, 0x28000021u },
 	// cmplwi r4, 33
 	std::pair { (char*)Menu_UpdateItemDisplay+0x66C, 0x28040021u },
+#ifdef PAL
+	// subi r0, r4, 32
+	std::pair { (char*)Menu_ItemMenuThink+0x2A8,     0x3804FFE0u },
+	// cmplwi r4, 33
+	std::pair { (char*)Menu_ItemMenuThink+0x350,     0x28040021u },
+	// cmpwi r26, 32
+	std::pair { (char*)Menu_ItemMenuThink+0x388,     0x2C1A0020u },
+#else
 	// subi r0, r4, 32
 	std::pair { (char*)Menu_ItemMenuThink+0x2DC,     0x3804FFE0u },
 	// cmplwi r4, 33
 	std::pair { (char*)Menu_ItemMenuThink+0x37C,     0x28040021u },
 	// cmpwi r26, 32
 	std::pair { (char*)Menu_ItemMenuThink+0x3BC,     0x2C1A0020u },
+#endif
 	// cmplwi r0, 32
 	std::pair { (char*)Menu_SetupItemMenu+0x13C,     0x28000020u },
 	// cmplwi r0, 33
@@ -193,12 +202,21 @@ static const auto patches = patch_list {
 	// Move data->selected_stage from 0x21 to 0x22
 	// lbz r4, 0x22(r28)
 	std::pair { (char*)Menu_UpdateItemDisplay+0x50,  0x889C0022u },
+#ifdef PAL
+	// lbz r4, 0x22(r30)
+	std::pair { (char*)Menu_ItemMenuThink+0x2BC,     0x889E0022u },
+	// stb r0, 0x22(r30)
+	std::pair { (char*)Menu_ItemMenuThink+0x36C,     0x981E0022u },
+	// lbz r3, 0x22(r25)
+	std::pair { (char*)Menu_ItemMenuThink+0x394,     0x88790022u },
+#else
 	// lbz r4, 0x22(r30)
 	std::pair { (char*)Menu_ItemMenuThink+0x2F0,     0x889E0022u },
 	// stb r0, 0x22(r30)
 	std::pair { (char*)Menu_ItemMenuThink+0x3A0,     0x981E0022u },
 	// lbz r3, 0x22(r25)
 	std::pair { (char*)Menu_ItemMenuThink+0x3C8,     0x88790022u },
+#endif
 	// stb r3, 0x22(r25)
 	std::pair { (char*)Menu_SetupItemMenu+0x158,     0x98790022u },
 	// lbz r0, 0x22(r25)
