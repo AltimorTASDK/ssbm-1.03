@@ -122,16 +122,6 @@ extern "C" bool CSS_DropPuck(u8 index);
 extern "C" void CSS_UpdatePortrait(u8 port);
 
 #ifdef BETA
-constexpr auto beta_watermark = text_builder::build(
-	text_builder::kern(),
-	text_builder::right(),
-	text_builder::scale<220, 220>(),
-	text_builder::offset<0, -10>(),
-	text_builder::br(),
-	text_builder::fade_interval<0, 0>(),
-	text_builder::ascii<MODNAME>(),
-	text_builder::reset_scale(),
-	text_builder::end_color());
 #endif
 
 // All CSS toggles except rumble require 1s hold
@@ -552,6 +542,41 @@ extern "C" void hook_CSS_ChooseTopString()
 		orig_CSS_ChooseTopString();
 }
 
+#ifdef BETA
+static void create_watermark()
+{
+	// Beta watermark
+	constexpr auto watermark = text_builder::build(
+		text_builder::kern(),
+		text_builder::right(),
+		text_builder::scale<220, 220>(),
+		text_builder::offset<0, -10>(),
+		text_builder::br(),
+		text_builder::fade_interval<0, 0>(),
+		text_builder::ascii<MODNAME>(),
+		text_builder::reset_scale(),
+		text_builder::end_color());
+
+	constexpr auto watermark_x = -2.9f;
+	constexpr auto watermark_y = 24.5f;
+	constexpr auto shadow_x = watermark_x + .2f;
+	constexpr auto shadow_y = watermark_y + .15f;
+
+	auto *shadow = Text_Create(0, 0, shadow_x, shadow_y, 0.f, 640.f, 480.f);
+	shadow->stretch.x = 0.0521f;
+	shadow->stretch.y = 0.0521f;
+	shadow->default_color = { 0, 0, 0, 192 };
+	Text_SetFromSIS(shadow, 0);
+	shadow->data = watermark.data();
+
+	auto *text = Text_Create(0, 0, watermark_x, watermark_y, 0.f, 640.f, 480.f);
+	text->stretch.x = 0.0521f;
+	text->stretch.y = 0.0521f;
+	Text_SetFromSIS(text, 0);
+	text->data = watermark.data();
+}
+#endif
+
 extern "C" void orig_CSS_Setup();
 extern "C" void hook_CSS_Setup()
 {
@@ -615,23 +640,6 @@ extern "C" void hook_CSS_Setup()
 	}
 
 #ifdef BETA
-	// Beta watermark
-	constexpr auto watermark_x = -2.9f;
-	constexpr auto watermark_y = 24.5f;
-	constexpr auto shadow_x = watermark_x + .2f;
-	constexpr auto shadow_y = watermark_y + .15f;
-
-	auto *shadow = Text_Create(0, 0, shadow_x, shadow_y, 0.f, 640.f, 480.f);
-	shadow->stretch.x = 0.0521f;
-	shadow->stretch.y = 0.0521f;
-	shadow->default_color = { 0, 0, 0, 192 };
-	Text_SetFromSIS(shadow, 0);
-	shadow->data = beta_watermark.data();
-
-	auto *text = Text_Create(0, 0, watermark_x, watermark_y, 0.f, 640.f, 480.f);
-	text->stretch.x = 0.0521f;
-	text->stretch.y = 0.0521f;
-	Text_SetFromSIS(text, 0);
-	text->data = beta_watermark.data();
+	create_watermark();
 #endif
 }
