@@ -151,7 +151,7 @@ constexpr auto controls_descriptions = multi_array {
 	make_description_text<"Allow the use of Z jump.">(),
 	make_description_text<"Allow the use of Z jump and",
 	                      "perfect angles.">(),
-	make_description_text<"Allow the use of all control",
+	make_description_text<"Allow the use of all controls",
 	                      "options.">()
 };
 
