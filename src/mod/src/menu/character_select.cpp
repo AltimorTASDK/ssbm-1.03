@@ -546,7 +546,7 @@ extern "C" void hook_CSS_ChooseTopString()
 static void create_watermark()
 {
 	// Beta watermark
-	constexpr auto watermark = text_builder::build(
+	static constexpr auto watermark = text_builder::build(
 		text_builder::kern(),
 		text_builder::right(),
 		text_builder::scale<220, 220>(),
