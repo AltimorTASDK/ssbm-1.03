@@ -135,6 +135,8 @@ static const auto patches = patch_list {
 	std::pair { (char*)SSS_Think+0x6C,            0x38600002u },
 	// li r3, Scene_VsMode
 	std::pair { (char*)CSS_Input+0x1F0,           0x38600002u },
+	// Return to VS menu like normal after exiting CSS
+	std::pair { (char*)MainMenu_Think+0x34,       NOP },
 	// li r0, Scene_VsMode
 	std::pair { (char*)MainMenu_Think+0x54,       0x38000002u },
 
