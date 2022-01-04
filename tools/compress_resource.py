@@ -27,14 +27,27 @@ def rle_encode(data):
 
     return out
 
-def index_encode(data, bits, table):
+def index_encode(data, index_bits, table, optimize_zero):
     bitpos = 0
     out = bytearray()
 
     for b in data:
         index = table.index(b)
-        # Start from most significant bit
-        shifted = index << (8 - bits)
+
+        if optimize_zero:
+            if index == 0:
+                # 0 bit indicates zero
+                bits = 1
+                shifted = 0
+            else:
+                # 1 bit indicates non-zero
+                bits = index_bits + 1
+                shifted = (1 << 7) | index << (8 - bits)
+        else:
+            # Start from most significant bit
+            bits = index_bits
+            shifted = index << (8 - bits)
+
         offset = bitpos % 8
 
         if offset == 0:
@@ -53,7 +66,7 @@ def compress_rle(data):
     # 0 = not indexed
     return bytearray(struct.pack(">Bxxx", 0)) + rle_encode(data)
 
-def compress_indexed(data):
+def compress_indexed(data, optimize_zero):
     unique_bytes = [b for b in range(0x100) if b in data]
     index_size = len(unique_bytes)
     index_bits = (index_size - 1).bit_length()
@@ -63,7 +76,7 @@ def compress_indexed(data):
         return None
 
     # 1 = indexed
-    indexed = bytearray(struct.pack(">Bxxx", 1))
+    indexed = bytearray(struct.pack(">BBxx", 1, optimize_zero))
 
     # Uncompressed size
     indexed += struct.pack(">I", len(data))
@@ -77,18 +90,22 @@ def compress_indexed(data):
     indexed += bytes(index_table)
 
     # Indexed data
-    indexed += rle_encode(index_encode(data, index_bits, unique_bytes))
+    index_data = index_encode(data, index_bits, unique_bytes, optimize_zero)
+    indexed += rle_encode(index_data)
+
     return indexed
 
 def compress(data):
     # Choose best compression strategy
-    rle = compress_rle(data)
-    indexed = compress_indexed(data)
+    choices = [
+        compress_rle(data),
+        compress_indexed(data, False),
+        #compress_indexed(data, True)
+    ]
 
-    if indexed is None or len(rle) < len(indexed):
-        return rle
-    else:
-        return indexed
+    choices = [choice for choice in choices if choice is not None]
+    choices.sort(key=len)
+    return choices[0]
 
 def get_header_size(extension):
     return {
