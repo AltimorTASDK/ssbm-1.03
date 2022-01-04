@@ -2,7 +2,7 @@
 
 #include "melee/text.h"
 #include "util/meta.h"
-#include <tuple>
+#include <array>
 
 namespace text_builder {
 
