@@ -3,6 +3,7 @@
 #include "melee/object.h"
 #include "melee/player.h"
 #include "rules/values.h"
+#include "util/melee/pad.h"
 #include <gctypes.h>
 
 static bool check_sdi_magnitude(const vec2 &stick)
