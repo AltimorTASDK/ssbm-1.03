@@ -114,6 +114,7 @@ extern "C" void hook_Player_SDICallback(HSD_GObj *gobj)
 
 	auto *player = gobj->get<Player>();
 	auto *as_data = &player->as_data.Damage;
+	const auto &input = player->input;
 
 	if (!player->in_hitlag)
 		return;
@@ -127,7 +128,7 @@ extern "C" void hook_Player_SDICallback(HSD_GObj *gobj)
 		return;
 	} else if (as_data->allow_sdi_extension) {
 		as_data->allow_sdi_extension = false;
-	} else if (!check_sdi_magnitude(player->input.last_stick)) {
+	} else if (!check_sdi_magnitude(input.last_stick) && !is_rim_coord(input.stick)) {
 		// Allow SDI to be extended to full magnitude the frame after entering SDI range
 		as_data->allow_sdi_extension = true;
 		as_data->sdi_extension_start = get_next_position(player);
@@ -139,7 +140,7 @@ extern "C" void hook_Player_SDICallback(HSD_GObj *gobj)
 
 	if (is_extension) {
 		// Remove old SDI distance from stats
-		const auto old_delta = player->input.last_stick * plco->sdi_distance;
+		const auto old_delta = input.last_stick * plco->sdi_distance;
 		auto *stats = PlayerBlock_GetStats(player->slot);
 		stats->total_sdi_distance_x -= std::abs(old_delta.x);
 		stats->total_sdi_distance_y -= std::abs(old_delta.y);
@@ -148,7 +149,7 @@ extern "C" void hook_Player_SDICallback(HSD_GObj *gobj)
 		player->position = as_data->sdi_extension_start;
 	}
 
-	const auto delta = player->input.stick * plco->sdi_distance;
+	const auto delta = input.stick * plco->sdi_distance;
 	player->position.x += delta.x;
 	player->position.y += delta.y;
 	PlayerBlock_AddTotalSDIDistance(player->slot, delta.x, delta.y);
