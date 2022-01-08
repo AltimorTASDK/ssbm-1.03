@@ -48,6 +48,22 @@ static bool check_sdi_window(const Player *player)
 	return true;
 }
 
+static bool is_valid_extension(const vec2 &stick, const vec2 &last_stick)
+{
+	// Magnitude must increase
+	if (stick.length_sqr() <= last_stick.length_sqr())
+		return false;
+
+	// Don't allow going from quadrant to cardinal
+	if (stick.x == 0.f && last_stick.x != 0.f)
+		return false;
+
+	if (stick.y == 0.f && last_stick.y != 0.f)
+		return false;
+
+	return true;
+}
+
 static bool check_sdi(const Player *player, bool *is_extension)
 {
 	const auto &input = player->input;
@@ -64,8 +80,8 @@ static bool check_sdi(const Player *player, bool *is_extension)
 	if (!player->as_data.Damage.allow_sdi_extension)
 		return false;
 
-	// Stick magnitude must increase for SDI extension
-	if (input.stick.length_sqr() > input.last_stick.length_sqr()) {
+	// Check for a valid extension input
+	if (!is_valid_extension(input.stick, input.last_stick)) {
 		*is_extension = true;
 		return true;
 	}
