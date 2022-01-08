@@ -1,10 +1,17 @@
 #pragma once
 
 #include "hsd/gobj.h"
+#include "hsd/jobj.h"
 #include "util/vector.h"
 
 struct ECB {
 	vec2 top, bottom, left, right;
+};
+
+struct CollisionContact {
+	s32 line;
+	u32 attributes;
+	vec3 normal;
 };
 
 struct Physics {
@@ -23,10 +30,14 @@ struct Physics {
 	HSD_JObj *ecb_bones[6];
 	char pad0124[0x130 - 0x124];
 	u32 ecb_update_flags;
-	u32 surface_type;
-	u32 last_surface_type;
-	char pad013C[0x19C - 0x13C];
-	s32 ecb_timer;
+	u32 collide;
+	u32 last_collide;
+	char pad013C[0x140 - 0x13C];
+	vec3 contact_point;
+	CollisionContact floor;
+	CollisionContact left_wall;
+	CollisionContact right_wall;
+	CollisionContact ceiling;
 };
 
 struct SubactionState {
@@ -86,3 +97,5 @@ struct Hurtbox {
 };
 
 extern "C" bool Physics_IsOnPlatform(const Physics *physics);
+
+extern "C" bool Collision_GetLineSpeed(s32 line, const vec3 &position, vec3 *speed);

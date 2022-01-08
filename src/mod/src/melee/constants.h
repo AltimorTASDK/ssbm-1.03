@@ -30,7 +30,11 @@ struct PlayerConstants {
 	s32 spot_dodge_stick_frames;
 	f32 roll_stick_threshold;
 	s32 roll_stick_frames;
-	char pad324[0x5F0 - 0x324];
+	char pad324[0x4B0 - 0x324];
+	f32 sdi_stick_threshold;
+	s32 sdi_stick_frames;
+	f32 sdi_distance;
+	char pad4BC[0x5F0 - 0x4BC];
 	s32 idle_timer;
 };
 

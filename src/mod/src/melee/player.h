@@ -8,8 +8,6 @@
 
 constexpr auto NANA_BUFFER = 30;
 
-struct PlayerBlockStats;
-
 enum CID {
 	CID_Mario,
 	CID_Fox,
@@ -78,9 +76,9 @@ struct PlayerInput {
     u8 stick_x_hold_time;
     u8 stick_y_hold_time;
     u8 analog_lr_hold_time;
-    u8 stick_x_hold_time_2;
-    u8 stick_y_hold_time_2;
-    u8 analog_lr_hold_time_2;
+    u8 true_stick_x_hold_time;
+    u8 true_stick_y_hold_time;
+    u8 true_analog_lr_hold_time;
     u8 stick_x_neutral_time;
     u8 stick_y_neutral_time;
     u8 analog_lr_neutral_time;
@@ -103,6 +101,10 @@ struct PlayerInput {
     u8 last_neutral_b_input;
     u8 jump_input_interval;
     u8 up_b_input_interval;
+};
+
+struct PlayerPhysics : Physics {
+	s32 ecb_timer;
 };
 
 struct PopoData {
@@ -215,7 +217,7 @@ struct Player {
 	char pad061C[0x620 - 0x61C];
 	PlayerInput input;
 	char pad068C[0x6F0 - 0x68C];
-	Physics phys;
+	PlayerPhysics phys;
 	void *camera_data;
 	f32 animation_frame;
 	f32 subaction_speed;
@@ -274,7 +276,27 @@ struct Player {
 	char pad1ED4[0x2218 - 0x1ED4];
 	u8 flags1;
 	u8 flags2;
-	u8 flags3;
+	struct {
+#ifdef PAL
+		u8 flags3_80 : 1;
+		u8 flags3_40 : 1;
+		u8 flags3_20 : 1;
+		u8 in_hitlag : 1;
+		u8 flags3_08 : 1;
+		u8 flags3_04 : 1;
+		u8 flags3_02 : 1;
+		u8 flags3_01 : 1;
+#else
+		u8 flags3_80 : 1;
+		u8 flags3_40 : 1;
+		u8 in_hitlag : 1;
+		u8 flags3_10 : 1;
+		u8 flags3_08 : 1;
+		u8 flags3_04 : 1;
+		u8 flags3_02 : 1;
+		u8 flags3_01 : 1;
+#endif
+	};
 	u8 flags4;
 	u8 flags5;
 	u8 flags6;
@@ -334,7 +356,26 @@ struct Player {
 			u32 can_dash;
 			u32 buffered_buttons;
 		} Turn;
+		struct {
+			char pad000[0x90];
+			// New fields
+			u32 hitlag_frame;
+			// Position before initial SDI
+			vec3 sdi_extension_start;
+			// Allow SDI on frame 2 of hitlag if below SDI magnitude on f1, even if
+			// outside the deadzone on f1
+			bool allow_f2_sdi;
+			// Allow extending SDI magnitude on the next frame
+			bool allow_sdi_extension;
+		} Damage;
 	} as_data;
+};
+
+struct PlayerBlockStats {
+	char pad000[0xCB0];
+	f32 total_sdi_distance_x;
+	f32 total_sdi_distance_y;
+	char padCB8[0xDA8 - 0xCB8];
 };
 
 extern "C" {
@@ -346,13 +387,16 @@ u8 PlayerBlock_GetPort(s32 slot);
 u8 PlayerBlock_GetTeam(s32 slot);
 u32 PlayerBlock_GetSlotType(s32 slot);
 bool PlayerBlock_ShouldDisplayPortTag(s32 slot);
+void PlayerBlock_AddTotalSDIDistance(s32 slot, f32 x, f32 y);
 
 PlayerBlockStats *PlayerBlock_GetStats(s32 slot);
 s32 PlayerBlockStats_GetActionStat(const PlayerBlockStats *stats, u32 index);
 
+void PlayerThink_Input(HSD_GObj *gobj);
+
 bool Player_IsCPU(const Player *player);
 
-void PlayerThink_Input(HSD_GObj *gobj);
+bool Player_GetWindPush(const HSD_GObj *gobj, vec3 *push);
 
 bool Player_CollisionAir(HSD_GObj *gobj);
 void Player_AirToGroundTransition(Player *player);

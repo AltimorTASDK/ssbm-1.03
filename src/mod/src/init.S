@@ -115,9 +115,7 @@ hooks_start:
         .int hook_\name
 .endm
 
-.set TumbleWiggleCheck,       Interrupt_AS_DamageFall+0x9C
 .set UpdatePadButtons,        HSD_PadRenewMasterStatus+0x400
-.set UpdatePlayerStick,       PlayerThink_Input+0x1D0
 .set CheckScrollingRuleIndex, Menu_UpdateRuleDisplay+0x418
 .set ShowNameTagCheck,        NameTag_Think+0x28
 .set CheckStockStealInput,    Match_CheckStockSteal+0xF8
@@ -159,11 +157,6 @@ add_hook DevelopText_Draw
 add_hook GetDebugMenuButtons
 add_hook HSD_ResetScene
 add_hook HUD_GetStockIconPosition
-add_hook Interrupt_AS_Turn
-add_hook Interrupt_SpotDodge
-add_hook Interrupt_SpotDodge_OoS
-add_hook Interrupt_SquatRv
-add_hook Interrupt_TurnOrDash
 add_hook Match_HandlePause
 add_hook MatchController_UpdateTeamWinners
 add_hook MatchController_UpdateWinners
@@ -203,9 +196,19 @@ add_hook TapJumpCheck_JumpOoS
 add_hook Text_UpdateSubtextSize
 add_hook TrainingMenu_Create
 add_hook TrainingMenu_Think
-add_hook TumbleWiggleCheck
 add_hook UpdatePadButtons
+# Controller fix
+.set TumbleWiggleCheck, Interrupt_AS_DamageFall+0x9C
+.set UpdatePlayerStick, PlayerThink_Input+0x1D0
+add_hook TumbleWiggleCheck
 add_hook UpdatePlayerStick
+add_hook Interrupt_AS_Turn
+add_hook Interrupt_SpotDodge
+add_hook Interrupt_SpotDodge_OoS
+add_hook Interrupt_SquatRv
+add_hook Interrupt_TurnOrDash
+add_hook Player_EnterDamageState
+add_hook Player_SDICallback
 # Stage select screen
 add_hook Stage_IsValidRandomChoice
 add_hook SSS_Init
@@ -218,7 +221,7 @@ add_hook Menu_SetupItemToggles
 add_hook Menu_UpdateItemDisplay
 add_hook Stage_GetBGM
 # Additional rules menu
-.set SelectExtraRuleModel, Menu_SetupExtraRulesMenu+0x55C
+.set SelectExtraRuleModel,   Menu_SetupExtraRulesMenu+0x55C
 .set CheckExtraRuleVisible1, Menu_UpdateExtraRuleDisplay+0xE8
 .set CheckExtraRuleVisible2, Menu_UpdateExtraRuleDisplay+0x44C
 .set CheckExtraRuleVisible3, Menu_SetupExtraRulesMenu+0x3B4
