@@ -29,7 +29,7 @@
 #ifdef NOPAL
 constexpr auto MAX_SCROLL = 2.114f;
 #else
-constexpr auto MAX_SCROLL = 2.430f;
+constexpr auto MAX_SCROLL = 2.633f;
 #endif
 
 static texture texture_p1;
