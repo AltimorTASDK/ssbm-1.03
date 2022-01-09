@@ -44,12 +44,32 @@ endif
 
 MGCFILES := $(shell find $(GCIDIR) -type f -name '*.mgc')
 
+ifeq ($(VERSION), 102)
+GCIFILE20XX := $(BINDIR)/$(MODNAME)-loader-20XX.gci
+GCISRC20XX  := $(GCIDIR)/ssbm-20XX.gci
+
+.PHONY: all
+all: ssbm 20XX
+else
+.PHONY: all
+all: ssbm
+endif
+
 .PHONY: ssbm
 ssbm: $(GCIFILE)
 
 $(GCIFILE): $(BINFILE) $(MGCFILES) $(GCISRC)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -i $(GCISRC) -o $@ $(MGCMAIN)
+
+ifeq ($(VERSION), 102)
+.PHONY: 20XX
+20XX: $(GCIFILE20XX)
+
+$(GCIFILE20XX): $(BINFILE) $(MGCFILES) $(GCISRC20XX)
+	@[ -d $(@D) ] || mkdir -p $(@D)
+	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -i $(GCISRC20XX) -o $@ $(MGCMAIN)
+endif
 
 .PHONY: bin
 bin: $(BINFILE)
