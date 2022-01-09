@@ -82,7 +82,7 @@ static bool check_sdi(const Player *player, bool *is_extension)
 		return false;
 
 	// Check for a valid extension input
-	if (!is_valid_extension(input.stick, input.last_stick)) {
+	if (is_valid_extension(input.stick, input.last_stick)) {
 		*is_extension = true;
 		return true;
 	}
