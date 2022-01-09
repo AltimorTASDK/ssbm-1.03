@@ -19,11 +19,9 @@
 #ifdef NOPAL
 #include "resources/screens/a/manual_p1.tex.h"
 #include "resources/screens/a/manual_p2.tex.h"
-#include "resources/screens/a/manual_p3.tex.h"
 #else
 #include "resources/screens/b/manual_p1.tex.h"
 #include "resources/screens/b/manual_p2.tex.h"
-#include "resources/screens/b/manual_p3.tex.h"
 #endif
 #include "resources/screens/manual_border.tex.h"
 #include "resources/screens/scrollbar.tex.h"
@@ -31,12 +29,11 @@
 #ifdef NOPAL
 constexpr auto MAX_SCROLL = 2.114f;
 #else
-constexpr auto MAX_SCROLL = 2.138f;
+constexpr auto MAX_SCROLL = 2.430f;
 #endif
 
 static texture texture_p1;
 static texture texture_p2;
-static texture texture_p3;
 static texture texture_border;
 static texture texture_scrollbar;
 
@@ -106,18 +103,13 @@ static void draw_manual(HSD_GObj *gobj, u32 pass)
 	constexpr auto scale = 25.f;
 	const auto scale_p1 = vec2(1, -texture_p1.inv_ratio()) * scale;
 	const auto scale_p2 = vec2(1, -texture_p2.inv_ratio()) * scale;
-	const auto scale_p3 = vec2(1, -texture_p3.inv_ratio()) * scale;
 	const auto pos_p1 = vec3(0, 7.5f + scroll_offset * scale, 17);
 	const auto pos_p2 = pos_p1 + vec3(0, scale_p1.y, 0);
-	const auto pos_p3 = pos_p2 + vec3(0, scale_p2.y, 0);
 
 	rs.fill_rect(pos_p1, scale_p1, color_rgba::white, texture_p1,
 	             uv_coord::zero, uv_coord::one, align::top);
 
 	rs.fill_rect(pos_p2, scale_p2, color_rgba::white, texture_p2,
-	             uv_coord::zero, uv_coord::one, align::top);
-
-	rs.fill_rect(pos_p3, scale_p3, color_rgba::white, texture_p3,
 	             uv_coord::zero, uv_coord::one, align::top);
 
 	rs.reset_2d();
@@ -154,7 +146,6 @@ extern "C" void hook_Menu_EnterCustomRulesMenu()
 
 	pool.add(init_texture(manual_p1_tex_data, &texture_p1));
 	pool.add(init_texture(manual_p2_tex_data, &texture_p2));
-	pool.add(init_texture(manual_p3_tex_data, &texture_p3));
 	pool.add(init_texture(manual_border_tex_data, &texture_border));
 	pool.add(init_texture(scrollbar_tex_data, &texture_scrollbar));
 
