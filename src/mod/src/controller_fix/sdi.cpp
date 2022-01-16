@@ -93,18 +93,14 @@ static bool check_sdi(const Player *player, bool *is_extension)
 // Get the position the player would be on the next frame of hitlag with no SDI
 static vec3 get_next_position(const Player *player)
 {
-	auto position = player->position;
+	const auto position = player->position;
 
 	// Add floor speed
 	vec3 speed;
 	if (!player->airborne && Collision_GetLineSpeed(player->phys.floor.line, position, &speed))
-		position += speed;
+		return position + speed;
 
-	// Add wind push (whispy)
-	vec3 push;
-	Player_GetWindPush(player->gobj, &push);
-
-	return position + push;
+	return position;
 }
 
 extern "C" void orig_Player_SDICallback(HSD_GObj *gobj);
