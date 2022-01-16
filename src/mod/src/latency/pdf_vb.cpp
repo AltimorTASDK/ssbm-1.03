@@ -94,6 +94,9 @@ extern "C" bool hook_SIGetResponseRaw(u32 port)
 {
 	const auto result = orig_SIGetResponseRaw(port);
 
+	if (is_faster_melee())
+		return result;
+
 	// Wait until all ports are polled
 	if (port != 3)
 		return result;
