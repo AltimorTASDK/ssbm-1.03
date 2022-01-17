@@ -32,14 +32,14 @@ static float get_stick_angle(const vec2 &stick)
 
 static int get_throw_state(const Player *player)
 {
-	const auto stick = player->input.stick * vec2(player->direction, 1);
-	const auto last_stick = player->input.last_stick * vec2(player->direction, 1);
-	const auto cstick = player->input.cstick * vec2(player->direction, 1);
-	const auto last_cstick = player->input.last_cstick * vec2(player->direction, 1);
+	const auto stick        = player->input.stick       * vec2(player->direction, 1);
+	const auto last_stick   = player->input.last_stick  * vec2(player->direction, 1);
+	const auto cstick       = player->input.cstick      * vec2(player->direction, 1);
+	const auto last_cstick  = player->input.last_cstick * vec2(player->direction, 1);
 
-	const auto angle = get_stick_angle(stick);
-	const auto last_angle = get_stick_angle(last_stick);
-	const auto c_angle = get_stick_angle(cstick);
+	const auto angle        = get_stick_angle(stick);
+	const auto last_angle   = get_stick_angle(last_stick);
+	const auto c_angle      = get_stick_angle(cstick);
 	const auto last_c_angle = get_stick_angle(last_cstick);
 
 	// fthrow > bthrow > c-fthrow > c-bthrow > uthrow > c-uthrow > dthrow > c-dthrow
