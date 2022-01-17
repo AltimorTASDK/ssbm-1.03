@@ -21,6 +21,8 @@ endif
 
 ifneq ($(findstring -beta, $(MODVERSION)),)
 export DEFINES += -DBETA
+else ifneq ($(findstring -rc, $(MODVERSION)),)
+export DEFINES += -DBETA
 endif
 
 ifneq ($(MODVERSION),)

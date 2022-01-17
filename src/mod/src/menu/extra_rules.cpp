@@ -380,8 +380,10 @@ static void load_textures()
 	decompressed_textures[ExtraRule_ControllerFix] =
 		pool.add_texture_swap(controller_fix_values_tex_data);
 
-	decompressed_textures[ExtraRule_Latency] =
-		pool.add_texture_swap(latency_values_tex_data);
+	if (!is_faster_melee()) {
+		decompressed_textures[ExtraRule_Latency] =
+			pool.add_texture_swap(latency_values_tex_data);
+	}
 }
 
 extern "C" ArchiveModel *select_extra_rule_model(u32 index)
@@ -432,7 +434,7 @@ extern "C" void hook_Menu_UpdateExtraRuleDescriptionText(HSD_GObj *gobj,
 	const auto value = MenuSelectedValue;
 
 	// Update rules from extra rotator values
-	if (value_changed && index == ExtraRule_Latency)
+	if (value_changed && index == ExtraRule_Latency && !is_faster_melee())
 		GetGameRules()->latency = (latency_mode)value;
 
 	if (value_changed && index == ExtraRule_Widescreen)
@@ -474,8 +476,10 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 	auto *data = gobj->get<ExtraRulesMenuData>();
 
 	// Initialize extra rotators
-	data->latency = GetGameRules()->latency;
-	set_value_anim(data, ExtraRule_Latency);
+	if (!is_faster_melee()) {
+		data->latency = GetGameRules()->latency;
+		set_value_anim(data, ExtraRule_Latency);
+	}
 	data->widescreen = GetGameRules()->widescreen;
 	set_value_anim(data, ExtraRule_Widescreen);
 
@@ -501,9 +505,11 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 	set_value_anim(data, ExtraRule_StageMods);
 	set_value_anim(data, ExtraRule_Controls);
 
-	// Use rotator for option replacing random stage select
-	set_to_rotator(data, ExtraRule_RandomStage);
-	set_value_anim(data, ExtraRule_RandomStage);
+	// Use rotator for latency (replacing random stage select)
+	if (!is_faster_melee()) {
+		set_to_rotator(data, ExtraRule_Latency);
+		set_value_anim(data, ExtraRule_Latency);
+	}
 
 	// Manually apply widescreen rotator texture since there's normally no 7th texture
 	fix_widescreen_text(data);
