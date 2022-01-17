@@ -155,10 +155,8 @@ constexpr auto controls_descriptions = multi_array {
 };
 
 constexpr auto ucf_type_descriptions = multi_array {
-	make_description_text<"Improve shield drop and wiggle and fix",
-		              "1.0 cardinal and dash out of crouch.">(),
-	make_description_text<"Lessen shield drop and wiggle and remove",
-		              "1.0 cardinal and dash out of crouch fixes.">()
+	make_description_text<"Use the 1.03 controller fix.">(),
+	make_description_text<"Use Universal Controller Fix.">()
 };
 
 constexpr auto latency_descriptions = multi_array {
