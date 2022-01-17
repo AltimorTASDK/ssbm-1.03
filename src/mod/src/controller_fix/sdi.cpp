@@ -90,17 +90,37 @@ static bool check_sdi(const Player *player, bool *is_extension)
 	return false;
 }
 
+// Simulate player collision for this frame
+static vec3 trace_collision(const Player *player, const vec3 &trace_end)
+{
+	auto phys = player->phys;
+
+	// Check if ECB should reset on this frame
+	if (player->ecb_timer == 1)
+		phys.ecb_flags &= ~ECBFlag_FreezeBottom;
+
+	phys.start_position = phys.position;
+	phys.position = trace_end;
+
+	if (player->airborne)
+		Physics_Collision_Air_StayAirborne(&phys);
+	else
+		Physics_Collision_Grounded(&phys);
+
+	return phys.position;
+}
+
 // Get the position the player would be on the next frame of hitlag with no SDI
 static vec3 get_next_position(const Player *player)
 {
-	const auto position = player->position;
+	auto position = player->position;
 
 	// Add floor speed
 	vec3 speed;
 	if (!player->airborne && Collision_GetLineSpeed(player->phys.floor.line, position, &speed))
-		return position + speed;
+		position += speed;
 
-	return position;
+	return trace_collision(player, position);
 }
 
 extern "C" void orig_Player_SDICallback(HSD_GObj *gobj);
@@ -144,6 +164,7 @@ extern "C" void hook_Player_SDICallback(HSD_GObj *gobj)
 
 		// Use position from before initial SDI
 		player->position = as_data->sdi_extension_start;
+		player->phys.position = player->position;
 	}
 
 	const auto delta = input.stick * plco->sdi_distance;

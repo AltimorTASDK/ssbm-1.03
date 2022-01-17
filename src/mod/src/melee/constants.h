@@ -17,7 +17,14 @@ struct PlayerConstants {
 	char pad078[0x90 - 0x78];
 	f32 squat_threshold;
 	f32 max_squatwait_threshold;
-	char pad098[0xCC - 0x98];
+	f32 ftilt_threshold;
+	f32 uftilt_angle;
+	f32 uftilt_mid_angle;
+	f32 dftilt_mid_angle;
+	f32 dftilt_angle;
+	f32 utilt_threshold;
+	f32 dtilt_threshold;
+	char pad0B4[0xCC - 0xB4];
 	f32 usmash_threshold;
 	f32 usmash_frames;
 	f32 dsmash_threshold;

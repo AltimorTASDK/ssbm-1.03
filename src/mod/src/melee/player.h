@@ -103,10 +103,6 @@ struct PlayerInput {
     u8 up_b_input_interval;
 };
 
-struct PlayerPhysics : Physics {
-	s32 ecb_timer;
-};
-
 struct PopoData {
 	u32 buttons;
 	u8 analog_l;
@@ -217,7 +213,8 @@ struct Player {
 	char pad061C[0x620 - 0x61C];
 	PlayerInput input;
 	char pad068C[0x6F0 - 0x68C];
-	PlayerPhysics phys;
+	Physics phys;
+	s32 ecb_timer;
 	void *camera_data;
 	f32 animation_frame;
 	f32 subaction_speed;
@@ -397,6 +394,8 @@ void PlayerThink_Input(HSD_GObj *gobj);
 bool Player_IsCPU(const Player *player);
 
 bool Player_GetWindPush(const HSD_GObj *gobj, vec3 *push);
+
+void Player_DoThrow(HSD_GObj *gobj, u32 state);
 
 bool Player_CollisionAir(HSD_GObj *gobj);
 void Player_AirToGroundTransition(Player *player);

@@ -4,6 +4,10 @@
 #include "hsd/jobj.h"
 #include "util/vector.h"
 
+enum ECBFlag {
+	ECBFlag_FreezeBottom = 0x10
+};
+
 struct ECB {
 	vec2 top, bottom, left, right;
 };
@@ -29,7 +33,7 @@ struct Physics {
 	HSD_JObj *root_bone;
 	HSD_JObj *ecb_bones[6];
 	char pad0124[0x130 - 0x124];
-	u32 ecb_update_flags;
+	u32 ecb_flags;
 	u32 collide;
 	u32 last_collide;
 	char pad013C[0x140 - 0x13C];
@@ -96,6 +100,13 @@ struct Hurtbox {
 	u32 grabbable;
 };
 
-extern "C" bool Physics_IsOnPlatform(const Physics *physics);
+extern "C" {
 
-extern "C" bool Collision_GetLineSpeed(s32 line, const vec3 &position, vec3 *speed);
+bool Physics_IsOnPlatform(const Physics *phys);
+
+bool Physics_Collision_Grounded(Physics *phys);
+bool Physics_Collision_Air_StayAirborne(Physics *phys);
+
+bool Collision_GetLineSpeed(s32 line, const vec3 &position, vec3 *speed);
+
+}
