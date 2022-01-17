@@ -264,7 +264,9 @@
 80042cec 000004b8 80042cec 0 ECB_Update
 800435ac 00000010 800435ac 0 dGeomEnable
 80043690 000002a8 80043690 0 Physics_Move
+8004771c 00000114 8004771c 0 Physics_Collision_Air_StayAirborne
 80047d50 0000012c 80047d50 0 ECB_CheckorSomething
+8004b044 00000114 8004b044 0 Physics_Collision_Grounded
 8004cafc 00000028 8004cafc 0 Physics_IsOnPlatform
 800523b8 0000002c 800523b8 0 Ab_Unknown_CalledOnSamusZair
 80054bc8 0000007c 80054bc8 0 StageFile_GroundIDTypeLoad
