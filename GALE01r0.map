@@ -949,6 +949,7 @@
 800dc48c 00000024 800dc48c 0 PlayerBlock_StoreBool&LoseGroundJumpInitialize
 800dc9e8 000001a0 800dc9e8 0 Knockback&HitEffects_Unknown1
 800dcd98 000001b4 800dcd98 0 Interrupt_Throw
+800dd064 000000b8 800dd064 0 Player_DoThrow
 800de56c 00000020 800de56c 0 Interrupt_DPadUpInstantPressed
 800de58c 00000050 800de58c 0 Interrupt_Taunt
 800de5dc 000000c0 800de5dc 0 AS_264&265_TauntLR_CharacterCheckBeforeExecute
