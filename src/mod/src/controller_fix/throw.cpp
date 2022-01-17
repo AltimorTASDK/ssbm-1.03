@@ -42,14 +42,16 @@ static int get_throw_state(const Player *player)
 	const auto c_angle = get_stick_angle(cstick);
 	const auto last_c_angle = get_stick_angle(last_cstick);
 
-	if (check_fthrow(stick, angle) && !check_fthrow(last_stick, last_angle))
-		return AS_ThrowF;
+	// fthrow > bthrow > c-fthrow > c-bthrow > uthrow > c-uthrow > dthrow > c-dthrow
 
-	if (check_fthrow(cstick, c_angle) && !check_fthrow(last_cstick, last_c_angle))
+	if (check_fthrow(stick, angle) && !check_fthrow(last_stick, last_angle))
 		return AS_ThrowF;
 
 	if (check_bthrow(stick, angle) && !check_bthrow(last_stick, last_angle))
 		return AS_ThrowB;
+
+	if (check_fthrow(cstick, c_angle) && !check_fthrow(last_cstick, last_c_angle))
+		return AS_ThrowF;
 
 	if (check_bthrow(cstick, c_angle) && !check_bthrow(last_cstick, last_c_angle))
 		return AS_ThrowB;
@@ -76,7 +78,7 @@ extern "C" void hook_Interrupt_Throw(HSD_GObj *gobj)
 	if (get_ucf_type() == ucf_type::ucf)
 		return orig_Interrupt_Throw(gobj);
 
-	auto *player = gobj->get<Player>();
+	const auto *player = gobj->get<Player>();
 
 	// Disable for ICs to avoid breaking desync tech
 	if (player->character_id == CID_Popo || player->character_id == CID_Nana)
