@@ -85,4 +85,6 @@ extern "C" void hook_Interrupt_Throw(HSD_GObj *gobj)
 	const auto state = get_throw_state(player);
 	if (state != -1)
 		Player_DoThrow(gobj, state);
+	else
+		orig_Interrupt_Throw(gobj);
 }
