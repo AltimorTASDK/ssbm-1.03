@@ -351,6 +351,7 @@ add_hook AS_357_Pika_UpBAirMiddle
 add_hook Player_Pika_CheckDoubleUpB
 add_hook AS_357_Mewtwo_UpBAirMiddle
 add_hook AS_353_Zelda_UpBAirMiddle
+add_hook Player_Yoshi_GetEggVelocity
 #if defined(NTSC100) || defined(NTSC101)
 # v1.02 hitlag
 .set RoundDealtDamage, Player_MeleeDamage+0x36C

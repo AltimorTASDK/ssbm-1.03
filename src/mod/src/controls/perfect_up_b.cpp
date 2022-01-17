@@ -78,3 +78,13 @@ extern "C" void hook_AS_353_Zelda_UpBAirMiddle(HSD_GObj *gobj)
 {
 	apply_perfect_up_b(gobj, orig_AS_353_Zelda_UpBAirMiddle);
 }
+
+extern "C" void orig_Player_Yoshi_GetEggVelocity(HSD_GObj *gobj, vec3 *velocity);
+extern "C" void hook_Player_Yoshi_GetEggVelocity(HSD_GObj *gobj, vec3 *velocity)
+{
+	auto *player = gobj->get<Player>();
+	const auto old_stick = player->input.stick;
+	apply_perfect_up_b_coords(player);
+	orig_Player_Yoshi_GetEggVelocity(gobj, velocity);
+	player->input.stick = old_stick;
+}
