@@ -206,7 +206,7 @@ static void strike_stage(int port)
 	for (auto i = 0; i < Icon_Random; i++) {
 		if (i != SelectedStageIcon && StageSelectIcons[i].unlocked == UnlockType_Unlocked)
 			break;
-		else if (i == 28)
+		else if (i == Icon_Random - 1)
 			return;
 	}
 
