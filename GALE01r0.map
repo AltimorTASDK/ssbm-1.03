@@ -1520,7 +1520,7 @@
 801a15ec 00000208 801a15ec 0 Ab_Menu_TextDraw_CameraMode_4
 801a1908 00000070 801a1908 0 Ab_Menu_TextDrawn_CameraMode_2
 801a2674 00000140 801a2674 0 Ab_Menu_TextDraw_CameraMode_3
-801a3200 000000cc 801a3200 0 Ab_Scene_CalledOnceOnEachTransition
+801a3200 000000cc 801a3200 0 Scene_Initialize
 801a32cc 00000268 801a32cc 0 Scene_Execute
 801a3544 00000014 801a3544 0 MenuController_StoreR3to0x3&0x4
 801a3558 00000014 801a3558 0 MenuController_StoreR3+1to0x5
