@@ -450,13 +450,22 @@ extern "C" void hook_Menu_UpdateExtraRuleDescriptionText(HSD_GObj *gobj,
 	case ExtraRule_StockMatchTimeLimit:
 		// Has to be hard coded because ExtraRuleDescriptions gets clobbered by extra
 		// rotator bounds
+#ifdef PAL
+		Text_SetFromSIS(text, 0x35);
+#else
 		Text_SetFromSIS(text, 0x37);
+#endif
 		break;
 	case ExtraRule_Pause:
-		if (value)
+		if (value) {
+#ifdef PAL
+			Text_SetFromSIS(text, 0x39);
+#else
 			Text_SetFromSIS(text, 0x3B);
-		else
+#endif
+		} else {
 			text->data = pause_auto_description.data();
+		}
 		break;
 	case ExtraRule_StageMods:      text->data = stage_mod_descriptions[value];  break;
 	case ExtraRule_Controls:       text->data = controls_descriptions[value];   break;
