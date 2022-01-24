@@ -92,7 +92,8 @@ int Text_CreateCanvas(u32 sis_id, HSD_GObj *camera_gobj, u8 classifier, u8 p_lin
                       u8 gx_link, u8 render_priority, u8 camera_prio);
 
 Text *Text_Create(u32 sis_id, s32 canvas_id,
-                  f32 trans_x, f32 trans_y, f32 trans_z, f32 aspect_x, f32 aspect_y);
+                  f32 trans_x, f32 trans_y, f32 trans_z,
+                  f32 textbox_w, f32 textbox_h);
 void Text_Free(Text *text);
 
 void Text_SetFromSIS(Text *text, u32 id);
