@@ -24,8 +24,6 @@
 #include "resources/sss/ys.tex.h"
 #include "resources/sss/random.tex.h"
 
-// TODO: Not compatible with 20XX striking
-
 extern "C" u8 SelectedStageIcon;
 extern "C" u8 StageLoadingState;
 
