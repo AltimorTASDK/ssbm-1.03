@@ -3,6 +3,8 @@
 #include "melee/menu.h"
 #include "melee/preferences.h"
 #include "melee/scene.h"
+#include "20XX.h"
+#include <cstring>
 #include <gctypes.h>
 
 enum DebugButton {
@@ -56,8 +58,12 @@ extern "C" u32 get_debug_menu_buttons()
 	return buttons;
 }
 
+extern "C" u32 orig_DebugMenu_Exit(u32 arg);
 extern "C" u32 hook_DebugMenu_Exit(u32 arg)
 {
+	if (is_20XX())
+		return orig_DebugMenu_Exit(arg);
+
 	// Exit back to VS menu
 	if (arg == 0) {
 		Menu_PlaySFX(MenuSFX_Back);
@@ -71,8 +77,10 @@ extern "C" u32 hook_DebugMenu_Exit(u32 arg)
 extern "C" void orig_DebugMenu_Init(SceneMinorData *data);
 extern "C" void hook_DebugMenu_Init(SceneMinorData *data)
 {
-	// Set debug menu language to game language
-	*DebugMenuEntries[DebugEntry_Language].value = GetSavedPreferences()->language;
+	if (!is_20XX()) {
+		// Set debug menu language to game language
+		*DebugMenuEntries[DebugEntry_Language].value = GetSavedPreferences()->language;
+	}
 
 	orig_DebugMenu_Init(data);
 }
