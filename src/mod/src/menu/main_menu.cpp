@@ -12,6 +12,7 @@
 #include "util/meta.h"
 #include "util/patch_list.h"
 #include "util/melee/text_builder.h"
+#include "20XX.h"
 #include <gctypes.h>
 
 #include "resources/portals/vs_mode_preview.tex.h"
@@ -28,11 +29,11 @@
 #include "resources/screens/manual_header.tex.h"
 
 enum VsMenuPortalID {
-	VsMenu_TournamentMelee = 1,
-	VsMenu_Controls = 1,
-	VsMenu_DebugMenu = 2,
+	VsMenu_Tournament  = 1,
+	VsMenu_Controls    = 1,
+	VsMenu_DebugMenu   = 2,
 	VsMenu_CustomRules = 3,
-	VsMenu_Manual = 3
+	VsMenu_Manual      = 3
 };
 
 struct MainMenuData {
@@ -188,6 +189,10 @@ extern "C" void hook_MainMenu_Init(void *menu)
 		next->next->next->next->matanim;
 	unmanaged_texture_swap(manual_header_tex_data, header->texanim->imagetbl[8]);
 
+	// Use original debug menu art on 20XX
+	if (is_20XX())
+		return;
+
 	// Debug menu preview
 	const auto *tournament_preview =
 		MenMainConTop_Top.matanim_joint->child->child->next->child->
@@ -214,6 +219,13 @@ static void update_portal_description(MainMenuData *data, u32 menu_type, u32 ind
 {
 	if (menu_type != MenuType_VsMode)
 		return;
+
+	if (index == VsMenu_DebugMenu && is_20XX()) {
+		// Use the original 20XX description for the shifted debug menu
+		const auto id = MenuTypeDataTable[MenuType_VsMode].descriptions[VsMenu_Tournament];
+		Text_SetFromSIS(data->description_text, id);
+		return;
+	}
 
 	if (index == VsMenu_DebugMenu)
 		data->description_text->data = debug_menu_description.data();

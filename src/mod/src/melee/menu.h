@@ -71,7 +71,7 @@ struct MenuCallbacks {
 struct MenuTypeData {
 	HSD_AnimLoop *preview_anims;
 	f32 anim_frame;
-	void *pad008;
+	u16 *descriptions;
 	u8 option_count;
 	void(*think)();
 };
