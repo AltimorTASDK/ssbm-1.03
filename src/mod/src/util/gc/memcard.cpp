@@ -25,6 +25,8 @@ static mempool pool;
 
 static auto first_save_check = false;
 
+static auto gamecode = cardmap[0].gamecode->game;
+
 static struct {
 	s32 card;
 	const char *filename;
@@ -94,9 +96,9 @@ static void card_done()
 	// Wake up the main thread
 	op.wait.wake();
 
-#ifdef PAL
-	// Restore PAL gamecode
-	cardmap[0].gamecode[3] = 'P';
+#ifndef NOPAL
+	// Restore gamecode
+	cardmap[0].gamecode->game = gamecode;
 #endif
 
 	// Check if the game is waiting to use the memcard
@@ -219,9 +221,9 @@ static void card_io(s32 card, const char *filename, void *buffer, u32 size, bool
 
 	InitCardBuffers();
 
-#ifdef PAL
-	// Use GALE01 saves
-	cardmap[0].gamecode[3] = 'E';
+#ifndef NOPAL
+	// Use GALE01 saves for PAL/UP
+	cardmap[0].gamecode->game = 'GALE';
 #endif
 
 	if (op.error = CARD_MountAsync(card, CardWorkArea, nullptr, callback); op.error < 0)

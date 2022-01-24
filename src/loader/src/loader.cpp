@@ -162,9 +162,10 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 
 	InitCardBuffers();
 
-#ifdef PAL
-	// Use GALE01 saves
-	cardmap[0].gamecode[3] = 'E';
+#ifndef NOPAL
+	// Use GALE01 saves for PAL/UP
+	const auto gamecode = cardmap[0].gamecode->game;
+	cardmap[0].gamecode->game = 'GALE';
 #endif
 
 	const auto *data = alloc_and_read("103Code");
@@ -184,9 +185,9 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 	memcpy(&__MOD_BASE__, base->data, code_size);
 #endif
 
-#ifdef PAL
-	// Restore PAL gamecode
-	cardmap[0].gamecode[3] = 'P';
+#ifndef NOPAL
+	// Restore gamecode
+	cardmap[0].gamecode->game = gamecode;
 #endif
 
 	DCStoreRange(&__MOD_BASE__, code_size);

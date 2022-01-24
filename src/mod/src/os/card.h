@@ -8,7 +8,10 @@ struct card_block {
 	u32 pad008;
 	u32 sector_size;
 	char pad010[0x10C - 0x10];
-	char *gamecode;
+	struct {
+		u32 game;
+		u16 company;
+	} *gamecode;
 };
 
 extern "C" card_block cardmap[2];

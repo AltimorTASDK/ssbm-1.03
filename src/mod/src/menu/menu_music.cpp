@@ -20,6 +20,7 @@
 #include "util/draw/render.h"
 #include "util/draw/texture.h"
 #include "util/melee/text_builder.h"
+#include "unclepunch.h"
 #include <algorithm>
 #include <gctypes.h>
 #include <type_traits>
@@ -280,7 +281,7 @@ extern "C" void hook_Menu_UpdateRandomStageDisplay(HSD_GObj *gobj,
 {
 	orig_Menu_UpdateRandomStageDisplay(gobj, index_changed, value_changed);
 
-	if (!value_changed)
+	if (!value_changed || is_unclepunch_osd())
 		return;
 
 	auto *data = gobj->get<RandomStageMenuData>();
@@ -304,6 +305,9 @@ extern "C" void orig_Menu_SetupRandomStageToggles(RandomStageMenuData *data);
 extern "C" void hook_Menu_SetupRandomStageToggles(RandomStageMenuData *data)
 {
 	orig_Menu_SetupRandomStageToggles(data);
+
+	if (is_unclepunch_osd())
+		return;
 
 	if (!IsLanguageUS()) {
 		// Load accented E
@@ -359,6 +363,9 @@ extern "C" HSD_GObj *hook_Menu_SetupRandomStageMenu(u8 state)
 {
 	auto *gobj = orig_Menu_SetupRandomStageMenu(state);
 
+	if (is_unclepunch_osd())
+		return orig_Menu_SetupRandomStageMenu(state);
+
 	// Set new GX proc
 	gobj->render_cb = menu_music_gx;
 
@@ -384,6 +391,9 @@ extern "C" HSD_GObj *hook_Menu_SetupRandomStageMenu(u8 state)
 extern "C" void orig_Menu_RandomStageMenuInput(HSD_GObj *gobj);
 extern "C" void hook_Menu_RandomStageMenuInput(HSD_GObj *gobj)
 {
+	if (is_unclepunch_osd())
+		return orig_Menu_RandomStageMenuInput(gobj);
+
 	const auto buttons = Menu_GetButtonsHelper(PORT_ALL);
 
 	if (buttons & (MenuButton_B | MenuButton_Start))
@@ -405,15 +415,19 @@ extern "C" void hook_Menu_RandomStageMenuInput(HSD_GObj *gobj)
 extern "C" void orig_Menu_CreateExtraRulesMenu();
 extern "C" void hook_Menu_CreateExtraRulesMenu()
 {
-	if (MenuType != MenuType_MenuMusic)
+	if (MenuType != MenuType_MenuMusic || is_unclepunch_osd())
 		return orig_Menu_CreateExtraRulesMenu();
 
 	// Exit back to the rules menu if this is menu music
 	Menu_ExitToRulesMenu();
 }
 
+extern "C" void orig_Menu_RandomStageMenuScroll(RandomStageMenuData *data, u32 buttons);
 extern "C" void hook_Menu_RandomStageMenuScroll(RandomStageMenuData *data, u32 buttons)
 {
+	if (is_unclepunch_osd())
+		return orig_Menu_RandomStageMenuScroll(data, buttons);
+
 	constexpr auto max_row_count = 15;
 	int row = MenuSelectedIndex % max_row_count;
 	int col = MenuSelectedIndex / max_row_count;

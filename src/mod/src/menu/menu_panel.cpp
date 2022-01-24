@@ -4,6 +4,7 @@
 #include "hsd/mobj.h"
 #include "hsd/tobj.h"
 #include "melee/menu.h"
+#include "unclepunch.h"
 #include <gctypes.h>
 
 enum MenuPanelState {
@@ -29,12 +30,15 @@ extern "C" MenuPanelAnim MenuPanelAnimTable[MenuType_Max];
 
 static bool is_in_menu_music(const MenuPanelData *data)
 {
+	if (is_unclepunch_osd())
+		return false;
+
 	if (MenuType == MenuType_MenuMusic)
 		return true;
-		
+
 	if (MenuTypePrevious != MenuType_MenuMusic)
 		return false;
-		
+
 	// Check for exiting menu music, including first frame where state hasn't updated
 	return data->menu_type == MenuType_ItemSwitch || data->state == MenuPanelState_Exit;
 }
@@ -43,10 +47,10 @@ extern "C" void orig_Menu_MenuPanelThink(HSD_GObj *gobj);
 extern "C" void hook_Menu_MenuPanelThink(HSD_GObj *gobj)
 {
 	const auto *data = gobj->get<MenuPanelData>();
-	
+
 	if (!is_in_menu_music(data))
 		return orig_Menu_MenuPanelThink(gobj);
-		
+
 	bool first_frame;
 	if (data->menu_type != MenuType_ItemSwitch)
 		first_frame = MenuType == MenuType_MenuMusic; // First enter frame
@@ -56,13 +60,13 @@ extern "C" void hook_Menu_MenuPanelThink(HSD_GObj *gobj)
 		first_frame = false;
 
 	auto *jobj = gobj->get_hsd_obj<HSD_JObj>();
-	
+
 	// Grid background for random stage/menu music
 	auto *grid = HSD_JObjGetFromTreeByIndex(jobj, 98);
-	
+
 	// Back up grid anim so it doesn't get overwritten by item switch anim
 	const auto grid_frame = HSD_JObjGetAnimFrame(grid);
-		
+
 	if (MenuType == MenuType_MenuMusic) {
 		// Use item switch anim for header
 		MenuType = MenuType_ItemSwitch;
@@ -71,12 +75,12 @@ extern "C" void hook_Menu_MenuPanelThink(HSD_GObj *gobj)
 	} else {
 		// Using item switch exit from data->menu_type_previous
 		orig_Menu_MenuPanelThink(gobj);
-		
+
 		// Don't interfere with returning to rules menu idle anim
 		if (data->state == MenuPanelState_Idle)
 			return;
 	}
-	
+
 	const auto &ss_anim = MenuPanelAnimTable[MenuType_MenuMusic];
 
 	// Hide item switch grid
@@ -87,7 +91,7 @@ extern "C" void hook_Menu_MenuPanelThink(HSD_GObj *gobj)
 	auto *name1 = HSD_JObjGetFromTreeByIndex(jobj, 82);
 	auto *name2 = HSD_JObjGetFromTreeByIndex(jobj, 83);
 	name1->u.dobj->mobj->tobj->imagedesc = name2->u.dobj->mobj->tobj->imagedesc;
-	
+
 	if (first_frame) {
 		// Start grid anim
 		if (data->state == MenuPanelState_Enter)
