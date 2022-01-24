@@ -315,6 +315,9 @@ extern "C" void orig_Scene_RunLoop(void(*think_callback)());
 extern "C" void hook_Scene_RunLoop(void(*think_callback)())
 {
 	text = DevelopText_Create(0x69, 0, 0, TEXT_WIDTH, TEXT_HEIGHT, text_buf);
+	if (text == nullptr)
+		return orig_Scene_RunLoop(think_callback);
+
 	DevelopText_Show(nullptr, text);
 	DevelopText_HideCursor(text);
 	DevelopText_SetBGColor(text, color_rgba::hex(0x00000060u));
