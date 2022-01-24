@@ -52,25 +52,25 @@ struct patch_entry {
 
 const patch_entry patch_table[] = {
 #ifdef NTSC100
-	{ DVDConvertPathToEntrynum("PlGn.dat"), PlGn_diff_data },
+	{ DVDConvertPathToEntrynum("PlGn.dat"), PlGn_diff_data }, // Ganon
 #endif
 #ifdef PAL
 	{ DVDConvertPathToEntrynum("IfAll.ukd"), IfAll_diff_data },
-	{ DVDConvertPathToEntrynum("PlCa.dat"), PlCa_diff_data },
-	{ DVDConvertPathToEntrynum("PlCl.dat"), PlCl_diff_data },
-	{ DVDConvertPathToEntrynum("PlFc.dat"), PlFc_diff_data },
-	{ DVDConvertPathToEntrynum("PlFx.dat"), PlFx_diff_data },
-	{ DVDConvertPathToEntrynum("PlGn.dat"), PlGn_diff_data },
-	{ DVDConvertPathToEntrynum("PlKb.dat"), PlKb_diff_data },
-	{ DVDConvertPathToEntrynum("PlKp.dat"), PlKp_diff_data },
-	{ DVDConvertPathToEntrynum("PlLk.dat"), PlLk_diff_data },
-	{ DVDConvertPathToEntrynum("PlMr.dat"), PlMr_diff_data },
-	{ DVDConvertPathToEntrynum("PlMs.dat"), PlMs_diff_data },
-	{ DVDConvertPathToEntrynum("PlMt.dat"), PlMt_diff_data },
-	{ DVDConvertPathToEntrynum("PlNs.dat"), PlNs_diff_data },
-	{ DVDConvertPathToEntrynum("PlPk.dat"), PlPk_diff_data },
-	{ DVDConvertPathToEntrynum("PlSk.dat"), PlSk_diff_data },
-	{ DVDConvertPathToEntrynum("PlYs.dat"), PlYs_diff_data },
+	{ DVDConvertPathToEntrynum("PlCa.dat"), PlCa_diff_data }, // Falcon
+	{ DVDConvertPathToEntrynum("PlCl.dat"), PlCl_diff_data }, // Young Link
+	{ DVDConvertPathToEntrynum("PlFc.dat"), PlFc_diff_data }, // Falco
+	{ DVDConvertPathToEntrynum("PlFx.dat"), PlFx_diff_data }, // Fox
+	{ DVDConvertPathToEntrynum("PlGn.dat"), PlGn_diff_data }, // Ganon
+	{ DVDConvertPathToEntrynum("PlKb.dat"), PlKb_diff_data }, // Kirby
+	{ DVDConvertPathToEntrynum("PlKp.dat"), PlKp_diff_data }, // Bowser
+	{ DVDConvertPathToEntrynum("PlLk.dat"), PlLk_diff_data }, // Link
+	{ DVDConvertPathToEntrynum("PlMr.dat"), PlMr_diff_data }, // Mario
+	{ DVDConvertPathToEntrynum("PlMs.dat"), PlMs_diff_data }, // Marth
+	{ DVDConvertPathToEntrynum("PlMt.dat"), PlMt_diff_data }, // Mewtwo
+	{ DVDConvertPathToEntrynum("PlNs.dat"), PlNs_diff_data }, // Ness
+	{ DVDConvertPathToEntrynum("PlPk.dat"), PlPk_diff_data }, // Pikachu
+	{ DVDConvertPathToEntrynum("PlSk.dat"), PlSk_diff_data }, // Sheik
+	{ DVDConvertPathToEntrynum("PlYs.dat"), PlYs_diff_data }, // Yoshi
 #endif
 };
 
