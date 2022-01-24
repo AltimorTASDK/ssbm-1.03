@@ -30,6 +30,18 @@ hook_loop:
         # Copy original instruction over function address
         lwzu    r3, 4(r31)
         lwz     r0, 0(r3)
+
+        # Check if it's a branch instruction and fix up the offset
+        rlwinm  r5, r0, 6, 26, 31
+        cmpwi   r5, 18
+        bne     store_original
+
+        # Add offset between copied bytes and function address to branch offset
+        add     r5, r0, r3
+        sub     r5, r5, r31
+        rlwimi  r0, r5, 0, 6, 29
+
+store_original:
         stw     r0, 0(r31)
 
         # Overwrite original instruction with branch to hook
@@ -119,7 +131,6 @@ hooks_start:
 .set CheckScrollingRuleIndex, Menu_UpdateRuleDisplay+0x418
 .set ShowNameTagCheck,        NameTag_Think+0x28
 .set CheckStockStealInput,    Match_CheckStockSteal+0xF8
-.set GetDebugMenuButtons,     DebugMenu_Input+0x1C
 .set TapJumpCheck_Jump,       Interrupt_Jump+0x40
 .set TapJumpCheck_JumpAerial, Interrupt_JumpAerial+0x44
 .set TapJumpCheck_JumpInput,  Player_CheckJumpInput+0x14
@@ -151,10 +162,7 @@ add_hook CheckRapidJabInput
 add_hook CheckFTiltAngle
 add_hook CmSubject_WorldToScreen
 add_hook CObjLoad
-add_hook DebugMenu_Exit
-add_hook DebugMenu_Init
 add_hook DevelopText_Draw
-add_hook GetDebugMenuButtons
 add_hook HSD_ResetScene
 add_hook HUD_GetStockIconPosition
 add_hook Match_HandlePause
@@ -210,6 +218,11 @@ add_hook Interrupt_Throw
 add_hook Interrupt_TurnOrDash
 add_hook Player_EnterDamageState
 add_hook Player_SDICallback
+# Debug menu
+.set GetDebugMenuButtons, DebugMenu_Input+0x1C
+add_hook GetDebugMenuButtons
+add_hook DebugMenu_Exit
+add_hook DebugMenu_Init
 # Stage select screen
 add_hook Stage_IsValidRandomChoice
 add_hook SSS_Init
