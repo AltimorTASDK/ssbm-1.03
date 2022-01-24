@@ -5,6 +5,7 @@
 #include "hsd/mobj.h"
 #include "hsd/pad.h"
 #include "hsd/robj.h"
+#include "melee/menu.h"
 #include "melee/stage.h"
 #include "rules/values.h"
 #include "util/compression.h"
@@ -194,6 +195,8 @@ static void reset_striking(int port)
 			icon->unlocked = UnlockType_Hidden;
 		}
 	}
+
+	Menu_PlaySFX(MenuSFX_Back);
 }
 
 static void strike_stage(int port)
@@ -216,6 +219,8 @@ static void strike_stage(int port)
 	icon->unlocked = UnlockType_Hidden;
 
 	SelectedStageIcon = Icon_None;
+
+	Menu_PlaySFX(MenuSFX_Activate);
 }
 
 extern "C" bool orig_Stage_IsValidRandomChoice(u16 index);
