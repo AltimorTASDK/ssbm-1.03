@@ -186,9 +186,12 @@ static void reset_striking(int port)
 	// Show all legal stages
 	for (auto i = 0; i < Icon_Random; i++) {
 		auto *icon = &StageSelectIcons[i];
-		if (is_legal_stage(icon->stage_id) || should_use_oss()) {
+		if (is_legal_stage(icon->stage_id)) {
 			HSD_JObjClearFlagsAll(icon->jobj, HIDDEN);
 			icon->unlocked = UnlockType_Unlocked;
+		} else {
+			HSD_JObjSetFlagsAll(icon->jobj, HIDDEN);
+			icon->unlocked = UnlockType_Hidden;
 		}
 	}
 }
