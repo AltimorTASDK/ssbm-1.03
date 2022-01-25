@@ -219,8 +219,6 @@ static void strike_stage(int port)
 	icon->unlocked = UnlockType_Hidden;
 
 	SelectedStageIcon = Icon_None;
-
-	Menu_PlaySFX(MenuSFX_Scroll);
 }
 
 extern "C" bool orig_Stage_IsValidRandomChoice(u16 index);
