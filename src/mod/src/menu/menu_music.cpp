@@ -364,7 +364,7 @@ extern "C" HSD_GObj *hook_Menu_SetupRandomStageMenu(u8 state)
 	auto *gobj = orig_Menu_SetupRandomStageMenu(state);
 
 	if (is_unclepunch_osd())
-		return orig_Menu_SetupRandomStageMenu(state);
+		return gobj;
 
 	// Set new GX proc
 	gobj->render_cb = menu_music_gx;
