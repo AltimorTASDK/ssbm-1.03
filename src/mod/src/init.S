@@ -411,5 +411,10 @@ add_hook ThrowSyncSideB
 .set OnTriggerboxHitItem, Player_ItemHitDetection+0x484
 add_hook OnTriggerboxHitItem
 #endif
+#ifndef NOPAL
+# UnclePunch compatibility
+.set InitRandomStageToggle, Menu_SetupRandomStageMenu+0x144
+add_hook InitRandomStageToggle
+#endif
 
 hooks_end:

@@ -1,4 +1,5 @@
 #include "hsd/gobj.h"
+#include "melee/menu.h"
 #include "melee/scene.h"
 #include "os/card.h"
 #include "util/patch_list.h"
@@ -40,3 +41,9 @@ struct check_unclepunch
 		};
 	}
 } check_unclepunch;
+
+// Check for the flag UnclePunch uses to indicate the OSD menu
+extern "C" bool is_unclepunch_osd()
+{
+	return IsEnteringMenu >= 2;
+}

@@ -362,6 +362,7 @@ extern "C" HSD_GObj *orig_Menu_SetupRandomStageMenu(u8 state);
 extern "C" HSD_GObj *hook_Menu_SetupRandomStageMenu(u8 state)
 {
 	auto *gobj = orig_Menu_SetupRandomStageMenu(state);
+	auto *data = gobj->get<RandomStageMenuData>();
 
 	if (is_unclepunch_osd())
 		return gobj;
@@ -373,7 +374,6 @@ extern "C" HSD_GObj *hook_Menu_SetupRandomStageMenu(u8 state)
 		selected_index[i] = 0;
 
 	// Initialize new field
-	auto *data = gobj->get<RandomStageMenuData>();
 	data->page = 0;
 
 	// Free assets on menu exit
@@ -391,10 +391,19 @@ extern "C" HSD_GObj *hook_Menu_SetupRandomStageMenu(u8 state)
 extern "C" void orig_Menu_RandomStageMenuInput(HSD_GObj *gobj);
 extern "C" void hook_Menu_RandomStageMenuInput(HSD_GObj *gobj)
 {
-	if (is_unclepunch_osd())
-		return orig_Menu_RandomStageMenuInput(gobj);
-
 	const auto buttons = Menu_GetButtonsHelper(PORT_ALL);
+
+	if (is_unclepunch_osd()) {
+		// Disable UCF toggle in UP OSD menu
+		if (!(buttons & MenuButton_B) && (buttons & MenuButton_A)) {
+			if (MenuSelectedIndex == OSD_UCF) {
+				Menu_PlaySFX(MenuSFX_Error);
+				return;
+			}
+		}
+
+		return orig_Menu_RandomStageMenuInput(gobj);
+	}
 
 	if (buttons & (MenuButton_B | MenuButton_Start))
 		config.save();
