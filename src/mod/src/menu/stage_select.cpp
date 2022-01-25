@@ -182,12 +182,12 @@ static void setup_random_icon(HSD_JObj *random_joint)
 	}
 }
 
-static void reset_striking(int port)
+static void reset_striking(bool all)
 {
 	// Show all legal stages
 	for (auto i = 0; i < Icon_Random; i++) {
 		auto *icon = &StageSelectIcons[i];
-		if (is_legal_stage(icon->stage_id)) {
+		if (is_legal_stage(icon->stage_id) || all) {
 			HSD_JObjClearFlagsAll(icon->jobj, HIDDEN);
 			icon->unlocked = UnlockType_Unlocked;
 		} else {
@@ -199,7 +199,7 @@ static void reset_striking(int port)
 	Menu_PlaySFX(MenuSFX_Back);
 }
 
-static void strike_stage(int port)
+static void strike_stage()
 {
 	// Don't strike random/none
 	if (SelectedStageIcon >= Icon_Random)
@@ -246,10 +246,12 @@ extern "C" void hook_SSS_Think()
 	for (auto port = 0; port < 4; port++) {
 		const auto &pad = HSD_PadMasterStatus[port];
 
-		if (pad.instant_buttons & Button_Y)
-			reset_striking(port);
+		if (pad.instant_buttons & Button_Z)
+			reset_striking(should_use_oss());
+		else if (pad.instant_buttons & Button_Y)
+			reset_striking(false);
 		else if (pad.instant_buttons & Button_X)
-			strike_stage(port);
+			strike_stage();
 	}
 }
 
