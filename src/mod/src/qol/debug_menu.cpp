@@ -1,9 +1,9 @@
+#include "compat/20XX.h"
 #include "hsd/pad.h"
 #include "melee/debug.h"
 #include "melee/menu.h"
 #include "melee/preferences.h"
 #include "melee/scene.h"
-#include "20XX.h"
 #include <cstring>
 #include <gctypes.h>
 

@@ -1,3 +1,4 @@
+#include "compat/unclepunch.h"
 #include "hsd/cobj.h"
 #include "hsd/gobj.h"
 #include "hsd/jobj.h"
@@ -20,7 +21,6 @@
 #include "util/draw/render.h"
 #include "util/draw/texture.h"
 #include "util/melee/text_builder.h"
-#include "unclepunch.h"
 #include <algorithm>
 #include <gctypes.h>
 #include <type_traits>

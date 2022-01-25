@@ -1,3 +1,4 @@
+#include "compat/20XX.h"
 #include "hsd/archive.h"
 #include "hsd/gobj.h"
 #include "hsd/jobj.h"
@@ -12,7 +13,6 @@
 #include "util/meta.h"
 #include "util/patch_list.h"
 #include "util/melee/text_builder.h"
-#include "20XX.h"
 #include <gctypes.h>
 
 #include "resources/portals/vs_mode_preview.tex.h"

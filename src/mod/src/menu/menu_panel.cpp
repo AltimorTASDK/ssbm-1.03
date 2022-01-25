@@ -1,10 +1,10 @@
+#include "compat/unclepunch.h"
 #include "hsd/dobj.h"
 #include "hsd/gobj.h"
 #include "hsd/jobj.h"
 #include "hsd/mobj.h"
 #include "hsd/tobj.h"
 #include "melee/menu.h"
-#include "unclepunch.h"
 #include <gctypes.h>
 
 enum MenuPanelState {
