@@ -415,6 +415,8 @@ add_hook OnTriggerboxHitItem
 # UnclePunch compatibility
 .set InitRandomStageToggle, Menu_SetupRandomStageMenu+0x144
 add_hook InitRandomStageToggle
+# 20XX compatibility
+add_hook SSS_CursorThink
 #endif
 
 hooks_end:

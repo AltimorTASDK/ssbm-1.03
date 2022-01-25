@@ -1,9 +1,10 @@
 #pragma once
 
-#include <array>
+#include "compat/20XX.h"
 #include "melee/match.h"
 #include "melee/rules.h"
 #include "melee/stage.h"
+#include <array>
 
 constexpr auto ledge_grab_limit_values = std::array {
 	0, 30, 35, 40, 45, 50, 55, 60
@@ -59,6 +60,11 @@ inline controls_type get_controls()
 
 inline bool should_use_oss()
 {
+#ifdef NTSC102
+	if (is_20XX_stage_select())
+		return true;
+#endif
+
 	const auto *rules = GetGameRules();
 	return rules->stage_mods == stage_mod_type::oss;
 }
