@@ -11,10 +11,14 @@ constexpr auto pi = 3.14159265f;
 constexpr auto tau = pi * 2;
 }
 
+constexpr auto align_down(auto value, auto alignment)
+{
+	return value - (value % alignment + alignment) % alignment;
+}
+
 constexpr auto align_up(auto value, auto alignment)
 {
-	const auto biased = value + alignment - 1;
-	return biased - ((biased % alignment) + alignment) % alignment;
+	return align_down(value + alignment - 1, alignment);
 }
 
 constexpr auto is_pow2(auto value)
