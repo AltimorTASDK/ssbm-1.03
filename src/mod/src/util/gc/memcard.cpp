@@ -167,7 +167,7 @@ static void write_callback(s32 chan, s32 result)
 			return card_error("CARD_CreateAsync failed (%d)\n", op.error);
 	};
 
-	static constinit auto remake = [](s32 chan, s32 result) {
+	static constinit auto erase = [](s32 chan, s32 result) {
 		if (op.error = CARD_DeleteAsync(op.card, op.filename, create);
 		    op.error < 0)
 			return card_error("CARD_DeleteAsync failed (%d)\n", op.error);
@@ -185,9 +185,9 @@ static void write_callback(s32 chan, s32 result)
 
 	// Resize if needed
 	if (op.stats.len != op.size)
-		remake(op.card, 0);
-	else
-		write(op.card, 0);
+		erase(op.card, 0);
+
+	write(op.card, 0);
 }
 
 static void card_io(s32 card, const char *filename, void *buffer, u32 size, bool read)
