@@ -177,7 +177,6 @@ constexpr auto widescreen_descriptions = multi_array {
 
 static mempool pool;
 static texture_swap *widescreen_text;
-static texture_swap *decompressed_textures[ExtraRule_Max];
 
 static const auto patches = patch_list {
 	// Swap text for pause and friendly fire
@@ -276,10 +275,16 @@ static int get_jobj_index(int index)
 		return index - 1;
 }
 
-static void replace_toggle_texture(ExtraRulesMenuData *data, int index)
+static void replace_toggle_texture(ExtraRulesMenuData *data, int index, u8 *tex_data,
+                                   bool force_allocation = false)
 {
 	auto *tobj = data->value_jobj_trees[index].tree[1]->u.dobj->mobj->tobj;
-	tobj->imagedesc = decompressed_textures[index]->image;
+
+	// Force a new texture buffer to be allocated for duplicate models
+	if (force_allocation)
+		tobj->imagedesc->img_ptr = nullptr;
+
+	pool.add_texture_swap(tex_data, tobj->imagedesc);
 }
 
 static void fix_widescreen_text(ExtraRulesMenuData *data)
@@ -366,24 +371,6 @@ static void load_textures()
 	pool.add_texture_swap(controller_fix_tex_data,  rule_names->texanim->imagetbl[12]);
 	pool.add_texture_swap(latency_tex_data,         rule_names->texanim->imagetbl[13]);
 	widescreen_text = pool.add_texture_swap(widescreen_tex_data);
-
-	// Load rule value textures
-	decompressed_textures[ExtraRule_Pause] =
-		pool.add_texture_swap(pause_values_tex_data);
-
-	decompressed_textures[ExtraRule_StageMods] =
-		pool.add_texture_swap(stage_mods_values_tex_data);
-
-	decompressed_textures[ExtraRule_Controls] =
-		pool.add_texture_swap(controls_values_tex_data);
-
-	decompressed_textures[ExtraRule_ControllerFix] =
-		pool.add_texture_swap(controller_fix_values_tex_data);
-
-	if (!is_faster_melee()) {
-		decompressed_textures[ExtraRule_Latency] =
-			pool.add_texture_swap(latency_values_tex_data);
-	}
 }
 
 extern "C" ArchiveModel *select_extra_rule_model(u32 index)
@@ -495,16 +482,19 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 	// Free assets on menu exit
 	gobj->user_data_remove_func = pool_free;
 
-	if (pool.inc_ref() == 0)
-		load_textures();
+	// Free previous assets
+	if (pool.inc_ref() != 0)
+		pool.reset();
+
+	load_textures();
 
 	// Replace rule value textures
-	replace_toggle_texture(data, ExtraRule_Pause);
-	replace_toggle_texture(data, ExtraRule_StageMods);
-	replace_toggle_texture(data, ExtraRule_Controls);
-	replace_toggle_texture(data, ExtraRule_ControllerFix);
+	replace_toggle_texture(data, ExtraRule_Pause,         pause_values_tex_data, true);
+	replace_toggle_texture(data, ExtraRule_StageMods,     stage_mods_values_tex_data);
+	replace_toggle_texture(data, ExtraRule_Controls,      controls_values_tex_data);
+	replace_toggle_texture(data, ExtraRule_ControllerFix, controller_fix_values_tex_data, true);
 	if (!is_faster_melee())
-		replace_toggle_texture(data, ExtraRule_Latency);
+		replace_toggle_texture(data, ExtraRule_Latency, latency_values_tex_data);
 
 	// Make Rl01 and Rl05 use proper additional rules position
 	fix_value_position(data, ExtraRule_StageMods);
