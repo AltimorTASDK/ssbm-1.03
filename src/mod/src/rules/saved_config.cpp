@@ -2,7 +2,7 @@
 #include "rules/values.h"
 #include "util/gc/memcard.h"
 
-constexpr char filename[] = "103Config";
+static constexpr char filename[] = "103Config";
 
 static bool save_pending = false;
 
