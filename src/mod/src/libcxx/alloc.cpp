@@ -36,7 +36,7 @@ void *malloc(size_t count)
 void free(void *ptr)
 {
 	// Check which heap to free to
-	if ((char*)ptr - heap_data < sizeof(heap_data))
+	if ((uintptr_t)ptr - (uintptr_t)heap_data < sizeof(heap_data))
 		OSFreeToHeap(get_heap(), ptr);
 	else
 		HSD_Free(ptr);
