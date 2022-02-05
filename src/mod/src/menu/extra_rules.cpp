@@ -282,9 +282,9 @@ static void replace_toggle_texture(ExtraRulesMenuData *data, int index, u8 *tex_
 
 	// Force a new texture buffer to be allocated for duplicate models
 	if (force_allocation)
-		tobj->imagedesc->img_ptr = nullptr;
-
-	pool.add_texture_swap(tex_data, tobj->imagedesc);
+		tobj->imagedesc = pool.add_texture_swap(tex_data)->image;
+	else
+		pool.add_texture_swap(tex_data, tobj->imagedesc);
 }
 
 static void fix_widescreen_text(ExtraRulesMenuData *data)
