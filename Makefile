@@ -10,7 +10,7 @@ export BINDIR  := $(abspath bin)
 export TOOLS   := $(abspath tools)
 export GCIDIR  := $(abspath gci)
 
-export LDFLAGS := -Wl,-Map=output.map -Wl,--gc-sections
+export LDFLAGS := -Wl,-Map=output-$(VERSION).map -Wl,--gc-sections
 
 export DEFINES := -DGEKKO
 
