@@ -47,8 +47,10 @@ MGCFILES := $(shell find $(GCIDIR) -type f -name '*.mgc')
 ifeq ($(VERSION), 102)
 GCIFILE20XX := $(BINDIR)/$(MODNAME)-loader-20XX.gci
 GCISRC20XX  := $(GCIDIR)/ssbm-20XX.gci
+MGCMAIN20XX := $(GCIDIR)/1.03-20XX.mgc
 GCIFILEUP := $(BINDIR)/$(MODNAME)-loader-UP.gci
 GCISRCUP  := $(GCIDIR)/ssbm-UP.gci
+MGCMAINUP := $(GCIDIR)/1.03-UP.mgc
 
 .PHONY: all
 all: ssbm 20XX UP
@@ -70,14 +72,14 @@ ifeq ($(VERSION), 102)
 
 $(GCIFILE20XX): $(BINFILE) $(MGCFILES) $(GCISRC20XX)
 	@[ -d $(@D) ] || mkdir -p $(@D)
-	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -i $(GCISRC20XX) -o $@ $(MGCMAIN)
+	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -i $(GCISRC20XX) -o $@ $(MGCMAIN20XX)
 
 .PHONY: UP
 UP: $(GCIFILEUP)
 
 $(GCIFILEUP): $(BINFILE) $(MGCFILES) $(GCISRCUP)
 	@[ -d $(@D) ] || mkdir -p $(@D)
-	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -i $(GCISRCUP) -o $@ $(MGCMAIN)
+	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -i $(GCISRCUP) -o $@ $(MGCMAINUP)
 endif
 
 .PHONY: bin
