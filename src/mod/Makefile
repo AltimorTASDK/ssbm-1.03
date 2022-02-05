@@ -22,6 +22,7 @@ GCINAME   := 103Code
 GCIFILE   := $(BINDIR)/$(MODNAME).gci
 BANNERSRC := banner.rgb5a3.png
 BANNER    := banner.tex
+ICON      := icon.tex
 TITLE     := "Super Smash Bros. Melee 1.03"
 
 DIFFSRC  := bin/mod.bin
@@ -47,13 +48,13 @@ CFLAGS  += -flto
 LDFLAGS += -flto
 
 ifeq ($(VERSION), 102)
-$(GCIFILE): $(BINFILE) $(BANNER) $(TOOLS)/bin_to_gci.py
+$(GCIFILE): $(BINFILE) $(BANNER) $(ICON) $(TOOLS)/bin_to_gci.py
 	@[ -d $(@D) ] || mkdir -p $(@D)
-	python $(TOOLS)/bin_to_gci.py $@ $(GCINAME) $(TITLE) $(BANNER) $(ALLBINS)
+	python $(TOOLS)/bin_to_gci.py $@ $(GCINAME) $(TITLE) $(BANNER) $(ICON) $(ALLBINS)
 else
-$(GCIFILE): $(BINFILE).diff $(BANNER) $(TOOLS)/bin_to_gci.py
+$(GCIFILE): $(BINFILE).diff $(BANNER) $(ICON) $(TOOLS)/bin_to_gci.py
 	@[ -d $(@D) ] || mkdir -p $(@D)
-	python $(TOOLS)/bin_to_gci.py $@ $(GCINAME) $(TITLE) $(BANNER) $(ALLBINS)
+	python $(TOOLS)/bin_to_gci.py $@ $(GCINAME) $(TITLE) $(BANNER) $(ICON) $(ALLBINS)
 
 $(BINFILE).diff: $(BINFILE) $(TOOLS)/diff.py
 	@[ -d $(@D) ] || mkdir -p $(@D)
