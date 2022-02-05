@@ -145,10 +145,13 @@ struct file_entry {
 
 const file_entry *get_file(const void *data, int index)
 {
-	for (auto i = 0; i < index; i++)
-		data = (const char*)data + ((const file_entry*)data)->size + 4;
+	constexpr auto title_size = 0x40;
+	const auto *ptr = (const char*)data + title_size;
 
-	return (const file_entry*)data;
+	for (auto i = 0; i < index; i++)
+		ptr += sizeof(file_entry) + ((const file_entry*)ptr)->size;
+
+	return (const file_entry*)ptr;
 }
 
 extern "C" [[gnu::section(".loader")]] void load_mod()

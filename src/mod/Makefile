@@ -17,8 +17,12 @@ ALLBINS  := bin/mod.bin bin/mod-ntsc100.bin.diff bin/mod-ntsc101.bin.diff
 else
 ALLBINS  := bin/mod.bin bin/mod-ntsc100.bin.diff bin/mod-ntsc101.bin.diff bin/mod-pal.bin.diff
 endif
-GCINAME  := 103Code
-GCIFILE  := $(BINDIR)/$(MODNAME).gci
+
+GCINAME   := 103Code
+GCIFILE   := $(BINDIR)/$(MODNAME).gci
+BANNERSRC := banner.rgb5a3.png
+BANNER    := banner.tex
+TITLE     := "Super Smash Bros. Melee 1.03"
 
 DIFFSRC  := bin/mod.bin
 
@@ -43,18 +47,21 @@ CFLAGS  += -flto
 LDFLAGS += -flto
 
 ifeq ($(VERSION), 102)
-$(GCIFILE): $(BINFILE) $(TOOLS)/bin_to_gci.py
+$(GCIFILE): $(BINFILE) $(BANNER) $(TOOLS)/bin_to_gci.py
 	@[ -d $(@D) ] || mkdir -p $(@D)
-	python $(TOOLS)/bin_to_gci.py $@ $(GCINAME) $(ALLBINS)
+	python $(TOOLS)/bin_to_gci.py $@ $(GCINAME) $(TITLE) $(BANNER) $(ALLBINS)
 else
-$(GCIFILE): $(BINFILE).diff $(TOOLS)/bin_to_gci.py
+$(GCIFILE): $(BINFILE).diff $(BANNER) $(TOOLS)/bin_to_gci.py
 	@[ -d $(@D) ] || mkdir -p $(@D)
-	python $(TOOLS)/bin_to_gci.py $@ $(GCINAME) $(ALLBINS)
+	python $(TOOLS)/bin_to_gci.py $@ $(GCINAME) $(TITLE) $(BANNER) $(ALLBINS)
 
 $(BINFILE).diff: $(BINFILE) $(TOOLS)/diff.py
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	python $(TOOLS)/diff.py $(DIFFSRC) $< $@
 endif
+
+$(BANNER): $(BANNERSRC) $(TOOLS)/encode_texture.py
+	python $(TOOLS)/encode_texture.py $< $@
 
 $(BINFILE): $(ELFFILE)
 	@[ -d $(@D) ] || mkdir -p $(@D)

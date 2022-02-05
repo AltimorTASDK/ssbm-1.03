@@ -32,13 +32,13 @@ DEPFILES := $(patsubst $(OBJDIR)/%.o, $(DEPDIR)/%.d, $(OBJFILES))
 
 ifeq ($(VERSION), PAL)
 GCIFILE    := $(BINDIR)/$(MODNAME)-loader-PAL.gci
-GCISRC     := $(GCIDIR)/ssbm-pal.gci
-MGCMAIN    := $(GCIDIR)/1.03-pal.mgc
+GCISRC     := $(GCIDIR)/ssbm-PAL.gci
+MGCMAIN    := $(GCIDIR)/1.03-PAL.mgc
 LINKSCRIPT := loader-pal.ld
 else
-GCIFILE    := $(BINDIR)/$(MODNAME)-loader.gci
-GCISRC     := $(GCIDIR)/ssbm.gci
-MGCMAIN    := $(GCIDIR)/1.03.mgc
+GCIFILE    := $(BINDIR)/$(MODNAME)-loader-NTSC.gci
+GCISRC     := $(GCIDIR)/ssbm-NTSC.gci
+MGCMAIN    := $(GCIDIR)/1.03-NTSC.mgc
 LINKSCRIPT := loader.ld
 endif
 
