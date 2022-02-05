@@ -9,6 +9,8 @@ constexpr void *load_base = &__LOAD_BASE__;
 
 static s32 get_heap()
 {
+	// Make our own heap with blackjack and hookers so any additional mods don't have less free
+	// heap space than expected
 	static char heap_data[0x8000] [[gnu::aligned(32)]];
 	static auto heap = -1;
 
