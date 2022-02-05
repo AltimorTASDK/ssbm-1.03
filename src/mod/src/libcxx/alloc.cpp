@@ -1,4 +1,5 @@
 #include "hsd/heap.h"
+#include "hsd/memory.h"
 #include "os/heap.h"
 #include "os/os.h"
 #include "util/mempool.h"
@@ -24,15 +25,21 @@ static s32 get_heap()
 void *malloc(size_t count)
 {
 	auto *ptr = OSAllocFromHeap(get_heap(), count);
+
+	// Fall back to main heap
 	if (ptr == nullptr)
-		PANIC("Allocation failed\n");
+		ptr = HSD_MemAlloc(count);
 
 	return ptr;
 }
 
 void free(void *ptr)
 {
-	OSFreeToHeap(get_heap(), ptr);
+	// Check which heap to free to
+	if ((char*)ptr - heap_data < sizeof(heap_data))
+		OSFreeToHeap(get_heap(), ptr);
+	else
+		HSD_Free(ptr);
 }
 
 void *operator new(size_t count)
