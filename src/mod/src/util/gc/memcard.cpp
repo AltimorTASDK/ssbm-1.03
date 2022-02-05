@@ -31,10 +31,10 @@ static struct {
 	s32 card;
 	const char *filename;
 	bool read;
+
+	// Caller buffer and size
 	void *buffer;
 	u32 size;
-	void *src_buffer;
-	u32 src_size;
 
 	bool save_pending;
 
@@ -84,13 +84,6 @@ extern "C" u32 hook_GetNextSceneMajorCallback()
 
 static void card_done()
 {
-	if (op.buffer != op.src_buffer) {
-		if (op.read && op.error >= 0)
-			memcpy(op.src_buffer, op.buffer, op.src_size);
-
-		HSD_Free(op.buffer);
-	}
-
 	CARD_Unmount(op.card);
 
 	// Wake up the main thread
@@ -156,29 +149,27 @@ static void write_callback(s32 chan, s32 result)
 	}
 
 	static constinit auto write = [](s32 chan, s32 result) {
-		if (op.error = CARD_WriteAsync(&op.file, op.buffer, op.size, 0, card_callback);
-		    op.error < 0)
+		op.error = CARD_WriteAsync(&op.file, op.buffer, op.size, 0, card_callback);
+		if (op.error < 0)
 			return card_error("CARD_WriteAsync failed (%d)\n", op.error);
 	};
 
 	static constinit auto create = [](s32 chan, s32 result) {
-		if (op.error = CARD_CreateAsync(op.card, op.filename, op.size, &op.file, write);
-		    op.error < 0)
+		op.error = CARD_CreateAsync(op.card, op.filename, op.size, &op.file, write);
+		if (op.error < 0)
 			return card_error("CARD_CreateAsync failed (%d)\n", op.error);
 	};
 
 	static constinit auto erase = [](s32 chan, s32 result) {
-		if (op.error = CARD_DeleteAsync(op.card, op.filename, create);
-		    op.error < 0)
+		op.error = CARD_DeleteAsync(op.card, op.filename, create);
+		if (op.error < 0)
 			return card_error("CARD_DeleteAsync failed (%d)\n", op.error);
 	};
 
-	if (op.error = CARD_Open(op.card, op.filename, &op.file);
-	    op.error < 0 && op.error != CARD_ERROR_NOFILE)
-		return card_error("CARD_Open failed (%d)\n", op.error);
-
-	if (op.error == CARD_ERROR_NOFILE)
+	if (op.error = CARD_Open(op.card, op.filename, &op.file); op.error == CARD_ERROR_NOFILE)
 		return create(op.card, 0);
+	else if (op.error < 0)
+		return card_error("CARD_Open failed (%d)\n", op.error);
 
 	if (op.error = CARD_GetStatus(op.card, op.file.filenum, &op.stats); op.error < 0)
 		return card_error("CARD_GetStatus failed (%d)\n", op.error);
@@ -186,8 +177,8 @@ static void write_callback(s32 chan, s32 result)
 	// Resize if needed
 	if (op.stats.len != op.size)
 		erase(op.card, 0);
-
-	write(op.card, 0);
+	else
+		write(op.card, 0);
 }
 
 static void card_io(s32 card, const char *filename, void *buffer, u32 size, bool read)
@@ -198,26 +189,9 @@ static void card_io(s32 card, const char *filename, void *buffer, u32 size, bool
 
 	op.card = card;
 	op.filename = filename;
+	op.buffer = buffer;
+	op.size = size;
 	op.read = read;
-	op.src_buffer = buffer;
-	op.src_size = size;
-
-	// Size must be aligned
-	op.size = align_up(size, read ? 0x200 : cardmap[card].sector_size);
-
-	if (buffer != nullptr && op.size != size) {
-		// Make resized buffer
-		op.buffer = HSD_MemAlloc(op.size);
-
-		if (!read) {
-			memcpy(op.buffer, buffer, size);
-			memset((u8*)op.buffer + size, 0, op.size - size);
-		}
-	} else {
-		op.buffer = buffer;
-	}
-
-	const auto callback = read ? read_callback : write_callback;
 
 	InitCardBuffers();
 
@@ -225,6 +199,8 @@ static void card_io(s32 card, const char *filename, void *buffer, u32 size, bool
 	// Use GALE01 saves for PAL/UP
 	cardmap[0].gamecode->game = 'GALE';
 #endif
+
+	const auto callback = read ? read_callback : write_callback;
 
 	if (op.error = CARD_MountAsync(card, CardWorkArea, nullptr, callback); op.error < 0)
 		card_error("CARD_MountAsync failed (%d)\n", op.error);

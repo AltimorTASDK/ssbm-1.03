@@ -2,6 +2,7 @@
 
 #include "melee/music.h"
 #include "melee/rules.h"
+#include "util/gc/memcard.h"
 #include <gctypes.h>
 
 enum class config_version : u8 {
@@ -47,4 +48,6 @@ struct [[gnu::packed]] saved_config : config_values<config_version::current> {
 	void save();
 };
 
-inline saved_config config;
+inline card_write_buffer<saved_config> config_buffer;
+
+inline saved_config &config = *config_buffer;
