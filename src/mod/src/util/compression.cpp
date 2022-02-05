@@ -42,10 +42,10 @@ u8 *rle_decode(const rle_data *rle, u8 *out = nullptr)
 {
 	const auto *in = rle->data;
 	const auto out_len = rle->uncompressed_len;
-	
+
 	if (out == nullptr)
 		out = new u8[out_len];
-	
+
 	size_t in_idx = 0;
 	size_t out_idx = 0;
 
@@ -72,9 +72,9 @@ u8 *rle_decode(const rle_data *rle, u8 *out = nullptr)
 			in_idx += 2;
 		}
 	}
-	
+
 	DCStoreRange(out, out_len);
-	
+
 	return out;
 }
 
@@ -93,11 +93,11 @@ u8 *index_decode(const index_header *index, u8 *out = nullptr)
 		out = new u8[out_len];
 
 	size_t bitpos = 0;
-	
+
 	for (size_t out_idx = 0; out_idx < out_len; out_idx++) {
 		const auto in_idx = bitpos / 8;
 		const auto offset = bitpos % 8;
-		
+
 		if (offset + bits <= 8) {
 			const auto index = (in[in_idx] >> (8 - offset - bits)) & mask;
 			out[out_idx] = table[index];
@@ -107,14 +107,14 @@ u8 *index_decode(const index_header *index, u8 *out = nullptr)
 			const auto index = (word >> (16 - offset - bits)) & mask;
 			out[out_idx] = table[index];
 		}
-		
+
 		bitpos += bits;
 	}
-	
+
 	delete[] in;
-	
+
 	DCStoreRange(out, out_len);
-	
+
 	return out;
 }
 
@@ -146,7 +146,7 @@ texture_swap::~texture_swap()
 {
 	if (buffer != nullptr)
 		delete[] buffer;
-		
+
 	if (image != &image_copy)
 		*image = image_copy;
 }
@@ -154,17 +154,17 @@ texture_swap::~texture_swap()
 u8 *unmanaged_texture_swap(const u8 *data, HSD_ImageDesc *image)
 {
 	const auto *tex = (tex_header*)data;
-	
+
 	const auto old_size = GX_GetTexBufferSize(image->width, image->height, image->format,
 	                                          (u8)image->mipmap, (u8)image->max_lod);
 
 	const auto new_size = GX_GetTexBufferSize(tex->width, tex->height, tex->format,
 	                                          GX_FALSE, 0);
-						  
+
 	image->width = tex->width;
 	image->height = tex->height;
 	image->format = tex->format;
-						  
+
 	if (new_size > old_size || image->img_ptr == nullptr) {
 		// Allocate a new buffer
 		image->img_ptr = decompress(data);

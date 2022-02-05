@@ -375,15 +375,13 @@ static bool detect_fm()
 	return result;
 }
 
-struct set_callbacks {
-	set_callbacks()
-	{
-		if (detect_fm()) {
-			faster_melee = true;
-			return;
-		}
-
-		SIEnablePollingInterrupt(true);
-		HSD_VISetUserPostRetraceCallback(post_retrace_callback);
+[[gnu::constructor]] static void init_latency()
+{
+	if (detect_fm()) {
+		faster_melee = true;
+		return;
 	}
-} set_callbacks;
+
+	SIEnablePollingInterrupt(true);
+	HSD_VISetUserPostRetraceCallback(post_retrace_callback);
+}

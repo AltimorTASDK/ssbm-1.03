@@ -5,30 +5,28 @@
 #include "rules/values.h"
 #include "util/melee/match.h"
 
-struct init_rules {
-	init_rules()
-	{
-		// Set new rule value bounds
-		RuleValueBounds[Rule_LedgeGrabLimit] = { 0, ledge_grab_limit_values.size() - 1 };
-		RuleValueBounds[Rule_AirTimeLimit]   = { 0, air_time_limit_values.size()   - 1 };
+[[gnu::constructor]] static void init_rules()
+{
+	// Set new rule value bounds
+	RuleValueBounds[Rule_LedgeGrabLimit] = { 0, ledge_grab_limit_values.size() - 1 };
+	RuleValueBounds[Rule_AirTimeLimit]   = { 0, air_time_limit_values.size()   - 1 };
 
-		ExtraRuleValueBounds[ExtraRule_StageMods]     = { 0, (u8)stage_mod_type::max - 1 };
-		//ExtraRuleValueBounds[ExtraRule_Controls]      = { 0, (u8)controls_type::max  - 1 };
-		ExtraRuleValueBounds[ExtraRule_Controls]      = { 0, (u8)controls_type::max  - 1 };
-		ExtraRuleValueBounds[ExtraRule_ControllerFix] = { 0, (u8)ucf_type::max       - 1 };
-		ExtraRuleValueBounds[ExtraRule_Latency]       = { 0, (u8)latency_mode::max   - 1 };
-		ExtraRuleValueBounds[ExtraRule_Widescreen]    = { 0, 1 };
+	ExtraRuleValueBounds[ExtraRule_StageMods]     = { 0, (u8)stage_mod_type::max - 1 };
+	//ExtraRuleValueBounds[ExtraRule_Controls]      = { 0, (u8)controls_type::max  - 1 };
+	ExtraRuleValueBounds[ExtraRule_Controls]      = { 0, (u8)controls_type::max  - 1 };
+	ExtraRuleValueBounds[ExtraRule_ControllerFix] = { 0, (u8)ucf_type::max       - 1 };
+	ExtraRuleValueBounds[ExtraRule_Latency]       = { 0, (u8)latency_mode::max   - 1 };
+	ExtraRuleValueBounds[ExtraRule_Widescreen]    = { 0, 1 };
 
-		auto *rules = GetGameRules();
+	auto *rules = GetGameRules();
 
-		// Set default rules
-		rules->mode                 = Mode_Stock;
-		rules->time_limit           = 0;
-		rules->stock_count          = 4;
-		rules->stage_selection_mode = 0;
-		rules->pause                = false;
-	}
-} init_rules;
+	// Set default rules
+	rules->mode                 = Mode_Stock;
+	rules->time_limit           = 0;
+	rules->stock_count          = 4;
+	rules->stage_selection_mode = 0;
+	rules->pause                = false;
+}
 
 static bool is_singleplayer(const StartMeleeData *data)
 {

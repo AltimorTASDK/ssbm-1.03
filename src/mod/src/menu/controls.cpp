@@ -655,13 +655,11 @@ void store_controls_menu_port()
 	}
 }
 
-struct set_menu_callbacks {
-	set_menu_callbacks()
-	{
-		// Replace tournament mode
-		auto *callbacks = Menu_GetCallbacks(MenuID_Controls);
-		callbacks->think = Controls_Think;
-		callbacks->enter = Controls_Init;
-		callbacks->exit = Controls_Free;
-	}
-} set_menu_callbacks;
+[[gnu::constructor]] static void set_menu_callbacks()
+{
+	// Replace tournament mode
+	auto *callbacks = Menu_GetCallbacks(MenuID_Controls);
+	callbacks->think = Controls_Think;
+	callbacks->enter = Controls_Init;
+	callbacks->exit = Controls_Free;
+}
