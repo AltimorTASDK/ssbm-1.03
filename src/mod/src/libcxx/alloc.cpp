@@ -9,26 +9,47 @@
 extern "C" char __LOAD_BASE__;
 constexpr void *load_base = &__LOAD_BASE__;
 
+static constexpr auto NEW_HEAP_COUNT = 5;
+static OSHeap new_heap_list[NEW_HEAP_COUNT];
+
 static char heap_data[0x8000] [[gnu::aligned(32)]];
 static auto heap = -1;
+
+static void expand_heap_list()
+{
+	// Expand the heap list to ensure a new one is available (UPTM uses all 4 already)
+	for (auto i = 0; i < NEW_HEAP_COUNT; i++) {
+		if (i < MaxHeapCount)
+			new_heap_list[i] = HeapList[i];
+		else
+			new_heap_list[i].size = -1;
+	}
+
+	HeapList = new_heap_list;
+	MaxHeapCount = NEW_HEAP_COUNT;
+}
 
 static s32 get_heap()
 {
 	// Make our own heap with blackjack and hookers so any additional mods don't have less free
 	// heap space than expected
-	if (heap == -1)
-		heap = OSCreateHeap(heap_data, heap_data + sizeof(heap_data));
+	if (heap != -1)
+		return heap;
 
+	if (MaxHeapCount < NEW_HEAP_COUNT)
+		expand_heap_list();
+
+	heap = OSCreateHeap(heap_data, heap_data + sizeof(heap_data));
 	return heap;
 }
 
 void *malloc(size_t count)
 {
-	auto *ptr = OSAllocFromHeap(get_heap(), count);
+	auto *ptr = get_heap() != -1 ? OSAllocFromHeap(get_heap(), count) : nullptr;
 
 	// Fall back to main heap
 	if (ptr == nullptr)
-		ptr = HSD_MemAlloc(count);
+		return HSD_MemAlloc(count);
 
 	return ptr;
 }
