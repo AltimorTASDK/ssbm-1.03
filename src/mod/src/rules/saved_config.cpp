@@ -2,8 +2,6 @@
 #include "rules/values.h"
 #include "util/gc/memcard.h"
 
-#include "os/os.h"
-
 constexpr char filename[] = "103Config";
 
 static bool save_pending = false;
@@ -61,8 +59,6 @@ void saved_config::save()
 	controller_fix   = rules->controller_fix;
 	stage_mods       = rules->stage_mods;
 	controls         = rules->controls;
-
-	OSReport("buffer %p\n", &config_buffer);
 
 	if (is_card_busy())
 		save_pending = true;
