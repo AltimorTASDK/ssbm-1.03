@@ -105,7 +105,7 @@ constexpr auto controls_description = make_description_text<
 	"Remap buttons and change",
 	"other controller settings.">();
 
-constexpr auto controls_locked_description = make_description_text<
+constexpr auto controls_z_jump_description = make_description_text<
 	"Remap buttons.">();
 
 constexpr auto manual_description = make_description_text<
@@ -229,10 +229,10 @@ static void update_portal_description(MainMenuData *data, u32 menu_type, u32 ind
 
 	if (index == VsMenu_DebugMenu)
 		data->description_text->data = debug_menu_description.data();
-	else if (index == VsMenu_Controls && !get_settings_lock())
+	else if (index == VsMenu_Controls && get_controls() != controls_type::z_jump)
 		data->description_text->data = controls_description.data();
-	else if (index == VsMenu_Controls && get_settings_lock())
-		data->description_text->data = controls_locked_description.data();
+	else if (index == VsMenu_Controls)
+		data->description_text->data = controls_z_jump_description.data();
 	else if (index == VsMenu_Manual)
 		data->description_text->data = manual_description.data();
 }
