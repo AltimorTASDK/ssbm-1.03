@@ -6,11 +6,11 @@ OUTPUT_FORMAT(elf32-powerpc)
 OUTPUT_ARCH(powerpc:common);
 ENTRY(_start);
 
-PROVIDE(__LOAD_BASE__ = 0x81791000);
+PROVIDE(__LOAD_BASE__ = 0x81781000);
 
 MEMORY
 {
-    load (rwx) : ORIGIN = __LOAD_BASE__, LENGTH = 0x5B000
+    load (rwx) : ORIGIN = __LOAD_BASE__, LENGTH = 0x6B000
 }
 
 SECTIONS
