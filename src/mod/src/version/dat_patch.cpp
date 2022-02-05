@@ -83,14 +83,14 @@ extern "C" void patch_preloaded_archive(PreloadEntry *entry)
 		const auto size = apply_diff(entry->raw_data->addr, patch.diff, nullptr);
 
 		// Move original buffer onto main heap to avoid OOM on preload heap
-		auto *original = new char[entry->size];
+		auto *original = HSD_MemAlloc(entry->size);
 		memcpy(original, entry->raw_data->addr, entry->size);
 		HSD_FreeToHeap(entry->heap, entry->raw_data->addr);
 
 		auto *out = (HSD_AllocEntry*)HSD_MemAllocFromHeap(entry->heap, size);
 		apply_diff(original, patch.diff, out->addr);
 
-		delete[] original;
+		HSD_Free(original);
 
 		entry->size = size;
 		entry->raw_data = out;
