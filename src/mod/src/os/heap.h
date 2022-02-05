@@ -19,6 +19,8 @@ extern "C" {
 extern OSHeap *HeapList;
 extern s32 MaxHeapCount;
 
-void *OSAllocFromHeap(int heap, u32 size);
+s32 OSCreateHeap(void *start, void *end);
+void *OSAllocFromHeap(s32 heap, u32 size);
+void OSFreeToHeap(s32 heap, void *buf);
 
 }
