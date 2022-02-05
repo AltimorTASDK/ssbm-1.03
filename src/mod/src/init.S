@@ -60,7 +60,8 @@ hook_end:
         lis     r3, __BSS_START__@h
         ori     r3, r3, __BSS_START__@l
         li      r4, 0
-        li      r5, __BSS_SIZE__
+        lis     r5, __BSS_SIZE__@h
+        ori     r5, r5, __BSS_SIZE__@l
         bl      memset
 
         # Run C++ constructors
@@ -411,7 +412,7 @@ add_hook ThrowSyncSideB
 .set OnTriggerboxHitItem, Player_ItemHitDetection+0x484
 add_hook OnTriggerboxHitItem
 #endif
-#ifndef NOPAL
+#if defined(NTSC102) && !defined(NOPAL)
 # UnclePunch compatibility
 .set InitRandomStageToggle, Menu_SetupRandomStageMenu+0x144
 add_hook InitRandomStageToggle

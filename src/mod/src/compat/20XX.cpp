@@ -2,6 +2,7 @@
 #include "hsd/pad.h"
 #include "util/patch_list.h"
 
+#if defined(NTSC102) && !defined(NOPAL)
 extern "C" char SaveFileName[25];
 extern "C" char MnSlMapPath[];
 
@@ -39,3 +40,14 @@ extern "C" void hook_SSS_CursorThink(HSD_GObj *gobj)
 	for (auto port = 0; port < 4; port++)
 		queue[0].stat[port].buttons = old_buttons[port];
 }
+#else
+extern "C" bool is_20XX()
+{
+	return false;
+}
+
+extern "C" bool is_20XX_stage_select()
+{
+	return false;
+}
+#endif

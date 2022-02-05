@@ -1,3 +1,4 @@
+#if defined(NTSC102) && !defined(NOPAL)
 .section .text
 
 .set OSD_UCF, 28
@@ -17,3 +18,5 @@ hook_InitRandomStageToggle:
         b       orig_InitRandomStageToggle+4
 1:
         b       orig_InitRandomStageToggle
+
+#endif
