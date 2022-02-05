@@ -25,7 +25,9 @@ static mempool pool;
 
 static auto first_save_check = false;
 
+#if defined(PAL) || defined(NTSC102)
 static auto gamecode = cardmap[0].gamecode->game;
+#endif
 
 static struct {
 	s32 card;
@@ -89,7 +91,7 @@ static void card_done()
 	// Wake up the main thread
 	op.wait.wake();
 
-#ifndef NOPAL
+#if defined(PAL) || defined(NTSC102)
 	// Restore gamecode
 	cardmap[0].gamecode->game = gamecode;
 #endif
@@ -195,7 +197,7 @@ static void card_io(s32 card, const char *filename, void *buffer, u32 size, bool
 
 	InitCardBuffers();
 
-#ifndef NOPAL
+#if defined(PAL) || defined(NTSC102)
 	// Use GALE01 saves for PAL/UP
 	cardmap[0].gamecode->game = 'GALE';
 #endif

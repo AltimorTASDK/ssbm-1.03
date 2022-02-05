@@ -162,7 +162,7 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 
 	InitCardBuffers();
 
-#ifndef NOPAL
+#if defined(PAL) || defined(NTSC102)
 	// Use GALE01 saves for PAL/UP
 	const auto gamecode = cardmap[0].gamecode->game;
 	cardmap[0].gamecode->game = 'GALE';
@@ -185,7 +185,7 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 	memcpy(&__MOD_BASE__, base->data, code_size);
 #endif
 
-#ifndef NOPAL
+#if defined(PAL) || defined(NTSC102)
 	// Restore gamecode
 	cardmap[0].gamecode->game = gamecode;
 #endif
