@@ -1,19 +1,20 @@
 #include "hsd/heap.h"
 #include "os/heap.h"
 #include "os/os.h"
+#include "util/mempool.h"
 #include <cstddef>
 #include <new>
 
 extern "C" char __LOAD_BASE__;
 constexpr void *load_base = &__LOAD_BASE__;
 
+static char heap_data[0x8000] [[gnu::aligned(32)]];
+static auto heap = -1;
+
 static s32 get_heap()
 {
 	// Make our own heap with blackjack and hookers so any additional mods don't have less free
 	// heap space than expected
-	static char heap_data[0x8000] [[gnu::aligned(32)]];
-	static auto heap = -1;
-
 	if (heap == -1)
 		heap = OSCreateHeap(heap_data, heap_data + sizeof(heap_data));
 
@@ -115,4 +116,19 @@ void fix_heap(OSHeap *heap)
 		if (heap_end > load_base)
 			heap->size = (u32)load_base - (u32)heap->start;
 	}
+}
+
+extern "C" void orig_HSD_ResetScene();
+extern "C" void hook_HSD_ResetScene()
+{
+	// Reset 1.03 heap
+	if (heap != -1) {
+		OSDestroyHeap(heap);
+		heap = -1;
+	}
+
+	// Run destructors and clear pool refcounts on heap destruction
+	mempool::free_all();
+
+	orig_HSD_ResetScene();
 }

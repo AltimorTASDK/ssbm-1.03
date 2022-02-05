@@ -14,7 +14,7 @@ class mempool {
 	};
 
 public:
-	static mempool *pool_list_head;
+	inline static mempool *pool_list_head;
 
 	inline static objpool<allocation, 32> entry_pool;
 	inline static objpool<texture_swap, 32> texture_swap_pool;

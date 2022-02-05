@@ -20,6 +20,7 @@ extern OSHeap *HeapList;
 extern s32 MaxHeapCount;
 
 s32 OSCreateHeap(void *start, void *end);
+void OSDestroyHeap(s32 heap);
 void *OSAllocFromHeap(s32 heap, u32 size);
 void OSFreeToHeap(s32 heap, void *buf);
 
