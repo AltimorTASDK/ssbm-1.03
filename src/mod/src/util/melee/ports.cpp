@@ -7,7 +7,7 @@
 static int get_singles_index(u32 port)
 {
 	auto count = 0;
-	int result;
+	auto result = -1;
 
 	for (u32 i = 0; i < 4; i++) {
 		if (PlayerBlock_GetSlotType(i) == SlotType_None)
