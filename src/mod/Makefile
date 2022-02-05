@@ -23,7 +23,7 @@ GCIFILE   := $(BINDIR)/$(MODNAME).gci
 BANNERSRC := banner.rgb5a3.png
 BANNER    := banner.tex
 ICON      := icon.tex
-TITLE     := "Super Smash Bros. Melee 1.03"
+TITLE     := "Super Smash Bros. Melee         1.03 Data"
 
 DIFFSRC  := bin/mod.bin
 

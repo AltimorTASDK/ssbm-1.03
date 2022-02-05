@@ -1,9 +1,9 @@
 !begin
 
 !gci 40
-!string "Super Smash Bros. Melee 1.03 Loader (UnclePunch)"
+!string "Super Smash Bros. Melee         1.03 Loader (UnclePunch)"
 # Pad to 0x40 length
-00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00
 
 # Make the first nametag so long that it overflows into the stack's return pointer
 !loc 8045d850
