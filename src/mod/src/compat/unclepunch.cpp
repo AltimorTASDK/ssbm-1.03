@@ -14,6 +14,7 @@ extern "C" void Interrupt_AS_Turn(HSD_GObj *gobj);
 extern "C" void AS_235_SpotDodge_YoshiCheck(HSD_GObj *gobj);
 extern "C" void CSS_Setup();
 extern "C" void CSS_ReadyThink(HSD_GObj *gobj);
+extern "C" void CSS_PlayerThink(HSD_GObj *gobj);
 extern "C" void Scene_Initialize(SceneMinorData *data);
 
 // Check for UP gamecode
@@ -48,6 +49,9 @@ extern "C" bool is_unclepunch()
 		// OSD/menu music. Newer UP versions have this built in
 		// li r3, 0x4800
 		std::pair { (char*)Scene_Initialize+0x54,            0x38604800u },
+
+		// Disable UP's built in rumble toggle
+		std::pair { (char*)CSS_PlayerThink+0x638,            0x889F0004u },
 	};
 }
 
