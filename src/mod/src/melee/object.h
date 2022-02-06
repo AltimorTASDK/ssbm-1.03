@@ -4,6 +4,8 @@
 #include "hsd/jobj.h"
 #include "util/vector.h"
 
+constexpr auto NO_LINE = -1;
+
 enum ECBFlag {
 	ECBFlag_FreezeBottom = 0x10
 };

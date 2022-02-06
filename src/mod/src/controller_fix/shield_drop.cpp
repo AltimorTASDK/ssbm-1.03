@@ -6,7 +6,7 @@
 static bool should_suppress_spotdodge(HSD_GObj *gobj)
 {
 	const auto *player = gobj->get<Player>();
-	
+
 	if (Player_IsCPUControlled(player))
 		return false;
 
@@ -15,7 +15,7 @@ static bool should_suppress_spotdodge(HSD_GObj *gobj)
 		return false;
 
 	// Must be on a platform (not checked by UCF)
-	if (!Physics_IsOnPlatform(&player->phys))
+	if (player->phys.floor.line == NO_LINE || !Physics_IsOnPlatform(&player->phys))
 		return false;
 
 	// Roll must be disabled
