@@ -64,12 +64,12 @@ export INCLUDE  := -Isrc -I$(abspath src/mod/src) -I$(DEVKITPATH)/libogc/include
 .PHONY: all
 all: loader mod
 
-.PHONY: loader
+.PHONY: loader clean_tmp
 loader: $(MELEELD)
 	+@cd src/loader && $(MAKE)
 
 .PHONY: mod
-mod: $(MELEELD)
+mod: $(MELEELD) clean_tmp resources
 	+@cd src/mod && $(MAKE)
 
 .PHONY: resources
@@ -78,6 +78,10 @@ resources: $(MELEELD)
 
 $(MELEELD): $(MELEEMAP) $(TOOLS)/map_to_linker_script.py
 	python $(TOOLS)/map_to_linker_script.py $(MELEEMAP) $(MELEELD)
+
+.PHONY: clean_tmp
+clean_tmp:
+	@rm -rf $(GCIDIR)/tmp_*
 
 .PHONY: clean
 clean:
