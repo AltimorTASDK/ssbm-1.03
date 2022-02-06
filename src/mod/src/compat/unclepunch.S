@@ -5,9 +5,9 @@
 
 .global hook_InitRandomStageToggle
 hook_InitRandomStageToggle:
-        # Check if UCF toggle index
+        # Check if UCF or extra toggle index
         cmpwi   r26, OSD_UCF
-        bne     1f
+        blt     1f
         # Check if UnclePunch OSD
         lis     r4, IsEnteringMenu@ha
         lwz     r4, IsEnteringMenu@l(r4)
