@@ -69,7 +69,7 @@ loader: $(MELEELD)
 	+@cd src/loader && $(MAKE)
 
 .PHONY: mod
-mod: $(MELEELD) clean_tmp resources
+mod: $(MELEELD) clean_tmp
 	+@cd src/mod && $(MAKE)
 
 .PHONY: resources
