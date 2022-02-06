@@ -1,3 +1,4 @@
+#include "compat/unclepunch.h"
 #include <gctypes.h>
 
 extern "C" u8 FeatureUnlockMask;
@@ -26,9 +27,10 @@ extern "C" u32 hook_IsTrophyUnlocked(u32 index)
 	return 1;
 }
 
+extern "C" u32 orig_GetUnlockedEventMatchCount(u32 index);
 extern "C" u32 hook_GetUnlockedEventMatchCount(u32 index)
 {
-	return 42;
+	return !is_unclepunch() ? 42 : orig_GetUnlockedEventMatchCount(index);
 }
 
 extern "C" bool hook_ShouldShowUnlockMessage(u32 index)

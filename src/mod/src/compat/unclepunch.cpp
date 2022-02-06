@@ -1,8 +1,13 @@
+#if defined(NTSC102) && !defined(NOPAL)
 #include "hsd/gobj.h"
 #include "melee/menu.h"
 #include "melee/scene.h"
-#include "os/card.h"
 #include "util/patch_list.h"
+
+extern "C" struct {
+	u32 game;
+	u16 company;
+} __GameCode;
 
 extern "C" void Interrupt_AS_DamageFall(HSD_GObj *gobj);
 extern "C" void Interrupt_AS_Turn(HSD_GObj *gobj);
@@ -11,11 +16,17 @@ extern "C" void CSS_Setup();
 extern "C" void CSS_ReadyThink(HSD_GObj *gobj);
 extern "C" void Scene_Initialize(SceneMinorData *data);
 
+// Check for UP gamecode
+static const auto result = __GameCode.game == 'GTME';
+
+extern "C" bool is_unclepunch()
+{
+	return result;
+}
+
 [[gnu::constructor]] static void check_unclepunch()
 {
-#if defined(NTSC102) && !defined(NOPAL)
-	// Check for UP gamecode
-	if (cardmap[0].gamecode->game != 'GTME')
+	if (!is_unclepunch())
 		return;
 
 	patch_list {
@@ -38,15 +49,21 @@ extern "C" void Scene_Initialize(SceneMinorData *data);
 		// li r3, 0x4800
 		std::pair { (char*)Scene_Initialize+0x54,            0x38604800u },
 	};
-#endif
 }
 
 // Check for the flag UnclePunch uses to indicate the OSD menu
 extern "C" bool is_unclepunch_osd()
 {
-#if defined(NTSC102) && !defined(NOPAL)
 	return IsEnteringMenu >= 2;
-#else
-	return false;
-#endif
 }
+#else
+extern "C" bool is_unclepunch()
+{
+	return false;
+}
+
+extern "C" bool is_unclepunch_osd()
+{
+	return false;
+}
+#endif
