@@ -25,7 +25,7 @@ extern "C" void process_remapping(int port);
 extern "C" void process_remapping(int port)
 {
 	// Reset config if unplugged and not in-game
-	if (HSD_PadMasterStatus[port].err != 0 && MatchInfo.match_over) {
+	if (HSD_PadMasterStatus[port].err != 0 && GetMatchInfo()->match_over) {
 		controller_configs[port].reset(port);
 		return;
 	}
