@@ -20,6 +20,8 @@ struct controller_config {
 	cstick_type c_down       = cstick_type::smash;
 	bool tap_jump            = true;
 
+	controller_config() = default;
+
 	controller_config(int port)
 	{
 		// Default to no rumble
