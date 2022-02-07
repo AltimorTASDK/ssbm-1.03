@@ -13,8 +13,6 @@ enum class cstick_type {
 struct controller_config {
 	static const controller_config defaults;
 
-	const int port;
-
 	u8 z_jump_bit            = 0;
 	bool perfect_angles      = false;
 	cstick_type c_up         = cstick_type::smash;
@@ -22,13 +20,13 @@ struct controller_config {
 	cstick_type c_down       = cstick_type::smash;
 	bool tap_jump            = true;
 
-	controller_config(int port) : port(port)
+	controller_config(int port)
 	{
 		// Default to no rumble
 		SetPortRumbleFlag(port, false);
 	}
 
-	void reset()
+	void reset(int port)
 	{
 		// Disable rumble on unplug
 		SetPortRumbleFlag(port, false);
