@@ -14,7 +14,7 @@
 #include "melee/text.h"
 #include "rules/saved_config.h"
 #include "rules/values.h"
-#include "util/compression.h"
+#include "util/texture_swap.h"
 #include "util/mempool.h"
 #include "util/meta.h"
 #include "util/patch_list.h"

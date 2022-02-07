@@ -1,7 +1,7 @@
 #pragma once
 
 #include "hsd/tobj.h"
-#include "util/compression.h"
+#include "util/texture_swap.h"
 #include "util/objpool.h"
 #include <new>
 

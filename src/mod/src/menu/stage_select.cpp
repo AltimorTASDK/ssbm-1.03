@@ -8,7 +8,7 @@
 #include "melee/menu.h"
 #include "melee/stage.h"
 #include "rules/values.h"
-#include "util/compression.h"
+#include "util/texture_swap.h"
 #include "util/math.h"
 #include "util/vector.h"
 #include <algorithm>

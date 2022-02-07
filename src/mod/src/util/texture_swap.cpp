@@ -1,6 +1,6 @@
 #include "hsd/tobj.h"
 #include "os/os.h"
-#include "util/compression.h"
+#include "util/texture_swap.h"
 #include <cstddef>
 #include <cstring>
 #include <gctypes.h>

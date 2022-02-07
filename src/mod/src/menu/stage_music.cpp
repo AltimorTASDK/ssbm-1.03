@@ -10,7 +10,7 @@
 #include "melee/stage.h"
 #include "melee/text.h"
 #include "rules/saved_config.h"
-#include "util/compression.h"
+#include "util/texture_swap.h"
 #include "util/math.h"
 #include "util/mempool.h"
 #include "util/meta.h"

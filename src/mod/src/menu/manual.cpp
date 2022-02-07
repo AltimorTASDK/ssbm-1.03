@@ -8,7 +8,7 @@
 #include "hsd/video.h"
 #include "melee/menu.h"
 #include "melee/text.h"
-#include "util/compression.h"
+#include "util/texture_swap.h"
 #include "util/math.h"
 #include "util/mempool.h"
 #include "util/draw/render.h"

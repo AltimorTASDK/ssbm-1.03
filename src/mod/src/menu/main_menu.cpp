@@ -9,7 +9,7 @@
 #include "melee/text.h"
 #include "menu/controls.h"
 #include "rules/values.h"
-#include "util/compression.h"
+#include "util/texture_swap.h"
 #include "util/meta.h"
 #include "util/patch_list.h"
 #include "util/melee/text_builder.h"

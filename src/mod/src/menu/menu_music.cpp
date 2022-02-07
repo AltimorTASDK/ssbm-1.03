@@ -12,7 +12,7 @@
 #include "os/gx.h"
 #include "rules/saved_config.h"
 #include "rules/values.h"
-#include "util/compression.h"
+#include "util/texture_swap.h"
 #include "util/math.h"
 #include "util/matrix.h"
 #include "util/mempool.h"
