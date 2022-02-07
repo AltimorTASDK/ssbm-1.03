@@ -167,7 +167,9 @@ struct MatchInfo {
 	char pad000;
 	u8 pauser;
 	u8 pause_timer;
-	char pad003[0x24C - 0x003];
+	char pad003[0x00E - 0x003];
+	u8 match_over;
+	char pad00F[0x24C - 0x00F];
 	MatchController match;
 	char pad24C4[0x24C8 - 0x24C4];
 	StartMeleeRules rules;
