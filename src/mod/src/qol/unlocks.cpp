@@ -1,4 +1,5 @@
 #include "compat/unclepunch.h"
+#include "melee/player.h"
 #include <gctypes.h>
 
 extern "C" u8 FeatureUnlockMask;
@@ -44,5 +45,10 @@ extern "C" u32 hook_MemoryCard_DoLoadData()
 	// Unlock everything and always return success
 	orig_MemoryCard_DoLoadData();
 	unlock_everything();
+
+	// Force rumble off regardless of saved settings
+	for (auto port = 0; port < 4; port++)
+		SetPortRumbleFlag(port, false);
+
 	return 0;
 }

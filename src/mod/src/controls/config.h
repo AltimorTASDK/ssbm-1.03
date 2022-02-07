@@ -20,14 +20,6 @@ struct controller_config {
 	cstick_type c_down       = cstick_type::smash;
 	bool tap_jump            = true;
 
-	controller_config() = default;
-
-	controller_config(int port)
-	{
-		// Default to no rumble
-		SetPortRumbleFlag(port, false);
-	}
-
 	void reset(int port)
 	{
 		// Disable rumble on unplug
@@ -58,14 +50,9 @@ struct controller_config {
 	}
 };
 
-inline const controller_config controller_config::defaults = {};
+inline const controller_config controller_config::defaults;
 
-inline controller_config controller_configs[] = {
-	controller_config(0),
-	controller_config(1),
-	controller_config(2),
-	controller_config(3)
-};
+inline controller_config controller_configs[4];
 
 inline const controller_config &get_player_config(const Player *player)
 {
