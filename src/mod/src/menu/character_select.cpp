@@ -1,3 +1,4 @@
+#include "compat/20XX.h"
 #include "controls/config.h"
 #include "hsd/aobj.h"
 #include "hsd/archive.h"
@@ -225,6 +226,10 @@ extern "C" bool check_if_any_players()
 
 static void rumble_toggle(u8 port)
 {
+	// 20XX uses dpad up for metal characters
+	if (is_20XX())
+		return;
+
 	if (!(HSD_PadCopyStatus[port].instant_buttons & Button_DPadUp))
 		return;
 
