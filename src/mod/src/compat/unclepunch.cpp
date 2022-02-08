@@ -16,6 +16,7 @@ extern "C" void CSS_Setup();
 extern "C" void CSS_ReadyThink(HSD_GObj *gobj);
 extern "C" void CSS_PlayerThink(HSD_GObj *gobj);
 extern "C" void Scene_Initialize(SceneMinorData *data);
+extern "C" void HSD_PadRenewMasterStatus();
 
 // Check for UP gamecode
 static const auto result = __GameCode.game == 'GTME';
@@ -52,6 +53,8 @@ extern "C" bool is_unclepunch()
 
 		// Disable UP's built in rumble toggle
 		std::pair { (char*)CSS_PlayerThink+0x638,            0x889F0004u },
+		// Disable UP's built in rumble off on unplug
+		std::pair { (char*)HSD_PadRenewMasterStatus+0x98,    0x8819000Au },
 	};
 }
 
