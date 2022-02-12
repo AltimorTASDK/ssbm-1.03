@@ -17,13 +17,29 @@ SECTIONS
 {
     /DISCARD/ : { *crtbegin.o(*) *crtend.o(*) }
 
+    .version __VERSION_START__ : {
+        */src/version/*(
+            .text   .text.*
+            .rodata .rodata.*
+            .data   .data.*
+        )
+        */src/compat/*(
+            .text   .text.*
+            .rodata .rodata.*
+            .data   .data.*
+        )
+    }
+
     .init   : {      *(.init   .init.*) }
     .text   : {      *(.text   .text.*) }
     .rodata : {      *(.rodata .rodata.*) }
     .ctors  : { KEEP(*(.ctors .ctors.*)) }
     .data   : {      *(.data   .data.*) }
-    PROVIDE(__BSS_START__ = .);
-    .bss    : {      *(.bss    .bss.*) }
+
+    PROVIDE(__VERSION_START__ = ALIGN(4));
+
+    PROVIDE(__BSS_START__ = __VERSION_START__ + SIZEOF(.version));
+    .bss __BSS_START__ : { *(.bss .bss.*) }
     PROVIDE(__BSS_SIZE__ = . - __BSS_START__);
 
     /DISCARD/ : { *(*) }
