@@ -58,7 +58,8 @@ extern "C" void hook_VsMode_InitDataFromRules(VsModeData *vs_data)
 }
 
 extern "C" void orig_Match_Init(StartMeleeData *data);
-extern "C" void hook_Match_Init(StartMeleeData *data)
+extern "C" [[gnu::section(".version.text")]]
+void hook_Match_Init(StartMeleeData *data)
 {
 	if (SceneMajor != Scene_VsMode) {
 		// Don't alter non-VS settings

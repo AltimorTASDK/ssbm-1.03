@@ -23,18 +23,21 @@ SECTIONS
             .rodata .rodata.*
             .data   .data.*
         )
+        . = ALIGN(4);
         */src/compat/*(
             .text   .text.*
             .rodata .rodata.*
             .data   .data.*
         )
+        . = ALIGN(4);
+        *(.version .version.*)
     }
 
     .init   : {      *(.init   .init.*) }
     .text   : {      *(.text   .text.*) }
     .rodata : {      *(.rodata .rodata.*) }
-    .ctors  : { KEEP(*(.ctors .ctors.*)) }
     .data   : {      *(.data   .data.*) }
+    .ctors  : { KEEP(*(.ctors .ctors.*)) }
 
     PROVIDE(__VERSION_START__ = ALIGN(4));
 

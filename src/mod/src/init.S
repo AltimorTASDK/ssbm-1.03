@@ -120,6 +120,8 @@ write_branch:
         mtlr    r0
         blr
 
+.section .version.data
+
 hooks_start:
 .macro add_hook name
         .global orig_\name

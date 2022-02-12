@@ -60,10 +60,8 @@ inline controls_type get_controls()
 
 inline bool should_use_oss()
 {
-#ifdef NTSC102
 	if (is_20XX_stage_select())
 		return true;
-#endif
 
 	const auto *rules = GetGameRules();
 	return rules->stage_mods == stage_mod_type::oss;

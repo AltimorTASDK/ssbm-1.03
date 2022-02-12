@@ -26,7 +26,15 @@ static mempool pool;
 static auto first_save_check = false;
 
 #if defined(PAL) || defined(NTSC102)
-static auto gamecode = cardmap[0].gamecode->game;
+[[gnu::section(".version.data")]]
+static u32 gamecode;
+
+[[gnu::section(".version.text")]]
+[[gnu::constructor]]
+static void get_gamecode()
+{
+	gamecode = cardmap[0].gamecode->game;
+}
 #endif
 
 static struct {
@@ -84,6 +92,7 @@ extern "C" u32 hook_GetNextSceneMajorCallback()
 	}
 }
 
+[[gnu::section(".version.text")]]
 static void card_done()
 {
 	CARD_Unmount(op.card);
@@ -183,6 +192,7 @@ static void write_callback(s32 chan, s32 result)
 		write(op.card, 0);
 }
 
+[[gnu::section(".version")]]
 static void card_io(s32 card, const char *filename, void *buffer, u32 size, bool read)
 {
 	// Any previous operations must be complete
