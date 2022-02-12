@@ -176,7 +176,7 @@ public:
 	}
 
 	template<typename... T>
-	constexpr vec_impl operator*=(const vec_impl &other)
+	constexpr vec_impl &operator*=(const vec_impl &other)
 	{
 		foreach(operators::mul_eq, other.elems());
 		return *this;
@@ -202,7 +202,7 @@ public:
 	}
 
 	template<typename... T>
-	constexpr vec_impl operator/=(const vec_impl &other)
+	constexpr vec_impl &operator/=(const vec_impl &other)
 	{
 		foreach(operators::div_eq, other.elems());
 		return *this;
