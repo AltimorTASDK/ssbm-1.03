@@ -82,10 +82,11 @@ static const auto patches = patch_list {
 	std::pair { (char*)CSS_GObjCallback+0x364,    0x38000000u },
 	std::pair { (char*)CSS_GObjCallback+0x3F8,    0x38000000u },
 	std::pair { (char*)CSS_PlayerThink+0xBA0,     0x38000000u },
-	std::pair { (char*)CSS_PlayerThink+0x1980,    0x38000000u },
 #ifdef PAL
+	std::pair { (char*)CSS_PlayerThink+0x198C,    0x38000000u },
 	std::pair { (char*)CSS_PlayerThink+0x1A58,    0x38000000u },
 #else
+	std::pair { (char*)CSS_PlayerThink+0x1980,    0x38000000u },
 	std::pair { (char*)CSS_PlayerThink+0x1A4C,    0x38000000u },
 #endif
 	// Disable score popups
