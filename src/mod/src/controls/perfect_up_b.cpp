@@ -4,8 +4,6 @@
 #include "melee/player.h"
 #include "util/melee/pad.h"
 
-//#include "os/os.h"
-
 static void apply_perfect_up_b_coords(Player *player)
 {
 	if (!get_player_config(player).perfect_angles)
@@ -79,7 +77,7 @@ extern "C" void hook_AS_353_Zelda_UpBAirMiddle(HSD_GObj *gobj)
 	apply_perfect_up_b(gobj, orig_AS_353_Zelda_UpBAirMiddle);
 }
 
-#if 0
+#ifdef YOSHI_PERFECT_ANGLES
 extern "C" void orig_Player_Yoshi_GetEggVelocity(HSD_GObj *gobj, vec3 *velocity);
 extern "C" void hook_Player_Yoshi_GetEggVelocity(HSD_GObj *gobj, vec3 *velocity)
 {

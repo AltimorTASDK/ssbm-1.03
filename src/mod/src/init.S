@@ -277,7 +277,7 @@ add_hook MemoryCard_CheckToSaveData
 add_hook UpdateMemCardState
 add_hook GetNextSceneMajorCallback
 # 1P camera
-#if 0
+#ifdef USE_CUSTOM_1P_CAMERA
 add_hook Camera_GetBounds
 #endif
 add_hook Camera_SetNormal
@@ -333,7 +333,7 @@ add_hook CSS_ChooseTopString
 add_hook CSS_Init
 add_hook CSS_PlayerThink
 add_hook CSS_Setup
-#if 0
+#ifdef USE_OLD_CSS_TOGGLES
 add_hook CSS_UpdatePortrait
 #endif
 # Settings lock
@@ -365,7 +365,7 @@ add_hook AS_357_Pika_UpBAirMiddle
 add_hook Player_Pika_CheckDoubleUpB
 add_hook AS_357_Mewtwo_UpBAirMiddle
 add_hook AS_353_Zelda_UpBAirMiddle
-#if 0
+#ifdef YOSHI_PERFECT_ANGLES
 add_hook Player_Yoshi_GetEggVelocity
 #endif
 #if defined(NTSC100) || defined(NTSC101)

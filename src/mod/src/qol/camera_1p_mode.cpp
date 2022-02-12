@@ -33,7 +33,7 @@ extern "C" void hook_Camera_SetNormal()
 		MainCamera.mode = CameraMode_Normal;
 }
 
-#if 0
+#ifdef USE_CUSTOM_1P_CAMERA
 extern "C" void orig_Camera_GetBounds(CameraBounds *out, CameraMovement *movement);
 extern "C" void hook_Camera_GetBounds(CameraBounds *out, CameraMovement *movement)
 {

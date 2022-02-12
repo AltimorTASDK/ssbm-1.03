@@ -122,9 +122,6 @@ extern "C" void CSS_Setup();
 extern "C" bool CSS_DropPuck(u8 index);
 extern "C" void CSS_UpdatePortrait(u8 port);
 
-#ifdef BETA
-#endif
-
 // All CSS toggles except rumble require 1s hold
 constexpr auto TOGGLE_HOLD_TIME = 60;
 
@@ -145,7 +142,7 @@ static bool saved_is_unplugged[4];
 
 static struct {
 	u32 z_jump;
-#if 0
+#ifdef USE_OLD_CSS_TOGGLES
 	u32 perfect_angles;
 	u32 c_up;
 	u32 c_horizontal;
@@ -154,7 +151,7 @@ static struct {
 #endif
 } toggle_timers[4];
 
-#if 0
+#ifdef CYAN_CSS_READY
 template<u8 a, u8 b>
 constexpr auto make_color_track()
 {
@@ -264,7 +261,7 @@ static void check_css_toggle(u8 port, u32 *timer, auto &&check_callback, auto &&
 	HSD_PadRumble(port, 0, 0, 60);
 }
 
-#if 0
+#ifdef USE_OLD_CSS_TOGGLES
 static void show_illegal_controls(u8 port)
 {
 	if (SceneMajor != Scene_VsMode)
@@ -300,7 +297,7 @@ static void z_jump_toggle(u8 port)
 		});
 }
 
-#if 0
+#ifdef USE_OLD_CSS_TOGGLES
 static void perfect_angles_toggle(u8 port)
 {
 	auto *config = &controller_configs[port];
@@ -407,7 +404,7 @@ static void tap_jump_toggle(u8 port)
 static void reset_toggle_timers(u8 port)
 {
 	toggle_timers[port].z_jump = 0;
-#if 0
+#ifdef USE_OLD_CSS_TOGGLES
 	toggle_timers[port].perfect_angles = 0;
 	toggle_timers[port].c_up = 0;
 	toggle_timers[port].c_horizontal = 0;
@@ -430,7 +427,7 @@ extern "C" void hook_CSS_PlayerThink(HSD_GObj *gobj)
 	if (HSD_PadCopyStatus[data->port].err == 0) {
 		rumble_toggle(data->port);
 		z_jump_toggle(data->port);
-#if 0
+#ifdef USE_OLD_CSS_TOGGLES
 		perfect_angles_toggle(data->port);
 		c_up_toggle(data->port);
 		c_horizontal_toggle(data->port);
@@ -474,7 +471,7 @@ extern "C" void hook_CSS_PlayerThink(HSD_GObj *gobj)
 	data->state = CSSPlayerState_Idle;
 }
 
-#if 0
+#ifdef USE_OLD_CSS_TOGGLES
 extern "C" void orig_CSS_UpdatePortrait(u8 port);
 extern "C" void hook_CSS_UpdatePortrait(u8 port)
 {
@@ -592,7 +589,7 @@ extern "C" void hook_CSS_Setup()
 	pool.dec_ref();
 	pool.inc_ref();
 
-#if 0
+#ifdef CYAN_CSS_READY
 	// Replace "READY TO FIGHT" color tracks
 	auto *ready_anim = MnSlChrModels->PressStart.matanim_joint->child->next->matanim;
 	auto *fobj_r = ready_anim->texanim->aobjdesc->fobjdesc;
