@@ -12,8 +12,7 @@ enum DebugEntry {
 	DebugEntry_Language = 3,
 	DebugEntry_Publicity = 4,
 	DebugEntry_DbLevel = 5,
-	DebugEntry_IKDebugFlag = 6,
-	DebugEntry_NewDefCalc = 7
+	DebugEntry_IKDebugFlag = 6
 };
 
 struct DebugMenuEntry {

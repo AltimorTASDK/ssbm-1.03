@@ -61,5 +61,4 @@ extern "C" void hook_InitializeGlobalData()
 
 	*DebugMenuEntries[DebugEntry_DbLevel].value     = DbLKind_Master;
 	*DebugMenuEntries[DebugEntry_IKDebugFlag].value = true;
-	*DebugMenuEntries[DebugEntry_NewDefCalc].value  = false;
 }
