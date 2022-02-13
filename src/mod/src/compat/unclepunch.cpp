@@ -17,6 +17,8 @@ extern "C" void CSS_ReadyThink(HSD_GObj *gobj);
 extern "C" void CSS_PlayerThink(HSD_GObj *gobj);
 extern "C" void Scene_Initialize(SceneMinorData *data);
 extern "C" void HSD_PadRenewMasterStatus();
+extern "C" void Match_InitPlayers();
+extern "C" void Player_Respawn(s32 slot, s32 subchar);
 
 // Check for UP gamecode
 static const auto result = __GameCode.game == 'GTME';
@@ -45,6 +47,12 @@ extern "C" bool is_unclepunch()
 		// Get rid of UP's 1p start code because it conflicts with 1.03's
 		// cmpwi r4, 2
 		std::pair { (char*)CSS_ReadyThink+0x120,             0x2C040002u },
+
+		// Remove UP's built in neutral spawns
+		// lbz r0, 0x24D0(r31)
+		std::pair { (char*)Match_InitPlayers+0x254,          0x881F24D0u },
+		// mr r3, r27
+		std::pair { (char*)Player_Respawn+0x80,              0x387B0000u },
 
 		// Increase CSS text heap size in older UP versions to prevent crashes at
 		// OSD/menu music. Newer UP versions have this built in

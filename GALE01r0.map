@@ -1472,7 +1472,7 @@
 8016cea4 00000414 8016cea4 0 Match_SetupPlayer
 8016d2b8 0000022c 8016d2b8 0 Match_Init
 8016d4e4 00000238 8016d4e4 0 Match_SetSpawnFacingDirections
-8016d8b4 00000304 8016d8b4 0 PlayerBlock_MatchStartRead&WriteValues
+8016d8b4 00000304 8016d8b4 0 Match_InitPlayers
 8016dd28 00000204 8016dd28 0 StartMelee
 8016df2c 00000094 8016df2c 0 fk_MatchStart?
 8016dfc0 000001f8 8016dfc0 0 wP_PopulateRewardScreen?
