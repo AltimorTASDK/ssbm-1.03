@@ -83,7 +83,7 @@ extern "C" u32 hook_PlayerBlock_GetRespawnPoint(u32 port, vec3 *respawn, vec3 *o
 		return orig_PlayerBlock_GetRespawnPoint(port, respawn, offset);
 
 	// Use a single merged respawn point on BF and FD
-	Stage.use_unique_respawns = false;
+	Stage.multiple_respawn_points = false;
 	orig_PlayerBlock_GetRespawnPoint(port, respawn, offset);
 	respawn->x = 0;
 

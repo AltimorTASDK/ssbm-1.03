@@ -53,7 +53,7 @@ struct StageData {
 		u8 flags_40 : 1;
 		u8 flags_20 : 1;
 		u8 flags_10 : 1;
-		u8 use_unique_respawns : 1;
+		u8 multiple_respawn_points : 1;
 	};
 	char pad08D[0x6A8 - 0x8D];
 	void *itemdata;
@@ -67,7 +67,7 @@ struct StageData {
 };
 
 extern "C" {
-	
+
 extern u16 StageIndexToID[29];
 extern StageData Stage;
 
