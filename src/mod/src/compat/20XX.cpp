@@ -1,10 +1,13 @@
 #include "hsd/gobj.h"
 #include "hsd/pad.h"
+#include "melee/scene.h"
 #include "util/patch_list.h"
 
 #if defined(NTSC102) && !defined(NOPAL)
 extern "C" char SaveFileName[25];
 extern "C" char MnSlMapPath[];
+
+extern "C" void Scene_Match_Exit(SceneMinorData *data, u8 victory_screen, u8 sudden_death);
 
 // XXperSmashBros
 static const auto result = SaveFileName[0] == 'X' && SaveFileName[1] == 'X';
@@ -12,6 +15,18 @@ static const auto result = SaveFileName[0] == 'X' && SaveFileName[1] == 'X';
 extern "C" bool is_20XX()
 {
 	return result;
+}
+
+[[gnu::constructor]] static void check_20XX()
+{
+	if (!is_20XX())
+		return;
+
+	patch_list {
+		// Remove 20XX's results screen hook
+		// addi r27, r4, 0
+		std::pair { (char*)Scene_Match_Exit+0x10, 0x3B640000u },
+	};
 }
 
 extern "C" bool is_20XX_stage_select()
