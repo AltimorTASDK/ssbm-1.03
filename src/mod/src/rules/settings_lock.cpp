@@ -1,3 +1,4 @@
+#include "compat/20XX.h"
 #include "controls/config.h"
 #include "melee/debug.h"
 #include "melee/music.h"
@@ -59,6 +60,9 @@ extern "C" void hook_InitializeGlobalData()
 	rules->stock_count = 4;
 	rules->pause       = false;
 
-	*DebugMenuEntries[DebugEntry_DbLevel].value     = DbLKind_Master;
-	*DebugMenuEntries[DebugEntry_IKDebugFlag].value = true;
+	if (!is_20XX()) {
+		// Reset debug settings
+		*DebugMenuEntries[DebugEntry_DbLevel].value     = DbLKind_Master;
+		*DebugMenuEntries[DebugEntry_IKDebugFlag].value = true;
+	}
 }
