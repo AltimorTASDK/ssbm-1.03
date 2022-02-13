@@ -185,18 +185,27 @@ static void setup_random_icon(HSD_JObj *random_joint)
 static void reset_striking(bool all)
 {
 	// Show all legal stages
+	auto visibility_changed = false;
+
 	for (auto i = 0; i < Icon_Random; i++) {
 		auto *icon = &StageSelectIcons[i];
 		if (is_legal_stage(icon->stage_id) || all) {
-			HSD_JObjClearFlagsAll(icon->jobj, HIDDEN);
-			icon->unlocked = UnlockType_Unlocked;
+			if (icon->unlocked != UnlockType_Unlocked) {
+				HSD_JObjClearFlagsAll(icon->jobj, HIDDEN);
+				icon->unlocked = UnlockType_Unlocked;
+				visibility_changed = true;
+			}
 		} else {
-			HSD_JObjSetFlagsAll(icon->jobj, HIDDEN);
-			icon->unlocked = UnlockType_Hidden;
+			if (icon->unlocked != UnlockType_Hidden) {
+				HSD_JObjSetFlagsAll(icon->jobj, HIDDEN);
+				icon->unlocked = UnlockType_Hidden;
+				visibility_changed = true;
+			}
 		}
 	}
 
-	Menu_PlaySFX(MenuSFX_Back);
+	if (visibility_changed)
+		Menu_PlaySFX(MenuSFX_Back);
 }
 
 static void strike_stage()
