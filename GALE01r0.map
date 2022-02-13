@@ -2451,7 +2451,7 @@
 802f0964 0000000c 802f0964 0 DrawableCharacter::GetAnimController
 802f09d8 00000318 802f09d8 0 Trophy_Drop
 802f1d40 00000010 802f1d40 0 dataARAMDefaultGetInfo
-802f1d50 00000018 802f1d50 0 HUD_GetStockIconPosition
+802f1d50 00000018 802f1d50 0 HUD_GetPlayerHUDPosition
 802f1d68 00000254 802f1d68 0 HUD_SpacingAdjust
 802f2414 00000574 802f2414 0 ss_**SetsMillisecondsGFXOtherwiseUnknown
 802f2d98 000003a0 802f2d98 0 HUD_Timer_Initialize

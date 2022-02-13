@@ -167,7 +167,7 @@ add_hook CmSubject_WorldToScreen
 add_hook CObjLoad
 add_hook DevelopText_Draw
 add_hook HSD_ResetScene
-add_hook HUD_GetStockIconPosition
+add_hook HUD_GetPlayerHUDPosition
 add_hook Match_HandlePause
 add_hook MatchController_UpdateTeamWinners
 add_hook MatchController_UpdateWinners
