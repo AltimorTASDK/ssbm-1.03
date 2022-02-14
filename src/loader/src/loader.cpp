@@ -167,8 +167,7 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 
 #if defined(PAL) || defined(NTSC102)
 	// Use GALE01 saves for PAL/UP
-	const auto gamecode = cardmap[0].gamecode->game;
-	cardmap[0].gamecode->game = 'GALE';
+	__CARDSetDiskID({'GALE', '01'});
 #endif
 
 	const auto *data = alloc_and_read("103Code");
@@ -190,7 +189,7 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 
 #if defined(PAL) || defined(NTSC102)
 	// Restore gamecode
-	cardmap[0].gamecode->game = gamecode;
+	__CARDSetDiskID(__GameCode);
 #endif
 
 	DCStoreRange(&__MOD_BASE__, code_size);
