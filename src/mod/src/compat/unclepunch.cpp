@@ -45,6 +45,8 @@ extern "C" bool is_unclepunch()
 		std::pair { (char*)CSS_ReadyThink+0x120,             0x2C040002u },
 
 		// Remove UP's built in neutral spawns
+		// mr r3, r28
+		std::pair { (char*)Match_InitPlayers+0x1D0,          0x387C0000u },
 		// lbz r0, 0x24D0(r31)
 		std::pair { (char*)Match_InitPlayers+0x254,          0x881F24D0u },
 		// mr r3, r27
