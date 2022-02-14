@@ -1,3 +1,4 @@
+#include "hsd/gobj.h"
 #include "melee/camera.h"
 #include "melee/player.h"
 #include "melee/scene.h"
@@ -58,3 +59,16 @@ extern "C" void hook_Camera_GetBounds(CameraBounds *out, CameraMovement *movemen
 	out->max = lerp(out->max, new_max, lerp_strength);
 }
 #endif
+
+extern "C" bool orig_Player_CheckForDeath(HSD_GObj *gobj);
+extern "C" bool hook_Player_CheckForDeath(HSD_GObj *gobj)
+{
+	if (!orig_Player_CheckForDeath(gobj))
+		return false;
+
+	// Force instant respawn in 1P mode
+	if (is_singleplayer())
+		gobj->get<Player>()->as_data.Dead.respawn_timer = 1;
+
+	return true;
+}

@@ -365,6 +365,9 @@ struct Player {
 			// Allow extending SDI magnitude on the next frame
 			bool allow_sdi_extension;
 		} Damage;
+		struct {
+			s32 respawn_timer;
+		} Dead;
 	} as_data;
 };
 

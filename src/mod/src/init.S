@@ -278,11 +278,12 @@ add_hook MemoryCard_DoLoadData
 add_hook MemoryCard_CheckToSaveData
 add_hook UpdateMemCardState
 add_hook GetNextSceneMajorCallback
-# 1P camera
+# 1P mode
 #ifdef USE_CUSTOM_1P_CAMERA
 add_hook Camera_GetBounds
 #endif
 add_hook Camera_SetNormal
+add_hook Player_CheckForDeath
 # Neutral spawns
 add_hook Stage_GetSpawnPoint
 add_hook PlayerBlock_GetRespawnPoint
