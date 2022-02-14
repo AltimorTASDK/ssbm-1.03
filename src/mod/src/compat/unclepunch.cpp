@@ -2,12 +2,8 @@
 #include "hsd/gobj.h"
 #include "melee/menu.h"
 #include "melee/scene.h"
+#include "os/os.h"
 #include "util/patch_list.h"
-
-extern "C" struct {
-	u32 game;
-	u16 company;
-} __GameCode;
 
 extern "C" void Interrupt_AS_DamageFall(HSD_GObj *gobj);
 extern "C" void Interrupt_AS_Turn(HSD_GObj *gobj);

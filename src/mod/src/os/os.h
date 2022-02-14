@@ -6,6 +6,11 @@
 
 extern "C" {
 
+extern struct {
+	u32 game;
+	u16 company;
+} __GameCode;
+
 [[noreturn]] void OSPanic(const char *file, int line, const char *fmt, ...);
 void OSReport(const char *fmt, ...);
 u64 OSGetTime();
