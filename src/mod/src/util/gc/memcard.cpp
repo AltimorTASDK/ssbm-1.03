@@ -20,6 +20,7 @@ extern "C" u32 MemCardState;
 
 extern "C" void InitCardBuffers();
 extern "C" void MemoryCard_RequestSave();
+extern "C" void __CARDSetDiskID(const GameCode &gamecode);
 
 static mempool pool;
 
@@ -80,14 +81,6 @@ extern "C" u32 hook_GetNextSceneMajorCallback()
 	}
 }
 
-[[gnu::section(".version.text"), gnu::noinline]]
-static void set_gamecode(u32 game)
-{
-#if defined(PAL) || defined(NTSC102)
-	cardmap[0].gamecode->game = game;
-#endif
-}
-
 static void card_done()
 {
 	CARD_Unmount(op.card);
@@ -96,7 +89,7 @@ static void card_done()
 	op.wait.wake();
 
 	// Restore gamecode
-	set_gamecode(__GameCode.game);
+	__CARDSetDiskID(__GameCode);
 
 	// Check if the game is waiting to use the memcard
 	if (op.save_pending) {
@@ -201,7 +194,7 @@ static void card_io(s32 card, const char *filename, void *buffer, u32 size, bool
 
 #if defined(PAL) || defined(NTSC102)
 	// Use GALE01 saves for PAL/UP
-	set_gamecode('GALE');
+	__CARDSetDiskID({'GALE', '01'});
 #endif
 
 	const auto callback = read ? read_callback : write_callback;
