@@ -4,14 +4,9 @@
 
 #define PANIC(...) OSPanic(__FILE__, __LINE__, __VA_ARGS__)
 
-struct GameCode {
-	u32 game;
-	u16 company;
-};
-
 extern "C" {
 
-extern GameCode __GameCode;
+extern char __GameCode[6];
 
 [[noreturn]] void OSPanic(const char *file, int line, const char *fmt, ...);
 void OSReport(const char *fmt, ...);

@@ -4,6 +4,7 @@
 #include "melee/scene.h"
 #include "os/os.h"
 #include "util/patch_list.h"
+#include <cstring>
 
 extern "C" void Interrupt_AS_DamageFall(HSD_GObj *gobj);
 extern "C" void Interrupt_AS_Turn(HSD_GObj *gobj);
@@ -17,7 +18,7 @@ extern "C" void Match_InitPlayers();
 extern "C" void Player_Respawn(s32 slot, s32 subchar);
 
 // Check for UP gamecode
-static const auto result = __GameCode.game == 'GTME';
+static const auto result = memcmp(__GameCode, "GTME", 4) == 0;
 
 extern "C" bool is_unclepunch()
 {

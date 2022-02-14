@@ -167,7 +167,7 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 
 #if defined(PAL) || defined(NTSC102)
 	// Use GALE01 saves for PAL/UP
-	__CARDSetDiskID({'GALE', '01'});
+	__CARDSetDiskID("GALE01");
 #endif
 
 	const auto *data = alloc_and_read("103Code");
