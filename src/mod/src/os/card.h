@@ -1,5 +1,6 @@
 #pragma once
 
+#include "os/os.h"
 #include <gctypes.h>
 
 struct card_block {
@@ -17,4 +18,10 @@ struct card_block {
 #endif
 };
 
-extern "C" card_block cardmap[2];
+extern "C" {
+
+extern card_block cardmap[2];
+
+void __CARDSetDiskID(const GameCode &gamecode);
+
+}

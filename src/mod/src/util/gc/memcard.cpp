@@ -20,7 +20,6 @@ extern "C" u32 MemCardState;
 
 extern "C" void InitCardBuffers();
 extern "C" void MemoryCard_RequestSave();
-extern "C" void __CARDSetDiskID(const GameCode &gamecode);
 
 static mempool pool;
 
