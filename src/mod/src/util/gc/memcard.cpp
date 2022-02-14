@@ -25,18 +25,6 @@ static mempool pool;
 
 static auto first_save_check = false;
 
-#if defined(PAL) || defined(NTSC102)
-[[gnu::section(".version.data")]]
-static u32 gamecode;
-
-[[gnu::section(".version.text")]]
-[[gnu::constructor]]
-static void get_gamecode()
-{
-	gamecode = cardmap[0].gamecode->game;
-}
-#endif
-
 static struct {
 	s32 card;
 	const char *filename;
@@ -92,7 +80,14 @@ extern "C" u32 hook_GetNextSceneMajorCallback()
 	}
 }
 
-[[gnu::section(".version.text")]]
+[[gnu::section(".version.text"), gnu::noinline]]
+static void set_gamecode(u32 game)
+{
+#if defined(PAL) || defined(NTSC102)
+	cardmap[0].gamecode->game = game;
+#endif
+}
+
 static void card_done()
 {
 	CARD_Unmount(op.card);
@@ -100,10 +95,8 @@ static void card_done()
 	// Wake up the main thread
 	op.wait.wake();
 
-#if defined(PAL) || defined(NTSC102)
 	// Restore gamecode
-	cardmap[0].gamecode->game = gamecode;
-#endif
+	set_gamecode(__GameCode.game);
 
 	// Check if the game is waiting to use the memcard
 	if (op.save_pending) {
@@ -192,7 +185,6 @@ static void write_callback(s32 chan, s32 result)
 		write(op.card, 0);
 }
 
-[[gnu::section(".version")]]
 static void card_io(s32 card, const char *filename, void *buffer, u32 size, bool read)
 {
 	// Any previous operations must be complete
@@ -209,7 +201,7 @@ static void card_io(s32 card, const char *filename, void *buffer, u32 size, bool
 
 #if defined(PAL) || defined(NTSC102)
 	// Use GALE01 saves for PAL/UP
-	cardmap[0].gamecode->game = 'GALE';
+	set_gamecode('GALE');
 #endif
 
 	const auto callback = read ? read_callback : write_callback;
