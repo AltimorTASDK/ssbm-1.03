@@ -70,7 +70,7 @@ extern "C" bool hook_Player_CheckForDeath(HSD_GObj *gobj)
 		return false;
 
 	// Force instant respawn in 1P mode
-	if (is_1p_mode())
+	if (is_1p_mode() || SceneMajor == Scene_Training)
 		gobj->get<Player>()->as_data.Dead.respawn_timer = 1;
 
 	return true;
@@ -80,6 +80,6 @@ extern "C" void orig_Player_StopAllSFX(Player *player);
 extern "C" void hook_Player_StopAllSFX(Player *player)
 {
 	// Prevent instant respawns from cutting off death SFX
-	if (!is_1p_mode())
+	if (!is_1p_mode() && SceneMajor != Scene_Training)
 		orig_Player_StopAllSFX(player);
 }
