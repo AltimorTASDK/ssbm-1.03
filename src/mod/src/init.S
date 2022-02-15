@@ -284,6 +284,7 @@ add_hook Camera_GetBounds
 #endif
 add_hook Camera_SetNormal
 add_hook Player_CheckForDeath
+add_hook Player_StopAllSFX
 # Neutral spawns
 add_hook Stage_GetSpawnPoint
 add_hook PlayerBlock_GetRespawnPoint

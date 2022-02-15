@@ -13,8 +13,11 @@ struct CameraBounds {
 	f32 z_pos;
 };
 
-static bool is_singleplayer()
+static bool is_1p_mode()
 {
+	if (SceneMajor != Scene_VsMode)
+		return false;
+
 	auto count = 0;
 
 	for (auto i = 0; i < 6; i++) {
@@ -28,7 +31,7 @@ static bool is_singleplayer()
 extern "C" void orig_Camera_SetNormal();
 extern "C" void hook_Camera_SetNormal()
 {
-	if (is_singleplayer() && SceneMajor == Scene_VsMode)
+	if (is_1p_mode())
 		MainCamera.mode = CameraMode_Fixed;
 	else
 		MainCamera.mode = CameraMode_Normal;
@@ -40,7 +43,7 @@ extern "C" void hook_Camera_GetBounds(CameraBounds *out, CameraMovement *movemen
 {
 	orig_Camera_GetBounds(out, movement);
 
-	if (MainCamera.mode != CameraMode_Normal || !is_singleplayer())
+	if (MainCamera.mode != CameraMode_Normal || !is_1p_mode())
 		return;
 
 	// Always keep center stage in view
@@ -67,8 +70,16 @@ extern "C" bool hook_Player_CheckForDeath(HSD_GObj *gobj)
 		return false;
 
 	// Force instant respawn in 1P mode
-	if (is_singleplayer())
+	if (is_1p_mode())
 		gobj->get<Player>()->as_data.Dead.respawn_timer = 1;
 
 	return true;
+}
+
+extern "C" void orig_Player_StopAllSFX(Player *player);
+extern "C" void hook_Player_StopAllSFX(Player *player)
+{
+	// Prevent instant respawns from cutting off death SFX
+	if (!is_1p_mode())
+		Player_StopAllSFX(player);
 }
