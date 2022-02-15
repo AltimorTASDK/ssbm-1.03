@@ -81,5 +81,5 @@ extern "C" void hook_Player_StopAllSFX(Player *player)
 {
 	// Prevent instant respawns from cutting off death SFX
 	if (!is_1p_mode())
-		Player_StopAllSFX(player);
+		orig_Player_StopAllSFX(player);
 }
