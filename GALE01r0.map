@@ -1402,6 +1402,7 @@
 8015f1a0 00000134 8015f1a0 0 InitializeSaveData
 8015f39c 000000d0 8015f39c 0 InitializeGlobalData
 8015f6ac 00000310 8015f6ac 0 main
+8015fba8 00000050 8015fba8 0 ApplySoundBalance
 80163b28 00000100 80163b28 0 Stage_IsValidRandomChoice
 80163c28 000000d4 80163c28 0 Stage_CheckStageUnlockStatus
 80163e84 00000144 80163e84 0 UnlockAllStages
