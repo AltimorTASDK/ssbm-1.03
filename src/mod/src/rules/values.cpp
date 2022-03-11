@@ -30,10 +30,12 @@
 static bool is_singleplayer(const StartMeleeData *data)
 {
 	auto count = 0;
+
 	for (auto i = 0; i < 6; i++) {
 		if (data->players[i].slot_type != SlotType_None && ++count > 1)
 			return false;
 	}
+
 	return true;
 }
 
