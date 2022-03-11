@@ -2495,8 +2495,8 @@
 8009be54 00000064 8009be54 0 ch_DK_ThrowFWait6_AnimationInterrupt
 8009beb8 00000020 8009beb8 0 ch_DK_ThrowFWait6_ActionPhys
 8009bed8 00000064 8009bed8 0 ch_DK_ThrowFWait6_CollisionInterrupt
-8009bf3c 000000f0 8009bf3c 0 zz_009bf3c_
-8009c02c 000000c0 8009c02c 0 zz_009c02c_
+8009bf3c 000000f0 8009bf3c 0 Interrupt_DK_ThrowFDecide
+8009c02c 000000c0 8009c02c 0 AS_DK_ThrowFDecide
 8009c0ec 00000044 8009c0ec 0 ch_DK_ThrowFF1_AnimationInterrupt
 8009c130 00000020 8009c130 0 ch_DK_ThrowFF1_IASA
 8009c150 00000020 8009c150 0 ch_DK_ThrowFF1_ActionPhys

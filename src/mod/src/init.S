@@ -218,6 +218,7 @@ add_hook Interrupt_SpotDodge
 add_hook Interrupt_SpotDodge_OoS
 add_hook Interrupt_SquatRv
 add_hook Interrupt_Throw
+add_hook Interrupt_DK_ThrowFDecide
 add_hook Interrupt_TurnOrDash
 add_hook Player_EnterDamageState
 add_hook Player_SDICallback
