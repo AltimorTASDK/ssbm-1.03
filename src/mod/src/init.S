@@ -134,11 +134,6 @@ hooks_start:
 .set CheckScrollingRuleIndex, Menu_UpdateRuleDisplay+0x418
 .set ShowNameTagCheck,        NameTag_Think+0x28
 .set CheckStockStealInput,    Match_CheckStockSteal+0xF8
-.set TapJumpCheck_Jump,       Interrupt_Jump+0x40
-.set TapJumpCheck_JumpAerial, Interrupt_JumpAerial+0x44
-.set TapJumpCheck_JumpInput,  Player_CheckJumpInput+0x14
-.set TapJumpCheck_JumpOoRun,  Interrupt_Jump_OoRun+0x44
-.set TapJumpCheck_JumpOoS,    Interrupt_Jump_OoS+0x48
 .set CheckUTiltInput,         Interrupt_UTilt+0x24
 .set CheckFTiltInput,         Interrupt_FTilt+0x24
 .set CheckDTiltInput,         Interrupt_DTilt+0x24
@@ -199,11 +194,6 @@ add_hook Stage_Fountain_UpdateReflection
 add_hook Stage_PokemonStadium_TransformationDecide
 add_hook Stage_Setup
 add_hook Stage_YoshisStory_ShyGuyUpdate
-add_hook TapJumpCheck_Jump
-add_hook TapJumpCheck_JumpAerial
-add_hook TapJumpCheck_JumpInput
-add_hook TapJumpCheck_JumpOoRun
-add_hook TapJumpCheck_JumpOoS
 add_hook Text_UpdateSubtextSize
 add_hook TrainingMenu_Create
 add_hook TrainingMenu_Think
@@ -222,6 +212,21 @@ add_hook Interrupt_DK_ThrowFDecide
 add_hook Interrupt_TurnOrDash
 add_hook Player_EnterDamageState
 add_hook Player_SDICallback
+# Tap jump toggle
+.set TapJumpCheck_Jump,           Interrupt_Jump+0x40
+.set TapJumpCheck_JumpAerial,     Interrupt_JumpAerial+0x44
+.set TapJumpCheck_JumpInput,      Player_CheckJumpInput+0x14
+.set TapJumpCheck_JumpOoRun,      Interrupt_Jump_OoRun+0x44
+.set TapJumpCheck_JumpOoS,        Interrupt_Jump_OoS+0x48
+.set TapJumpCheck_MultiJump,      Interrupt_MultiJump+0x120
+.set TapJumpCheck_FirstMultiJump, Player_CheckFirstMultiJumpInput+0x20
+add_hook TapJumpCheck_Jump
+add_hook TapJumpCheck_JumpAerial
+add_hook TapJumpCheck_JumpInput
+add_hook TapJumpCheck_JumpOoRun
+add_hook TapJumpCheck_JumpOoS
+add_hook TapJumpCheck_MultiJump
+add_hook TapJumpCheck_FirstMultiJump
 # Debug menu
 .set GetDebugMenuButtons, DebugMenu_Input+0x1C
 add_hook GetDebugMenuButtons

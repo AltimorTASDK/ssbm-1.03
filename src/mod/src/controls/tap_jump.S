@@ -8,9 +8,9 @@ suppress_tap_jump:
         stw     r5, 0xC(r1)
         mfcr    r0
         stw     r0, 0x10(r1)
-        
+
         bl      is_tap_jump_on
-        
+
         lwz     r0, 0x10(r1)
         mtcr    r0
         lwz     r5, 0xC(r1)
@@ -61,3 +61,28 @@ hook_TapJumpCheck_JumpOoS:
         mr      r3, r4
         bl      suppress_tap_jump
         b       orig_TapJumpCheck_JumpOoS
+
+.global hook_TapJumpCheck_MultiJump
+hook_TapJumpCheck_MultiJump:
+        stwu    r1, -0xC(r1)
+        stw     r3, 0x8(r1)
+        mr      r3, r28
+        bl      suppress_tap_jump
+        lwz     r3, 0x8(r1)
+        addi    r1, r1, 0xC
+        b       orig_TapJumpCheck_MultiJump
+
+.global hook_TapJumpCheck_FirstMultiJump
+hook_TapJumpCheck_FirstMultiJump:
+        mflr    r0
+        stw     r0, 0x4(r1)
+        stwu    r1, -0x10(r1)
+        stw     r3, 0x8(r1)
+        stw     r6, 0xC(r1)
+        bl      suppress_tap_jump
+        lwz     r6, 0xC(r1)
+        lwz     r3, 0x8(r1)
+        lwz     r0, 0x14(r1)
+        addi    r1, r1, 0x10
+        mtlr    r0
+        b       orig_TapJumpCheck_FirstMultiJump
