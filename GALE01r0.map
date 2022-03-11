@@ -1467,7 +1467,7 @@
 8018e91c 000000c0 8018e91c 0 Debug_FightingButtons2
 8016b358 0000020c 8016b358 0 Pause_CheckButtonInputsToPause
 8016b628 00000154 8016b628 0 StockMatch_EndMatch
-8016c064 00000180 8016c064 0 Pause_IngameCheckPauseOnOff
+8016c064 00000180 8016c064 0 Match_CheckToPause
 8016c1e4 000001b0 8016c1e4 0 Pause_CheckButtonsToUnpause
 8016c394 000001b4 8016c394 0 Timer_EveryFrame
 8016c548 00000094 8016c548 0 Match_NoContestOrRetry

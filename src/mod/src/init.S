@@ -319,6 +319,7 @@ add_hook Menu_UpdateStockCountOrTimerText
 # Match rules
 add_hook VsMode_InitDataFromRules
 add_hook Match_Init
+add_hook Match_CheckToPause
 # CSS
 .set CreateCSSNameText,          CSS_Setup+0x1180
 .set CheckCSSPlayerCount,        CSS_ReadyThink+0x124
