@@ -80,7 +80,7 @@ int get_player_count()
 
 	for (u32 i = 0; i < 4; i++) {
 		if (PlayerBlock_GetSlotType(i) != SlotType_None)
-		count++;
+			count++;
 	}
 
 	return count;
