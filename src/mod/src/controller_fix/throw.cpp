@@ -74,8 +74,8 @@ static int get_throw_state(const Player *player)
 	return -1;
 }
 
-extern "C" void orig_Interrupt_Throw(HSD_GObj *gobj);
-extern "C" void hook_Interrupt_Throw(HSD_GObj *gobj)
+extern "C" bool orig_Interrupt_Throw(HSD_GObj *gobj);
+extern "C" bool hook_Interrupt_Throw(HSD_GObj *gobj)
 {
 	if (get_ucf_type() == ucf_type::ucf)
 		return orig_Interrupt_Throw(gobj);
@@ -87,10 +87,12 @@ extern "C" void hook_Interrupt_Throw(HSD_GObj *gobj)
 		return orig_Interrupt_Throw(gobj);
 
 	// Check for throws with 50d line, try old logic if no throw with 50d
-	if (const auto state = get_throw_state(player); state != -1)
+	if (const auto state = get_throw_state(player); state != -1) {
 		Player_DoThrow(gobj, state);
-	else
-		orig_Interrupt_Throw(gobj);
+		return true;
+	}
+
+	return orig_Interrupt_Throw(gobj);
 }
 
 static int get_cargo_throw_state(const Player *player)
@@ -116,8 +118,8 @@ static int get_cargo_throw_state(const Player *player)
 	return -1;
 }
 
-extern "C" void orig_Interrupt_DK_ThrowFDecide(HSD_GObj *gobj);
-extern "C" void hook_Interrupt_DK_ThrowFDecide(HSD_GObj *gobj)
+extern "C" bool orig_Interrupt_DK_ThrowFDecide(HSD_GObj *gobj);
+extern "C" bool hook_Interrupt_DK_ThrowFDecide(HSD_GObj *gobj)
 {
 	if (get_ucf_type() == ucf_type::ucf)
 		return orig_Interrupt_DK_ThrowFDecide(gobj);
@@ -126,11 +128,13 @@ extern "C" void hook_Interrupt_DK_ThrowFDecide(HSD_GObj *gobj)
 
 	// Cargo throw requires A/B press
 	if (!(player->input.instant_buttons & (Button_A | Button_B)))
-		return;
+		return false;
 
 	// Check for throws with 50d line, try old logic if no throw with 50d
-	if (const auto state = get_cargo_throw_state(player); state != -1)
+	if (const auto state = get_cargo_throw_state(player); state != -1) {
 		AS_DK_ThrowFDecide(gobj, state);
-	else
-		orig_Interrupt_DK_ThrowFDecide(gobj);
+		return true;
+	} else {
+		return orig_Interrupt_DK_ThrowFDecide(gobj);
+	}
 }
