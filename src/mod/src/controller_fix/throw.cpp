@@ -1,3 +1,4 @@
+#include "hsd/pad.h"
 #include "melee/action_state.h"
 #include "melee/constants.h"
 #include "melee/player.h"
@@ -122,6 +123,10 @@ extern "C" void hook_Interrupt_DK_ThrowFDecide(HSD_GObj *gobj)
 		return orig_Interrupt_DK_ThrowFDecide(gobj);
 
 	const auto *player = gobj->get<Player>();
+
+	// Cargo throw requires A/B press
+	if (!(player->input.instant_buttons & (Button_A | Button_B)))
+		return;
 
 	// Check for throws with 50d line, try old logic if no throw with 50d
 	if (const auto state = get_cargo_throw_state(player); state != -1)
