@@ -16,6 +16,7 @@ extern "C" void Scene_Initialize(SceneMinorData *data);
 extern "C" void HSD_PadRenewMasterStatus();
 extern "C" void Match_InitPlayers();
 extern "C" void Player_Respawn(s32 slot, s32 subchar);
+extern "C" void Scene_Match_Exit(SceneMinorData *data, u8 victory_screen, u8 sudden_death);
 
 // Check for UP gamecode
 static const auto result = memcmp(__GameCode, "GTME", 4) == 0;
@@ -62,6 +63,9 @@ extern "C" bool is_unclepunch()
 		std::pair { (char*)CSS_PlayerThink+0x638,            0x889F0004u },
 		// Disable UP's built in rumble off on unplug
 		std::pair { (char*)HSD_PadRenewMasterStatus+0x98,    0x8819000Au },
+
+		// Disable UP's results screen check hook
+		std::pair { (char*)Scene_Match_Exit+0x24,            0x3BA00000u },
 	};
 }
 
