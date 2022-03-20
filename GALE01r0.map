@@ -703,6 +703,8 @@
 8009bba8 00000064 8009bba8 0 ch_DK_ThrowFWait6_AnimationInterrupt
 8009bc0c 00000020 8009bc0c 0 ch_DK_ThrowFWait6_ActionPhys
 8009bc2c 00000064 8009bc2c 0 ch_DK_ThrowFWait6_CollisionInterrupt
+8009bc90 000000f0 8009bc90 0 Interrupt_DK_ThrowFDecide
+8009bd80 000000c0 8009bd80 0 AS_DK_ThrowFDecide
 8009be40 00000044 8009be40 0 ch_DK_ThrowFF1_AnimationInterrupt
 8009c0b8 00000020 8009c0b8 0 ch_DK_ThrowFF1_IASA
 8009c0d8 00000020 8009c0d8 0 ch_DK_ThrowFF1_ActionPhys
@@ -821,6 +823,7 @@
 800caf7c 00000104 800caf7c 0 Interrupt_AS_JumpF
 800cb128 00000048 800cb128 0 AS_024_Kneebend
 800cb244 000000b0 800cb244 0 Interrupt_AS_Kneebend
+800cb44c 0000006c 800cb44c 0 Player_CheckFirstMultiJumpInput
 800cb4b8 00000070 800cb4b8 0 Interrupt_AerialJumpGoTo
 800cb598 00000174 800cb598 0 Interrupt_JumpAerial
 800cb808 00000158 800cb808 0 AS_027&028_AerialJump
@@ -928,6 +931,7 @@
 800d6cb4 000000d8 800d6cb4 0 Interrupt_CatchItem
 800d6d8c 00000090 800d6d8c 0 Items_GiveItemIfCatchBufferIsActive
 800d6e54 0000006c 800d6e54 0 Ab_FindJumpsRemainingReturningToDJ
+800d6ec0 00000198 800d6ec0 0 Interrupt_MultiJump
 800d8544 000000a8 800d8544 0 Interrupt_Grab_Standing
 800d85ec 000000a8 800d85ec 0 Interrupt_Grab_FromRun
 800d8750 00000060 800d8750 0 Interrupt_CatchDash
