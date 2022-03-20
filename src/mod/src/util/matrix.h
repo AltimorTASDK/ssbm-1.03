@@ -9,6 +9,8 @@
 template<typename T, size_t N, size_t M>
 class matrix {
 public:
+	using array_type = float(*)[M];
+
 	static constexpr auto row_count = N;
 	static constexpr auto col_count = M;
 	static constexpr auto elem_count = M * N;
@@ -130,11 +132,6 @@ public:
 		});
 	}
 
-	constexpr auto as_multidimensional() const
-	{
-		return (float(*)[M])elems;
-	}
-
 	template<size_t otherM>
 	constexpr auto operator*(const matrix<T, M, otherM> &other) const
 	{
@@ -155,6 +152,11 @@ public:
 	{
 		*this = *this * other;
 		return *this;
+	}
+
+	constexpr operator array_type() const
+	{
+		return (array_type)elems;
 	}
 };
 

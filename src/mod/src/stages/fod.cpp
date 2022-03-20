@@ -70,7 +70,7 @@ extern "C" void hook_Stage_Fountain_UpdateReflection(HSD_GObj *gobj)
 	};
 
 	matrix3x4 view_matrix;
-	HSD_CObjGetViewingMtx(cobj, view_matrix.as_multidimensional());
+	HSD_CObjGetViewingMtx(cobj, view_matrix);
 
 	auto *data = gobj->get<FountainReflectionData>();
 	data->texture_matrix = proj_matrix * view_matrix;

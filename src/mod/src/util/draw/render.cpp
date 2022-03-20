@@ -126,12 +126,9 @@ void render_state::reset_2d()
 	constexpr auto proj      = ortho_projection(0, 480,      0,    640, -1000, 1000);
 	constexpr auto proj_wide = ortho_projection(0, 480, wide_l, wide_r, -1000, 1000);
 
-	const auto &current_proj = is_widescreen() ? proj_wide : proj;
 	GX_SetCurrentMtx(0);
-	GX_LoadProjectionMtx(current_proj.as_multidimensional(), GX_ORTHOGRAPHIC);
-
-	GX_LoadPosMtxImm(matrix3x4::identity.as_multidimensional(), GX_PNMTX0);
-
+	GX_LoadProjectionMtx(is_widescreen() ? proj_wide : proj, GX_ORTHOGRAPHIC);
+	GX_LoadPosMtxImm(matrix3x4::identity, GX_PNMTX0);
 	set_scissor(0, 0, 640, 480);
 }
 
@@ -143,7 +140,6 @@ void render_state::reset_3d()
 	const auto *cobj = HSD_CObjGetCurrent();
 	HSD_CObjGetViewingMtx(cobj, view_matrix);
 	GX_LoadPosMtxImm(view_matrix, GX_PNMTX0);
-
 	set_scissor(0, 0, 640, 480);
 }
 
@@ -169,9 +165,9 @@ void render_state::restrict_scissor(u32 x, u32 y, u32 w, u32 h)
 {
 	// Get scissor corners
 	const auto old_min = vec2i(current_scissor[0], current_scissor[1]);
-	const auto old_max = old_min + vec2i(current_scissor[2], current_scissor[3]);
+	const auto old_max = vec2i(current_scissor[2], current_scissor[3]) + old_min;
 	const auto new_min = vec2i(x, y);
-	const auto new_max = vec2i(x + w, y + h);
+	const auto new_max = vec2i(w, h) + new_min;
 
 	const auto min = vec2i::max(old_min, new_min);
 	const auto max = vec2i::min(old_max, new_max);
