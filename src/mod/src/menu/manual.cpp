@@ -95,15 +95,20 @@ static void draw_manual(HSD_GObj *gobj, u32 pass)
 	auto &rs = render_state::get();
 	rs.reset_3d();
 
-	constexpr auto scissor_y = 88;
+	constexpr auto scissor_w = 516;
 	constexpr auto scissor_h = 288;
+	constexpr auto scissor_x = 320 - scissor_w / 2;
+	constexpr auto scissor_y =  88;
 
-	rs.set_scissor(0, scissor_y, 640, scissor_h);
+	rs.set_scissor(scissor_x, scissor_y, scissor_w, scissor_h);
 
-	constexpr auto scale = 25.f;
+	constexpr auto scale    = 25.0f;
+	constexpr auto manual_y =  7.5f;
+	constexpr auto manual_z = 17.0f;
+
 	const auto scale_p1 = vec2(1, -texture_p1.inv_ratio()) * scale;
 	const auto scale_p2 = vec2(1, -texture_p2.inv_ratio()) * scale;
-	const auto pos_p1 = vec3(0, 7.5f + scroll_offset * scale, 17);
+	const auto pos_p1 = vec3(0, manual_y + scroll_offset * scale, manual_z);
 	const auto pos_p2 = pos_p1 + vec3(0, scale_p1.y, 0);
 
 	rs.fill_rect(pos_p1, scale_p1, color_rgba::white, texture_p1,
@@ -114,18 +119,23 @@ static void draw_manual(HSD_GObj *gobj, u32 pass)
 
 	rs.reset_2d();
 
-	rs.fill_tiled_rect(vec3(320, scissor_y, 17), vec2(516, scissor_h),
-	                   color_rgba::hex(0x929196FFu), texture_border, align::top);
+	constexpr auto border_color = color_rgba::hex(0x929196FFu);
 
-	constexpr auto scrollbar_size = vec2(11, 6);
-	constexpr auto scrollbar_x = 320 + 516.f / 2 - 2;
-	constexpr auto scrollbar_y_min = scissor_y + 14.f;
-	constexpr auto scrollbar_y_max = scissor_y + scissor_h - scrollbar_size.y - 14.f;
+	rs.fill_tiled_rect(vec3(scissor_x, scissor_y, manual_z), vec2(scissor_w, scissor_h),
+	                   border_color, texture_border, align::top_left);
 
-	const auto scrollbar_y = lerp(scrollbar_y_min, scrollbar_y_max, scroll_offset / MAX_SCROLL);
+	constexpr auto scrollbar_margin      = vec2(2, 14);
+	constexpr auto scrollbar_size        = vec2(11, 6);
+	constexpr auto scrollbar_area_right  = scissor_x + scissor_w - scrollbar_margin.x;
+	constexpr auto scrollbar_area_top    = scissor_y             + scrollbar_margin.y;
+	constexpr auto scrollbar_area_bottom = scissor_y + scissor_h - scrollbar_margin.y;
 
-	rs.fill_tiled_rect(vec3(scrollbar_x, scrollbar_y, 17), scrollbar_size,
-	                   color_rgba::hex(0x929196FFu), texture_scrollbar, align::top_right);
+	const auto scrollbar_y = lerp(scrollbar_area_top,
+	                              scrollbar_area_bottom - scrollbar_size.y,
+	                              scroll_offset / MAX_SCROLL);
+
+	rs.fill_tiled_rect(vec3(scrollbar_area_right, scrollbar_y, manual_z), scrollbar_size,
+	                   border_color, texture_scrollbar, align::top_right);
 }
 
 extern "C" void hook_Menu_EnterCustomRulesMenu()
