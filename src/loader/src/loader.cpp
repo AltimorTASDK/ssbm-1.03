@@ -131,6 +131,7 @@ static u32 card_read(const char *file, void *dest)
 	return stats.len;
 }
 
+#ifndef NTSC102
 static void *alloc_and_read(const char *file)
 {
 	const auto size = card_read(file, nullptr);
@@ -138,6 +139,7 @@ static void *alloc_and_read(const char *file)
 	card_read(file, buf);
 	return buf;
 }
+#endif
 
 struct file_entry {
 	u32 size;
@@ -171,10 +173,9 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 	__CARDSetDiskID("GALE01");
 #endif
 
+#ifndef NTSC102
 	const auto *data = alloc_and_read("103Code");
 	const auto *base = get_file(data, 0);
-
-#ifndef NTSC102
 #if defined(NTSC100)
 	const auto *diff = get_file(data, 1);
 #elif defined(NTSC101)
@@ -184,8 +185,10 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 #endif
 	const auto code_size = apply_diff(base->data, diff->data, &__MOD_BASE__);
 #else
+	card_read("103Code", &__MOD_BASE__);
+	const auto *base = get_file(&__MOD_BASE__, 0);
 	const auto code_size = base->size;
-	memcpy(&__MOD_BASE__, base->data, code_size);
+	memmove(&__MOD_BASE__, base->data, code_size);
 #endif
 
 #if defined(PAL) || defined(NTSC102)
