@@ -7,6 +7,7 @@
 extern "C" char SaveFileName[25];
 extern "C" char MnSlMapPath[];
 
+extern "C" void Stage_Fountain_Init();
 extern "C" void Scene_Match_Exit(SceneMinorData *data, u8 victory_screen, u8 sudden_death);
 
 // XXperSmashBros
@@ -25,7 +26,10 @@ extern "C" bool is_20XX()
 	patch_list {
 		// Remove 20XX's results screen hook
 		// addi r27, r4, 0
-		std::pair { (char*)Scene_Match_Exit+0x10, 0x3B640000u },
+		std::pair { (char*)Scene_Match_Exit+0x10,   0x3B640000u },
+		// Disable 20XX's lagless FoD patch
+		// stwu r1, -8(r1)
+		std::pair { (char*)Stage_Fountain_Init+0x8, 0x9421FFF8u },
 	};
 }
 
