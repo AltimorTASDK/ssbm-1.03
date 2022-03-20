@@ -137,7 +137,7 @@ public:
 	}
 
 	// Create a new vector by applying a function to each component
-	template<typename T = vec_impl> requires is_vector_type<T>
+	template<vector_type T = vec_impl>
 	constexpr T map(auto &&callable) const
 	{
 		return T(foreach(callable));
