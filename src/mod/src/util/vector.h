@@ -149,91 +149,77 @@ public:
 		return *this;
 	}
 
-	template<typename... T>
 	constexpr vec_impl &operator+=(const vec_impl &other)
 	{
 		foreach(operators::add_eq, other.elems());
 		return *this;
 	}
 
-	template<typename... T>
 	constexpr vec_impl operator+(const vec_impl &other) const
 	{
 		return vec_impl(foreach(operators::add, other.elems()));
 	}
 
-	template<typename... T>
 	constexpr vec_impl &operator-=(const vec_impl &other)
 	{
 		foreach(operators::sub_eq, other.elems());
 		return *this;
 	}
 
-	template<typename... T>
 	constexpr vec_impl operator-(const vec_impl &other) const
 	{
 		return vec_impl(foreach(operators::sub, other.elems()));
 	}
 
-	template<typename... T>
 	constexpr vec_impl &operator*=(const vec_impl &other)
 	{
 		foreach(operators::mul_eq, other.elems());
 		return *this;
 	}
 
-	template<typename... T>
 	constexpr vec_impl &operator*=(auto value)
 	{
 		foreach(bind_back(operators::mul_eq, value));
 		return *this;
 	}
 
-	template<typename... T>
 	constexpr vec_impl operator*(const vec_impl &other) const
 	{
 		return vec_impl(foreach(operators::mul, other.elems()));
 	}
 
-	template<typename... T>
 	constexpr vec_impl operator*(auto value) const
 	{
 		return vec_impl(foreach(bind_back(operators::mul, value)));
 	}
 
-	template<typename... T>
 	constexpr vec_impl &operator/=(const vec_impl &other)
 	{
 		foreach(operators::div_eq, other.elems());
 		return *this;
 	}
 
-	template<typename... T>
 	constexpr vec_impl &operator/=(auto value)
 	{
 		foreach(bind_back(operators::div_eq, value));
 		return *this;
 	}
 
-	template<typename... T>
 	constexpr vec_impl operator/(const vec_impl &other) const
 	{
 		return vec_impl(foreach(operators::div, other.elems()));
 	}
 
-	template<typename... T>
 	constexpr vec_impl operator/(auto value) const
 	{
 		return vec_impl(foreach(bind_back(operators::div, value)));
 	}
 
-	template<typename... T>
 	constexpr bool operator==(const vec_impl &other) const
 	{
 		return elems() == other.elems();
 	}
 
-	template<typename... T>
 	constexpr vec_impl operator-() const
 	{
 		return vec_impl(foreach(operators::neg));
@@ -284,7 +270,7 @@ using vec4d = vec_impl<vec4_base<f64>>;
 
 template<typename T>
 struct color_rgb_base {
-	static constexpr vec_impl<color_rgb_base> white = []() {
+	static constexpr vec_impl<color_rgb_base> white = [] {
 		constexpr auto max =
 			std::is_same_v<T, f32> ? 1.f :
 			std::is_same_v<T, f64> ? 1.0 :
