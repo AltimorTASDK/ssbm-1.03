@@ -18,11 +18,10 @@ extern "C" void Match_InitPlayers();
 extern "C" void Player_Respawn(s32 slot, s32 subchar);
 extern "C" void Scene_Match_Exit(SceneMinorData *data, u8 victory_screen, u8 sudden_death);
 
-// Check for UP gamecode
-static const auto result = memcmp(__GameCode, "GTME", 4) == 0;
-
 extern "C" bool is_unclepunch()
 {
+	// Check for UP gamecode
+	static const auto result = memcmp(__GameCode, "GTME", 4) == 0;
 	return result;
 }
 

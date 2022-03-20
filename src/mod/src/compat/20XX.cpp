@@ -10,11 +10,10 @@ extern "C" char MnSlMapPath[];
 extern "C" void Stage_Fountain_Init();
 extern "C" void Scene_Match_Exit(SceneMinorData *data, u8 victory_screen, u8 sudden_death);
 
-// XXperSmashBros
-static const auto result = SaveFileName[0] == 'X' && SaveFileName[1] == 'X';
-
 extern "C" bool is_20XX()
 {
+	// XXperSmashBros
+	static const auto result = SaveFileName[0] == 'X' && SaveFileName[1] == 'X';
 	return result;
 }
 
