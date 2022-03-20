@@ -70,24 +70,15 @@ void vertex_pos_uv::set_format()
 vec3 alignment_offset(const vec2 &size, align alignment)
 {
 	switch (alignment) {
-	case align::top_left:
-		return vec3::zero;
-	case align::top:
-		return -vec3(size.x / 2, 0, 0);
-	case align::top_right:
-		return -vec3(size.x, 0, 0);
-	case align::left:
-		return -vec3(0, size.y / 2, 0);
-	case align::center:
-		return -vec3(size.x / 2, size.y / 2, 0);
-	case align::right:
-		return -vec3(size.x, size.y / 2, 0);
-	case align::bottom_left:
-		return -vec3(0, size.y, 0);
-	case align::bottom:
-		return -vec3(size.x / 2, size.y, 0);
-	case align::bottom_right:
-		return -vec3(size.x, size.y, 0);
+	case align::top_left:     return vec3::zero;
+	case align::top:          return -vec3(size.x / 2, 0,          0);
+	case align::top_right:    return -vec3(size.x,     0,          0);
+	case align::left:         return -vec3(0,          size.y / 2, 0);
+	case align::center:       return -vec3(size.x / 2, size.y / 2, 0);
+	case align::right:        return -vec3(size.x,     size.y / 2, 0);
+	case align::bottom_left:  return -vec3(0,          size.y,     0);
+	case align::bottom:       return -vec3(size.x / 2, size.y,     0);
+	case align::bottom_right: return -vec3(size.x,     size.y,     0);
 	}
 
 	PANIC("Invalid align constant");
@@ -123,7 +114,7 @@ void render_state::reset_2d()
 
 	constexpr auto wide_l    = ortho_left_wide;
 	constexpr auto wide_r    = ortho_right_wide;
-	constexpr auto proj      = ortho_projection(0, 480,      0,    640, -1000, 1000);
+	constexpr auto proj      = ortho_projection(0, 480, 0,      640,    -1000, 1000);
 	constexpr auto proj_wide = ortho_projection(0, 480, wide_l, wide_r, -1000, 1000);
 
 	GX_SetCurrentMtx(0);
@@ -241,9 +232,9 @@ static void iterate_tiled_rect_corners(auto &&callable, const vec2 &size, const 
 
 	for (auto i = 0; i < 3; i++) {
 		for (auto j = 0; j < 3; j++) {
-			const auto offset1 = vec2(offset_table[i].x, offset_table[j].y);
+			const auto offset1 = vec2(offset_table[i].x,     offset_table[j].y);
 			const auto offset2 = vec2(offset_table[i + 1].x, offset_table[j + 1].y);
-			const auto uv1 = uv_coord(uv_table[i].u, uv_table[j].v);
+			const auto uv1 = uv_coord(uv_table[i].u,     uv_table[j].v);
 			const auto uv2 = uv_coord(uv_table[i + 1].u, uv_table[j + 1].v);
 			callable(offset1, offset2, uv1, uv2);
 		}
