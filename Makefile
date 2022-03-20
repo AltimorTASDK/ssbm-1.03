@@ -6,8 +6,6 @@ export CC  := powerpc-eabi-gcc
 export CXX := powerpc-eabi-g++
 export LD  := powerpc-eabi-ld
 
-export LDFLAGS := -Wl,-Map=$(OBJDIR)/output.map -Wl,--gc-sections
-
 export DEFINES := -DGEKKO
 
 ifneq ($(findstring __a, __$(MODVERSION)),)
@@ -54,6 +52,9 @@ export GCIDIR  := $(abspath gci)
 export OBJDIR  := obj/$(VERSION)
 export DEPDIR  := dep/$(VERSION)
 export SOURCES := src
+
+export OUTPUTMAP := $(OBJDIR)/output.map
+export LDFLAGS   := -Wl,-Map=$(OUTPUTMAP) -Wl,--gc-sections
 
 export MELEEMAP := $(MELEELD:.ld=.map)
 

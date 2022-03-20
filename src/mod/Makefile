@@ -139,8 +139,12 @@ clean:
 # Remove unused obj/dep/resource files
 .PHONY: clean_unused
 clean_unused:
-	$(foreach file, $(shell find $(OBJDIR) -type f), $(if $(filter $(file), $(OBJFILES)),, $(shell rm $(file))))
-	$(foreach file, $(shell find $(DEPDIR) -type f), $(if $(filter $(file), $(DEPFILES)),, $(shell rm $(file))))
+	$(foreach file, $(shell find $(OBJDIR) -type f), \
+		$(if $(filter $(file), $(OBJFILES) $(OUTPUTMAP)),, \
+		$(shell rm $(file))))
+	$(foreach file, $(shell find $(DEPDIR) -type f), \
+		$(if $(filter $(file), $(DEPFILES)),, \
+		$(shell rm $(file))))
 	$(foreach file, $(shell find $(RESOURCE_DIR_OUT) -type f), \
 		$(if $(filter $(file), $(RESOURCES_OUT) $(RESOURCES_H_OUT) $(TEXTURES_OUT) $(TEXTURES_H_OUT)),, \
 		$(shell rm $(file))))
