@@ -99,11 +99,11 @@ void render_state::reset()
 	current_tex_obj = nullptr;
 
 	GX_SetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
-	
+
 	GX_SetNumTevStages(1);
 	GX_SetTevOp(GX_TEVSTAGE0, GX_MODULATE);
 	GX_SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
-	
+
 	GX_SetNumChans(1);
 	GX_SetChanCtrl(GX_COLOR0A0, GX_DISABLE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHTNULL, GX_DF_NONE,
 	               GX_AF_NONE);
@@ -113,7 +113,7 @@ void render_state::reset()
 	                   GX_DTTIDENTITY);
 
 	GX_SetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
-	
+
 	GX_SetCullMode(GX_NONE);
 }
 
@@ -121,16 +121,18 @@ void render_state::reset_2d()
 {
 	reset();
 
-	constexpr auto proj = ortho_projection(0, 480, 0, 640, -1000, 1000);
-	constexpr auto proj_wide = ortho_projection(0, 480, ortho_left_wide, ortho_right_wide,
-	                                            -1000, 1000);
+	constexpr auto wide_l    = ortho_left_wide;
+	constexpr auto wide_r    = ortho_right_wide;
+	constexpr auto proj      = ortho_projection(0, 480,      0,    640, -1000, 1000);
+	constexpr auto proj_wide = ortho_projection(0, 480, wide_l, wide_r, -1000, 1000);
+
 	GX_SetCurrentMtx(0);
 	if (is_widescreen())
 		GX_LoadProjectionMtx(proj_wide.as_multidimensional(), GX_ORTHOGRAPHIC);
 	else
 		GX_LoadProjectionMtx(proj.as_multidimensional(), GX_ORTHOGRAPHIC);
 	GX_LoadPosMtxImm(matrix3x4::identity.as_multidimensional(), GX_PNMTX0);
-	
+
 	set_scissor(0, 0, 640, 480);
 }
 
@@ -142,7 +144,7 @@ void render_state::reset_3d()
 	const auto *cobj = HSD_CObjGetCurrent();
 	HSD_CObjGetViewingMtx(cobj, view_matrix);
 	GX_LoadPosMtxImm(view_matrix, GX_PNMTX0);
-	
+
 	set_scissor(0, 0, 640, 480);
 }
 
@@ -171,7 +173,7 @@ void render_state::restrict_scissor(u32 x, u32 y, u32 w, u32 h)
 	const auto old_max = old_min + vec2i(current_scissor[2], current_scissor[3]);
 	const auto new_min = vec2i(x, y);
 	const auto new_max = vec2i(x + w, y + h);
-	
+
 	const auto min = vec2i::max(old_min, new_min);
 	const auto max = vec2i::min(old_max, new_max);
 	const auto size = max - min;
@@ -182,7 +184,7 @@ void render_state::fill_rect(const vec3 &origin, const vec2 &size, const color_r
                              align alignment)
 {
 	const auto aligned = origin + alignment_offset(size, alignment);
-	
+
 	draw_quads<vertex_pos_clr>({
 		{ aligned,                           color },
 		{ aligned + vec3(size.x, 0,      0), color },
@@ -195,9 +197,9 @@ void render_state::fill_rect(const vec3 &origin, const vec2 &size, const texture
                              const uv_coord &uv1, const uv_coord &uv2, align alignment)
 {
 	const auto aligned = origin + alignment_offset(size, alignment);
-	
+
 	tex.apply();
-	
+
 	draw_quads<vertex_pos_uv>({
 		{ aligned,                           uv1                    },
 		{ aligned + vec3(size.x, 0,      0), uv_coord(uv2.u, uv1.v) },
@@ -211,9 +213,9 @@ void render_state::fill_rect(const vec3 &origin, const vec2 &size, const color_r
                              align alignment)
 {
 	const auto aligned = origin + alignment_offset(size, alignment);
-	
+
 	tex.apply();
-	
+
 	draw_quads<vertex_pos_clr_uv>({
 		{ aligned,                           color, uv1                    },
 		{ aligned + vec3(size.x, 0,      0), color, uv_coord(uv2.u, uv1.v) },
@@ -227,7 +229,7 @@ static void iterate_tiled_rect_corners(auto &&callable, const vec2 &size, const 
 	const auto tile_size = vec2(
 		std::min(size.x, (float)tex.width()) / 3,
 		std::min(size.y, (float)tex.height()) / 3);
-		
+
 	vec2 offset_table[] = {
 		vec2::zero,
 		vec2(tile_size),
@@ -257,9 +259,9 @@ void render_state::fill_tiled_rect(const vec3 &origin, const vec2 &size, const t
                                    align alignment)
 {
 	const auto aligned = origin + alignment_offset(size, alignment);
-	
+
 	tex.apply();
-	
+
 	iterate_tiled_rect_corners([&](auto offset1, auto offset2, auto uv1, auto uv2) {
 		fill_rect(aligned + vec3(offset1), offset2 - offset1, tex, uv1, uv2);
 	}, size, tex);
@@ -269,9 +271,9 @@ void render_state::fill_tiled_rect(const vec3 &origin, const vec2 &size, const c
 		                   const texture &tex, align alignment)
 {
 	const auto aligned = origin + alignment_offset(size, alignment);
-	
+
 	tex.apply();
-	
+
 	iterate_tiled_rect_corners([&](auto offset1, auto offset2, auto uv1, auto uv2) {
 		fill_rect(aligned + vec3(offset1), offset2 - offset1, color, tex, uv1, uv2);
 	}, size, tex);
