@@ -85,9 +85,13 @@ def main():
     data = title.encode().ljust(TITLE_SIZE, b'\0')
 
     for path in in_files:
-        with open(path, "rb") as f:
-            in_data = f.read()
-            data += struct.pack(">I", len(in_data)) + in_data
+        try:
+            with open(path, "rb") as f:
+                in_data = f.read()
+                data += struct.pack(">I", len(in_data)) + in_data
+        except IOError:
+            print(f"Warning: Unable to open input file {path}. Skipping.",
+                  file=sys.stderr)
 
     if len(banner) != 0:
         banner_offset = len(data)
