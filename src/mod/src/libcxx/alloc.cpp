@@ -149,14 +149,14 @@ void fix_heap(OSHeap *heap)
 extern "C" void orig_HSD_ResetScene();
 extern "C" void hook_HSD_ResetScene()
 {
+	// Run destructors and clear pool refcounts on heap destruction
+	mempool::free_all();
+
 	// Reset 1.03 heap
 	if (heap != -1) {
 		OSDestroyHeap(heap);
 		heap = -1;
 	}
-
-	// Run destructors and clear pool refcounts on heap destruction
-	mempool::free_all();
 
 	orig_HSD_ResetScene();
 }
