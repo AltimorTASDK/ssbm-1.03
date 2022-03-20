@@ -15,10 +15,6 @@ ELFFILE  := $(GCIDIR)/1.03_data/loader-pal.elf
 BINFILE  := $(GCIDIR)/1.03_data/loader-pal.bin
 endif
 
-OBJDIR   := obj/$(VERSION)
-DEPDIR   := dep/$(VERSION)
-SOURCES  := src
-
 CFILES   := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.c'))
 CXXFILES := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.cpp'))
 SFILES   := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.S'))

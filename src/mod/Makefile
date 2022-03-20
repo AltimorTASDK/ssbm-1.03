@@ -27,10 +27,6 @@ TITLE     := "Super Smash Bros. Melee         1.03 Data"
 
 DIFFSRC  := bin/mod.bin
 
-OBJDIR   := obj/$(VERSION)
-DEPDIR   := dep/$(VERSION)
-SOURCES  := src
-
 CFILES   := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.c'))
 CXXFILES := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.cpp'))
 SFILES   := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.S'))

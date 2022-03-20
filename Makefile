@@ -6,11 +6,7 @@ export CC  := powerpc-eabi-gcc
 export CXX := powerpc-eabi-g++
 export LD  := powerpc-eabi-ld
 
-export BINDIR  := $(abspath bin)
-export TOOLS   := $(abspath tools)
-export GCIDIR  := $(abspath gci)
-
-export LDFLAGS := -Wl,-Map=output-$(VERSION).map -Wl,--gc-sections
+export LDFLAGS := -Wl,-Map=$(OBJDIR)/output.map -Wl,--gc-sections
 
 export DEFINES := -DGEKKO
 
@@ -51,6 +47,14 @@ else
 $(error Unsupported Melee version "$(VERSION)")
 endif
 
+export BINDIR  := $(abspath bin)
+export TOOLS   := $(abspath tools)
+export GCIDIR  := $(abspath gci)
+
+export OBJDIR  := obj/$(VERSION)
+export DEPDIR  := dep/$(VERSION)
+export SOURCES := src
+
 export MELEEMAP := $(MELEELD:.ld=.map)
 
 export CFLAGS   := $(DEFINES) -mogc -mcpu=750 -meabi -mhard-float -Os \
@@ -59,7 +63,7 @@ export CFLAGS   := $(DEFINES) -mogc -mcpu=750 -meabi -mhard-float -Os \
 				   -fno-builtin-sqrt -fno-builtin-sqrtf
 export ASFLAGS  := $(DEFINES) -Wa,-mregnames -Wa,-mgekko
 export CXXFLAGS := $(CFLAGS) -std=c++2b -fconcepts -fno-rtti -fno-exceptions
-export INCLUDE  := -Isrc -I$(abspath src/mod/src) -I$(DEVKITPATH)/libogc/include
+export INCLUDE  := -I$(SOURCES) -I$(abspath src/mod/$(SOURCES)) -I$(DEVKITPATH)/libogc/include
 
 .PHONY: all
 all: loader mod
