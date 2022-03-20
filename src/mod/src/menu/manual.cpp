@@ -14,6 +14,7 @@
 #include "util/draw/render.h"
 #include "util/draw/texture.h"
 #include "util/melee/text_builder.h"
+#include <cmath>
 #include <gctypes.h>
 
 #ifdef NOPAL
@@ -26,11 +27,12 @@
 #include "resources/screens/manual_border.tex.h"
 #include "resources/screens/scrollbar.tex.h"
 
-#ifdef NOPAL
-constexpr auto MAX_SCROLL = 2.114f;
-#else
-constexpr auto MAX_SCROLL = 2.847f;
-#endif
+constexpr auto scissor_w = 516;
+constexpr auto scissor_h = 288;
+constexpr auto scissor_x = 320 - scissor_w / 2;
+constexpr auto scissor_y =  88;
+
+constexpr auto manual_margin = 13;
 
 static texture texture_p1;
 static texture texture_p2;
@@ -40,6 +42,7 @@ static texture texture_scrollbar;
 static mempool pool;
 
 static float scroll_offset;
+static int scroll_frames;
 
 static Text *text;
 
@@ -59,6 +62,12 @@ constexpr auto bottom_text = text_builder::build(
 	text_builder::reset_scale(),
 	text_builder::end_color());
 
+static float max_scroll_offset()
+{
+	const auto total_height = texture_p1.height() + texture_p2.height();
+	return (float)std::max(total_height - (scissor_h - manual_margin * 2), 0);
+}
+
 static void manual_input(HSD_GObj *gobj)
 {
 	const auto buttons = Menu_GetButtons(PORT_ALL);
@@ -69,8 +78,9 @@ static void manual_input(HSD_GObj *gobj)
 		Menu_PlaySFX(MenuSFX_Back);
 		Text_Free(text);
 		pool.dec_ref();
-		Menu_MainMenuTransition(MenuType_VsMode, 3, MenuState_ExitTo);
-		return;
+
+		// Frees gobj
+		return Menu_MainMenuTransition(MenuType_VsMode, 3, MenuState_ExitTo);
 	}
 
 	auto total_y = 0.f;
@@ -82,9 +92,15 @@ static void manual_input(HSD_GObj *gobj)
 			total_y += y;
 	}
 
-	total_y = clamp(total_y, -1.f, 1.f);
+	if (total_y == 0) {
+		scroll_frames = 0;
+		return;
+	}
 
-	scroll_offset = clamp(scroll_offset - total_y * .0125f, 0.f, MAX_SCROLL);
+	const auto delta = clamp(total_y, -1.f, 1.f) * 7.f;
+	scroll_offset = clamp(scroll_offset - delta, 0.f, max_scroll_offset());
+
+	scroll_frames++;
 }
 
 static void draw_manual(HSD_GObj *gobj, u32 pass)
@@ -93,31 +109,19 @@ static void draw_manual(HSD_GObj *gobj, u32 pass)
 		return;
 
 	auto &rs = render_state::get();
-	rs.reset_3d();
-
-	constexpr auto scissor_w = 516;
-	constexpr auto scissor_h = 288;
-	constexpr auto scissor_x = 320 - scissor_w / 2;
-	constexpr auto scissor_y =  88;
-
+	rs.reset_2d();
 	rs.set_scissor(scissor_x, scissor_y, scissor_w, scissor_h);
 
-	constexpr auto scale    = 25.0f;
-	constexpr auto manual_y =  7.5f;
-	constexpr auto manual_z = 17.0f;
+	constexpr auto manual_z = 17;
 
-	const auto scale_p1 = vec2(1, -texture_p1.inv_ratio()) * scale;
-	const auto scale_p2 = vec2(1, -texture_p2.inv_ratio()) * scale;
-	const auto pos_p1 = vec3(0, manual_y + scroll_offset * scale, manual_z);
-	const auto pos_p2 = pos_p1 + vec3(0, scale_p1.y, 0);
+	const auto pos_p1 = vec3(320, scissor_y + manual_margin - scroll_offset, manual_z);
+	const auto pos_p2 = pos_p1 + vec3(0, texture_p1.height(), 0);
 
-	rs.fill_rect(pos_p1, scale_p1, color_rgba::white, texture_p1,
+	rs.fill_rect(pos_p1, vec2(texture_p1.size()), color_rgba::white, texture_p1,
 	             uv_coord::zero, uv_coord::one, align::top);
 
-	rs.fill_rect(pos_p2, scale_p2, color_rgba::white, texture_p2,
+	rs.fill_rect(pos_p2, vec2(texture_p2.size()), color_rgba::white, texture_p2,
 	             uv_coord::zero, uv_coord::one, align::top);
-
-	rs.reset_2d();
 
 	constexpr auto border_color = color_rgba::hex(0x929196FFu);
 
@@ -132,7 +136,7 @@ static void draw_manual(HSD_GObj *gobj, u32 pass)
 
 	const auto scrollbar_y = lerp(scrollbar_area_top,
 	                              scrollbar_area_bottom - scrollbar_size.y,
-	                              scroll_offset / MAX_SCROLL);
+	                              scroll_offset / max_scroll_offset());
 
 	rs.fill_tiled_rect(vec3(scrollbar_area_right, scrollbar_y, manual_z), scrollbar_size,
 	                   border_color, texture_scrollbar, align::top_right);
@@ -143,6 +147,7 @@ extern "C" void hook_Menu_EnterCustomRulesMenu()
 	manual_open = true;
 
 	scroll_offset = 0;
+	scroll_frames = 0;
 
 	MenuTypePrevious = MenuType;
 	MenuType = MenuType_Rules;

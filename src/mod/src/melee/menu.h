@@ -100,6 +100,8 @@ void Menu_PlaySFX(s32 sfx);
 
 void Menu_ExitToRulesMenu();
 void Menu_CreateRandomStageMenu();
+
+// Frees current gobj
 void Menu_MainMenuTransition(u32 menu_type, u16 index, u8 state);
 
 void Menu_SetGObjPrio(HSD_GObj *gobj);
