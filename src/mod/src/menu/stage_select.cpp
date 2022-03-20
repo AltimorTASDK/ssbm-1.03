@@ -375,6 +375,6 @@ extern "C" void hook_SSS_Init(void *menu)
 	}
 
 	// Replace random icon's gobj proc to apply offset
-	HSD_JObj *random_joint = HSD_JObjGetFromTreeByIndex(position_jobj, 17);
+	auto *random_joint = HSD_JObjGetFromTreeByIndex(position_jobj, 17);
 	setup_random_icon(random_joint);
 }
