@@ -28,7 +28,7 @@ extern "C" void hook_Match_CheckToPause(MatchInfo *match, u32 pause_bit)
 		match->rules.pause_disabled = false;
 		orig_Match_CheckToPause(match, pause_bit);
 		match->rules.pause_disabled = true;
-	} {
+	} else {
 		orig_Match_CheckToPause(match, pause_bit);
 	}
 }
