@@ -57,6 +57,17 @@ constexpr T lerp(T a, T b, auto c)
 }
 
 template<typename T>
+constexpr T inv_lerp(T value, T a, T b)
+{
+	if (value <= a)
+		return (T) { 0 };
+	else if (value >= b)
+		return (T) { 1 };
+	else
+		return (value - a) / (b - a);
+}
+
+template<typename T>
 constexpr T mod(T value, T modulus)
 {
 	if (value >= 0)

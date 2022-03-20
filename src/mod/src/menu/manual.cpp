@@ -13,6 +13,7 @@
 #include "util/mempool.h"
 #include "util/draw/render.h"
 #include "util/draw/texture.h"
+#include "util/melee/pad.h"
 #include "util/melee/text_builder.h"
 #include <cmath>
 #include <gctypes.h>
@@ -83,24 +84,24 @@ static void manual_input(HSD_GObj *gobj)
 		return Menu_MainMenuTransition(MenuType_VsMode, 3, MenuState_ExitTo);
 	}
 
-	auto total_y = 0.f;
+	auto total_y = 0;
 
-	for (auto i = 0; i < 4; i++) {
-		const auto y = HSD_PadCopyStatus[i].stick.y;
+	for (auto port = 0; port < 4; port++) {
+		const auto y = get_input<0>(port).stick.y;
 		// Check deadzone
-		if (std::abs(y) >= .2875f)
+		if (std::abs(y) > DEADZONE)
 			total_y += y;
 	}
 
-	if (total_y == 0) {
+	if (std::abs(total_y) >= STICK_MAX)
+		scroll_frames++;
+	else
 		scroll_frames = 0;
-		return;
-	}
 
-	const auto delta = clamp(total_y, -1.f, 1.f) * 7.f;
+	const auto ramp_up = inv_lerp((float)scroll_frames, 40.f, 100.f);
+	const auto speed = 7.f * (1.f + ramp_up);
+	const auto delta = clamp((float)total_y / STICK_MAX, -1.f, 1.f) * speed;
 	scroll_offset = clamp(scroll_offset - delta, 0.f, max_scroll_offset());
-
-	scroll_frames++;
 }
 
 static void draw_manual(HSD_GObj *gobj, u32 pass)
