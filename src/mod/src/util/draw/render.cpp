@@ -126,11 +126,10 @@ void render_state::reset_2d()
 	constexpr auto proj      = ortho_projection(0, 480,      0,    640, -1000, 1000);
 	constexpr auto proj_wide = ortho_projection(0, 480, wide_l, wide_r, -1000, 1000);
 
+	const auto &current_proj = is_widescreen() ? proj_wide : proj;
 	GX_SetCurrentMtx(0);
-	if (is_widescreen())
-		GX_LoadProjectionMtx(proj_wide.as_multidimensional(), GX_ORTHOGRAPHIC);
-	else
-		GX_LoadProjectionMtx(proj.as_multidimensional(), GX_ORTHOGRAPHIC);
+	GX_LoadProjectionMtx(current_proj.as_multidimensional(), GX_ORTHOGRAPHIC);
+
 	GX_LoadPosMtxImm(matrix3x4::identity.as_multidimensional(), GX_PNMTX0);
 
 	set_scissor(0, 0, 640, 480);
