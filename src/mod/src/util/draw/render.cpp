@@ -179,8 +179,9 @@ void render_state::fill_rect(const vec3 &origin, const vec2 &size, const color_r
 	});
 }
 
-void render_state::fill_rect(const vec3 &origin, const vec2 &size, const texture &tex,
-                             const uv_coord &uv1, const uv_coord &uv2, align alignment)
+void render_state::fill_rect(const vec3 &origin, const vec2 &size,
+                             const texture &tex, const uv_coord &uv1, const uv_coord &uv2,
+                             align alignment)
 {
 	const auto aligned = origin + alignment_offset(size, alignment);
 
@@ -241,8 +242,8 @@ static void iterate_tiled_rect_corners(auto &&callable, const vec2 &size, const 
 	}
 }
 
-void render_state::fill_tiled_rect(const vec3 &origin, const vec2 &size, const texture &tex,
-                                   align alignment)
+void render_state::fill_tiled_rect(const vec3 &origin, const vec2 &size,
+                                   const texture &tex, align alignment)
 {
 	const auto aligned = origin + alignment_offset(size, alignment);
 
