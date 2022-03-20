@@ -8587,7 +8587,7 @@
 8016c7d0 00000020 8016c7d0 0 zz_016c7d0_
 8016c7f0 00000278 8016c7f0 0 zz_016c7f0_
 8016ca68 00000180 8016ca68 0 Match_CheckToPause
-8016cbe8 000001b0 8016cbe8 0 Pause_CheckButtonsToUnpause
+8016cbe8 000001b0 8016cbe8 0 Match_CheckToUnpause
 8016cd98 000001b4 8016cd98 0 Timer_EveryFrame
 8016cf4c 00000094 8016cf4c 0 Match_NoContestOrRetry
 8016cfe0 0000034c 8016cfe0 0 Match_HandlePause

@@ -28,8 +28,20 @@ extern "C" void hook_Match_CheckToPause(MatchInfo *match, u32 pause_bit)
 		match->rules.pause_disabled = false;
 		orig_Match_CheckToPause(match, pause_bit);
 		match->rules.pause_disabled = true;
-		return;
+	} {
+		orig_Match_CheckToPause(match, pause_bit);
 	}
+}
 
-	orig_Match_CheckToPause(match, pause_bit);
+extern "C" void orig_Match_CheckToUnpause(MatchInfo *match, u32 pause_bit);
+extern "C" void hook_Match_CheckToUnpause(MatchInfo *match, u32 pause_bit)
+{
+	if (match->rules.pause_disabled) {
+		// Always allow unpause
+		match->rules.pause_disabled = false;
+		orig_Match_CheckToUnpause(match, pause_bit);
+		match->rules.pause_disabled = true;
+	} else {
+		orig_Match_CheckToUnpause(match, pause_bit);
+	}
 }
