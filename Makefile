@@ -11,26 +11,28 @@ export OBJCOPY := powerpc-eabi-objcopy
 
 export DEFINES := -DGEKKO
 
-ifneq ($(shell echo "$(MODVERSION)" | grep '^a'),)
-export NOPAL   := 1
-export DEFINES += -DNOPAL
+ifdef MODVERSION
+ifneq ($(shell echo "$(MODVERSION)" | grep -P '^a\d'),)
+export NOPAL := 1
 endif
-
-ifneq ($(findstring -beta, $(MODVERSION)),)
-export DEFINES += -DBETA
-else ifneq ($(findstring -rc, $(MODVERSION)),)
-export DEFINES += -DBETA
+ifneq ($(shell echo "$(MODVERSION)" | grep -P '(^|-)(beta|rc)([0-9-].*)?$$'),)
+export BETA := 1
 endif
-
-ifneq ($(MODVERSION),)
 export MODNAME := ssbm-1.03-$(MODVERSION)
 else
 export MODNAME := ssbm-1.03
 endif
 
+ifdef NOPAL
+export DEFINES += -DNOPAL
+endif
+ifdef BETA
+export DEFINES += -DBETA
+endif
+
 export DEFINES += -DMODNAME=\"$(MODNAME)\"
 
-ifeq ($(VERSION),)
+ifndef VERSION
 $(error Specify Melee version with $$VERSION)
 else ifeq ($(VERSION), 100)
 export MELEELD := $(abspath GALE01r0.ld)
