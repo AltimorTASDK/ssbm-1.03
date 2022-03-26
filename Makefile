@@ -1,10 +1,12 @@
-DEVKITPATH=$(shell echo "$(DEVKITPRO)" | sed -e 's/^\([a-zA-Z]\):/\/\1/')
-PATH := $(DEVKITPATH)/devkitPPC/bin:$(DEVKITPATH)/tools/bin:$(PATH)
+ifndef DEVKITPRO
+$(error Specify devkitPro install path with $$DEVKITPRO)
+endif
 
-export AS  := powerpc-eabi-as
+DEVKITPATH=$(shell echo "$(DEVKITPRO)" | sed -e 's/^\([a-zA-Z]\):/\/\1/')
+PATH := $(DEVKITPATH)/devkitPPC/bin:$(PATH)
+
 export CC  := powerpc-eabi-gcc
 export CXX := powerpc-eabi-g++
-export LD  := powerpc-eabi-ld
 
 export DEFINES := -DGEKKO
 
@@ -28,7 +30,7 @@ endif
 export DEFINES += -DMODNAME=\"$(MODNAME)\"
 
 ifeq ($(VERSION),)
-$(error Specify Melee version with VERSION)
+$(error Specify Melee version with $$VERSION)
 else ifeq ($(VERSION), 100)
 export MELEELD := $(abspath GALE01r0.ld)
 export DEFINES += -DNTSC100
