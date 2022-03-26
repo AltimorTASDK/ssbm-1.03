@@ -11,7 +11,7 @@ export OBJCOPY := powerpc-eabi-objcopy
 
 export DEFINES := -DGEKKO
 
-ifneq ($(findstring __a, __$(MODVERSION)),)
+ifneq ($(shell echo "$(MODVERSION)" | grep '^a'),)
 export NOPAL   := 1
 export DEFINES += -DNOPAL
 endif
