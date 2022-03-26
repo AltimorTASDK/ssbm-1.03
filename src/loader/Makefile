@@ -81,7 +81,7 @@ bin: $(BINFILE)
 
 $(BINFILE): $(ELFFILE)
 	@[ -d $(@D) ] || mkdir -p $(@D)
-	powerpc-eabi-objcopy -O binary $< $@
+	$(OBJCOPY) -O binary $< $@
 
 $(ELFFILE): $(OBJFILES) $(LINKSCRIPT) $(MELEELD) | clean_unused
 	@[ -d $(@D) ] || mkdir -p $(@D)

@@ -5,8 +5,9 @@ endif
 DEVKITPATH=$(shell echo "$(DEVKITPRO)" | sed -e 's/^\([a-zA-Z]\):/\/\1/')
 PATH := $(DEVKITPATH)/devkitPPC/bin:$(PATH)
 
-export CC  := powerpc-eabi-gcc
-export CXX := powerpc-eabi-g++
+export CC      := powerpc-eabi-gcc
+export CXX     := powerpc-eabi-g++
+export OBJCOPY := powerpc-eabi-objcopy
 
 export DEFINES := -DGEKKO
 

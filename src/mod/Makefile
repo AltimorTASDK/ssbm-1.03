@@ -62,7 +62,7 @@ $(BANNER): $(BANNERSRC) $(TOOLS)/encode_texture.py
 
 $(BINFILE): $(ELFFILE)
 	@[ -d $(@D) ] || mkdir -p $(@D)
-	powerpc-eabi-objcopy -O binary $< $@
+	$(OBJCOPY) -O binary $< $@
 
 $(ELFFILE): $(RESOURCES_H_OUT) $(TEXTURES_H_OUT) $(OBJFILES) $(LINKSCRIPT) $(MELEELD) | clean_unused
 	@[ -d $(@D) ] || mkdir -p $(@D)
