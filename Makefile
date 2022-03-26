@@ -12,7 +12,7 @@ export OBJCOPY := powerpc-eabi-objcopy
 export DEFINES := -DGEKKO
 
 ifdef MODVERSION
-ifneq ($(shell echo "$(MODVERSION)" | grep -P '^a\d'),)
+ifneq ($(shell echo "$(MODVERSION)" | grep -P '^a($$|[\d-])'),)
 export NOPAL := 1
 endif
 ifneq ($(shell echo "$(MODVERSION)" | grep -P '(^|-)(beta|rc)($$|[\d-])'),)
