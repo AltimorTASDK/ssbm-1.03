@@ -6,7 +6,6 @@ OUTPUT_FORMAT(elf32-powerpc)
 OUTPUT_ARCH(powerpc:common);
 ENTRY(_start);
 
-PROVIDE(__BOOTSTRAP_BASE__ = 0x8045D930);
 PROVIDE(__LOAD_BASE__      = 0x81780000);
 PROVIDE(__MOD_BASE__       = 0x81781000);
 
@@ -30,7 +29,7 @@ SECTIONS
     .data   : {      *(.data   .data.*)    } >load AT>bootstrap
     PROVIDE(__BSS_START__ = .);
     .bss    : {      *(.bss    .bss.*)     } >load AT>bootstrap
-    PROVIDE(__BSS_SIZE__ = sizeof(.bss));
+    PROVIDE(__BSS_SIZE__ = SIZEOF(.bss));
     PROVIDE(__COPY_SIZE__ = . - __LOAD_BASE__);
 
     /DISCARD/ : { *(*) }

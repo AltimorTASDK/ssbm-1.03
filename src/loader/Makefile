@@ -30,12 +30,12 @@ ifeq ($(VERSION), PAL)
 GCIFILE    := $(BINDIR)/$(MODNAME)-loader-PAL.gci
 GCISRC     := $(GCIDIR)/ssbm-PAL.gci
 MGCMAIN    := $(GCIDIR)/1.03-PAL.mgc
-LINKSCRIPT := loader-pal.ld
+LINKSCRIPT := loader-PAL.ld
 else
 GCIFILE    := $(BINDIR)/$(MODNAME)-loader-NTSC.gci
 GCISRC     := $(GCIDIR)/ssbm-NTSC.gci
 MGCMAIN    := $(GCIDIR)/1.03-NTSC.mgc
-LINKSCRIPT := loader.ld
+LINKSCRIPT := loader-NTSC.ld
 endif
 
 ifeq ($(VERSION), 102)
