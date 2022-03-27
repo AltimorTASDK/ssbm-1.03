@@ -63,6 +63,12 @@ $(BANNER): $(BANNERSRC) $(TOOLS)/encode_texture.py
 $(BINFILE): $(ELFFILE)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(OBJCOPY) -O binary $< $@
+ifeq ($(VERSION), 102)
+# diffs are no longer valid
+	rm bin/mod-ntsc100.bin.diff
+	rm bin/mod-ntsc101.bin.diff
+	rm bin/mod-pal.bin.diff
+endif
 
 $(ELFFILE): $(RESOURCES_H_OUT) $(TEXTURES_H_OUT) $(OBJFILES) $(LINKSCRIPT) $(MELEELD) | clean_unused
 	@[ -d $(@D) ] || mkdir -p $(@D)
