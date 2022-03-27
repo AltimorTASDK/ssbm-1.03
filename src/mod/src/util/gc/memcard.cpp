@@ -191,10 +191,8 @@ static void card_io(s32 card, const char *filename, void *buffer, u32 size, bool
 
 	InitCardBuffers();
 
-#if defined(PAL) || defined(NTSC102)
 	// Use GALE01 saves for PAL/UP
 	__CARDSetDiskID("GALE01");
-#endif
 
 	const auto callback = read ? read_callback : write_callback;
 
