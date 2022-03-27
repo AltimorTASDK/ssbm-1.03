@@ -30,7 +30,7 @@ SECTIONS
     .data   : {      *(.data   .data.*)    } >load AT>bootstrap
     PROVIDE(__BSS_START__ = .);
     .bss    : {      *(.bss    .bss.*)     } >load AT>bootstrap
-    PROVIDE(__BSS_SIZE__ = . - __BSS_START__);
+    PROVIDE(__BSS_SIZE__ = sizeof(.bss));
     PROVIDE(__COPY_SIZE__ = . - __LOAD_BASE__);
 
     /DISCARD/ : { *(*) }

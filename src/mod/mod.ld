@@ -43,7 +43,7 @@ SECTIONS
 
     PROVIDE(__BSS_START__ = __VERSION_START__ + SIZEOF(.version));
     .bss __BSS_START__ : { *(.bss .bss.*) }
-    PROVIDE(__BSS_SIZE__ = . - __BSS_START__);
+    PROVIDE(__BSS_SIZE__ = SIZEOF(.bss));
 
     /DISCARD/ : { *(*) }
 }
