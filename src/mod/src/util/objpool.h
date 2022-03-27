@@ -11,10 +11,10 @@ template<typename T, size_t N>
 class objpool {
 	using index_type = smallest_int_t<0, N>;
 
-	static constexpr auto NO_INDEX = 0;
+	static constexpr auto NO_INDEX = N;
 
 	static constexpr auto index_list = for_range<N>([]<size_t ...I> {
-		return std::array { (index_type)(I + 1)... };
+		return std::array { (index_type)I... };
 	});
 
 	union {
@@ -46,7 +46,7 @@ public:
 			PANIC("Failed to alloc from objpool");
 
 		free_list[free_index++] = NO_INDEX;
-		return &pool[index - 1];
+		return &pool[index];
 	}
 
 	T *alloc(auto &&...params)
@@ -60,7 +60,7 @@ public:
 			PANIC("Failed to free to objpool");
 
 		const auto index = object - pool;
-		free_list[--free_index] = (index_type)(index + 1);
+		free_list[--free_index] = (index_type)index;
 		object->~T();
 	}
 
@@ -68,10 +68,11 @@ public:
 	{
 		auto indices = index_list;
 
+		// Remove any indices that are in the free list
 		for (size_t i = 0; i < N; i++) {
 			const auto index = free_list[i];
 			if (index != NO_INDEX)
-				indices[index - 1] = NO_INDEX;
+				indices[index] = NO_INDEX;
 		}
 
 		for (size_t i = 0; i < N; i++) {
