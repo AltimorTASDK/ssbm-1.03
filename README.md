@@ -8,14 +8,15 @@ save file using davsalvato's Melee GCI Compiler, and the mod itself, located in
 
 The loader is executed upon entering *Name Entry* using the standard nametag
 buffer overflow exploit. The loader then copies itself out of the nametag
-region and reads the `103Code` save containing the mod from the memory card into
-main memory. `103Code` contains a full copy of 1.03 for Melee NTSC 1.02 and
-diffs against this copy for other game versions, which the loader will apply if
-necessary. The loader then executes the mod entry point and makes Melee load an
-alternate save file that won't trigger the nametag overflow.
+region and reads the `103Code` save (output as `ssbm-1.03-$(MODVERSION).gci`)
+containing the mod from the memory card into main memory. `103Code` contains a
+full copy of 1.03 for Melee NTSC 1.02 and diffs against this copy for other game
+versions, which the loader will apply if necessary. The loader then executes the
+mod entry point and makes Melee load an alternate save file that won't trigger
+the nametag overflow.
 
-1.03 uses this two-stage loading process because its main binary is
-unable to fit in a Melee save file.
+1.03 uses this two-stage loading process because its main binary is too large to
+fit in a Melee save file.
 
 ## Build environment
 
