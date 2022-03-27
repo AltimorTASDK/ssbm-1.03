@@ -41,7 +41,10 @@ SECTIONS
 
     PROVIDE(__VERSION_START__ = ALIGN(4));
 
-    PROVIDE(__BSS_START__ = __VERSION_START__ + SIZEOF(.version));
+    . = __VERSION_START__ + SIZEOF(.version);
+    . = ALIGN(4);
+
+    PROVIDE(__BSS_START__ = .);
     .bss __BSS_START__ : { *(.bss .bss.*) }
     PROVIDE(__BSS_SIZE__ = SIZEOF(.bss));
 
