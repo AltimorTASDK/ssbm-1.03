@@ -27,9 +27,9 @@ SECTIONS
     .rodata : {      *(.rodata .rodata.*)  } >load AT>bootstrap
     .ctors  : { KEEP(*(.ctors  .ctors.*))  } >load AT>bootstrap
     .data   : {      *(.data   .data.*)    } >load AT>bootstrap
-    PROVIDE(__BSS_START__ = .);
     .bss    : {      *(.bss    .bss.*)     } >load AT>bootstrap
-    PROVIDE(__BSS_SIZE__ = SIZEOF(.bss));
+    PROVIDE(__BSS_START__ = ADDR(.bss));
+    PROVIDE(__BSS_SIZE__  = SIZEOF(.bss));
     PROVIDE(__COPY_SIZE__ = . - __LOAD_BASE__);
 
     /DISCARD/ : { *(*) }
