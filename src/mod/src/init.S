@@ -120,7 +120,7 @@ write_branch:
         mtlr    r0
         blr
 
-.section .version.data
+.section .hooks
 
 hooks_start:
 .macro add_hook name
