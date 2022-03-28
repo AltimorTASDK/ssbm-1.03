@@ -2,11 +2,13 @@
  * Produces a code blob to be compiled into a GCI
  */
 
+INCLUDE ../common.ld
+
 OUTPUT_FORMAT(elf32-powerpc)
 OUTPUT_ARCH(powerpc:common);
 ENTRY(_start);
 
-PROVIDE(__LOAD_BASE__ = 0x81781000);
+__LOAD_BASE__ = __MOD_BASE__;
 __MAX_SIZE__  = 0x817EC000 - __LOAD_BASE__;
 
 MEMORY
