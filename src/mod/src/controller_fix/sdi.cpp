@@ -6,6 +6,18 @@
 #include "util/melee/pad.h"
 #include <gctypes.h>
 
+// Custom AS data
+struct sdi_data {
+	u32 hitlag_frame;
+	// Position before initial SDI
+	vec3 sdi_extension_start;
+	// Allow SDI on frame 2 of hitlag if below SDI magnitude on f1, even if
+	// outside the deadzone on f1
+	bool allow_f2_sdi;
+	// Allow extending SDI magnitude on the next frame
+	bool allow_sdi_extension;
+};
+
 static bool check_sdi_magnitude(const vec2 &stick)
 {
 	// Check .7 magnitude
@@ -23,14 +35,17 @@ extern "C" void hook_Player_EnterDamageState(HSD_GObj *gobj, u32 state, f32 dire
 	auto *player = gobj->get<Player>();
 
 	// Only allow f2 SDI if below .7 magnitude
-	player->as_data.Damage.allow_f2_sdi = !check_sdi_magnitude(player->input.stick);
-	player->as_data.Damage.hitlag_frame = 1;
-	player->as_data.Damage.allow_sdi_extension = false;
+	auto *as_data = player->custom_as_data<sdi_data>();
+	as_data->allow_f2_sdi = !check_sdi_magnitude(player->input.stick);
+	as_data->hitlag_frame = 1;
+	as_data->allow_sdi_extension = false;
 }
 
 static bool check_sdi_window(const Player *player)
 {
-	if (player->as_data.Damage.hitlag_frame == 2 && player->as_data.Damage.allow_f2_sdi) {
+	auto *as_data = player->custom_as_data<sdi_data>();
+
+	if (as_data->hitlag_frame == 2 && as_data->allow_f2_sdi) {
 		// Allow a SDI on the 2nd frame of hitlag after leaving the deadzone on f1
 		const auto x_frames = player->input.true_stick_x_hold_time;
 		const auto y_frames = player->input.true_stick_y_hold_time;
@@ -78,7 +93,7 @@ static bool check_sdi(const Player *player, bool *is_extension)
 		return true;
 	}
 
-	if (!player->as_data.Damage.allow_sdi_extension)
+	if (!player->custom_as_data<sdi_data>()->allow_sdi_extension)
 		return false;
 
 	// Check for a valid extension input
@@ -130,7 +145,7 @@ extern "C" void hook_Player_SDICallback(HSD_GObj *gobj)
 		return orig_Player_SDICallback(gobj);
 
 	auto *player = gobj->get<Player>();
-	auto *as_data = &player->as_data.Damage;
+	auto *as_data = player->custom_as_data<sdi_data>();
 	const auto &input = player->input;
 
 	if (!player->in_hitlag)

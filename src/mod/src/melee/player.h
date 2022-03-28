@@ -325,8 +325,31 @@ struct Player {
 	u8 flags10;
 	u8 flags11;
 	u8 flags12;
+#ifdef PAL
 	u8 flags13;
+	struct {
+		u8 can_walljump : 1;
+		u8 flags14_40 : 1;
+		u8 flags14_20 : 1;
+		u8 flags14_10 : 1;
+		u8 flags14_08 : 1;
+		u8 flags14_04 : 1;
+		u8 flags14_02 : 1;
+		u8 flags14_01 : 1;
+	};
+#else
+	struct {
+		u8 flags13_80 : 1;
+		u8 flags13_40 : 1;
+		u8 flags13_20 : 1;
+		u8 flags13_10 : 1;
+		u8 flags13_08 : 1;
+		u8 flags13_04 : 1;
+		u8 flags13_02 : 1;
+		u8 can_walljump : 1;
+	};
 	u8 flags14;
+#endif
 	u8 flags15;
 	u8 flags16;
 	u8 flags17;
@@ -354,21 +377,22 @@ struct Player {
 			u32 buffered_buttons;
 		} Turn;
 		struct {
-			char pad000[0x90];
-			// New fields
-			u32 hitlag_frame;
-			// Position before initial SDI
-			vec3 sdi_extension_start;
-			// Allow SDI on frame 2 of hitlag if below SDI magnitude on f1, even if
-			// outside the deadzone on f1
-			bool allow_f2_sdi;
-			// Allow extending SDI magnitude on the next frame
-			bool allow_sdi_extension;
-		} Damage;
-		struct {
 			s32 respawn_timer;
 		} Dead;
 	} as_data;
+
+	// Place new data at end of AS data space
+	template<typename T>
+	T *custom_as_data()
+	{
+		return (T*)&as_data.raw[sizeof(as_data.raw) - sizeof(T)];
+	}
+
+	template<typename T>
+	const T *custom_as_data() const
+	{
+		return (T*)&as_data.raw[sizeof(as_data.raw) - sizeof(T)];
+	}
 };
 
 struct PlayerBlockStats {
