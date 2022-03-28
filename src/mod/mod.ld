@@ -21,7 +21,9 @@ SECTIONS
     .init   : { EXCLUDE_FILE(*/src/version/* */src/compat/*) *(  .init   .init.*) }
     .text   : { EXCLUDE_FILE(*/src/version/* */src/compat/*) *(  .text   .text.*) }
     .rodata : { EXCLUDE_FILE(*/src/version/* */src/compat/*) *(.rodata .rodata.*) }
-    .data   : { EXCLUDE_FILE(*/src/version/* */src/compat/*) *(  .data   .data.*) *(.hooks) }
+    .data   : { EXCLUDE_FILE(*/src/version/* */src/compat/*) *(  .data   .data.*)
+                . = ALIGN(4);
+                KEEP(*(.hooks)) }
     .ctors  : { KEEP(*(.ctors .ctors.*)) }
 
     .version.text : {
