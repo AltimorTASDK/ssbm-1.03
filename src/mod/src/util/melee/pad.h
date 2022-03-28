@@ -52,6 +52,7 @@ inline const PADStatus &get_character_input(const Player *player)
 
 inline bool check_ucf_xsmash(const Player *player)
 {
+	// Designed by tauKhan
 	const auto &prev_input = get_character_input<-2>(player);
 	const auto &current_input = get_character_input<0>(player);
 	const auto delta = current_input.stick.x - prev_input.stick.x;
