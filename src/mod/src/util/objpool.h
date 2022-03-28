@@ -9,7 +9,7 @@
 
 template<typename T, size_t N>
 class objpool {
-	using index_type = smallest_int_t<0, N>;
+	using index_type = smallest_int_t<0, N - 1>;
 
 	static constexpr auto NO_INDEX = N;
 
