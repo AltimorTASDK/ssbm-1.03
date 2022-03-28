@@ -212,6 +212,8 @@ add_hook Interrupt_DK_ThrowFDecide
 add_hook Interrupt_TurnOrDash
 add_hook Player_EnterDamageState
 add_hook Player_SDICallback
+add_hook AS_029_Fall
+add_hook Interrupt_Walljump
 # Tap jump toggle
 .set TapJumpCheck_Jump,           Interrupt_Jump+0x40
 .set TapJumpCheck_JumpAerial,     Interrupt_JumpAerial+0x44

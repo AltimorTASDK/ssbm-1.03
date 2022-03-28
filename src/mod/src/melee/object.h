@@ -6,6 +6,11 @@
 
 constexpr auto NO_LINE = -1;
 
+enum Collide {
+	Collide_LeftWallHug  = 0x20,
+	Collide_RightWallHug = 0x800
+};
+
 enum ECBFlag {
 	ECBFlag_FreezeBottom = 0x10
 };

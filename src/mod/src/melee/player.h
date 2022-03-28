@@ -270,7 +270,10 @@ struct Player {
 	PopoData popo_data_buffer[30];
 	PopoData *popo_data_write;
 	PopoData *popo_data_read;
-	char pad1ED4[0x2218 - 0x1ED4];
+	char pad1ED4[0x210C - 0x1ED4];
+	u8 walljump_eligible_frames;
+	f32 walljump_direction;
+	char pad2114[0x2218 - 0x2114];
 	u8 flags1;
 	u8 flags2;
 	struct {
