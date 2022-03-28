@@ -36,10 +36,10 @@ static bool check_doraki_input(const Player *player)
 {
 	// Must be pressing away from wall
 	if (player->input.stick.x * -player->walljump_direction < plco->walljump_stick_threshold)
-		return true;
+		return false;
 
 	if (player->input.stick_x_hold_time >= 2)
-		return true;
+		return false;
 
 	// Hardware value comparison
 	return check_ucf_xsmash(player);
