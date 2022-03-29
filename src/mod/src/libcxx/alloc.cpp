@@ -93,7 +93,7 @@ void operator delete[](void *ptr, size_t sz)
 	free(ptr);
 }
 
-void fix_heap(OSHeap *heap)
+static void fix_heap(OSHeap *heap)
 {
 	// Resize the heap to avoid overwriting mod code
 	auto *chunk = heap->free_list;
