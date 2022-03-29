@@ -90,8 +90,10 @@ extern "C" bool hook_Interrupt_Walljump(HSD_GObj *gobj)
 		// Store doraki eligibility for f2
 		as_data->ledgefall = false;
 		as_data->can_doraki = player->walljump_eligible_frames < 0xFE;
-		as_data->doraki_position = player->position;
-		as_data->doraki_ecb_flags = player->phys.ecb_flags;
+		if (as_data->can_doraki) {
+			as_data->doraki_position = player->position;
+			as_data->doraki_ecb_flags = player->phys.ecb_flags;
+		}
 	}
 
 	return false;
