@@ -45,7 +45,7 @@ static const char *read_file;
 extern "C" char __BSS_START__;
 extern "C" char __BSS_SIZE__;
 
-static void panic(const char *fmt, auto &&...args)
+[[gnu::noreturn]] static void panic(const char *fmt, auto &&...args)
 {
 	OSReport(fmt, args...);
 
@@ -58,14 +58,14 @@ static void panic(const char *fmt, auto &&...args)
 	OSContext context;
 	OSSaveContext(&context);
 	OSDefaultErrorHandler(&context);
+
+	while (true);
 }
 
 static void card_callback(s32 chan, s32 result)
 {
-	if (result < 0) {
+	if (result < 0)
 		panic("Card read failed (%d)\n", result);
-		return;
-	}
 
 	// Wake up the main thread
 	wait.wake();
@@ -73,20 +73,14 @@ static void card_callback(s32 chan, s32 result)
 
 static void read_callback(s32 chan, s32 result)
 {
-	if (result < 0) {
+	if (result < 0)
 		panic("Card mount failed (%d)\n", result);
-		return;
-	}
 
-	if (s32 error = CARD_Open(chan, read_file, &file); error < 0) {
+	if (s32 error = CARD_Open(chan, read_file, &file); error < 0)
 		panic("CARD_Open failed (%d)\n", error);
-		return;
-	}
 
-	if (s32 error = CARD_GetStatus(chan, file.filenum, &stats); error < 0) {
+	if (s32 error = CARD_GetStatus(chan, file.filenum, &stats); error < 0)
 		panic("CARD_GetStatus failed (%d)\n", error);
-		return;
-	}
 
 	if (read_dest == nullptr) {
 		// Wake up the main thread
@@ -94,10 +88,8 @@ static void read_callback(s32 chan, s32 result)
 		return;
 	}
 
-	if (s32 error = CARD_ReadAsync(&file, read_dest, stats.len, 0, card_callback); error < 0) {
+	if (s32 error = CARD_ReadAsync(&file, read_dest, stats.len, 0, card_callback); error < 0)
 		panic("CARD_ReadAsync failed (%d)\n", error);
-		return;
-	}
 }
 
 static void patch_crash_screen()
@@ -118,10 +110,8 @@ static u32 card_read(const char *file, void *dest)
 
 	wait.reset();
 
-	if (s32 error = CARD_MountAsync(0, CardWorkArea, nullptr, read_callback); error < 0) {
+	if (s32 error = CARD_MountAsync(0, CardWorkArea, nullptr, read_callback); error < 0)
 		panic("CARD_MountAsync failed (%d)\n", error);
-		return 0;
-	}
 
 	// Wait for read to complete
 	wait.sleep();
@@ -151,8 +141,21 @@ const file_entry *get_file(const void *data, int index)
 	constexpr auto title_size = 0x40;
 	const auto *ptr = (const char*)data + title_size;
 
-	for (auto i = 0; i < index; i++)
-		ptr += sizeof(file_entry) + ((const file_entry*)ptr)->size;
+	for (auto i = 0; i < index; i++) {
+		const auto file_size = ((const file_entry*)ptr)->size;
+
+		if (file_size == 0) {
+#if defined(NTSC100)
+			panic("This build of 1.03 does not support NTSC 1.00.\n");
+#elif defined(NTSC101)
+			panic("This build of 1.03 does not support NTSC 1.01.\n");
+#elif defined(PAL)
+			panic("This build of 1.03 does not support PAL.\n");
+#endif
+		}
+
+		ptr += sizeof(file_entry) + file_size;
+	}
 
 	return (const file_entry*)ptr;
 }

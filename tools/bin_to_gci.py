@@ -87,11 +87,15 @@ def main():
     for path in in_files:
         try:
             with open(path, "rb") as f:
+                # Write size of each file followed by contents
                 in_data = f.read()
                 data += struct.pack(">I", len(in_data)) + in_data
         except IOError:
             print(f"Warning: Unable to open input file {path}. Skipping.",
                   file=sys.stderr)
+
+    # Mark EOF with 0 size
+    data += struct.pack(">I", 0)
 
     if len(banner) != 0:
         banner_offset = len(data)
