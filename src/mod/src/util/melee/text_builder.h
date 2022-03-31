@@ -187,8 +187,12 @@ constexpr auto text()
 template<auto c>
 constexpr auto char_width()
 {
-	constexpr auto index = character_pal<c>();
-	return 32 - kerning_offsets[index].left - kerning_offsets[index].right + 2;
+	if constexpr (c == ' ') {
+		return 16;
+	} else {
+		constexpr auto index = character_pal<c>() - ' ' - 1;
+		return 32 - kerning_offsets[index].left - kerning_offsets[index].right + 2;
+	}
 }
 
 template<string_literal str>
