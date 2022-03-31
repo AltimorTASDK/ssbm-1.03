@@ -56,9 +56,9 @@ constexpr auto bottom_text = text_builder::build(
 	text_builder::scale<179, 179>(),
 	text_builder::offset<0, -10>(),
 	text_builder::br(),
-	text_builder::fade_interval<0, 0>(),
+	text_builder::type_speed<0, 0>(),
 	text_builder::fit(),
-	text_builder::ascii<"Up/Down: Scroll">(),
+	text_builder::text<"Up/Down: Scroll">(),
 	text_builder::end_fit(),
 	text_builder::reset_scale(),
 	text_builder::end_color());

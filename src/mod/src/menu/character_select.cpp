@@ -126,7 +126,7 @@ extern "C" void CSS_UpdatePortrait(u8 port);
 constexpr auto TOGGLE_HOLD_TIME = 60;
 
 constexpr auto crew_text = text_builder::build(
-	text_builder::ascii<"An epic crew battle!">());
+	text_builder::text<"An epic crew battle!">());
 
 static const auto patches = patch_list {
 	// Use "Survival!" voice clip for crew
@@ -554,8 +554,8 @@ static void create_watermark()
 		text_builder::scale<220, 220>(),
 		text_builder::offset<0, -10>(),
 		text_builder::br(),
-		text_builder::fade_interval<0, 0>(),
-		text_builder::ascii<MODNAME>(),
+		text_builder::type_speed<0, 0>(),
+		text_builder::text<MODNAME>(),
 		text_builder::reset_scale(),
 		text_builder::end_color());
 

@@ -54,7 +54,7 @@ static constexpr auto item_text()
 {
 	return array_cat(
 		text_builder::scale<scale, 138>(),
-		text_builder::ascii<str>(),
+		text_builder::text<str>(),
 		text_builder::reset_scale(),
 		text_builder::br());
 }

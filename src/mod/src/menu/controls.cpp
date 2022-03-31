@@ -56,7 +56,7 @@ static consteval auto make_text()
 		text_builder::kern(),
 		text_builder::scale<scale_x, scale_y>(),
 		text_builder::fit(),
-		text_builder::ascii<str>(),
+		text_builder::text<str>(),
 		text_builder::end_fit(),
 		text_builder::reset_scale());
 }
@@ -81,7 +81,7 @@ static consteval auto make_description_text()
 		text_builder::center(),
 		text_builder::kern(),
 		text_builder::fit(),
-		text_builder::ascii<str>(),
+		text_builder::text<str>(),
 		text_builder::end_fit(),
 		text_builder::reset_scale());
 }

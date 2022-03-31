@@ -7,13 +7,19 @@
 namespace text_builder {
 
 template<auto c>
-constexpr auto ascii_to_melee()
+constexpr auto character_pal()
+{
+	if constexpr (c == u'é')
+		return '\x90';
+	else
+		return (char)c;
+}
+
+template<auto c>
+constexpr auto character()
 {
 #ifdef PAL
-	if constexpr (c == u'é')
-		return std::array { '\x90' };
-	else
-		return std::array { (char)c };
+	return std::array { character_pal<c>() };
 #else
 	if constexpr (c >= '0' && c <= '9')
 		return std::array { '\x20', (char)(c - '0') };
@@ -49,10 +55,10 @@ constexpr auto ascii_to_melee()
 }
 
 template<string_literal str>
-constexpr auto ascii()
+constexpr auto text()
 {
 	return for_range<decltype(str)::size - 1>([]<size_t ...I>() {
-		return array_cat(ascii_to_melee<str.value[I]>()...);
+		return array_cat(character<str.value[I]>()...);
 	});
 };
 
