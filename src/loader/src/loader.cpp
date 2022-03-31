@@ -141,23 +141,24 @@ const file_entry *get_file(const void *data, int index)
 	constexpr auto title_size = 0x40;
 	const auto *ptr = (const char*)data + title_size;
 
-	for (auto i = 0; i < index; i++) {
-		const auto file_size = ((const file_entry*)ptr)->size;
+	for (auto i = 0; i < index; i++)
+		ptr += sizeof(file_entry) + ((const file_entry*)ptr)->size;
 
-		if (file_size == 0) {
-#if defined(NTSC100)
-			panic("This build of 1.03 does not support NTSC 1.00.\n");
+	const auto *entry = (file_entry*)ptr;
+
+	if (entry->size == 0) {
+#if defined(NTSC102)
+		panic("This build of 1.03 does not support NTSC 1.02. lmao\n");
 #elif defined(NTSC101)
-			panic("This build of 1.03 does not support NTSC 1.01.\n");
+		panic("This build of 1.03 does not support NTSC 1.01.\n");
+#elif defined(NTSC100)
+		panic("This build of 1.03 does not support NTSC 1.00.\n");
 #elif defined(PAL)
-			panic("This build of 1.03 does not support PAL.\n");
+		panic("This build of 1.03 does not support PAL.\n");
 #endif
-		}
-
-		ptr += sizeof(file_entry) + file_size;
 	}
 
-	return (const file_entry*)ptr;
+	return entry;
 }
 
 extern "C" [[gnu::section(".loader")]] void load_mod()
