@@ -3,9 +3,11 @@
 #include "melee/text.h"
 #include "util/meta.h"
 #include <array>
+#include <tuple>
 
 namespace text_builder {
 
+// Taken from PAL
 constexpr TextKerning kerning_offsets[] = {
 	{13,12}, { 9, 8}, { 4, 3}, { 4, 5}, { 1, 1}, { 4, 1}, {12,13}, { 1, 1}, { 1, 1}, { 7, 6},
 	{ 5, 5}, {10,11}, { 6, 6}, {10,11}, { 3, 2}, { 9, 8}, { 9,12}, { 9, 8}, { 8, 8}, { 9, 8},
@@ -23,62 +25,6 @@ constexpr TextKerning kerning_offsets[] = {
 	{ 4, 3}, { 8, 6}, { 9, 9}, { 4, 3}, { 5, 3}, { 4, 3}, { 7, 6}, { 7, 6}, { 9, 9}, { 7, 6},
 	{ 8, 5}, { 6, 6}, { 4, 3}, { 7, 6}, { 1, 1}, { 1, 0}, { 3, 2}, { 2, 2}, { 4, 4}, { 7, 6},
 	{ 6, 5}, {13,12}, { 6, 8}, { 7, 6}, { 7, 6}, { 1, 1}, { 0, 1}, { 0, 1}, { 1, 2}, { 2, 1},
-};
-
-template<auto c>
-constexpr auto character_pal()
-{
-	if constexpr (c == u'é')
-		return '\x90';
-	else
-		return (char)c;
-}
-
-template<auto c>
-constexpr auto character()
-{
-#ifdef PAL
-	return std::array { character_pal<c>() };
-#else
-	if constexpr (c >= '0' && c <= '9')
-		return std::array { '\x20', (char)(c - '0') };
-	else if constexpr (c >= 'A' && c <= 'Z')
-		return std::array { '\x20', (char)(c - 'A' + 0x0A) };
-	else if constexpr (c >= 'a' && c <= 'z')
-		return std::array { '\x20', (char)(c - 'a' + 0x24) };
-	else if constexpr (c == ',')
-		return std::array { '\x20', '\xE6' };
-	else if constexpr (c == '.')
-		return std::array { '\x20', '\xE7' };
-	else if constexpr (c == ':')
-		return std::array { '\x20', '\xE9' };
-	else if constexpr (c == '?')
-		return std::array { '\x20', '\xEB' };
-	else if constexpr (c == '!')
-		return std::array { '\x20', '\xEC' };
-	else if constexpr (c == '/')
-		return std::array { '\x20', '\xF0' };
-	else if constexpr (c == '\'')
-		return std::array { '\x20', '\xF3' };
-	else if constexpr (c == '(')
-		return std::array { '\x20', '\xF5' };
-	else if constexpr (c == ')')
-		return std::array { '\x20', '\xF6' };
-	else if constexpr (c == '-')
-		return std::array { '\x20', '\xFC' };
-	else if constexpr (c == u'é')
-		return std::array { '\x40', '\x00' };
-	else if constexpr (c == ' ')
-		return std::array { (char)text_opcode::space };
-#endif
-}
-
-template<string_literal str>
-constexpr auto text()
-{
-	return for_range<decltype(str)::size - 1>([]<size_t ...I>() {
-		return array_cat(character<str.value[I]>()...);
-	});
 };
 
 template<u8 r, u8 g, u8 b>
@@ -180,6 +126,122 @@ constexpr auto type_speed()
 constexpr auto br()
 {
 	return std::array { (char)text_opcode::line_break };
+};
+
+template<auto c>
+constexpr auto character_pal()
+{
+	if constexpr (c == u'é')
+		return '\x90';
+	else
+		return (char)c;
+}
+
+template<auto c>
+constexpr auto character()
+{
+#ifdef PAL
+	return std::array { character_pal<c>() };
+#else
+	if constexpr (c >= '0' && c <= '9')
+		return std::array { '\x20', (char)(c - '0') };
+	else if constexpr (c >= 'A' && c <= 'Z')
+		return std::array { '\x20', (char)(c - 'A' + 0x0A) };
+	else if constexpr (c >= 'a' && c <= 'z')
+		return std::array { '\x20', (char)(c - 'a' + 0x24) };
+	else if constexpr (c == ',')
+		return std::array { '\x20', '\xE6' };
+	else if constexpr (c == '.')
+		return std::array { '\x20', '\xE7' };
+	else if constexpr (c == ':')
+		return std::array { '\x20', '\xE9' };
+	else if constexpr (c == '?')
+		return std::array { '\x20', '\xEB' };
+	else if constexpr (c == '!')
+		return std::array { '\x20', '\xEC' };
+	else if constexpr (c == '/')
+		return std::array { '\x20', '\xF0' };
+	else if constexpr (c == '\'')
+		return std::array { '\x20', '\xF3' };
+	else if constexpr (c == '(')
+		return std::array { '\x20', '\xF5' };
+	else if constexpr (c == ')')
+		return std::array { '\x20', '\xF6' };
+	else if constexpr (c == '-')
+		return std::array { '\x20', '\xFC' };
+	else if constexpr (c == u'é')
+		return std::array { '\x40', '\x00' };
+	else if constexpr (c == ' ')
+		return std::array { (char)text_opcode::space };
+#endif
+}
+
+template<string_literal str>
+constexpr auto text()
+{
+	return for_range<decltype(str)::size - 1>([]<size_t ...I>() {
+		return array_cat(character<str.value[I]>()...);
+	});
+};
+
+template<auto c>
+constexpr auto char_width()
+{
+	constexpr auto index = character_pal<c>();
+	return 32 - kerning_offsets[index].left - kerning_offsets[index].right + 2;
+}
+
+template<string_literal str>
+constexpr auto text_width()
+{
+	return for_range<decltype(str)::size - 1>([]<size_t ...I>() {
+		return (char_width<str.value[I]>() + ...);
+	});
+};
+
+template<int line_width, int check_size, string_literal str>
+constexpr auto split_text_impl()
+{
+	constexpr auto tail = str.value[check_size - 1];
+	constexpr auto next = str.value[check_size];
+	constexpr auto sub = str.template substring<0, check_size>();
+	constexpr auto str_size = decltype(str)::size - 1;
+
+	// Only break before whitespace or after hyphen
+	constexpr auto can_break = next != '\0' && next != ' ' && tail != '-';
+
+	if constexpr (can_break && text_width<sub>() <= line_width) {
+		if constexpr (check_size == str_size) {
+			// Consumed whole string
+			return std::make_tuple(sub);
+		} else {
+			constexpr auto remainder = str.template substring<check_size, str_size>();
+			return tuple_cat(std::make_tuple(sub),
+			                 split_text_impl<line_width, decltype(remainder)::size - 1,
+			                                 remainder>());
+		}
+	} else if constexpr (check_size == 1) {
+		// It won't fit onii-chan, so just jam it in
+		return std::make_tuple(str);
+	} else {
+		// Try reducing the line size
+		return split_text_impl<line_width, check_size - 1, str>();
+	}
+};
+
+// Break str into a tuple of lines with a display width <= line_width
+template<int line_width, string_literal str>
+constexpr auto split_text()
+{
+	return split_text_impl<line_width, decltype(str)::size - 1, str>();
+};
+
+// Join a tuple of lines with line break opcodes
+constexpr auto join_lines(auto &&tuple)
+{
+	return for_range<sizeof_tuple<decltype(tuple)>>([&]<size_t ...I>() {
+		return array_cat(array_cat(text<std::get<I>(tuple)>(), br())...);
+	});
 };
 
 constexpr auto build(auto &&...components)

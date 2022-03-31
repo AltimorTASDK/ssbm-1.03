@@ -284,6 +284,25 @@ struct string_literal {
 		}
 	}
 
+	constexpr auto as_tuple() const
+	{
+		return for_range<0, size - 1>([&]<size_t ...I>() {
+			return std::make_tuple(value[I]...);
+		});
+	}
+
+	template<size_t start, size_t end>
+	constexpr auto substring() const
+	{
+		constexpr auto substring = slice_tuple<start, end>(as_tuple());
+		constexpr auto substring_size = sizeof_tuple<decltype(substring)>;
+		return for_range<substring_size>([&]<size_t ...I>() {
+			return string_literal(c_array_t<T, substring_size> {
+				std::get<I>(substring)..., T { 0 }
+			});
+		});
+	}
+
 	T value[size];
 };
 
