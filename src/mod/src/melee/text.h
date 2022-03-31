@@ -12,7 +12,7 @@ enum class text_opcode {
 	line_break        = 0x03,
 	zero_width        = 0x04,
 	pause             = 0x05,
-	fade_interval     = 0x06,
+	type_speed        = 0x06,
 	offset            = 0x07,
 	set_pointer_sub   = 0x08,
 	set_pointer       = 0x09,
