@@ -77,10 +77,27 @@ struct DevText {
 	DevText *next;
 };
 
+struct TextKerning {
+	u8 left;
+	u8 right;
+};
+
+struct TextGlyphTexture {
+	u8 data[512];
+};
+
+struct SIS {
+#ifndef PAL
+	TextKerning *kerning;
+	TextGlyphTexture *textures;
+#endif
+	char *strings[0];
+};
+
 extern "C" {
 
 extern Text *NameTagText;
-extern char **SISData[5];
+extern SIS *SISData[5];
 
 void LoadSIS(u32 id, const char *name, const char *symbol);
 
