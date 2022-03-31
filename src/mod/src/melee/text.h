@@ -14,8 +14,8 @@ enum class text_opcode {
 	pause             = 0x05,
 	fade_interval     = 0x06,
 	offset            = 0x07,
-	unknown_08        = 0x08,
-	unknown_09        = 0x09,
+	set_pointer_sub   = 0x08,
+	set_pointer       = 0x09,
 	spacing           = 0x0A,
 	reset_spacing     = 0x0B,
 	color             = 0x0C,
@@ -32,9 +32,7 @@ enum class text_opcode {
 	no_kerning        = 0x17,
 	fitting           = 0x18,
 	no_fitting        = 0x19,
-	space             = 0x1A,
-	common_character  = 0x20,
-	special_character = 0x40
+	space             = 0x1A
 };
 
 struct Text {
