@@ -72,6 +72,11 @@ constexpr auto kern()
 	return std::array { (char)text_opcode::kerning };
 };
 
+constexpr auto end_kern()
+{
+	return std::array { (char)text_opcode::no_kerning };
+};
+
 constexpr auto left()
 {
 	return std::array { (char)text_opcode::left_aligned };
@@ -140,9 +145,9 @@ constexpr auto pause()
 };
 
 template<u16 per_char, u16 per_line>
-constexpr auto fade_interval()
+constexpr auto type_speed()
 {
-	return std::array { (char)text_opcode::fade_interval,
+	return std::array { (char)text_opcode::type_speed,
 			    (char)(per_char >> 8), (char)(per_char & 0xFF),
 			    (char)(per_line >> 8), (char)(per_line & 0xFF) };
 };
