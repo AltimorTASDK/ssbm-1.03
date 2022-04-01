@@ -105,7 +105,7 @@ def encode_rgb5a3(out_file, get_pixel, width, height):
                 value = (alpha << 12) | (red << 8) | (green << 4) | blue
 
             out_file.write(bytes([value >> 8, value & 0xFF]))
-    
+
 def encode_rgba8(out_file, get_pixel, width, height):
     """
     Write in 4x4 pixel blocks of format:
@@ -133,16 +133,16 @@ def encode_png(in_path, out_path, fmt):
     with open(in_path, "rb") as in_file:
         reader = png.Reader(file=open(in_path, "rb"))
         width, height, [*data], info = reader.asRGBA8()
-        
+
     with open(out_path, "wb") as out_file:
         def get_pixel(x, y, channel):
             if x >= width or y >= height:
                 return 0
             return data[y][x * 4 + channel]
-            
+
         # Write header
         out_file.write(struct.pack(">HHBx", width, height, fmt))
-        
+
         { # Call corresponding encoding function
             GX_TF_I4:     encode_i4,
             GX_TF_IA4:    encode_ia4,
@@ -150,20 +150,19 @@ def encode_png(in_path, out_path, fmt):
             GX_TF_RGB5A3: encode_rgb5a3,
             GX_TF_RGBA8:  encode_rgba8
         }[fmt](out_file, get_pixel, width, height)
-        
+
 
 def main():
     if len(sys.argv) < 3:
         print("Usage: encode_texture.py <in> <out>", file=sys.stderr)
         sys.exit(1)
 
-    in_path = sys.argv[1]
+    in_path  = sys.argv[1]
     out_path = sys.argv[2]
-    out_dir = os.path.dirname(os.path.abspath(out_path))
+    out_dir  = os.path.dirname(os.path.abspath(out_path))
 
-    if not os.path.exists(out_dir):
-        os.makedirs(out_dir)
-        
+    os.makedirs(out_dir, exist_ok=True)
+
     # Get format name e.g. texture.rgba8.png, default RGBA8
     name = os.path.basename(in_path)
     components = name.split(".")
