@@ -19,14 +19,14 @@
 #include <gctypes.h>
 
 #ifdef NOPAL
-#include "resources/screens/a/manual_p1.tex.h"
-#include "resources/screens/a/manual_p2.tex.h"
+#include "resources/manual/a/manual_p1.tex.h"
+#include "resources/manual/a/manual_p2.tex.h"
 #else
-#include "resources/screens/b/manual_p1.tex.h"
-#include "resources/screens/b/manual_p2.tex.h"
+#include "resources/manual/b/manual_p1.tex.h"
+#include "resources/manual/b/manual_p2.tex.h"
 #endif
-#include "resources/screens/manual_border.tex.h"
-#include "resources/screens/scrollbar.tex.h"
+#include "resources/manual/manual_border.tex.h"
+#include "resources/manual/scrollbar.tex.h"
 
 constexpr auto scissor_w = 516;
 constexpr auto scissor_h = 288;
