@@ -26,7 +26,7 @@
 #else
 #include "resources/portals/b/manual_preview.tex.h"
 #endif
-#include "resources/screens/manual_header.tex.h"
+#include "resources/manual/manual_header.tex.h"
 
 enum VsMenuPortalID {
 	VsMenu_Tournament  = 1,
