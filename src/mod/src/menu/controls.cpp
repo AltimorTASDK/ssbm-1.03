@@ -141,7 +141,6 @@ constexpr auto value_counts = for_range<value_text_data.size()>([]<size_t ...I> 
 static HSD_Archive *GmTou1p;
 static HSD_Archive *MnExtAll;
 static scene_type *scene;
-static int canvas;
 
 static struct {
 	u8 port;
@@ -534,7 +533,7 @@ static void create_footer()
 	HSD_JObjSetMtxDirty(redo);
 }
 
-static void create_text_canvas()
+static int create_text_canvas()
 {
 	auto *canvas_gobj = GObj_Create(GOBJ_CLASS_TEXT, GOBJ_PLINK_MENU_CAMERA, 0);
 	auto *canvas_cobj = HSD_CObjLoadDesc(is_widescreen() ? &canvas_cobjdesc_wide
@@ -543,11 +542,11 @@ static void create_text_canvas()
 	GObj_SetupCameraGXLink(canvas_gobj, GObj_GXProcCamera, 19);
 	canvas_gobj->gxlink_prios = 1 << GOBJ_GXLINK_MENU_FG;
 
-	canvas = Text_CreateCanvas(0, canvas_gobj, GOBJ_CLASS_TEXT, GOBJ_PLINK_MENU_CAMERA, 0,
-	                           GOBJ_GXLINK_MENU_FG, 0, 19);
+	return Text_CreateCanvas(0, canvas_gobj, GOBJ_CLASS_TEXT, GOBJ_PLINK_MENU_CAMERA, 0,
+	                         GOBJ_GXLINK_MENU_FG, 0, 19);
 }
 
-static void create_text()
+static void create_text(int canvas)
 {
 	menu_state.description_text = Text_Create(0, canvas, 124.5f, 45, 0, 391, 30);
 	Text_SetFromSIS(menu_state.description_text, 0);
@@ -589,8 +588,8 @@ static void create_menu()
 	create_model(scene->models->selection, update_selection);
 	create_toggles();
 	create_footer();
-	create_text_canvas();
-	create_text();
+	const auto canvas = create_text_canvas();
+	create_text(canvas);
 }
 
 static void Controls_Think()

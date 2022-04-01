@@ -7,10 +7,14 @@
 #include "hsd/tobj.h"
 #include "hsd/video.h"
 #include "melee/menu.h"
+#include "melee/scene.h"
 #include "melee/text.h"
+#include "rules/values.h"
+#include "qol/widescreen.h"
 #include "util/texture_swap.h"
 #include "util/math.h"
 #include "util/mempool.h"
+#include "util/patch_list.h"
 #include "util/draw/render.h"
 #include "util/draw/texture.h"
 #include "util/melee/pad.h"
@@ -18,12 +22,14 @@
 #include <cmath>
 #include <gctypes.h>
 
+#if 0
 #ifdef NOPAL
 #include "resources/manual/a/manual_p1.tex.h"
 #include "resources/manual/a/manual_p2.tex.h"
 #else
 #include "resources/manual/b/manual_p1.tex.h"
 #include "resources/manual/b/manual_p2.tex.h"
+#endif
 #endif
 #include "resources/manual/manual_border.tex.h"
 #include "resources/manual/scrollbar.tex.h"
@@ -33,10 +39,55 @@ constexpr auto scissor_h = 288;
 constexpr auto scissor_x = 320 - scissor_w / 2;
 constexpr auto scissor_y =  88;
 
-constexpr auto manual_margin = 13;
+constexpr auto manual_margin_x = 25;
+constexpr auto manual_margin_y = 13;
+constexpr auto manual_x = scissor_x + manual_margin_x;
+constexpr auto manual_y = scissor_y + manual_margin_y;
+constexpr auto manual_w = scissor_w - manual_margin_x * 2;
 
+constexpr auto text_scale_p = .36250f;
+constexpr auto text_scale_h = .46875f;
+
+constexpr auto text_options_p = text_builder::formatting_options {
+	.line_width   = manual_w,
+	.indent       = 2,
+	.line_spacing = 12,
+	.space_width  = 10,
+	.scale        = text_scale_p,
+	.justify      = true
+};
+
+constexpr auto text_options_h = text_builder::formatting_options {
+	.line_width   = manual_w,
+	.indent       = 2,
+	.line_spacing = 12,
+	.space_width  = 10,
+	.scale        = text_scale_h,
+	.justify      = true
+};
+
+constexpr auto text_options_table_left = text_builder::formatting_options {
+	.line_width   = manual_w,
+	.indent       = 27,
+	.line_spacing = 12,
+	.space_width  = 10,
+	.scale        = text_scale_p,
+	.justify      = false
+};
+
+constexpr auto text_options_table_right = text_builder::formatting_options {
+	.line_width   = manual_w,
+	.indent       = 140,
+	.line_spacing = 12,
+	.space_width  = 10,
+	.scale        = text_scale_p,
+	.justify      = false
+};
+
+#if 0
 static texture texture_p1;
 static texture texture_p2;
+#endif
 static texture texture_border;
 static texture texture_scrollbar;
 
@@ -44,8 +95,6 @@ static mempool pool;
 
 static float scroll_offset;
 static int scroll_frames;
-
-static Text *text;
 
 bool manual_open;
 
@@ -63,10 +112,87 @@ constexpr auto bottom_text = text_builder::build(
 	text_builder::reset_scale(),
 	text_builder::end_color());
 
+template<string_literal str>
+constexpr auto h()
+{
+	return text_builder::format_text<text_options_h, str>();
+}
+
+template<string_literal str>
+constexpr auto p()
+{
+	return text_builder::format_text<text_options_p, str>();
+}
+
+constexpr auto br()
+{
+	return array_cat(text_builder::scale<256, 256>(),
+	                 text_builder::spacing<0, 12 * 256>(),
+	                 text_builder::br());
+}
+
+constexpr auto hr()
+{
+	constexpr auto scale_x = 32;
+	constexpr auto scale_y = 128;
+	constexpr auto spacing = -4;
+	constexpr auto width = (float)(text_builder::char_width<'-'>() + spacing) * scale_x / 256;
+	constexpr auto count = (size_t)(manual_w / width);
+
+	return for_range<count>([]<size_t ...I>() {
+		return array_cat(
+			text_builder::scale<scale_x, scale_y>(),
+			text_builder::spacing<spacing * 256, -10 * 256>(),
+			text_builder::br(),
+			(I, text_builder::character<'-'>())...,
+			text_builder::br());
+	});
+}
+
+template<string_literal left, string_literal right>
+constexpr auto table_row()
+{
+	return array_cat(
+		text_builder::format_text<text_options_table_left, left>(),
+		text_builder::spacing<0, -32 * 256>(),
+		text_builder::br(),
+		text_builder::format_text<text_options_table_right, right>());
+}
+
+constexpr auto text_test_data = text_builder::build(
+	text_builder::kern(),
+	h<"Welcome to Melee 1.03 (Version B4)!">(),
+	br(),
+	p<"1.03 is created by Hax$ and Altimor. Visit www.b0xx.com for more information.">(),
+	br(),
+	h<"Polling Drift Fix">(),
+	hr(),
+	p<"1.03 contains the polling drift fix, which fixes a bug that causes Melee's input "
+	  "latency to constantly fluctuate.">(),
+	br(),
+	h<"1.03 Controller Fix">(),
+	hr(),
+	p<"The 1.03 controller fix applies the following fixes:">(),
+	br(),
+	table_row<"Dash Back",
+	          "Dash back is increased to a 2-frame window and tilt intent is applied.">());
+
+extern "C" void Scene_Initialize(SceneMinorData *data);
+
+const auto patches = patch_list {
+	// Increase menu text heap size
+	// lis r3, 1
+	std::pair { (char*)Scene_Initialize+0x60, 0x3C600001u },
+};
+
 static float max_scroll_offset()
 {
+#if 0
 	const auto total_height = texture_p1.height() + texture_p2.height();
-	return (float)std::max(total_height - (scissor_h - manual_margin * 2), 0);
+#else
+	const auto total_height = 986 + 672;
+#endif
+	return (float)std::max(total_height - (scissor_h - manual_margin_y * 2), 0);
 }
 
 static void manual_input(HSD_GObj *gobj)
@@ -77,7 +203,7 @@ static void manual_input(HSD_GObj *gobj)
 		manual_open = false;
 		IsEnteringMenu = false;
 		Menu_PlaySFX(MenuSFX_Back);
-		Text_Free(text);
+		Text_FreeAll();
 		pool.dec_ref();
 
 		// Frees gobj
@@ -115,7 +241,8 @@ static void draw_manual(HSD_GObj *gobj, u32 pass)
 
 	constexpr auto manual_z = 17;
 
-	const auto pos_p1 = vec3(320, scissor_y + manual_margin - scroll_offset, manual_z);
+#if 0
+	const auto pos_p1 = vec3(320, manual_y - scroll_offset, manual_z);
 	const auto pos_p2 = pos_p1 + vec3(0, texture_p1.height(), 0);
 
 	rs.fill_rect(pos_p1, vec2(texture_p1.size()), color_rgba::white, texture_p1,
@@ -123,6 +250,7 @@ static void draw_manual(HSD_GObj *gobj, u32 pass)
 
 	rs.fill_rect(pos_p2, vec2(texture_p2.size()), color_rgba::white, texture_p2,
 	             uv_coord::zero, uv_coord::one, align::top);
+#endif
 
 	constexpr auto border_color = color_rgba::hex(0x929196FFu);
 
@@ -143,6 +271,20 @@ static void draw_manual(HSD_GObj *gobj, u32 pass)
 	                   border_color, texture_scrollbar, align::top_right);
 }
 
+static int create_text_canvas()
+{
+	constexpr auto gxlink = 20;
+	auto *canvas_gobj = GObj_Create(GOBJ_CLASS_TEXT, GOBJ_PLINK_MENU_CAMERA, 0);
+	auto *canvas_cobj = HSD_CObjLoadDesc(is_widescreen() ? &canvas_cobjdesc_wide
+	                                                     : &canvas_cobjdesc);
+	GObj_InitKindObj(canvas_gobj, GOBJ_KIND_CAMERA, canvas_cobj);
+	GObj_SetupCameraGXLink(canvas_gobj, GObj_GXProcCamera, 19);
+	canvas_gobj->gxlink_prios = 1 << gxlink;
+
+	return Text_CreateCanvas(0, canvas_gobj, GOBJ_CLASS_TEXT, GOBJ_PLINK_MENU_CAMERA, 0,
+	                         gxlink, 0, 19);
+}
+
 extern "C" void hook_Menu_EnterCustomRulesMenu()
 {
 	manual_open = true;
@@ -160,15 +302,24 @@ extern "C" void hook_Menu_EnterCustomRulesMenu()
 
 	pool.inc_ref();
 
+#if 0
 	pool.add(init_texture(manual_p1_tex_data, &texture_p1));
 	pool.add(init_texture(manual_p2_tex_data, &texture_p2));
+#endif
 	pool.add(init_texture(manual_border_tex_data, &texture_border));
 	pool.add(init_texture(scrollbar_tex_data, &texture_scrollbar));
 
 	// Bottom text
-	text = Text_Create(0, 1, -9.5f, 8.f, 17.f, 364.68331909f, 76.75543640f);
+	auto *text = Text_Create(0, 1, -9.5f, 8.f, 17.f, 364.68331909f, 76.75543640f);
 	text->stretch.x = 0.0521f;
 	text->stretch.y = 0.0521f;
 	Text_SetFromSIS(text, 0);
 	text->data = bottom_text.data();
+
+	const auto canvas = create_text_canvas();
+
+	// Test
+	auto *text_test = Text_Create(0, canvas, manual_x, manual_y, 0, 640, 480);
+	Text_SetFromSIS(text_test, 0);
+	text_test->data = text_test_data.data();
 }
