@@ -203,7 +203,7 @@ constexpr auto text_width()
 	});
 };
 
-template<int line_width, int check_size, string_literal str>
+template<auto line_width, int check_size, string_literal str>
 constexpr auto split_text_impl()
 {
 	constexpr auto tail = str.value[check_size - 1];
@@ -234,15 +234,19 @@ constexpr auto split_text_impl()
 };
 
 // Break str into a tuple of lines with a display width <= line_width
-template<int line_width, string_literal str>
+template<auto line_width, string_literal str>
 constexpr auto split_text()
 {
 	return split_text_impl<line_width, decltype(str)::size - 1, str>();
 };
 
-// Join a tuple of lines with line break opcodes
-constexpr auto join_lines(auto &&tuple)
+// Convert str into Melee text with line breaks inserted such that the display
+// width doesn't exceed line_width
+template<auto line_width, string_literal str>
+constexpr auto break_lines()
 {
+	constexpr auto tuple = split_text<line_width, str>();
+
 	return for_range<sizeof_tuple<decltype(tuple)>>([&]<size_t ...I>() {
 		return array_cat(array_cat(text<std::get<I>(tuple)>(), br())...);
 	});
