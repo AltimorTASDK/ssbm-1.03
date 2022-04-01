@@ -33,8 +33,11 @@ endif
 export DEFINES += -DMODNAME=\"$(MODNAME)\"
 
 ifndef VERSION
-$(error Specify Melee version with $$VERSION)
-else ifeq ($(VERSION), 100)
+$(warning Melee $$VERSION not specified. Defaulting to 102.)
+export VERSION := 102
+endif
+
+ifeq ($(VERSION), 100)
 export MELEELD := $(abspath GALE01r0.ld)
 export DEFINES += -DNTSC100
 else ifeq ($(VERSION), 101)
