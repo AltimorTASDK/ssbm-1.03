@@ -152,19 +152,19 @@ constexpr auto bind_back(auto &&callable, auto &&...args)
 	};
 }
 
-template<size_t start, size_t end>
+template<ssize_t start, ssize_t end>
 constexpr auto slice_tuple(auto &&tuple)
 {
 	// Python style indices
-	constexpr auto size = sizeof_tuple<decltype(tuple)>;
+	constexpr auto size = (ssize_t)sizeof_tuple<decltype(tuple)>;
 
 	constexpr auto real_start = start >= 0
 		? std::min(start, size - 1)
-		: std::max((size_t)0, size + start);
+		: std::max((ssize_t)0, size + start);
 
 	constexpr auto real_end = end >= 0
 		? std::min(end, size)
-		: std::max((size_t)0, size + end);
+		: std::max((ssize_t)0, size + end);
 
 	return for_range<real_start, real_end>([&]<size_t ...I> {
 		return std::forward_as_tuple(std::get<I>(tuple)...);
@@ -282,25 +282,6 @@ struct string_literal {
 					return std::array<T, 0>();
 			}, strings)..., std::array { T { 0 } }).begin(), size, value);
 		}
-	}
-
-	constexpr auto as_tuple() const
-	{
-		return for_range<0, size - 1>([&]<size_t ...I>() {
-			return std::make_tuple(value[I]...);
-		});
-	}
-
-	template<size_t start, size_t end>
-	constexpr auto substring() const
-	{
-		constexpr auto substring = slice_tuple<start, end>(as_tuple());
-		constexpr auto substring_size = sizeof_tuple<decltype(substring)>;
-		return for_range<substring_size>([&]<size_t ...I>() {
-			return string_literal(c_array_t<T, substring_size> {
-				std::get<I>(substring)..., T { 0 }
-			});
-		});
 	}
 
 	T value[size];

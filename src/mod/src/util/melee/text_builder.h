@@ -176,10 +176,10 @@ constexpr auto character()
 #endif
 }
 
-template<string_literal str>
+template<string_literal str, size_t start = 0, size_t end = decltype(str)::size - 1>
 constexpr auto text()
 {
-	return for_range<decltype(str)::size - 1>([]<size_t ...I>() {
+	return for_range<start, end>([]<size_t ...I>() {
 		return array_cat(character<str.value[I]>()...);
 	});
 };
@@ -203,53 +203,45 @@ constexpr auto text_width()
 	});
 };
 
-template<auto line_width, int check_size, string_literal str>
-constexpr auto split_text_impl()
-{
-	constexpr auto tail = str.value[check_size - 1];
-	constexpr auto next = str.value[check_size];
-	constexpr auto sub = str.template substring<0, check_size>();
-	constexpr auto str_size = decltype(str)::size - 1;
-
-	// Only break before whitespace or after hyphen
-	constexpr auto can_break = next != '\0' && next != ' ' && tail != '-';
-
-	if constexpr (can_break && text_width<sub>() <= line_width) {
-		if constexpr (check_size == str_size) {
-			// Consumed whole string
-			return std::make_tuple(sub);
-		} else {
-			constexpr auto remainder = str.template substring<check_size, str_size>();
-			return tuple_cat(std::make_tuple(sub),
-			                 split_text_impl<line_width, decltype(remainder)::size - 1,
-			                                 remainder>());
-		}
-	} else if constexpr (check_size == 1) {
-		// It won't fit onii-chan, so just jam it in
-		return std::make_tuple(str);
-	} else {
-		// Try reducing the line size
-		return split_text_impl<line_width, check_size - 1, str>();
-	}
-};
-
-// Break str into a tuple of lines with a display width <= line_width
-template<auto line_width, string_literal str>
-constexpr auto split_text()
-{
-	return split_text_impl<line_width, decltype(str)::size - 1, str>();
-};
-
 // Convert str into Melee text with line breaks inserted such that the display
 // width doesn't exceed line_width
-template<auto line_width, string_literal str>
-constexpr auto break_lines()
+template<size_t line_width, string_literal str,
+         size_t start_index = 0, size_t check_index = start_index,
+         size_t break_index = start_index, size_t display_width = 0>
+constexpr auto break_text()
 {
-	constexpr auto tuple = split_text<line_width, str>();
+	constexpr auto tail = str.value[check_index];
+	constexpr auto next = str.value[check_index + 1];
+	constexpr auto new_display_width = display_width + char_width<tail>();
 
-	return for_range<sizeof_tuple<decltype(tuple)>>([&]<size_t ...I>() {
-		return array_cat(array_cat(text<std::get<I>(tuple)>(), br())...);
-	});
+	if constexpr (new_display_width > line_width) {
+		if constexpr (break_index == start_index) {
+			// It won't fit onii-chan, so just jam it in
+			return text<str, start_index>();
+		} else {
+			// Break at last good index
+			constexpr auto line = text<str, start_index, break_index>();
+			if constexpr (str.value[break_index] == ' ') {
+				// Skip space
+				return array_cat(line, br(),
+				                 break_text<line_width, str, break_index + 1>());
+			} else {
+				return array_cat(line, br(),
+				                 break_text<line_width, str, break_index>());
+			}
+		}
+	} else if constexpr (next == '\0') {
+		// Consumed whole string
+		return text<str, start_index>();
+	} else if constexpr (next == ' ' || tail == '-') {
+		// Before whitespace/after hyphen, update break index and check next index
+		return break_text<line_width, str, start_index, check_index + 1,
+		                  check_index + 1, new_display_width>();
+	} else {
+		// Can't break here, preserve break index and check next index
+		return break_text<line_width, str, start_index, check_index + 1,
+		                  break_index, new_display_width>();
+	}
 };
 
 constexpr auto build(auto &&...components)
