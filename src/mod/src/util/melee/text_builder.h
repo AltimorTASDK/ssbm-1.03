@@ -224,6 +224,8 @@ constexpr auto char_code()
 		return 0x20F5;
 	else if constexpr (c == ')')
 		return 0x20F6;
+	else if constexpr (c == '+')
+		return 0x20FB;
 	else if constexpr (c == '-')
 		return 0x20FC;
 	else if constexpr (c == '<')
@@ -266,19 +268,18 @@ constexpr auto char_width()
 	if constexpr (c == ' ') {
 		return 16;
 	} else {
+		constexpr auto offsets = [&] {
 #ifdef PAL
-		constexpr auto offsets = kerning_offsets[char_code<c>() - ' ' - 1];
-		return 32 - offsets.left - offsets.right + 2;
+			return kerning_offsets[char_code<c>() - ' ' - 1];
 #else
-		constexpr auto code = char_code<c>();
-		if constexpr (code < 0x4000) {
-			constexpr auto offsets = kerning_offsets[code - 0x2000];
-			return 32 - offsets.left - offsets.right + 2;
-		} else {
-			constexpr auto offsets = kerning_offsets_special[code - 0x4000];
-			return 32 - offsets.left - offsets.right + 2;
-		}
+			if constexpr (code < 0x4000)
+				return kerning_offsets[code - 0x2000];
+			else
+				return kerning_offsets_special[code - 0x4000];
 #endif
+		}();
+
+		return 32 - offsets.left - offsets.right + 2;
 	}
 }
 
