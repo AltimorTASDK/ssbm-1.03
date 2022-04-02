@@ -48,7 +48,7 @@ constexpr auto manual_w = scissor_w - manual_margin_x * 2;
 constexpr auto text_scale_p = .36250f;
 constexpr auto text_scale_h = .46875f;
 
-constexpr auto text_options_p = text_builder::formatting_options {
+constexpr auto format_p = text_builder::formatting_options {
 	.line_width   = manual_w,
 	.indent       = 2,
 	.line_spacing = 12,
@@ -57,7 +57,7 @@ constexpr auto text_options_p = text_builder::formatting_options {
 	.justify      = true
 };
 
-constexpr auto text_options_h = text_builder::formatting_options {
+constexpr auto format_h = text_builder::formatting_options {
 	.line_width   = manual_w,
 	.indent       = 2,
 	.line_spacing = 12,
@@ -66,22 +66,28 @@ constexpr auto text_options_h = text_builder::formatting_options {
 	.justify      = true
 };
 
-constexpr auto text_options_table_left = text_builder::formatting_options {
-	.line_width   = manual_w,
-	.indent       = 27,
+constexpr auto format_table_left = text_builder::formatting_options {
+	.indent       = 20,
 	.line_spacing = 12,
 	.space_width  = 10,
 	.scale        = text_scale_p,
-	.justify      = false
+	.justify      = true
 };
 
-constexpr auto text_options_table_right = text_builder::formatting_options {
-	.line_width   = manual_w,
-	.indent       = 140,
+constexpr auto format_table_sep = text_builder::formatting_options {
+	.indent       = 168,
 	.line_spacing = 12,
 	.space_width  = 10,
 	.scale        = text_scale_p,
-	.justify      = false
+	.justify      = true
+};
+
+constexpr auto format_table_right = text_builder::formatting_options {
+	.indent       = 178,
+	.line_spacing = 12,
+	.space_width  = 10,
+	.scale        = text_scale_p,
+	.justify      = true
 };
 
 #if 0
@@ -95,6 +101,8 @@ static mempool pool;
 
 static float scroll_offset;
 static int scroll_frames;
+
+static Text *manual_text;
 
 bool manual_open;
 
@@ -115,16 +123,16 @@ constexpr auto bottom_text = text_builder::build(
 template<string_literal str>
 constexpr auto h()
 {
-	return text_builder::format_text<text_options_h, str>();
+	return text_builder::format_text<format_h, str>();
 }
 
 template<string_literal str>
 constexpr auto p()
 {
-	return text_builder::format_text<text_options_p, str>();
+	return text_builder::format_text<format_p, str>();
 }
 
-constexpr auto br()
+constexpr auto big_br()
 {
 	return array_cat(text_builder::scale<256, 256>(),
 	                 text_builder::spacing<0, 12 * 256>(),
@@ -149,40 +157,100 @@ constexpr auto hr()
 	});
 }
 
-template<string_literal left, string_literal right>
+template<float offset, auto break_count = 1>
+constexpr auto adjust_y()
+{
+	constexpr auto amount = (int)((offset / break_count - 32) * 256);
+	if constexpr (amount > 0x7FFF || amount < -0x8000) {
+		// Requires more line breaks
+		return adjust_y<offset, break_count + 1>();
+	} else {
+		return for_range<break_count>([]<size_t ...I>() {
+			return array_cat(text_builder::spacing<0, (s16)amount>(),
+			                 (I, text_builder::br())...);
+		});
+	}
+}
+
+template<string_literal left, string_literal ...right>
 constexpr auto table_row()
 {
+	constexpr auto height = sizeof...(right)      * 32 +
+	                       (sizeof...(right) - 1) * format_table_right.line_spacing;
+
+	constexpr auto line_height = 32 + format_table_sep.line_spacing;
+	constexpr auto sep_offset = -line_height / 4;
+	constexpr auto sep_count = sizeof...(right) * 2;
+	constexpr auto sep_spacing = line_height / 2;
+	constexpr auto sep_height = sep_count * sep_spacing;
+
+	constexpr auto separators = for_range<sep_count>([]<size_t ...I>() {
+		return array_cat((I, array_cat(text_builder::format_text<format_table_sep, "|">(),
+		                               adjust_y<sep_spacing>()))...);
+	});
+
+	constexpr auto left_offset = height / 2 - 16;
+
 	return array_cat(
-		text_builder::format_text<text_options_table_left, left>(),
-		text_builder::spacing<0, -32 * 256>(),
-		text_builder::br(),
-		text_builder::format_text<text_options_table_right, right>());
+		adjust_y<4.f>(),
+		adjust_y<left_offset>(),
+		text_builder::format_text<format_table_left, left>(),
+		adjust_y<-left_offset + sep_offset>(),
+		separators,
+		adjust_y<-sep_height - sep_offset>(),
+		array_cat(text_builder::format_text<format_table_right, right>(),
+			  text_builder::br())...,
+		adjust_y<4.f>());
 }
 
 constexpr auto text_test_data = text_builder::build(
 	text_builder::kern(),
-	h<"Welcome to Melee 1.03 (Version B4)!">(),
-	br(),
+	h<"Welcome to Melee 1.03!">(),
+	big_br(),
 	p<"1.03 is created by Hax$ and Altimor. Visit www.b0xx.com for more information.">(),
-	br(),
+	big_br(),
 	h<"Polling Drift Fix">(),
 	hr(),
 	p<"1.03 contains the polling drift fix, which fixes a bug that causes Melee's input "
 	  "latency to constantly fluctuate.">(),
-	br(),
+	big_br(),
 	h<"1.03 Controller Fix">(),
 	hr(),
 	p<"The 1.03 controller fix applies the following fixes:">(),
-	br(),
-	table_row<"Dash Back",
-	          "Dash back is increased to a 2-frame window and tilt intent is applied.">());
+	text_builder::br(),
+	adjust_y<24.f>(),
+	table_row<"Dash Back",            "Dash back is increased to a 2-frame window",
+	                                  "and tilt intent is applied.">(),
+	table_row<"Doraki Walljump",      "Doraki walljump is increased to a 2-frame",
+	                                  "window and tilt intent is applied.">(),
+	table_row<"Wiggle Out of Tumble", "Wiggle out of tumble is increased to a 2-",
+	                                  "frame window.">(),
+	table_row<"Smash DI",             "A tilt input on the first frame of hitlag will",
+	                                  "not prevent smash DI from occurring on the",
+	                                  "second frame of hitlag. Additionally, the",
+	                                  "second frame after entering the smash DI",
+	                                  "range counts toward the first smash DI",
+	                                  "input.">(),
+	table_row<"Dash Out of Crouch",   "Dash out of crouch is increased to a 3-frame",
+	                                  "window and SquatRv along the rim is",
+	                                  "prevented.">(),
+	table_row<"Shield Drop",          "Shield drop's range is maximized along the",
+	                                  "rim after roll is shut off.">(),
+	table_row<"1.0 Cardinal",         "The rims of the control stick and C-stick's",
+	                                  "cardinals clamp to 1.0.">(),
+	table_row<"Vertical Throws",      "The range for vertical throws is increased to",
+	                                  "> 50. This fix does not apply to Ice Climbers.">(),
+	adjust_y<24.f>(),
+	p<"B0XX is affected only by the increased timing window on dash out of crouch.">(),
+	big_br(),
+	p<"Credits to tauKhan for designing the dash back fix.">());
 
 extern "C" void Scene_Initialize(SceneMinorData *data);
 
 const auto patches = patch_list {
 	// Increase menu text heap size
-	// lis r3, 1
-	std::pair { (char*)Scene_Initialize+0x60, 0x3C600001u },
+	// lis r3, 0x20
+	std::pair { (char*)Scene_Initialize+0x60, 0x3C600020u },
 };
 
 static float max_scroll_offset()
@@ -228,12 +296,12 @@ static void manual_input(HSD_GObj *gobj)
 	const auto speed = 7.f * (1.f + ramp_up);
 	const auto delta = clamp((float)total_y / STICK_MAX, -1.f, 1.f) * speed;
 	scroll_offset = clamp(scroll_offset - delta, 0.f, max_scroll_offset());
+	manual_text->trans.y = manual_y - scroll_offset;
 }
 
 static void draw_manual(HSD_GObj *gobj, u32 pass)
 {
-	if (pass != HSD_RP_BOTTOMHALF)
-		return;
+	GObj_GXProcCamera(gobj, pass);
 
 	auto &rs = render_state::get();
 	rs.reset_2d();
@@ -273,12 +341,47 @@ static void draw_manual(HSD_GObj *gobj, u32 pass)
 
 static int create_text_canvas()
 {
+	const auto manual_cobjdesc = HSD_CObjDesc {
+		.projection_type = ProjType_Ortho,
+		.viewport_right  = 640,
+		.viewport_bottom = 480,
+		.scissor_left    = scissor_x,
+		.scissor_right   = scissor_x + scissor_w,
+		.scissor_top     = scissor_y,
+		.scissor_bottom  = scissor_y + scissor_h,
+		.eye_position    = &canvas_eye,
+		.interest        = &canvas_interest,
+		.far             = 65535,
+		.ortho = {
+			.bottom  = -480,
+			.right   = 640
+		}
+	};
+
+	const auto manual_cobjdesc_wide = HSD_CObjDesc {
+		.projection_type = ProjType_Ortho,
+		.viewport_right  = 640,
+		.viewport_bottom = 480,
+		.scissor_left    = scissor_x,
+		.scissor_right   = scissor_x + scissor_w,
+		.scissor_top     = scissor_y,
+		.scissor_bottom  = scissor_y + scissor_h,
+		.eye_position    = &canvas_eye,
+		.interest        = &canvas_interest,
+		.far             = 65535,
+		.ortho = {
+			.bottom  = -480,
+			.left    = ortho_left_wide,
+			.right   = ortho_right_wide,
+		}
+	};
+
 	constexpr auto gxlink = 20;
 	auto *canvas_gobj = GObj_Create(GOBJ_CLASS_TEXT, GOBJ_PLINK_MENU_CAMERA, 0);
-	auto *canvas_cobj = HSD_CObjLoadDesc(is_widescreen() ? &canvas_cobjdesc_wide
-	                                                     : &canvas_cobjdesc);
+	auto *canvas_cobj = HSD_CObjLoadDesc(is_widescreen() ? &manual_cobjdesc_wide
+	                                                     : &manual_cobjdesc);
 	GObj_InitKindObj(canvas_gobj, GOBJ_KIND_CAMERA, canvas_cobj);
-	GObj_SetupCameraGXLink(canvas_gobj, GObj_GXProcCamera, 19);
+	GObj_SetupCameraGXLink(canvas_gobj, draw_manual, 19);
 	canvas_gobj->gxlink_prios = 1 << gxlink;
 
 	return Text_CreateCanvas(0, canvas_gobj, GOBJ_CLASS_TEXT, GOBJ_PLINK_MENU_CAMERA, 0,
@@ -298,7 +401,6 @@ extern "C" void hook_Menu_EnterCustomRulesMenu()
 	auto *gobj = GObj_Create(GOBJ_CLASS_PROC, GOBJ_PLINK_PROC, 0x80);
 	GObj_AddProc(gobj, manual_input, 0);
 	Menu_SetGObjPrio(gobj);
-	GObj_SetupGXLink(gobj, draw_manual, GOBJ_GXLINK_MENU_TOP, 0x80);
 
 	pool.inc_ref();
 
@@ -319,7 +421,7 @@ extern "C" void hook_Menu_EnterCustomRulesMenu()
 	const auto canvas = create_text_canvas();
 
 	// Test
-	auto *text_test = Text_Create(0, canvas, manual_x, manual_y, 0, 640, 480);
-	Text_SetFromSIS(text_test, 0);
-	text_test->data = text_test_data.data();
+	manual_text = Text_Create(0, canvas, manual_x, manual_y, 0, 640, 480);
+	Text_SetFromSIS(manual_text, 0);
+	manual_text->data = text_test_data.data();
 }

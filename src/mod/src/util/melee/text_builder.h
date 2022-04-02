@@ -214,6 +214,10 @@ constexpr auto char_code()
 		return 0x20EF;
 	else if constexpr (c == '/')
 		return 0x20F0;
+	else if constexpr (c == '~')
+		return 0x20F1;
+	else if constexpr (c == '|')
+		return 0x20F2;
 	else if constexpr (c == '\'')
 		return 0x20F3;
 	else if constexpr (c == '(')
@@ -222,6 +226,10 @@ constexpr auto char_code()
 		return 0x20F6;
 	else if constexpr (c == '-')
 		return 0x20FC;
+	else if constexpr (c == '<')
+		return 0x20FF;
+	else if constexpr (c == '>')
+		return 0x2100;
 	else if constexpr (c == '$')
 		return 0x2102;
 	else if constexpr (c == u'é')
@@ -310,7 +318,7 @@ constexpr auto text_with_space_padding()
 };
 
 template<formatting_options options, string_literal str,
-         size_t start, size_t end = decltype(str)::size - 1>
+         size_t start = 0, size_t end = decltype(str)::size - 1>
 constexpr auto justified_text()
 {
 	constexpr auto old_width = text_width<str, start, end>() * options.scale + options.indent;
@@ -326,25 +334,32 @@ constexpr auto justified_text()
 };
 
 template<formatting_options options, string_literal str,
-         size_t start, size_t end = decltype(str)::size - 1>
+         size_t start = 0, size_t end = decltype(str)::size - 1>
 constexpr auto text_with_space_width()
 {
 	constexpr auto padding = (s16)((options.space_width - 16) * 256);
 	return text_with_space_padding<options, padding, str, start, end>();
 }
 
-template<formatting_options options, auto line>
+template<formatting_options options, auto line, auto space_count = 1>
 constexpr auto indent()
 {
-	constexpr auto fixed_scale = (u16)(options.scale * 256);
-	constexpr auto amount = (s16)((options.indent - 16) * 256);
-	constexpr auto line_spacing = (s16)(options.line_spacing * 256);
-	return array_cat(scale<256, fixed_scale>(),
-	                 spacing<amount, line_spacing>(),
-	                 character<' '>(),
-			 scale<fixed_scale, fixed_scale>(),
-	                 spacing<0, line_spacing>(),
-	                 line);
+	constexpr auto amount = (int)((options.indent / space_count - 16) * 256);
+	if constexpr (amount > 0x7FFF || amount < -0x8000) {
+		// Requires more spaces
+		return indent<options, line, space_count + 1>();
+	} else {
+		constexpr auto fixed_scale = (u16)(options.scale * 256);
+		constexpr auto line_spacing = (s16)(options.line_spacing * 256);
+		return for_range<space_count>([]<size_t ...I>() {
+			return array_cat(scale<256, fixed_scale>(),
+			                 spacing<(s16)amount, line_spacing>(),
+			                 (I, character<' '>())...,
+			                 scale<fixed_scale, fixed_scale>(),
+			                 spacing<0, line_spacing>(),
+			                 line);
+		});
+	}
 }
 
 // Convert str into Melee text with line breaks inserted such that the display
@@ -411,9 +426,15 @@ constexpr auto format_text()
 {
 	constexpr auto fixed_scale = (u16)(options.scale * 256);
 	constexpr auto line_spacing = (s16)(options.line_spacing * 256);
-	return array_cat(scale<fixed_scale, fixed_scale>(),
-	                 spacing<0, line_spacing>(),
-	                 break_text<options, str>());
+	if constexpr (options.line_width != 0) {
+		return array_cat(scale<fixed_scale, fixed_scale>(),
+		                 spacing<0, line_spacing>(),
+		                 break_text<options, str>());
+	} else {
+		return array_cat(scale<fixed_scale, fixed_scale>(),
+		                 spacing<0, line_spacing>(),
+		                 indent<options, text_with_space_width<options, str>()>());
+	}
 };
 
 constexpr auto build(auto &&...components)
