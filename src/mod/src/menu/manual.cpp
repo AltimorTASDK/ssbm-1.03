@@ -203,6 +203,11 @@ constexpr auto table_row()
 		adjust_y<4.f>());
 }
 
+constexpr auto table_padding()
+{
+	return adjust_y<24.f>();
+}
+
 constexpr auto text_test_data = text_builder::build(
 	text_builder::kern(),
 	h<"Welcome to Melee 1.03!">(),
@@ -218,7 +223,7 @@ constexpr auto text_test_data = text_builder::build(
 	hr(),
 	p<"The 1.03 controller fix applies the following fixes:">(),
 	text_builder::br(),
-	adjust_y<24.f>(),
+	table_padding(),
 	table_row<"Dash Back",            "Dash back is increased to a 2-frame window",
 	                                  "and tilt intent is applied.">(),
 	table_row<"Doraki Walljump",      "Doraki walljump is increased to a 2-frame",
@@ -240,17 +245,94 @@ constexpr auto text_test_data = text_builder::build(
 	                                  "cardinals clamp to 1.0.">(),
 	table_row<"Vertical Throws",      "The range for vertical throws is increased to",
 	                                  "> 50. This fix does not apply to Ice Climbers.">(),
-	adjust_y<24.f>(),
+	table_padding(),
 	p<"B0XX is affected only by the increased timing window on dash out of crouch.">(),
 	big_br(),
-	p<"Credits to tauKhan for designing the dash back fix.">());
+	p<"Credits to tauKhan for designing the dash back fix.">(),
+	big_br(),
+	h<"Stage Modifications">(),
+	hr(),
+	p<"1.03 allows you to apply the following stage modifications:">(),
+	text_builder::br(),
+	table_padding(),
+	table_row<"Dreamland",          "Wind is removed.">(),
+	table_row<"Final Destination",  "Background visuals are locked to the starry",
+	                                "sky.">(),
+	table_row<"Fountain of Dreams", "The side platforms start at equal height.">(),
+	table_row<u"Pokémon Stadium",   "Transformations are removed.">(),
+	table_row<"Yoshi's Story",      "Shy Guys are removed.">(),
+	text_builder::br(),
+	table_padding(),
+	h<"Crew Battle">(),
+	hr(),
+	p<"Melee's signature exhibition is made better than ever before by 1.03's crew battle "
+	  "mode, which features a stock storage system that keeps track of how many stocks are "
+	  "remaining at the end of a match.">(),
+	big_br(),
+	h<"Auto Pause">(),
+	hr(),
+	p<"1.03's auto pause feature allows you to turn off pause in 4-stock matches specifically "
+	  "so that you can freely enter timed matches while still being able to pause.">(),
+	big_br(),
+	h<"In-Game Shortcuts">(),
+	hr(),
+	p<"The following shortcuts speed up the process of exiting or restarting a match:">(),
+	text_builder::br(),
+	table_padding(),
+	table_row<"Hold Start",     "L R A Start">(),
+	table_row<"Hold Start + B", "L R A Start + Rematch">(),
+	text_builder::br(),
+	table_padding(),
+	h<"Character Select Screen Shortcuts">(),
+	hr(),
+	p<"The following settings can be toggled at the character select screen by performing the "
+	  "corresponding inputs:">(),
+	text_builder::br(),
+	table_padding(),
+	table_row<"Rumble", "D-Pad Up">(),
+	table_row<"Z Jump", "X + Z or Y + Z (hold for one second)">(),
+	text_builder::br(),
+	table_padding(),
+	h<"Perfect Angles">(),
+	hr(),
+	p<"1.03's perfect angles mod modernizes wavedashing by allowing you to airdodge at the "
+	  "shallowest angle by pointing horizontally. Your control stick must reach X .8000 or "
+	  "greater (the same cut-off as dash and F-smash) for this mod to take effect. "
+	  "Additionally, 1.03's perfect angles mod converts exactly half of the cardinal rim  to "
+	  "the perfect angle when using a directional up-B.">(),
+	big_br(),
+	p<"B0XX is affected only by the perfect wavedash aspect of this mod.">(),
+	big_br(),
+	h<"Latency Toggles">(),
+	hr(),
+	p<"1.03 contains two custom latency toggles in addition to the default CRT toggle. The LCD "
+	  "toggle is intended to counteract the innate latency of an LCD monitor by reducing "
+	  "Melee's latency by half a frame. The LOW toggle reduces Melee's latency by one and a "
+	  "half frames (the most a Wii can handle) so that you can play Melee at lighting-fast "
+	  "speed.">(),
+	big_br(),
+	h<"Tournament Lock">(),
+	hr(),
+	p<"To lock all settings that have been chosen in the VS. Mode options menu, remove your "
+	  "1.03 memory card and reset your console. This will also prohibit entering the Debug "
+	  "Menu and reset Stage Music to the default songs.">(),
+	big_br(),
+	h<"1.02 Mechanics">(),
+	hr(),
+	p<"1.03 converts all mechanics that are relevant to tournament play to their NTSC 1.02 "
+	  "iterations.">(),
+	big_br(),
+	h<"Version Compatibility">(),
+	hr(),
+	p<"1.03 is compatible with NTSC 1.00, 1.01, and 1.02, as well as PAL, 20XX, and "
+	  "UnclePunch.">());
 
 extern "C" void Scene_Initialize(SceneMinorData *data);
 
 const auto patches = patch_list {
 	// Increase menu text heap size
 	// lis r3, 0x20
-	std::pair { (char*)Scene_Initialize+0x60, 0x3C600020u },
+	std::pair { (char*)Scene_Initialize+0x60, 0x3C600040u },
 };
 
 static float max_scroll_offset()
