@@ -85,8 +85,6 @@ def main():
 
     data = title.encode().ljust(TITLE_SIZE, b'\0')
 
-    zobj = zlib.compressobj(zlib.Z_BEST_COMPRESSION)
-
     for path in in_files:
         # Write compressed and uncompressed size of each file followed by
         # compressed contents
@@ -99,7 +97,7 @@ def main():
                   file=sys.stderr)
             continue
 
-        compressed = zobj.compress(in_data) + zobj.flush()
+        compressed = zlib.compress(in_data, level=zlib.Z_BEST_COMPRESSION)
         data += struct.pack(">II", len(compressed), len(in_data)) + compressed
 
     if len(banner) != 0:
