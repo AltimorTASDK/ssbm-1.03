@@ -8,6 +8,16 @@
 .set return_address_css, CSS_LoadNameTags+0x680
 #endif
 
+#if defined(NTSC102)
+.set zlib_copy_base, __ZLIB_COPY_BASE_NTSC102__
+#elif defined(NTSC101)
+.set zlib_copy_base, __ZLIB_COPY_BASE_NTSC101__
+#elif defined(NTSC100)
+.set zlib_copy_base, __ZLIB_COPY_BASE_NTSC100__
+#elif defined(PAL)
+.set zlib_copy_base, __ZLIB_COPY_BASE_PAL__
+#endif
+
 /*
  * void _start()
  */
@@ -48,6 +58,15 @@ run_loader:
         lis     r4, __COPY_START__@h
         ori     r4, r4, __COPY_START__@l
         li      r5, __COPY_SIZE__
+        bl      memcpy
+
+	# Copy zlib out of save region
+        lis     r3, __ZLIB_BASE__@h
+        ori     r3, r3, __ZLIB_BASE__@l
+        lis     r4, zlib_copy_base@h
+        ori     r4, r4, zlib_copy_base@l
+        lis     r5, __ZLIB_COPY_SIZE__@h
+        ori     r5, r5, __ZLIB_COPY_SIZE__@l
         bl      memcpy
 
         # Update instruction cache

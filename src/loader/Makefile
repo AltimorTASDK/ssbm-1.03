@@ -15,6 +15,8 @@ ELFFILE  := $(GCIDIR)/1.03_data/loader-pal.elf
 BINFILE  := $(GCIDIR)/1.03_data/loader-pal.bin
 endif
 
+ZLIBBIN  := $(GCIDIR)/1.03_data/zlib.bin
+
 CFILES   := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.c'))
 CXXFILES := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.cpp'))
 SFILES   := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.S'))
@@ -63,7 +65,7 @@ endif
 .PHONY: ssbm
 ssbm: $(GCIFILE)
 
-$(GCIFILE): $(BINFILE) $(MGCMAIN) $(GCISRC)
+$(GCIFILE): $(BINFILE) $(ZLIBBIN) $(MGCMAIN) $(GCISRC)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -i $(GCISRC) -o $@ $(MGCMAIN)
 
@@ -84,11 +86,15 @@ $(GCIFILEUP): $(BINFILE) $(MGCMAINUP) $(GCISRCUP)
 endif
 
 .PHONY: bin
-bin: $(BINFILE)
+bin: $(BINFILE) $(ZLIBBIN)
 
 $(BINFILE): $(ELFFILE)
 	@[ -d $(@D) ] || mkdir -p $(@D)
-	$(OBJCOPY) -O binary $< $@
+	$(OBJCOPY) -O binary -R .zlib $< $@
+
+$(ZLIBBIN): $(ELFFILE)
+	@[ -d $(@D) ] || mkdir -p $(@D)
+	$(OBJCOPY) -O binary -j .zlib $< $@
 
 $(ELFFILE): $(OBJFILES) $(LINKSCRIPT) $(MELEELD) loader.ld | clean_unused
 	@[ -d $(@D) ] || mkdir -p $(@D)
