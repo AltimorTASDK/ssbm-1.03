@@ -272,6 +272,7 @@ constexpr auto char_width()
 #ifdef PAL
 			return kerning_offsets[char_code<c>() - ' ' - 1];
 #else
+			constexpr auto code = char_code<c>();
 			if constexpr (code < 0x4000)
 				return kerning_offsets[code - 0x2000];
 			else
