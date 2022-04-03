@@ -37,9 +37,9 @@ DDDDDDDD 804ee8f8 8045d930 00000000
 !file "1.03_data/loader-ntsc102.bin"
 
 # 1.01 loader
-!loc 8045e610
-!file "1.03_data/loader-ntsc101.bin"
+# !loc 8045e610
+# !file "1.03_data/loader-ntsc101.bin"
 
 # 1.00 loader
-!loc 8045f8f8
-!file "1.03_data/loader-ntsc100.bin"
+# !loc 8045f8f8
+# !file "1.03_data/loader-ntsc100.bin"

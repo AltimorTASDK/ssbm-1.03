@@ -133,7 +133,8 @@ static void *alloc_and_read(const char *file)
 #endif
 
 struct file_entry {
-	u32 size;
+	u32 compressed_len;
+	u32 uncompressed_len;
 	char data[];
 };
 
@@ -143,11 +144,11 @@ const file_entry *get_file(const void *data, int index)
 	const auto *ptr = (const char*)data + title_size;
 
 	for (auto i = 0; i < index; i++)
-		ptr += sizeof(file_entry) + ((const file_entry*)ptr)->size;
+		ptr += sizeof(file_entry) + ((const file_entry*)ptr)->compressed_len;
 
 	const auto *entry = (file_entry*)ptr;
 
-	if (entry->size == 0) {
+	if (entry->compressed_len == 0) {
 #if defined(NTSC102)
 		panic("This build of 1.03 does not support NTSC 1.02. lmao\n");
 #elif defined(NTSC101)
@@ -162,12 +163,12 @@ const file_entry *get_file(const void *data, int index)
 	return entry;
 }
 
-static void *zalloc(void *opaque, u32 items, u32 size)
+extern "C" void *zcalloc(void *opaque, u32 items, u32 size)
 {
 	return HSD_MemAlloc(items * size);
 }
 
-static void zfree(void *opaque, void *ptr)
+extern "C" void zcfree(void *opaque, void *ptr)
 {
 	return HSD_Free(ptr);
 }
@@ -175,23 +176,23 @@ static void zfree(void *opaque, void *ptr)
 static void decompress(const void *in, size_t in_size, void *out, size_t out_size)
 {
 	z_stream stream = {
-		.zalloc = zalloc,
-		.zfree  = zfree
+		.zalloc = zcalloc,
+		.zfree  = zcfree
 	};
 
-	if (const auto err = deflateInit(&stream, Z_BEST_COMPRESSION); err != Z_OK)
-		panic("deflateInit failed: %d\n", err);
+	if (const auto err = inflateInit(&stream); err != Z_OK)
+		panic("inflateInit failed: %d\n", err);
 
 	stream.next_in = (const Byte*)in;
 	stream.avail_in = in_size;
 	stream.next_out = (Byte*)out;
 	stream.avail_out = out_size;
 
-	if (const auto err = deflate(&stream, Z_NO_FLUSH); err != Z_OK)
-		panic("deflate failed: %d\n", err);
+	if (const auto err = inflate(&stream, Z_FINISH); err != Z_STREAM_END)
+		panic("inflate failed: %d\n", err);
 
-	if (const auto err = deflateEnd(&stream); err != Z_OK)
-		panic("deflateEnd failed: %d\n", err);
+	if (const auto err = inflateEnd(&stream); err != Z_OK)
+		panic("inflate failed: %d\n", err);
 }
 
 extern "C" [[gnu::section(".loader")]] void load_mod()
@@ -222,10 +223,16 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 #endif
 	const auto code_size = apply_diff(base->data, diff->data, &__MOD_BASE__);
 #else
-	card_read("103Code", &__MOD_BASE__);
-	const auto *base = get_file(&__MOD_BASE__, 0);
-	const auto code_size = base->size;
-	memmove(&__MOD_BASE__, base->data, code_size);
+	auto *buffer = &__MOD_BASE__;
+	card_read("103Code", buffer);
+
+	const auto *base = get_file(buffer, 0);
+	const auto code_size = base->uncompressed_len;
+
+	// Copy compressed data past end of space reserved for uncompressed data and decompress
+	auto *compressed = (char*)base->data + base->uncompressed_len;
+	memcpy(compressed, base->data, base->uncompressed_len);
+	decompress(compressed, base->compressed_len, buffer, code_size);
 #endif
 
 #if defined(PAL) || defined(NTSC102)

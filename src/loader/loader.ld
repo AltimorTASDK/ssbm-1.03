@@ -12,7 +12,7 @@ __LOAD_BASE__ = __LOADER_BASE__;
 
 MEMORY
 {
-    bootstrap : ORIGIN = __BOOTSTRAP_BASE__, LENGTH = 0x800
+    bootstrap : ORIGIN = __BOOTSTRAP_BASE__, LENGTH = 0xC000
     load      : ORIGIN = __LOAD_BASE__,      LENGTH = __LOADER_SIZE__
 }
 
