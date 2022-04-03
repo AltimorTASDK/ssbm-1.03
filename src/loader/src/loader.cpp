@@ -12,6 +12,7 @@
 #include <gctypes.h>
 #include <ogc/cache.h>
 #include <ogc/card.h>
+#include <zlib.h>
 
 extern "C" {
 
@@ -159,6 +160,38 @@ const file_entry *get_file(const void *data, int index)
 	}
 
 	return entry;
+}
+
+static void *zalloc(void *opaque, u32 items, u32 size)
+{
+	return HSD_MemAlloc(items * size);
+}
+
+static void zfree(void *opaque, void *ptr)
+{
+	return HSD_Free(ptr);
+}
+
+static void decompress(const void *in, size_t in_size, void *out, size_t out_size)
+{
+	z_stream stream = {
+		.zalloc = zalloc,
+		.zfree  = zfree
+	};
+
+	if (const auto err = deflateInit(&stream, Z_BEST_COMPRESSION); err != Z_OK)
+		panic("deflateInit failed: %d\n", err);
+
+	stream.next_in = (const Byte*)in;
+	stream.avail_in = in_size;
+	stream.next_out = (Byte*)out;
+	stream.avail_out = out_size;
+
+	if (const auto err = deflate(&stream, Z_NO_FLUSH); err != Z_OK)
+		panic("deflate failed: %d\n", err);
+
+	if (const auto err = deflateEnd(&stream); err != Z_OK)
+		panic("deflateEnd failed: %d\n", err);
 }
 
 extern "C" [[gnu::section(".loader")]] void load_mod()

@@ -1,5 +1,6 @@
 import struct
 import sys
+import zlib
 from datetime import datetime
 
 BLOCK_SIZE = 0x2000
@@ -85,16 +86,19 @@ def main():
     data = title.encode().ljust(TITLE_SIZE, b'\0')
 
     for path in in_files:
+        # Write compressed and uncompressed size of each file followed by
+        # compressed contents
         try:
             with open(path, "rb") as f:
-                # Write size of each file followed by contents
                 in_data = f.read()
         except IOError:
-            in_data = b""
+            data += struct.pack(">II", 0, 0)
             print(f"Warning: Unable to open input file {path}. Skipping.",
                   file=sys.stderr)
+            continue
 
-        data += struct.pack(">I", len(in_data)) + in_data
+        compressed = zlib.compress(in_data, level=zlib.Z_BEST_COMPRESSION)
+        data += struct.pack(">II", len(compressed), len(in_data)) + compressed
 
     if len(banner) != 0:
         banner_offset = len(data)

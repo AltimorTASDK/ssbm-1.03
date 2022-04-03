@@ -19,6 +19,11 @@ CFILES   := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.c'))
 CXXFILES := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.cpp'))
 SFILES   := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.S'))
 
+CFLAGS   += -DZLIB_CONST -Wno-conversion
+CXXFLAGS += -DZLIB_CONST
+INCLUDE  += -I../third_party/zlib
+CFILES   += ../third_party/zlib/deflate.c
+
 OBJFILES := \
     $(patsubst %, $(OBJDIR)/%.o, $(CFILES)) \
     $(patsubst %, $(OBJDIR)/%.o, $(CXXFILES)) \
