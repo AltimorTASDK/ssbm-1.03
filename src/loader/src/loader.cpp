@@ -195,6 +195,13 @@ static void decompress(const void *in, size_t in_size, void *out, size_t out_siz
 		panic("inflate failed: %d\n", err);
 }
 
+static void *decompress(const file_entry *entry)
+{
+	auto *decompressed = HSD_MemAlloc(entry->uncompressed_len);
+	decompress(entry->data, entry->compressed_len, decompressed, entry->uncompressed_len);
+	return decompressed;
+}
+
 extern "C" [[gnu::section(".loader")]] void load_mod()
 {
 	OSReport("Running 1.03 loader\n");
@@ -221,7 +228,9 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 #elif defined(PAL)
 	const auto *diff = get_file(data, 3);
 #endif
-	const auto code_size = apply_diff(base->data, diff->data, &__MOD_BASE__);
+	const auto *base_decompressed = decompress(base);
+	const auto *diff_decompressed = decompress(diff);
+	const auto code_size = apply_diff(base_decompressed, diff_decompressed, &__MOD_BASE__);
 #else
 	auto *buffer = &__MOD_BASE__;
 	card_read("103Code", buffer);
