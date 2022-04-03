@@ -90,7 +90,7 @@ $(BINFILE): $(ELFFILE)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(OBJCOPY) -O binary $< $@
 
-$(ELFFILE): $(OBJFILES) $(LINKSCRIPT) $(MELEELD) | clean_unused
+$(ELFFILE): $(OBJFILES) $(LINKSCRIPT) $(MELEELD) loader.ld | clean_unused
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(CC) $(LDFLAGS) -T$(LINKSCRIPT) -T$(MELEELD) $(OBJFILES) -o $@
 
