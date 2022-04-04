@@ -60,17 +60,6 @@ run_loader:
         li      r5, __COPY_SIZE__
         bl      memcpy
 
-#ifdef NOPAL
-	# Copy zlib out of save region
-        lis     r3, __ZLIB_BASE__@h
-        ori     r3, r3, __ZLIB_BASE__@l
-        lis     r4, zlib_copy_base@h
-        ori     r4, r4, zlib_copy_base@l
-        lis     r5, __ZLIB_COPY_SIZE__@h
-        ori     r5, r5, __ZLIB_COPY_SIZE__@l
-        bl      memcpy
-#endif
-
         # Update instruction cache
         lis     r3, __LOAD_BASE__@h
         ori     r3, r3, __LOAD_BASE__@l
@@ -83,6 +72,30 @@ run_loader:
         lis     r4, __COPY_SIZE__@h
         ori     r4, r4, __COPY_SIZE__@l
         bl      ICInvalidateRange
+
+#ifdef NOPAL
+	# Copy zlib out of save region
+        lis     r3, __ZLIB_BASE__@h
+        ori     r3, r3, __ZLIB_BASE__@l
+        lis     r4, zlib_copy_base@h
+        ori     r4, r4, zlib_copy_base@l
+        lis     r5, __ZLIB_COPY_SIZE__@h
+        ori     r5, r5, __ZLIB_COPY_SIZE__@l
+        bl      memcpy
+
+        # Update instruction cache
+        lis     r3, __ZLIB_BASE__@h
+        ori     r3, r3, __ZLIB_BASE__@l
+        lis     r4, __ZLIB_COPY_SIZE__@h
+        ori     r4, r4, __ZLIB_COPY_SIZE__@l
+        bl      DCStoreRange
+
+        lis     r3, __ZLIB_BASE__@h
+        ori     r3, r3, __ZLIB_BASE__@l
+        lis     r4, __ZLIB_COPY_SIZE__@h
+        ori     r4, r4, __ZLIB_COPY_SIZE__@l
+        bl      ICInvalidateRange
+#endif
 
         lwz     r0, 0xC(r1)
         addi    r1, r1, 0x8
