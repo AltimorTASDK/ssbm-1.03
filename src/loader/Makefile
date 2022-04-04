@@ -57,6 +57,7 @@ endif
 endif
 
 ifeq ($(VERSION), 102)
+ifndef NOPAL
 GCIFILE20XX := $(BINDIR)/$(MODNAME)-loader-20XX.gci
 GCISRC20XX  := $(GCIDIR)/ssbm-20XX.gci
 MGCMAIN20XX := $(GCIDIR)/1.03-20XX.mgc
@@ -66,6 +67,10 @@ MGCMAINUP := $(GCIDIR)/1.03-UP.mgc
 
 .PHONY: all
 all: ssbm 20XX UP
+else
+.PHONY: all
+all: ssbm
+endif
 else
 .PHONY: all
 all: ssbm
