@@ -21,11 +21,7 @@
 #include "resources/portals/debug_menu.tex.h"
 #include "resources/portals/debug_menu_preview.tex.h"
 #include "resources/portals/manual.tex.h"
-#ifdef NOPAL
-#include "resources/portals/a/manual_preview.tex.h"
-#else
-#include "resources/portals/b/manual_preview.tex.h"
-#endif
+#include "resources/portals/manual_preview.tex.h"
 #include "resources/manual/manual_header.tex.h"
 
 enum VsMenuPortalID {
