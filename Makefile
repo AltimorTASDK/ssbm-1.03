@@ -47,6 +47,9 @@ else ifeq ($(VERSION), 102)
 export MELEELD := $(abspath GALE01r2.ld)
 export DEFINES += -DNTSC102
 else ifeq ($(VERSION), PAL)
+ifdef NOPAL
+$(error $$VERSION set to PAL, but $$NOPAL specified.)
+endif
 export MELEELD := $(abspath GALP01.ld)
 export DEFINES += -DPAL
 else
