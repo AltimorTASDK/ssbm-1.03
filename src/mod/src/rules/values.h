@@ -36,8 +36,12 @@ inline int get_air_time_limit()
 
 inline ucf_type get_ucf_type()
 {
+#ifdef UCF_TOGGLE
 	const auto *rules = GetGameRules();
 	return rules->controller_fix;
+#else
+	return ucf_type::hax;
+#endif
 }
 
 inline bool is_widescreen()

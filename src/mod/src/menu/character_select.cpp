@@ -28,10 +28,12 @@
 #include <cmath>
 #include <cstring>
 
+#ifdef UCF_TOGGLE
 #include "resources/css/banner_103.tex.h"
 #include "resources/css/banner_103_team.tex.h"
 #include "resources/css/banner_ucf.tex.h"
 #include "resources/css/banner_ucf_team.tex.h"
+#endif
 
 #include "resources/css/vs_ball_crt.tex.h"
 #include "resources/css/vs_ball_lcd.tex.h"
@@ -505,6 +507,7 @@ extern "C" void hook_CSS_Init(void *menu)
 
 static void replace_textures()
 {
+#ifdef UCF_TOGGLE
 	// Replace MELEE/TEAM BATTLE textures
 	auto *banner = MnSlChrModels->Menu.matanim_joint->child->next->next->next->child->matanim;
 
@@ -515,6 +518,7 @@ static void replace_textures()
 		pool.add_texture_swap(banner_ucf_tex_data,      banner->texanim->imagetbl[0]);
 		pool.add_texture_swap(banner_ucf_team_tex_data, banner->texanim->imagetbl[1]);
 	}
+#endif
 
 	if (is_faster_melee())
 		return;

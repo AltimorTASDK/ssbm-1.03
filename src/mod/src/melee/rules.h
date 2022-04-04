@@ -54,7 +54,6 @@ enum ExtraRule {
 	ExtraRule_Controls            = 3,
 	ExtraRule_ControllerFix       = 4,
 	ExtraRule_Latency             = 5,
-	ExtraRule_RandomStage         = 5,
 	ExtraRule_Widescreen          = 6,
 	ExtraRule_Max                 = 7
 };

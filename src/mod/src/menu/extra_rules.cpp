@@ -266,18 +266,37 @@ static const auto patches = patch_list {
 	std::pair { (char*)Menu_SetupExtraRulesMenu+0x600,                       0x38000007u },
 };
 
+extern "C" bool is_rule_visible(int index)
+{
+	switch (index) {
+	case ExtraRule_Latency:
+		return !is_faster_melee();
+#ifndef UCF_TOGGLE
+	case ExtraRule_ControllerFix:
+		return false;
+#endif
+	default:
+		return true;
+	}
+}
+
 static int get_jobj_index(int index)
 {
-	// Fix up indices if latency is hidden
-	if (!is_faster_melee() || index < ExtraRule_Latency)
-		return index;
-	else
-		return index - 1;
+	// Fix up indices for hidden rotators
+	for (auto i = 0; i < index; i++) {
+		if (!is_rule_visible(i))
+			index--;
+	}
+
+	return index;
 }
 
 static void replace_toggle_texture(ExtraRulesMenuData *data, int index, u8 *tex_data,
                                    bool force_allocation = false)
 {
+	if (!is_rule_visible(index))
+		return;
+
 	auto *tobj = data->value_jobj_trees[index].tree[1]->u.dobj->mobj->tobj;
 
 	// Force a new texture buffer to be allocated for duplicate models
@@ -296,6 +315,9 @@ static void fix_widescreen_text(ExtraRulesMenuData *data)
 
 static void set_to_rotator(ExtraRulesMenuData *data, int index)
 {
+	if (!is_rule_visible(index))
+		return;
+
 	auto *cursor = data->jobj_tree.rules[get_jobj_index(index)]->child;
 	auto [background, arrow, scroll] = HSD_JObjGetFromTreeTuple<6, 8, 13>(cursor);
 
@@ -329,6 +351,9 @@ static u8 get_model_max_value(int index)
 
 static void set_value_anim(ExtraRulesMenuData *data, int index)
 {
+	if (!is_rule_visible(index))
+		return;
+
 	// Set initial value anim frame with support for more than 3 values
 	auto *jobj = data->value_jobj_trees[index].tree[0];
 	const auto value = data->values[index];
@@ -340,6 +365,9 @@ static void set_value_anim(ExtraRulesMenuData *data, int index)
 
 static void fix_rule_scale(ExtraRulesMenuData *data, int index)
 {
+	if (!is_rule_visible(index))
+		return;
+
 	auto *cursor = data->jobj_tree.rules[get_jobj_index(index)]->child;
 	auto *label = HSD_JObjGetFromTreeByIndex(cursor, 7);
 	label->scale.x = 1.5f;
@@ -351,8 +379,7 @@ static void fix_rule_anims(ExtraRulesMenuData *data)
 	// Force same label scale for all languages
 	fix_rule_scale(data, ExtraRule_StageMods);
 	fix_rule_scale(data, ExtraRule_ControllerFix);
-	if (!is_faster_melee())
-		fix_rule_scale(data, ExtraRule_Latency);
+	fix_rule_scale(data, ExtraRule_Latency);
 	fix_rule_scale(data, ExtraRule_Widescreen);
 }
 
@@ -421,7 +448,7 @@ extern "C" void hook_Menu_UpdateExtraRuleDescriptionText(HSD_GObj *gobj,
 	const auto value = MenuSelectedValue;
 
 	// Update rules from extra rotator values
-	if (value_changed && index == ExtraRule_Latency && !is_faster_melee())
+	if (value_changed && index == ExtraRule_Latency)
 		GetGameRules()->latency = (latency_mode)value;
 
 	if (value_changed && index == ExtraRule_Widescreen)
@@ -472,10 +499,8 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 	auto *data = gobj->get<ExtraRulesMenuData>();
 
 	// Initialize extra rotators
-	if (!is_faster_melee()) {
-		data->latency = GetGameRules()->latency;
-		set_value_anim(data, ExtraRule_Latency);
-	}
+	data->latency = GetGameRules()->latency;
+	set_value_anim(data, ExtraRule_Latency);
 	data->widescreen = GetGameRules()->widescreen;
 	set_value_anim(data, ExtraRule_Widescreen);
 
@@ -493,8 +518,7 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 	replace_toggle_texture(data, ExtraRule_StageMods,     stage_mods_values_tex_data);
 	replace_toggle_texture(data, ExtraRule_Controls,      controls_values_tex_data);
 	replace_toggle_texture(data, ExtraRule_ControllerFix, controller_fix_values_tex_data, true);
-	if (!is_faster_melee())
-		replace_toggle_texture(data, ExtraRule_Latency, latency_values_tex_data);
+	replace_toggle_texture(data, ExtraRule_Latency,       latency_values_tex_data);
 
 	// Make Rl01 and Rl05 use proper additional rules position
 	fix_value_position(data, ExtraRule_StageMods);
@@ -505,10 +529,8 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 	set_value_anim(data, ExtraRule_Controls);
 
 	// Use rotator for latency (replacing random stage select)
-	if (!is_faster_melee()) {
-		set_to_rotator(data, ExtraRule_Latency);
-		set_value_anim(data, ExtraRule_Latency);
-	}
+	set_to_rotator(data, ExtraRule_Latency);
+	set_value_anim(data, ExtraRule_Latency);
 
 	// Manually apply widescreen rotator texture since there's normally no 7th texture
 	fix_widescreen_text(data);
@@ -522,7 +544,7 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 extern "C" bool orig_Menu_IsExtraRuleVisible(u8 index);
 extern "C" bool hook_Menu_IsExtraRuleVisible(u8 index)
 {
-	return index != ExtraRule_Latency || !is_faster_melee();
+	return is_rule_visible(index);
 }
 
 extern "C" void orig_Menu_ExtraRulesMenuInput(HSD_GObj *gobj);
@@ -541,17 +563,16 @@ extern "C" void hook_Menu_ExtraRulesMenuInput(HSD_GObj *gobj)
 	if (!(buttons & MenuButton_A) && (buttons & (MenuButton_B | MenuButton_Start)))
 		config.save();
 
-	if (!is_faster_melee() || MenuSelectedIndex != ExtraRule_Latency)
-		return;
+	while (!is_rule_visible(MenuSelectedIndex)) {
+		// Skip over the nonexistent rotator
+		if (buttons & MenuButton_Up)
+			MenuSelectedIndex--;
+		else
+			MenuSelectedIndex++;
 
-	// Skip over the nonexistent latency rotator on FM
-	if (buttons & MenuButton_Up)
-		MenuSelectedIndex--;
-	else
-		MenuSelectedIndex++;
-
-	const auto *data = ExtraRulesMenuGObj->get<ExtraRulesMenuData>();
-	MenuSelectedValue = data->values[MenuSelectedIndex];
+		const auto *data = ExtraRulesMenuGObj->get<ExtraRulesMenuData>();
+		MenuSelectedValue = data->values[MenuSelectedIndex];
+	}
 }
 
 extern "C" const HSD_AnimLoop &orig_Menu_GetExtraRuleValueAnimLoop(u8 index, u8 value,
