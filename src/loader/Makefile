@@ -112,7 +112,7 @@ $(ZLIBBIN): $(ELFFILE)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(OBJCOPY) -O binary -j .zlib $< $@
 
-$(ELFFILE): $(OBJFILES) $(LINKSCRIPT) $(MELEELD) loader.ld | clean_unused
+$(ELFFILE): $(OBJFILES) $(LINKSCRIPT) $(MELEELD) loader.ld ../common.ld | clean_unused
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(CC) $(LDFLAGS) -T$(LINKSCRIPT) -T$(MELEELD) $(OBJFILES) -o $@
 
