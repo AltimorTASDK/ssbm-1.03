@@ -9,7 +9,7 @@ export CC      := powerpc-eabi-gcc
 export CXX     := powerpc-eabi-g++
 export OBJCOPY := powerpc-eabi-objcopy
 
-export DEFINES := -DGEKKO
+export DEFINES += -DGEKKO
 
 ifdef MODVERSION
 ifneq ($(shell echo "$(MODVERSION)" | grep -P '^a($$|[\d-])'),)
