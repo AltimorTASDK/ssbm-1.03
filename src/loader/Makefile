@@ -15,18 +15,22 @@ ELFFILE  := $(GCIDIR)/1.03_data/loader-pal.elf
 BINFILE  := $(GCIDIR)/1.03_data/loader-pal.bin
 endif
 
+ifdef NOPAL
 ZLIBBIN  := $(GCIDIR)/1.03_data/zlib.bin
+endif
 
 CFILES   := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.c'))
 CXXFILES := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.cpp'))
 SFILES   := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.S'))
 
+ifdef NOPAL
 ZLIB     := third_party/zlib
 CFLAGS   += -DZLIB_CONST -DMY_ZCALLOC -Wno-conversion
 CXXFLAGS += -DZLIB_CONST
 INCLUDE  += -I$(ZLIB)
 CFILES   += $(ZLIB)/adler32.c $(ZLIB)/crc32.c $(ZLIB)/inffast.c $(ZLIB)/inflate.c $(ZLIB)/inftrees.c $(ZLIB)/trees.c \
             $(ZLIB)/zutil.c
+endif
 
 OBJFILES := \
     $(patsubst %, $(OBJDIR)/%.o, $(CFILES)) \
@@ -43,8 +47,13 @@ LINKSCRIPT := loader-PAL.ld
 else
 GCIFILE    := $(BINDIR)/$(MODNAME)-loader-NTSC.gci
 GCISRC     := $(GCIDIR)/ssbm-NTSC.gci
+ifdef NOPAL
+MGCMAIN    := $(GCIDIR)/1.03-NTSC-NOPAL.mgc
+LINKSCRIPT := loader-NTSC-NOPAL.ld
+else
 MGCMAIN    := $(GCIDIR)/1.03-NTSC.mgc
 LINKSCRIPT := loader-NTSC.ld
+endif
 endif
 
 ifeq ($(VERSION), 102)
@@ -70,6 +79,7 @@ $(GCIFILE): $(BINFILE) $(ZLIBBIN) $(MGCMAIN) $(GCISRC)
 	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -i $(GCISRC) -o $@ $(MGCMAIN)
 
 ifeq ($(VERSION), 102)
+ifndef NOPAL
 .PHONY: 20XX
 20XX: $(GCIFILE20XX)
 
@@ -83,6 +93,7 @@ UP: $(GCIFILEUP)
 $(GCIFILEUP): $(BINFILE) $(MGCMAINUP) $(GCISRCUP)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -i $(GCISRCUP) -o $@ $(MGCMAINUP)
+endif
 endif
 
 .PHONY: bin

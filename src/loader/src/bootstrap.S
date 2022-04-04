@@ -8,14 +8,14 @@
 .set return_address_css, CSS_LoadNameTags+0x680
 #endif
 
+#ifdef NOPAL
 #if defined(NTSC102)
 .set zlib_copy_base, __ZLIB_COPY_BASE_NTSC102__
 #elif defined(NTSC101)
 .set zlib_copy_base, __ZLIB_COPY_BASE_NTSC101__
 #elif defined(NTSC100)
 .set zlib_copy_base, __ZLIB_COPY_BASE_NTSC100__
-#elif defined(PAL)
-.set zlib_copy_base, __ZLIB_COPY_BASE_PAL__
+#endif
 #endif
 
 /*
@@ -60,6 +60,7 @@ run_loader:
         li      r5, __COPY_SIZE__
         bl      memcpy
 
+#ifdef NOPAL
 	# Copy zlib out of save region
         lis     r3, __ZLIB_BASE__@h
         ori     r3, r3, __ZLIB_BASE__@l
@@ -68,6 +69,7 @@ run_loader:
         lis     r5, __ZLIB_COPY_SIZE__@h
         ori     r5, r5, __ZLIB_COPY_SIZE__@l
         bl      memcpy
+#endif
 
         # Update instruction cache
         lis     r3, __LOAD_BASE__@h

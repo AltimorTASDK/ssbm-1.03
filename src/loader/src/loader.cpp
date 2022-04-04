@@ -12,7 +12,9 @@
 #include <gctypes.h>
 #include <ogc/cache.h>
 #include <ogc/card.h>
+#ifdef NOPAL
 #include <zlib.h>
+#endif
 
 extern "C" {
 
@@ -173,6 +175,7 @@ extern "C" void zcfree(void *opaque, void *ptr)
 	return HSD_Free(ptr);
 }
 
+#ifdef NOPAL
 static void decompress(const void *in, size_t in_size, void *out, size_t out_size)
 {
 	z_stream stream = {
@@ -201,6 +204,7 @@ static void *decompress(const file_entry *entry)
 	decompress(entry->data, entry->compressed_len, decompressed, entry->uncompressed_len);
 	return decompressed;
 }
+#endif
 
 extern "C" [[gnu::section(".loader")]] void load_mod()
 {
@@ -228,20 +232,27 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 #elif defined(PAL)
 	const auto *diff = get_file(data, 3);
 #endif
+#ifdef NOPAL
 	const auto *base_decompressed = decompress(base);
 	const auto *diff_decompressed = decompress(diff);
 	const auto code_size = apply_diff(base_decompressed, diff_decompressed, &__MOD_BASE__);
 #else
+	const auto code_size = apply_diff(base->data, diff->data, &__MOD_BASE__);
+#endif
+#else
 	auto *buffer = &__MOD_BASE__;
 	card_read("103Code", buffer);
-
 	const auto *base = get_file(buffer, 0);
 	const auto code_size = base->uncompressed_len;
 
+#ifdef NOPAL
 	// Copy compressed data past end of space reserved for uncompressed data and decompress
 	auto *compressed = (char*)base->data + base->uncompressed_len;
 	memcpy(compressed, base->data, base->uncompressed_len);
 	decompress(compressed, base->compressed_len, buffer, code_size);
+#else
+	memmove(&__MOD_BASE__, base->data, code_size);
+#endif
 #endif
 
 #if defined(PAL) || defined(NTSC102)

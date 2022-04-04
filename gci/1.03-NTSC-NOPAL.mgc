@@ -43,3 +43,10 @@ DDDDDDDD 804ee8f8 8045d930 00000000
 # 1.00 loader
 !loc 8045f8f8
 !file "1.03_data/loader-ntsc100.bin"
+
+# zlib
+# v1.02: 80461000
+# v1.01: 80460320
+# v1.00: 8045F038
+!loc 80461000
+!file "1.03_data/zlib.bin"

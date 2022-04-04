@@ -13,7 +13,7 @@ BINFILE := bin/mod-pal.bin
 endif
 
 ifdef NOPAL
-ALLBINS  := bin/mod.bin bin/mod-ntsc100.bin.diff bin/mod-ntsc101.bin.diff
+ALLBINS  := --compress bin/mod.bin bin/mod-ntsc100.bin.diff bin/mod-ntsc101.bin.diff
 else
 ALLBINS  := bin/mod.bin bin/mod-ntsc100.bin.diff bin/mod-ntsc101.bin.diff bin/mod-pal.bin.diff
 endif

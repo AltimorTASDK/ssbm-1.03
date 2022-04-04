@@ -84,8 +84,12 @@ def main():
         sys.exit(1)
 
     data = title.encode().ljust(TITLE_SIZE, b'\0')
+    compress = False
 
     for path in in_files:
+        if path == "--compress":
+            compress = True
+            continue
         # Write compressed and uncompressed size of each file followed by
         # compressed contents
         try:
@@ -97,7 +101,11 @@ def main():
                   file=sys.stderr)
             continue
 
-        compressed = zlib.compress(in_data, level=zlib.Z_BEST_COMPRESSION)
+        if compress:
+            compressed = zlib.compress(in_data, level=zlib.Z_BEST_COMPRESSION)
+        else:
+            compressed = in_data
+
         data += struct.pack(">II", len(compressed), len(in_data)) + compressed
 
     if len(banner) != 0:
