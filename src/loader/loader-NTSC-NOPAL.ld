@@ -38,6 +38,7 @@ SECTIONS
     PROVIDE(__ZLIB_COPY_SIZE__ = SIZEOF(.zlib));
 
     .zalloc : {      *(.zalloc .zalloc.*)  } >load AT>bootstrap
+    .lib    : {  *crtresxgpr.o(.text*)     } >load AT>bootstrap
     .loader : { KEEP(*(.loader .loader.*)) } >load AT>bootstrap
     .text   : {      *(.text   .text.*)    } >load AT>bootstrap
     .rodata : {      *(.rodata .rodata.*)  } >load AT>bootstrap

@@ -166,15 +166,9 @@ const file_entry *get_file(const void *data, int index)
 }
 
 #ifdef NOPAL
-extern "C" void *zcalloc(void *opaque, u32 items, u32 size);
-extern "C" void zcfree(void *opaque, void *ptr);
-
 static void decompress(const void *in, size_t in_size, void *out, size_t out_size)
 {
-	z_stream stream = {
-		.zalloc = NULL,
-		.zfree  = NULL
-	};
+	z_stream stream = { 0 };
 
 	if (const auto err = inflateInit(&stream); err != Z_OK)
 		panic("inflateInit failed: %d\n", err);
