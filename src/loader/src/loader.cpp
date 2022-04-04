@@ -198,12 +198,14 @@ static void decompress(const void *in, size_t in_size, void *out, size_t out_siz
 		panic("inflate failed: %d\n", err);
 }
 
+#ifndef NTSC102
 static void *decompress(const file_entry *entry)
 {
 	auto *decompressed = HSD_MemAlloc(entry->uncompressed_len);
 	decompress(entry->data, entry->compressed_len, decompressed, entry->uncompressed_len);
 	return decompressed;
 }
+#endif
 #endif
 
 extern "C" [[gnu::section(".loader")]] void load_mod()
