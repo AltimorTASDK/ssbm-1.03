@@ -37,16 +37,17 @@ SECTIONS
 
     PROVIDE(__ZLIB_COPY_SIZE__ = SIZEOF(.zlib));
 
+    .zalloc : {      *(.zalloc .zalloc.*)  } >load AT>bootstrap
     .loader : { KEEP(*(.loader .loader.*)) } >load AT>bootstrap
     .text   : {      *(.text   .text.*)    } >load AT>bootstrap
     .rodata : {      *(.rodata .rodata.*)  } >load AT>bootstrap
-    .ctors  : { KEEP(*(.ctors  .ctors.*))  } >load AT>bootstrap
     .data   : {      *(.data   .data.*)    } >load AT>bootstrap
     .bss    : {      *(.bss    .bss.*)     } >load AT>bootstrap
-    PROVIDE(__BSS_START__ = ADDR(.bss));
-    PROVIDE(__BSS_SIZE__  = SIZEOF(.bss));
-    PROVIDE(__COPY_START__ = LOADADDR(.loader));
-    PROVIDE(__COPY_SIZE__ = __BSS_START__ - __LOAD_BASE__);
+    PROVIDE(__BSS_START__  = ADDR(.bss));
+    PROVIDE(__BSS_SIZE__   = SIZEOF(.bss));
+    PROVIDE(__COPY_START__ = LOADADDR(.zalloc));
+    PROVIDE(__COPY_SIZE__  = __BSS_START__ - __LOAD_BASE__);
+    PROVIDE(__ENTRY__      = ADDR(.loader));
 
     /DISCARD/ : { *(*) }
 }

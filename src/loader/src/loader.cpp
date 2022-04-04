@@ -165,22 +165,15 @@ const file_entry *get_file(const void *data, int index)
 	return entry;
 }
 
-extern "C" void *zcalloc(void *opaque, u32 items, u32 size)
-{
-	return HSD_MemAlloc(items * size);
-}
-
-extern "C" void zcfree(void *opaque, void *ptr)
-{
-	return HSD_Free(ptr);
-}
-
 #ifdef NOPAL
+extern "C" void *zcalloc(void *opaque, u32 items, u32 size);
+extern "C" void zcfree(void *opaque, void *ptr);
+
 static void decompress(const void *in, size_t in_size, void *out, size_t out_size)
 {
 	z_stream stream = {
-		.zalloc = zcalloc,
-		.zfree  = zcfree
+		.zalloc = NULL,
+		.zfree  = NULL
 	};
 
 	if (const auto err = inflateInit(&stream); err != Z_OK)

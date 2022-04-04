@@ -102,4 +102,4 @@ run_loader:
         mtlr    r0
 
         # Run loader
-        b      __LOAD_BASE__
+        b      __ENTRY__
