@@ -249,11 +249,11 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 
 #ifdef NOPAL
 	// Copy compressed data past end of space reserved for uncompressed data and decompress
-	auto *compressed = (char*)base->data + base->uncompressed_len;
-	memcpy(compressed, base->data, base->uncompressed_len);
+	auto *compressed = (char*)base->data + code_size;
+	memcpy(compressed, base->data, code_size);
 	decompress(compressed, base->compressed_len, buffer, code_size);
 #else
-	memmove(&__MOD_BASE__, base->data, code_size);
+	memmove(buffer, base->data, code_size);
 #endif
 #endif
 
