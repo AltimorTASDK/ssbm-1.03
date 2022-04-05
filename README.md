@@ -3,7 +3,7 @@
 ## Overview
 
 1.03 consists of a loader, located in `src/loader`, which is built into a Melee
-save file using davsalvato's Melee GCI Compiler, and the mod itself, located in
+save file using dansalvato's Melee GCI Compiler, and the mod itself, located in
 `src/mod`.
 
 The loader is executed upon entering *Name Entry* using the standard nametag
