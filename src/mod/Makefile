@@ -70,7 +70,7 @@ ifeq ($(VERSION), 102)
 	rm -f bin/mod-pal.bin.diff
 endif
 
-$(ELFFILE): $(RESOURCES_H_OUT) $(TEXTURES_H_OUT) $(OBJFILES) $(LINKSCRIPT) $(MELEELD) ../common.ld | clean_unused
+$(ELFFILE): $(OBJFILES) $(LINKSCRIPT) $(MELEELD) ../common.ld | resources clean_unused
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(CC) $(LDFLAGS) -T$(LINKSCRIPT) -T$(MELEELD) $(OBJFILES) -o $@
 

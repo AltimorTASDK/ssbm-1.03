@@ -80,16 +80,16 @@ export INCLUDE  := -I$(SOURCES) -I$(abspath src/mod/$(SOURCES)) -I$(DEVKITPATH)/
 .PHONY: all
 all: loader mod
 
-.PHONY: loader clean_tmp
-loader: $(MELEELD)
+.PHONY: loader
+loader: $(MELEELD) clean_tmp
 	+@cd src/loader && $(MAKE)
 
 .PHONY: mod
-mod: $(MELEELD) clean_tmp
+mod: $(MELEELD)
 	+@cd src/mod && $(MAKE)
 
 .PHONY: resources
-resources: $(MELEELD)
+resources:
 	+@cd src/mod && $(MAKE) resources
 
 $(MELEELD): $(MELEEMAP) $(TOOLS)/map_to_linker_script.py
