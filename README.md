@@ -20,7 +20,7 @@ fit in a Melee save file.
 
 ## Build environment
 
-You need to have (https://devkitpro.org/wiki/Getting_Started)[devkitPro]
+You need to have [devkitPro](https://devkitpro.org/wiki/Getting_Started)
 installed, and the environment variable `DEVKITPRO` must be set to your
 devkitPro install path.
 
