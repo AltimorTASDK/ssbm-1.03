@@ -1,6 +1,6 @@
 [submodule "tools/melee-gci-compiler"]
 	path = tools/melee-gci-compiler
 	url = https://github.com/AltimorTASDK/melee-gci-compiler
-[submodule "src/third_party/zlib"]
-	path = src/third_party/zlib
+[submodule "src/loader/third_party/zlib"]
+	path = src/loader/third_party/zlib
 	url = https://github.com/madler/zlib
