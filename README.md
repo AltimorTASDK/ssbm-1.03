@@ -24,6 +24,11 @@ You need to have [devkitPro](https://devkitpro.org/wiki/Getting_Started)
 installed, and the environment variable `DEVKITPRO` must be set to your
 devkitPro install path.
 
+You need at least Python 3.6.
+
+You need to install the `pypng` Python library.
+* Example: `pip install pypng`
+
 ## Building
 
 Invoke `make` with `VERSION` set to one of `102`, `101`, `100`, or `PAL`. This
