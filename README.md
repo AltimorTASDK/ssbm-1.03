@@ -45,9 +45,20 @@ is implied.
 at the start or after a hyphen, `BETA` is implied.
 * * Example: `MODVERSION=b3.4-beta1`
 
+`USERDEFS` may be specified to supply additional preprocessor macros. Additional
+functionality may be added using the following macros:
+
+* `CYAN_CSS_READY` - Recolor the "Ready to fight!" banner to cyan
+* `OLD_CSS_TOGGLES` - Allow CSS toggles for 1.03 controls like the first version
+of 1.03
+* `POLL_DEBUG` - Show debug information on the game's input poll/fetch timing
+and latency
+* `POLL_DEBUG_VERBOSE` - Show additional poll debug info
+* `UCF_TOGGLE` - Reinstate the UCF toggle in the additional rules menu
+
 **Example `make` command:**
 
-    make -j8 VERSION=PAL MODVERSION=b3.4
+    make -j8 USERDEFS=OLD_CSS_TOGGLES VERSION=PAL MODVERSION=b3.4
 
 NTSC 1.02 must be built before any other versions, as all other versions are
 stored as a diff against the 1.02 build.  If the 1.02 version is rebuilt, all
