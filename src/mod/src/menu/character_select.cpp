@@ -306,6 +306,10 @@ static void perfect_angles_toggle(u8 port)
 
 	check_css_toggle(port, &toggle_timers[port].perfect_angles,
 		[&] {
+			// Check if legal
+			if (get_controls() == controls_type::z_jump)
+				return false;
+
 			// Check if already using PWD
 			if (config->perfect_angles)
 				return false;
@@ -327,6 +331,10 @@ static void c_up_toggle(u8 port)
 
 	check_css_toggle(port, &toggle_timers[port].c_up,
 		[&] {
+			// Check if legal
+			if (get_controls() != controls_type::all)
+				return false;
+
 			// Check if already using cstick utilt
 			if (config->c_up == cstick_type::tilt)
 				return false;
@@ -346,6 +354,10 @@ static void c_horizontal_toggle(u8 port)
 
 	check_css_toggle(port, &toggle_timers[port].c_horizontal,
 		[&] {
+			// Check if legal
+			if (get_controls() != controls_type::all)
+				return false;
+
 			// Check if already using cstick ftilt
 			if (config->c_horizontal == cstick_type::tilt)
 				return false;
@@ -365,6 +377,10 @@ static void c_down_toggle(u8 port)
 
 	check_css_toggle(port, &toggle_timers[port].c_down,
 		[&] {
+			// Check if legal
+			if (get_controls() != controls_type::all)
+				return false;
+
 			// Check if already using cstick dtilt
 			if (config->c_down == cstick_type::tilt)
 				return false;
@@ -384,6 +400,10 @@ static void tap_jump_toggle(u8 port)
 
 	check_css_toggle(port, &toggle_timers[port].tap_jump,
 		[&] {
+			// Check if legal
+			if (get_controls() != controls_type::all)
+				return false;
+
 			// Check if tap jump is already disabled
 			if (!config->tap_jump)
 				return false;
