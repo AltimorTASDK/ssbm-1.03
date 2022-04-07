@@ -283,7 +283,7 @@ extern "C" bool is_rule_visible(int index)
 static int get_jobj_index(int index)
 {
 	// Fix up indices for hidden rotators
-	for (auto i = 0; i < index; i++) {
+	for (auto i = index - 1; i >= 0; i--) {
 		if (!is_rule_visible(i))
 			index--;
 	}
