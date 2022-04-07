@@ -7,7 +7,5 @@
 hook_CheckStockStealInput:
         # r0 = buttons
         andi.   r0, r0, Button_A | Button_Start
-        
-end:
         # Skip overwritten instruction
         b       orig_CheckStockStealInput+4
