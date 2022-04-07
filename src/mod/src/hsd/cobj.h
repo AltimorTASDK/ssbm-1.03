@@ -99,10 +99,7 @@ inline const auto canvas_cobjdesc = HSD_CObjDesc {
 	.eye_position    = &canvas_eye,
 	.interest        = &canvas_interest,
 	.far             = 65535,
-	.ortho = {
-		.bottom  = -480,
-		.right   = 640
-	}
+	.ortho           = { 0, -480, 0, 640 }
 };
 
 inline const auto canvas_cobjdesc_wide = HSD_CObjDesc {
@@ -114,11 +111,7 @@ inline const auto canvas_cobjdesc_wide = HSD_CObjDesc {
 	.eye_position    = &canvas_eye,
 	.interest        = &canvas_interest,
 	.far             = 65535,
-	.ortho = {
-		.bottom  = -480,
-		.left    = ortho_left_wide,
-		.right   = ortho_right_wide,
-	}
+	.ortho           = { 0, -480, ortho_left_wide, ortho_right_wide }
 };
 
 extern "C" {
