@@ -9,6 +9,7 @@ export CC      := powerpc-eabi-gcc
 export CXX     := powerpc-eabi-g++
 export OBJCOPY := powerpc-eabi-objcopy
 
+export DEFINES := $(foreach def, $(USERDEFS), -D$(def))
 export DEFINES += -DGEKKO
 
 ifdef MODVERSION
