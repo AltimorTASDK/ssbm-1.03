@@ -29,6 +29,9 @@ You need at least Python 3.6.
 You need to install the `pypng` Python library.
 * Example: `pip install pypng`
 
+All submodules in the 1.03 repo must be cloned.
+* Example: `git submodule update --init --recursive`
+
 ## Building
 
 Invoke `make` with `VERSION` set to one of `102`, `101`, `100`, or `PAL`. This
