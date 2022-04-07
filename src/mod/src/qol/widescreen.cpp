@@ -54,14 +54,14 @@ extern "C" int orig_CObjLoad(HSD_CObj *cobj, HSD_CObjDesc *desc);
 extern "C" int hook_CObjLoad(HSD_CObj *cobj, HSD_CObjDesc *desc)
 {
 	const auto result = orig_CObjLoad(cobj, desc);
-	
+
 	// Don't prevent screen flash from covering screen
 	if (desc == &ScreenFlashCObjDesc)
 		return result;
-	
+
 	if (is_widescreen() && cobj->projection_type == ProjType_Perspective)
-		cobj->perspective.aspect *= aspect_ratio_factor;
-	
+		cobj->u.perspective.aspect *= aspect_ratio_factor;
+
 	return result;
 }
 
@@ -69,12 +69,12 @@ extern "C" bool orig_CmSubject_WorldToScreen(const CmSubject *subject, vec2 *out
 extern "C" bool hook_CmSubject_WorldToScreen(const CmSubject *subject, vec2 *out)
 {
 	auto *cobj = MainCamera.gobj->get_hsd_obj<HSD_CObj>();
-	
+
 	// Perform off screen check with the original aspect ratio
-	const auto old_aspect = cobj->perspective.aspect;
-	cobj->perspective.aspect = aspect_ratio_vanilla;
+	const auto old_aspect = cobj->u.perspective.aspect;
+	cobj->u.perspective.aspect = aspect_ratio_vanilla;
 	const auto on_screen = orig_CmSubject_WorldToScreen(subject, out);
-	cobj->perspective.aspect = old_aspect;
+	cobj->u.perspective.aspect = old_aspect;
 
 	orig_CmSubject_WorldToScreen(subject, out);
 	return on_screen;
@@ -94,7 +94,7 @@ extern "C" void orig_TrainingMenu_Create();
 extern "C" void hook_TrainingMenu_Create()
 {
 	orig_TrainingMenu_Create();
-	
+
 	if (is_widescreen()) {
 		TrainingMenu.item_text->aspect.x /= aspect_ratio_factor;
 		TrainingMenu.item_text->default_scale.x /= aspect_ratio_factor;
@@ -105,7 +105,7 @@ extern "C" void orig_TrainingMenu_Think();
 extern "C" void hook_TrainingMenu_Think()
 {
 	orig_TrainingMenu_Think();
-	
+
 	if (!is_widescreen())
 		return;
 
@@ -130,7 +130,7 @@ extern "C" void hook_TrainingMenu_Think()
 			break;
 		}
 	}
-	
+
 	// Move item text to accomodate stretched viewport
 	TrainingMenu.item_text->trans.x /= aspect_ratio_factor;
 }
@@ -139,7 +139,7 @@ extern "C" void orig_NameTag_SetupForPlayer(u32 port);
 extern "C" void hook_NameTag_SetupForPlayer(u32 port)
 {
 	orig_NameTag_SetupForPlayer(port);
-	
+
 	// Scale nametag background
 	if (is_widescreen())
 		NameTagGObjs[port]->get_hsd_obj<HSD_JObj>()->scale.x /= aspect_ratio_factor;
