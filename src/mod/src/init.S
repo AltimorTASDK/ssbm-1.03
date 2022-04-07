@@ -347,7 +347,7 @@ add_hook CSS_ChooseTopString
 add_hook CSS_Init
 add_hook CSS_PlayerThink
 add_hook CSS_Setup
-#ifdef USE_OLD_CSS_TOGGLES
+#ifdef OLD_CSS_TOGGLES
 add_hook CSS_UpdatePortrait
 #endif
 # Settings lock
