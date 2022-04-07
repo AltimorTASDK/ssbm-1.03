@@ -70,16 +70,16 @@ ifeq ($(VERSION), 102)
 	rm -f bin/mod-pal.bin.diff
 endif
 
-$(ELFFILE): $(OBJFILES) $(LINKSCRIPT) $(MELEELD) ../common.ld | resources clean_unused
+$(ELFFILE): $(OBJFILES) $(LINKSCRIPT) $(MELEELD) ../common.ld | clean_unused
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(CC) $(LDFLAGS) -T$(LINKSCRIPT) -T$(MELEELD) $(OBJFILES) -o $@
 
-$(OBJDIR)/%.c.o: %.c
+$(OBJDIR)/%.c.o: %.c | resources
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	@[ -d $(subst $(OBJDIR), $(DEPDIR), $(@D)) ] || mkdir -p $(subst $(OBJDIR), $(DEPDIR), $(@D))
 	$(CC) -MMD -MP -MF $(patsubst $(OBJDIR)/%.o, $(DEPDIR)/%.d, $@) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
-$(OBJDIR)/%.cpp.o: %.cpp
+$(OBJDIR)/%.cpp.o: %.cpp | resources
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	@[ -d $(subst $(OBJDIR), $(DEPDIR), $(@D)) ] || mkdir -p $(subst $(OBJDIR), $(DEPDIR), $(@D))
 	$(CXX) -MMD -MP -MF $(patsubst $(OBJDIR)/%.o, $(DEPDIR)/%.d, $@) $(CXXFLAGS) $(INCLUDE) -c $< -o $@
