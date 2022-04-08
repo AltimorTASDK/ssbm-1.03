@@ -1,5 +1,6 @@
 #include "hsd/gobj.h"
 #include "hsd/pad.h"
+#include "os/thread.h"
 #include "melee/scene.h"
 #include "util/patch_list.h"
 
@@ -9,6 +10,8 @@ extern "C" char MnSlMapPath[];
 
 extern "C" void Stage_Fountain_Init();
 extern "C" void Scene_Match_Exit(SceneMinorData *data, u8 victory_screen, u8 sudden_death);
+extern "C" void Scene_RunLoop(void(*think_callback)());
+extern "C" void VIRetraceHandler(u16 irq, OSContext *ctx);
 
 extern "C" bool is_20XX()
 {
@@ -29,6 +32,13 @@ extern "C" bool is_20XX()
 		// Disable 20XX's lagless FoD patch
 		// stwu r1, -8(r1)
 		std::pair { (char*)Stage_Fountain_Init+0x8, 0x9421FFF8u },
+		// Disable 20XX's built in half frame lag reduction
+		// bl MCCUpdate
+		std::pair { (char*)Scene_RunLoop+0x64,      0x481EE0E9u },
+		// li r3, 0
+		std::pair { (char*)Scene_RunLoop+0x31C,     0x38600000u },
+		// subi r3, r13, 0x4278
+		std::pair { (char*)VIRetraceHandler+0x1FC,  0x386DBD88u },
 	};
 }
 
