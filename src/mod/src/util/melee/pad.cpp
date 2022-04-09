@@ -22,6 +22,7 @@ static ptrdiff_t get_nana_write_index(const Player *nana)
 }
 
 namespace detail {
+
 const PADStatus &get_input_impl(int port, int offset)
 {
 	// index is guaranteed to be in range [0, 8], avoid modulo
@@ -41,7 +42,8 @@ const PADStatus &get_nana_input_impl(const Player *nana, int offset)
 
 	return nana_hw_buffer[nana->slot][index];
 }
-}
+
+} // namespace detail
 
 extern "C" void orig_Player_Nana_RecordPopoData(Player *popo, Player *nana);
 extern "C" void hook_Player_Nana_RecordPopoData(Player *popo, Player *nana)

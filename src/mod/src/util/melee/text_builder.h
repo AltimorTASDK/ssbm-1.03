@@ -162,4 +162,4 @@ constexpr auto build(auto &&...components)
 	return array_cat(components..., std::array { (char)text_opcode::end });
 }
 
-}
+} // namespace text_builder

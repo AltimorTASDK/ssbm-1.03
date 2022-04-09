@@ -7,9 +7,11 @@
 #include <type_traits>
 
 namespace math {
+
 constexpr auto pi = 3.14159265f;
 constexpr auto tau = pi * 2;
-}
+
+} // namespace math
 
 constexpr auto align_down(auto value, auto alignment)
 {

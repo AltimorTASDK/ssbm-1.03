@@ -24,4 +24,4 @@ constexpr auto mod_eq = [](auto &a, auto &&b) { return a %= b; };
 constexpr auto min = [](auto &a, auto &&b) { return std::min(a, b); };
 constexpr auto max = [](auto &a, auto &&b) { return std::max(a, b); };
 
-}
+} // namespace operators

@@ -250,12 +250,14 @@ constexpr auto zip_apply(auto &&callable, auto &&...tuples)
 }
 
 namespace detail {
+
 constexpr auto array_cat_impl(size_t offset, auto &result, auto &&head, auto &&...tail) {
 	std::copy(head.begin(), head.end(), result.begin() + offset);
 	if constexpr (sizeof...(tail) != 0)
 		array_cat_impl(offset + head.size(), result, tail...);
 };
-}
+
+} // namespace detail
 
 template<typename T, size_t ...sizes>
 constexpr auto array_cat(const std::array<T, sizes> &...arrays)

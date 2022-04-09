@@ -23,9 +23,11 @@ constexpr auto XSMASH_THRESHOLD = .8000f;
 constexpr auto YSMASH_THRESHOLD = .6625f;
 
 namespace detail {
+
 const PADStatus &get_input_impl(int port, int offset);
 const PADStatus &get_nana_input_impl(const Player *nana, int offset);
-}
+
+} // namespace detail
 
 template<int offset>
 inline const PADStatus &get_input(int port)
