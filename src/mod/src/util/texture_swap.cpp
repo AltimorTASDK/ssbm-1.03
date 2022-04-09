@@ -164,7 +164,7 @@ u8 *unmanaged_texture_swap(const u8 *data, HSD_ImageDesc *image)
 	const auto new_size = GX_GetTexBufferSize(tex->width, tex->height, tex->format,
 	                                          GX_FALSE, 0);
 
-	image->width = tex->width;
+	image->width  = tex->width;
 	image->height = tex->height;
 	image->format = tex->format;
 
