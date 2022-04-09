@@ -373,4 +373,4 @@ void AS_024_KneeBend(HSD_GObj *gobj, u32 jump_type);
 void AS_029_Fall(HSD_GObj *gobj);
 void AS_041_SquatRv(HSD_GObj *gobj);
 
-}
+} // extern "C"

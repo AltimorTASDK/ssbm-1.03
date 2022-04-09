@@ -129,4 +129,4 @@ void HSD_CObjGetViewingMtx(const HSD_CObj *cobj, Mtx out);
 
 void HSD_CObjTransform(HSD_CObj *cobj, const vec3 &in, vec3 *out, bool recalc_mtx);
 
-}
+} // extern "C"

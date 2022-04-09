@@ -106,7 +106,7 @@ void Menu_MainMenuTransition(u32 menu_type, u16 index, u8 state);
 
 void Menu_SetGObjPrio(HSD_GObj *gobj);
 
-}
+} // extern "C"
 
 // Call Menu_GetButtons without affecting the input cooldown
 inline u32 Menu_GetButtonsHelper(u32 port)

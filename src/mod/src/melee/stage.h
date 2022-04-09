@@ -80,4 +80,4 @@ f32 Stage_GetCameraLimitRight();
 f32 Stage_GetCameraLimitTop();
 f32 Stage_GetCameraLimitBottom();
 
-}
+} // extern "C"

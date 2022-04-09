@@ -56,4 +56,4 @@ void HSD_VICopyXFBASync(u32 pass);
 VIRetraceCallback *HSD_VISetUserPreRetraceCallback(VIRetraceCallback *cb);
 VIRetraceCallback *HSD_VISetUserPostRetraceCallback(VIRetraceCallback *cb);
 
-}
+} // extern "C"

@@ -21,7 +21,7 @@ struct vi_regdef {
 	u16 scan_v;
 	display_interrupt display_int[4];
 };
-	
+
 inline volatile auto *vi_regs = (vi_regdef*)0xCC002000;
 
 extern "C" {
@@ -31,4 +31,4 @@ u32 VIGetRetraceCount();
 void VIWaitForRetrace();
 void VISetNextFrameBuffer(void *buffer);
 
-}
+} // extern "C"

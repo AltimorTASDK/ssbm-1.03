@@ -15,7 +15,7 @@ struct OSAlarm {
 };
 
 extern "C" {
-	
+
 void OSCancelAlarm(OSAlarm *alarm);
-	
-}
+
+} // extern "C"

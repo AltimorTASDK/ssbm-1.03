@@ -84,7 +84,7 @@ struct HSD_AnimLoop {
 };
 
 extern "C" {
-	
+
 HSD_JObj *HSD_JObjLoadDesc(const HSD_JObjDesc *desc);
 
 void HSD_JObjAddAnimAll(HSD_JObj *jobj, const HSD_AnimJoint *animjoint,
@@ -115,7 +115,7 @@ void HSD_JObjClearFlagsAll(HSD_JObj *jobj, u32 flags);
 void HSD_JObjGetFromTreeByIndices(const HSD_JObj *jobj, HSD_JObj **out_list,
                                   const u16 *indices, s32 count);
 
-}
+} // extern "C"
 
 // Helper function to get single jobj
 inline HSD_JObj *HSD_JObjGetFromTreeByIndex(const HSD_JObj *jobj, u16 index)
@@ -169,7 +169,7 @@ inline void HSD_JObjWalkTree(HSD_JObj *jobj, auto &&callable)
 {
 	while (true) {
 		callable(jobj);
-		
+
 		if (jobj->child != nullptr) {
 			jobj = jobj->child;
 			continue;
@@ -181,7 +181,7 @@ inline void HSD_JObjWalkTree(HSD_JObj *jobj, auto &&callable)
 			if (jobj == nullptr)
 				return;
 		}
-		
+
 		jobj = jobj->next;
 	}
 }

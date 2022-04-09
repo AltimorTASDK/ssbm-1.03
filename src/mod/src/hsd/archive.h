@@ -81,7 +81,7 @@ HSD_Archive *HSD_ArchiveLoadAndGetSymbols(const char *path, ...);
 void *HSD_ArchiveGetSymbol(const HSD_Archive *archive, const char *symbol);
 void HSD_ArchiveGetSymbols(const HSD_Archive *archive, ...);
 
-}
+} // extern "C"
 
 template<typename T>
 inline T *HSD_ArchiveGetSymbol(const HSD_Archive *archive, const char *symbol)
@@ -100,6 +100,6 @@ inline ArchiveModel HSD_ArchiveGetModel(const HSD_Archive *archive)
 		&result.animjoint,       string_literal(name.value, "_animjoint"),
 		&result.matanim_joint,   string_literal(name.value, "_matanim_joint"),
 		&result.shapeanim_joint, string_literal(name.value, "_shapeanim_joint"));
-		
+
 	return result;
 }

@@ -24,4 +24,4 @@ extern card_block cardmap[2];
 
 void __CARDSetDiskID(const char gamecode[6]);
 
-}
+} // extern "C"

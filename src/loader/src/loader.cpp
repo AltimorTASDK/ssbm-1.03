@@ -37,7 +37,7 @@ void InitCardBuffers();
 u32 MemoryCard_DoLoadData();
 void ApplySoundBalance();
 
-}
+} // extern "C"
 
 static card_file file;
 static card_stat stats;

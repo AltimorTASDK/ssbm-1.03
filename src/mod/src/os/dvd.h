@@ -6,4 +6,4 @@ extern "C" {
 
 u32 DVDConvertPathToEntrynum(const char *path);
 
-}
+} // extern "C"

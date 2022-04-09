@@ -68,4 +68,4 @@ void HSD_AObjWalkTree(void *obj, u32 obj_type, u32 obj_mask, auto *callback, u32
 
 void HSD_AObjStopAnim(HSD_AObj *aobj, void *obj, void (*callback)());
 
-}
+} // extern "C"

@@ -15,4 +15,4 @@ void *HSD_MemAllocFromHeap(u32 heap, u32 size);
 void HSD_Free(void *ptr);
 void HSD_FreeToHeap(u32 heap, void *ptr);
 
-}
+} // extern "C"

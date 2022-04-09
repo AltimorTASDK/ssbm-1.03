@@ -15,4 +15,4 @@ u64 OSGetTime();
 bool OSDisableInterrupts();
 void OSRestoreInterrupts(bool level);
 
-}
+} // extern "C"

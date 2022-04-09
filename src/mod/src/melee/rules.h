@@ -108,4 +108,4 @@ extern struct {
 
 GameRules *GetGameRules();
 
-}
+} // extern "C"

@@ -436,7 +436,7 @@ void Player_ASChange(HSD_GObj *gobj, u32 new_state, u32 flags, HSD_GObj *parent,
 bool GetPortRumbleFlag(u32 port);
 void SetPortRumbleFlag(u32 port, bool flag);
 
-}
+} // extern "C"
 
 // Returns Popo's port if given a Nana pointer
 inline u8 Player_GetPort(const Player *player)

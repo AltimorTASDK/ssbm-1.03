@@ -65,4 +65,4 @@ bool SIEnablePollingInterrupt(bool enable);
 
 extern SIData Si;
 
-}
+} // extern "C"

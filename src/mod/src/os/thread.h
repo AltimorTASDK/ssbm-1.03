@@ -15,10 +15,10 @@ struct OSThreadQueue {
 };
 
 extern "C" {
-	
+
 extern OSThread *CurrentThread;
 
 void OSSleepThread(OSThreadQueue *queue);
 void OSWakeupThread(OSThreadQueue *queue);
 
-}
+} // extern "C"

@@ -63,4 +63,4 @@ extern char CurrentBGMPath[64];
 s32 PlayBGM(s32 bgm);
 s32 Menu_GetBGM();
 
-}
+} // extern "C"

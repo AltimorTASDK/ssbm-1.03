@@ -24,4 +24,4 @@ void OSDestroyHeap(s32 heap);
 void *OSAllocFromHeap(s32 heap, u32 size);
 void OSFreeToHeap(s32 heap, void *buf);
 
-}
+} // extern "C"

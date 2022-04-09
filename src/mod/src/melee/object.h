@@ -116,4 +116,4 @@ bool Physics_Collision_Air_StayAirborne(Physics *phys);
 
 bool Collision_GetLineSpeed(s32 line, const vec3 &position, vec3 *speed);
 
-}
+} // extern "C"

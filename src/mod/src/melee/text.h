@@ -129,4 +129,4 @@ void DevelopText_SetCursor(DevText *text, s32 x, s32 y);
 void DevelopText_Printf(DevText *text, const char *fmt, ...);
 void DevelopText_Print(DevText *text, const char *buf);
 
-}
+} // extern "C"

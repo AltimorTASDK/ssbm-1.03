@@ -98,4 +98,4 @@ extern PadLibData HSD_PadLibData;
 
 void HSD_PadRumble(u32 port, s32 id1, s32 id2, s32 duration);
 
-}
+} // extern "C"

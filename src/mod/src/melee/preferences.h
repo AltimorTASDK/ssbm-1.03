@@ -13,4 +13,4 @@ extern "C" {
 SavedPreferences *GetSavedPreferences();
 bool IsLanguageUS();
 
-}
+} // extern "C"

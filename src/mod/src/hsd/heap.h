@@ -22,4 +22,4 @@ extern void *default_hsd_heap_arena_lo;
 extern void *default_hsd_heap_arena_hi;
 extern HSD_Heap hsd_heap_list[6];
 
-}
+} // extern "C"

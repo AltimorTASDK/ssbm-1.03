@@ -83,7 +83,7 @@ struct HSD_GObj {
 	{
 		return static_cast<T*>(hsd_obj);
 	}
-	
+
 	template<typename T>
 	const T *get_hsd_obj() const
 	{
@@ -95,7 +95,7 @@ struct HSD_GObj {
 	{
 		return static_cast<T*>(data);
 	}
-	
+
 	template<typename T>
 	const T *get() const
 	{
@@ -134,4 +134,4 @@ void GObj_GXProcJoint(HSD_GObj *gobj, u32 pass);
 void GObj_GXProcFog(HSD_GObj *gobj, u32 pass);
 void GObj_GXProcCamera(HSD_GObj *gobj, u32 pass);
 
-}
+} // extern "C"

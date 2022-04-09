@@ -70,4 +70,4 @@ bool Scene_CheckPauseFlag(u32 flag);
 void Scene_SetMajorPending(u8 scene);
 void *Scene_GetExitData();
 
-}
+} // extern "C"
