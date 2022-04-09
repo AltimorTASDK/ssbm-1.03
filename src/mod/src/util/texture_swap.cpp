@@ -73,6 +73,9 @@ u8 *rle_decode(const rle_data *rle, u8 *out = nullptr)
 		}
 	}
 
+	if (out_idx > out_len)
+		PANIC("RLE decoding buffer overflow");
+
 	DCStoreRange(out, out_len);
 
 	return out;
