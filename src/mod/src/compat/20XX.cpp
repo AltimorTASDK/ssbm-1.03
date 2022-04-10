@@ -16,8 +16,7 @@ extern "C" void VIRetraceHandler(u16 irq, OSContext *ctx);
 extern "C" bool is_20XX()
 {
 	// XXperSmashBros
-	static const auto result = SaveFileName[0] == 'X' && SaveFileName[1] == 'X';
-	return result;
+	return *(u16*)&SaveFileName == 'XX';
 }
 
 [[gnu::constructor]] static void check_20XX()

@@ -21,8 +21,7 @@ extern "C" void Scene_Match_Exit(SceneMinorData *data, u8 victory_screen, u8 sud
 extern "C" bool is_unclepunch()
 {
 	// Check for UP gamecode
-	static const auto result = memcmp(__GameCode, "GTME", 4) == 0;
-	return result;
+	return *(u32*)&__GameCode == 'GTME';
 }
 
 [[gnu::constructor]] static void check_unclepunch()
