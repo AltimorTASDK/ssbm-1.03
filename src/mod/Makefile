@@ -93,8 +93,8 @@ RESOURCE_DIR_IN  := resources
 RESOURCE_DIR_OUT := $(SOURCES)/resources
 RESOURCES        := $(foreach dir, $(RESOURCE_DIR_IN), $(shell find $(dir) -type f))
 RESOURCES        := $(filter-out %.docx, $(filter-out %.psd, $(RESOURCES)))
-TEXTURES         := $(filter     %.png, $(RESOURCES))
-RESOURCES        := $(filter-out %.png, $(RESOURCES))
+TEXTURES         := $(filter     %.png,  $(RESOURCES))
+RESOURCES        := $(filter-out %.png,  $(RESOURCES))
 
 define get_resource_out
 $(subst $(RESOURCE_DIR_IN), $(RESOURCE_DIR_OUT), $1)
@@ -112,27 +112,22 @@ endef
 
 define make_texture_rule
 $(call get_texture_out, $1): $1 $(TOOLS)/compress_resource.py $(TOOLS)/encode_texture.py
-	python $(TOOLS)/encode_texture.py $$< $$@
+	python $(TOOLS)/encode_texture.py    $$< $$@
 	python $(TOOLS)/compress_resource.py $$@ $$@
 endef
 
-define make_header_rule
-$1.h: $1 $(TOOLS)/bin_to_header.py
-	python $(TOOLS)/bin_to_header.py $$< $$@
-endef
+RESOURCES_OUT    := $(foreach resource, $(RESOURCES), $(call get_resource_out, $(resource))) \
+                    $(foreach texture,  $(TEXTURES),  $(call get_texture_out,  $(texture)))
+RESOURCE_HEADERS := $(RESOURCES_OUT:%=%.h)
 
-RESOURCES_OUT := $(foreach resource, $(RESOURCES), $(call get_resource_out, $(resource)))
-RESOURCES_H_OUT := $(foreach out, $(RESOURCES_OUT), $(out).h)
-TEXTURES_OUT := $(foreach texture, $(TEXTURES), $(call get_texture_out, $(texture)))
-TEXTURES_H_OUT := $(foreach out, $(TEXTURES_OUT), $(out).h)
+$(foreach resource, $(RESOURCES),     $(eval $(call make_resource_rule, $(resource))))
+$(foreach texture,  $(TEXTURES),      $(eval $(call make_texture_rule,  $(texture))))
+
+$(RESOURCE_DIR_OUT)/%.h: $(RESOURCE_DIR_OUT)/% $(TOOLS)/bin_to_header.py
+	python $(TOOLS)/bin_to_header.py $< $@
 
 .PHONY: resources
-resources: $(RESOURCES_H_OUT) $(TEXTURES_H_OUT)
-
-$(foreach resource, $(RESOURCES), $(eval $(call make_resource_rule, $(resource))))
-$(foreach texture, $(TEXTURES), $(eval $(call make_texture_rule, $(texture))))
-
-$(foreach resource, $(RESOURCES_OUT) $(TEXTURES_OUT), $(eval $(call make_header_rule, $(resource))))
+resources: $(RESOURCE_HEADERS)
 
 .PHONY: clean
 clean:
@@ -148,7 +143,7 @@ clean_unused:
 		$(if $(filter $(file), $(DEPFILES)),, \
 		$(shell rm $(file))))
 	$(foreach file, $(shell find $(RESOURCE_DIR_OUT) -type f), \
-		$(if $(filter $(file), $(RESOURCES_OUT) $(RESOURCES_H_OUT) $(TEXTURES_OUT) $(TEXTURES_H_OUT)),, \
+		$(if $(filter $(file), $(RESOURCES_OUT) $(RESOURCE_HEADERS)),, \
 		$(shell rm $(file))))
 
 -include $(DEPFILES)
