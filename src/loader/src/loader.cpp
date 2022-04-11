@@ -48,7 +48,7 @@ static const char *read_file;
 extern "C" char __BSS_START__;
 extern "C" char __BSS_SIZE__;
 
-[[gnu::noreturn]] static void panic(const char *fmt, auto &&...args)
+[[noreturn]] static void panic(const char *fmt, auto &&...args)
 {
 	OSReport(fmt, args...);
 
