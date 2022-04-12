@@ -275,14 +275,14 @@ struct string_literal {
 	constexpr string_literal(const c_array_t<T, N> &...strings)
 	{
 		if constexpr(sizeof...(N) == 1) {
-			std::copy_n(strings..., size, value);
+			std::copy_n(strings..., size + 1, value);
 		} else {
 			std::copy_n(array_cat(for_range<N - 1>([&]<size_t ...I>(const auto &str) {
 				if constexpr (sizeof...(I) != 0)
 					return std::array { str[I]... };
 				else
 					return std::array<T, 0>();
-			}, strings)..., std::array { T { 0 } }).begin(), size, value);
+			}, strings)..., std::array { T { 0 } }).begin(), size + 1, value);
 		}
 	}
 
