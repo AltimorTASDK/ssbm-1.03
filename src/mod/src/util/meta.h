@@ -270,7 +270,7 @@ constexpr auto array_cat(const std::array<T, sizes> &...arrays)
 // Wrap string literals so they can be passed as template params
 template<typename T, size_t ...N>
 struct string_literal {
-	static constexpr auto size = ((N - 1) + ... + 1);
+	static constexpr auto size = ((N - 1) + ...);
 
 	constexpr string_literal(const c_array_t<T, N> &...strings)
 	{
@@ -286,7 +286,7 @@ struct string_literal {
 		}
 	}
 
-	T value[size];
+	T value[size + 1];
 };
 
 // Wrap a list of arbitrarily sized std::arrays as an array of raw pointers
