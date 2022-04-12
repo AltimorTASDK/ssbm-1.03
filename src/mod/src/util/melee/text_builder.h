@@ -51,7 +51,7 @@ constexpr auto character()
 template<string_literal str>
 constexpr auto text()
 {
-	return for_range<decltype(str)::size>([]<size_t ...I>() {
+	return for_range<str.size>([]<size_t ...I>() {
 		return array_cat(character<str.value[I]>()...);
 	});
 };
