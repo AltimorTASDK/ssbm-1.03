@@ -4,7 +4,7 @@
  * branch to the hook, and then overwrite the hook definition with the original
  * instruction and a branch back to the original function.
  */
-.section .init
+.section .init, "ax"
 
 /*
  * void _start()
@@ -120,7 +120,11 @@ write_branch:
         mtlr    r0
         blr
 
-.section .hooks
+#ifdef DOL
+.section .hooks, "a"
+#else
+.section .hooks, "aw"
+#endif
 
 hooks_start:
 .macro add_hook name
