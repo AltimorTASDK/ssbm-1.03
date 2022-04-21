@@ -93,6 +93,7 @@ void operator delete[](void *ptr, size_t sz)
 	free(ptr);
 }
 
+#ifndef DOL
 static void fix_heap(OSHeap *heap)
 {
 	// Resize the heap to avoid overwriting mod code
@@ -145,6 +146,7 @@ static void fix_heap(OSHeap *heap)
 			heap->size = (u32)load_base - (u32)heap->start;
 	}
 }
+#endif
 
 extern "C" void orig_HSD_ResetScene();
 extern "C" void hook_HSD_ResetScene()
