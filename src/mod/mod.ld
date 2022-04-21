@@ -29,19 +29,16 @@ SECTIONS
     .ctors  : { KEEP(*(.ctors .ctors.*)) }
 
     .version.text : {
-        */src/version/*(          .text           .text.*)
-        */src/compat/* (          .text           .text.*)
-        *              (  .version.text   .version.text.*)
+        */src/version/*(  .text   .text.*)
+        */src/compat/* (  .text   .text.*)
     }
     .version.rodata : {
-        */src/version/*(        .rodata         .rodata.*)
-        */src/compat/* (        .rodata         .rodata.*)
-        *              (.version.rodata .version.rodata.*)
+        */src/version/*(.rodata .rodata.*)
+        */src/compat/* (.rodata .rodata.*)
     }
     .version.data : {
-        */src/version/*(          .data           .data.*)
-        */src/compat/* (          .data           .data.*)
-        *              (  .version.data   .version.data.*)
+        */src/version/*(  .data   .data.*)
+        */src/compat/* (  .data   .data.*)
     }
 
     .bss : { *(.bss .bss.*) }
