@@ -97,9 +97,10 @@ def get_hooks_section(map_path):
 
 def apply_hooks(data, map_path):
     hooks_address, hooks_size = get_hooks_section(map_path)
-    hooks_offset = address_to_offset(data, hooks_address)
+    hooks_offset              = address_to_offset(data, hooks_address)
+    hook_count                = hooks_size // 8
 
-    for i in range(hooks_size // 8):
+    for i in range(hook_count):
         address = hooks_address + i * 8
         offset  = hooks_offset  + i * 8
 
@@ -121,7 +122,7 @@ def apply_hooks(data, map_path):
         # Replace original instruction with branch to hook
         patch_branch(data, orig, hook)
 
-        print(f"Hook {orig:08X} -> {hook:08X}")
+    print(f"Applied {hook_count} hooks")
 
 def main():
     if len(sys.argv) < 3:
