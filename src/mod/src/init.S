@@ -6,17 +6,26 @@
  */
 .section .init, "ax"
 
+#ifdef DOL
+/*
+ * void hook_Scene_Main()
+ */
+ .global hook_Scene_Main
+ hook_Scene_Main:
+#else
 /*
  * void _start()
  */
  .global _start
  _start:
+#endif
         mflr    r0
         stw     r0, 4(r1)
         stwu    r1, -16(r1)
         stw     r31, 12(r1)
         stw     r30, 8(r1)
 
+#ifndef DOL
         # Apply hooks
         lis     r31, (hooks_start - 4)@h
         ori     r31, r31, (hooks_start - 4)@l
@@ -55,6 +64,7 @@ store_original:
 
         b       hook_loop
 hook_end:
+#endif
 
         # Zero out the bussy
         lis     r3, __BSS_START__@h
@@ -85,9 +95,15 @@ ctor_end:
         lwz     r31, 12(r1)
         lwz     r30, 8(r1)
         addi    r1, r1, 16
+#ifdef DOL
+        # Branch to original
+        b       orig_Scene_Main
+#else
         mtlr    r0
         blr
+#endif
 
+#ifndef DOL
 /*
  * void *write_branch(void *address, void *target)
  * Returns address
@@ -119,6 +135,7 @@ write_branch:
         addi    r1, r1, 12
         mtlr    r0
         blr
+#endif
 
 #ifdef DOL
 .section .hooks, "a"
@@ -149,6 +166,9 @@ hooks_start:
 .set CheckRapidJabInput,      Interrupt_RapidJab+0x18
 .set CheckFTiltAngle,         AS_053_056_FTilt+0x34
 
+#ifdef DOL
+add_hook Scene_Main
+#endif
 add_hook Bubble_GetPosition
 add_hook CheckScrollingRuleIndex
 add_hook CheckStockStealInput
