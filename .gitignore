@@ -1,4 +1,5 @@
 bin/*
+iso/*
 src/*/bin/*
 src/*/obj/*
 src/*/dep/*

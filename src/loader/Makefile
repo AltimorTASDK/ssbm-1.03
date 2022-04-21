@@ -25,8 +25,8 @@ SFILES   := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.S'))
 
 ifdef NOPAL
 ZLIB     := third_party/zlib
-CFLAGS   += -DZLIB_CONST -DMY_ZCALLOC -Wno-conversion
-CXXFLAGS += -DZLIB_CONST
+CFLAGS   += -Wno-conversion
+DEFINES  += -DZLIB_CONST -DMY_ZCALLOC
 INCLUDE  += -I$(ZLIB)
 CFILES   += $(ZLIB)/adler32.c $(ZLIB)/crc32.c $(ZLIB)/inffast.c $(ZLIB)/inflate.c $(ZLIB)/inftrees.c $(ZLIB)/trees.c \
             $(ZLIB)/zutil.c

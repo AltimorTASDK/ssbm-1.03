@@ -27,6 +27,12 @@ TITLE     := "Super Smash Bros. Melee         1.03 Data"
 
 DIFFSRC  := bin/mod.bin
 
+DOLFILE  := $(ISODIR)/sys/main.dol
+DOLELF   := bin/dol.elf
+DOLSRC   := main.dol
+DOLDATA  := obj/dol_data.bin
+DOLLD    := dol.ld
+
 CFILES   := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.c'))
 CXXFILES := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.cpp'))
 SFILES   := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.S'))
@@ -56,6 +62,22 @@ $(BINFILE).diff: $(BINFILE) $(TOOLS)/diff.py
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	python $(TOOLS)/diff.py $(DIFFSRC) $< $@
 endif
+
+.PHONY: dol
+dol: $(DOLFILE)
+
+$(DOLFILE): $(DOLELF)
+	@[ -d $(@D) ] || mkdir -p $(@D)
+	$(OBJCOPY) -O binary $< $@
+
+$(DOLELF): $(OBJFILES) $(DOLDATA) $(DOLLD) $(MELEELD) ../common.ld | clean_unused
+	@[ -d $(@D) ] || mkdir -p $(@D)
+	$(CC) $(LDFLAGS) -T$(DOLLD) -T$(MELEELD) $(OBJFILES) -o $@
+
+$(DOLDATA): $(DOLSRC)
+	@[ -d $(@D) ] || mkdir -p $(@D)
+# skip dol header
+	dd if=$(DOLSRC) of=$(DOLDATA) bs=256 skip=1
 
 $(BANNER): $(BANNERSRC) $(TOOLS)/encode_texture.py
 	python $(TOOLS)/encode_texture.py $< $@

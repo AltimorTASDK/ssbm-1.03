@@ -58,6 +58,7 @@ $(error Unsupported Melee version "$(VERSION)")
 endif
 
 export BINDIR  := $(abspath bin)
+export ISODIR  := $(abspath iso)
 export TOOLS   := $(abspath tools)
 export GCIDIR  := $(abspath gci)
 
@@ -65,29 +66,36 @@ export OBJDIR  := obj/$(VERSION)
 export DEPDIR  := dep/$(VERSION)
 export SOURCES := src
 
-export OUTPUTMAP := $(OBJDIR)/output.map
-export LDFLAGS   := -Wl,-Map=$(OUTPUTMAP) -Wl,--gc-sections
+export OUTPUTMAP = $(OBJDIR)/output.map
+export LDFLAGS   = -Wl,-Map=$(OUTPUTMAP) -Wl,--gc-sections
 
-export MELEEMAP := $(MELEELD:.ld=.map)
+export MELEEMAP  = $(MELEELD:.ld=.map)
 
-export CFLAGS   := $(DEFINES) -mogc -mcpu=750 -meabi -mhard-float -Os \
+export CFLAGS    = $(DEFINES) -mogc -mcpu=750 -meabi -mhard-float -Os \
 				   -Wall -Wno-switch -Wno-unused-value -Wconversion -Warith-conversion -Wno-multichar \
 				   -ffunction-sections -fdata-sections -mno-sdata \
 				   -fno-builtin-sqrt -fno-builtin-sqrtf
-export ASFLAGS  := $(DEFINES) -Wa,-mregnames -Wa,-mgekko
-export CXXFLAGS := $(CFLAGS) -std=c++2b -fconcepts -fno-rtti -fno-exceptions
+export ASFLAGS   = $(DEFINES) -Wa,-mregnames -Wa,-mgekko
+export CXXFLAGS  = $(CFLAGS) -std=c++2b -fconcepts -fno-rtti -fno-exceptions
 export INCLUDE  := -I$(SOURCES) -I$(abspath src/mod/$(SOURCES)) -I$(DEVKITPATH)/libogc/include
 
 .PHONY: all
 all: loader mod
 
 .PHONY: loader
-loader: $(MELEELD) clean_tmp
+loader: $(MELEELD) | clean_tmp
 	+@cd src/loader && $(MAKE)
 
 .PHONY: mod
 mod: $(MELEELD)
 	+@cd src/mod && $(MAKE)
+
+.PHONY: dol
+dol: export OBJDIR  := obj/DOL
+dol: export DEPDIR  := dep/DOL
+dol: export DEFINES += -DDOL
+dol: $(MELEELD)
+	+@cd src/mod && $(MAKE) dol
 
 .PHONY: resources
 resources:
