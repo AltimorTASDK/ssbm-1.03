@@ -93,7 +93,7 @@ mod: $(MELEELD)
 .PHONY: dol
 dol: export OBJDIR  := obj/DOL
 dol: export DEPDIR  := dep/DOL
-dol: export DEFINES += -DDOL
+dol: export DEFINES += -DDOL -DNOPAL
 dol: $(MELEELD)
 	+@cd src/mod && $(MAKE) dol
 
