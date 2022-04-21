@@ -41,9 +41,17 @@ extern "C" void hook_InitializeSaveData(u32 status)
 	// Prevent save data reset
 }
 
-extern "C" void hook_InitializeGlobalData();
+extern "C" void orig_InitializeGlobalData();
 extern "C" void hook_InitializeGlobalData()
 {
+#ifdef DOL
+	// Allow first InitializeGlobalData on boot
+	static auto once = false;
+	if (!once) {
+		once = true;
+		return orig_InitializeGlobalData();
+	}
+#endif
 	// Prevent global data reset and check settings lock
 	if (settings_lock || CARD_Probe(CARD_SLOTA))
 		return;
