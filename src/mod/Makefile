@@ -66,9 +66,10 @@ endif
 .PHONY: dol
 dol: $(DOLFILE)
 
-$(DOLFILE): $(DOLELF)
+$(DOLFILE): $(DOLELF) $(TOOLS)/patch_dol.py
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(OBJCOPY) -O binary $< $@
+	python $(TOOLS)/patch_dol.py $@ $@ $(OUTPUTMAP)
 
 $(DOLELF): $(OBJFILES) $(DOLDATA) $(DOLLD) $(MELEELD) ../common.ld | clean_unused
 	@[ -d $(@D) ] || mkdir -p $(@D)
