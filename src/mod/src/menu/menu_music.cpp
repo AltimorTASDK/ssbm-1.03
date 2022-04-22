@@ -168,66 +168,66 @@ static texture texture_r;
 
 static u16 selected_index[page_count] = { 0 };
 
-static const auto patches = patch_list {
+PATCH_LIST(
 	// Expand the menu data struct to allow an extra Text pointer
 	// li r3, 0xB8
-	std::pair { (char*)Menu_SetupRandomStageMenu+0xB4,     0x386000B8u },
+	std::pair { Menu_SetupRandomStageMenu+0xB4,     0x386000B8u },
 
 	// Move data->state to the formerly unused memory at +0x38 to make room for a 30th toggle
 	// stb r26, 0x38(r30)
-	std::pair { (char*)Menu_SetupRandomStageMenu+0x11C,    0x9B5E0038u },
+	std::pair { Menu_SetupRandomStageMenu+0x11C,    0x9B5E0038u },
 	// lbz r0, 0x38(r31)
-	std::pair { (char*)Menu_RandomStageMenuThink+0x2C,     0x881F0038u },
+	std::pair { Menu_RandomStageMenuThink+0x2C,     0x881F0038u },
 	// stb r0, 0x38(r31)
-	std::pair { (char*)Menu_RandomStageMenuThink+0x6C,     0x981F0038u },
+	std::pair { Menu_RandomStageMenuThink+0x6C,     0x981F0038u },
 	// stb r0, 0x38(r31)
-	std::pair { (char*)Menu_RandomStageMenuThink+0x78,     0x981F0038u },
+	std::pair { Menu_RandomStageMenuThink+0x78,     0x981F0038u },
 	// lbz r0, 0x38(r31)
-	std::pair { (char*)Menu_RandomStageMenuThink+0x7C,     0x881F0038u },
+	std::pair { Menu_RandomStageMenuThink+0x7C,     0x881F0038u },
 	// lbz r0, 0x38(r31)
-	std::pair { (char*)Menu_RandomStageMenuThink+0xDC,     0x881F0038u },
+	std::pair { Menu_RandomStageMenuThink+0xDC,     0x881F0038u },
 	// lbz r0, 0x38(r31)
-	std::pair { (char*)Menu_RandomStageMenuThink+0x104,    0x881F0038u },
+	std::pair { Menu_RandomStageMenuThink+0x104,    0x881F0038u },
 	// lbz r0, 0x38(r31)
-	std::pair { (char*)Menu_RandomStageMenuThink+0x170,    0x881F0038u },
+	std::pair { Menu_RandomStageMenuThink+0x170,    0x881F0038u },
 	// stb r25, 0x38(r31)
-	std::pair { (char*)Menu_RandomStageMenuThink+0x1A0,    0x9B3F0038u },
+	std::pair { Menu_RandomStageMenuThink+0x1A0,    0x9B3F0038u },
 	// lbz r0, 0x38(r31)
-	std::pair { (char*)Menu_RandomStageMenuThink+0x25C,    0x881F0038u },
+	std::pair { Menu_RandomStageMenuThink+0x25C,    0x881F0038u },
 
 	// Change toggle loops from 29 to 30
 	// cmpwi r24, 0x1E
-	std::pair { (char*)Menu_SetupRandomStageMenu+0x424,    0x2C18001Eu },
+	std::pair { Menu_SetupRandomStageMenu+0x424,    0x2C18001Eu },
 	// cmpwi r25, 0x1E
-	std::pair { (char*)Menu_RandomStageMenuThink+0x204,    0x2C19001Eu },
+	std::pair { Menu_RandomStageMenuThink+0x204,    0x2C19001Eu },
 	// cmpwi r25, 0x1E
-	std::pair { (char*)Menu_RandomStageMenuThink+0x23C,    0x2C19001Eu },
+	std::pair { Menu_RandomStageMenuThink+0x23C,    0x2C19001Eu },
 #ifdef PAL
 	// cmpwi r0, 0x1E
-	std::pair { (char*)Menu_RandomStageMenuInput+0x98,     0x2800001Eu },
+	std::pair { Menu_RandomStageMenuInput+0x98,     0x2800001Eu },
 	// li r0, 0x1E
-	std::pair { (char*)Menu_RandomStageMenuInput+0xB4,     0x3800001Eu },
+	std::pair { Menu_RandomStageMenuInput+0xB4,     0x3800001Eu },
 	// cmpwi r30, 0x1E
-	std::pair { (char*)Menu_RandomStageMenuInput+0x174,    0x2C1E001Eu },
+	std::pair { Menu_RandomStageMenuInput+0x174,    0x2C1E001Eu },
 #else
 	// cmpwi r0, 0x1E
-	std::pair { (char*)Menu_RandomStageMenuInput+0x8C,     0x2800001Eu },
+	std::pair { Menu_RandomStageMenuInput+0x8C,     0x2800001Eu },
 	// li r0, 0x1E
-	std::pair { (char*)Menu_RandomStageMenuInput+0xA8,     0x3800001Eu },
+	std::pair { Menu_RandomStageMenuInput+0xA8,     0x3800001Eu },
 	// cmpwi r29, 0x1E
-	std::pair { (char*)Menu_RandomStageMenuInput+0x168,    0x2C1D001Eu },
+	std::pair { Menu_RandomStageMenuInput+0x168,    0x2C1D001Eu },
 #endif
 	// cmpwi r25, 0x1E
-	std::pair { (char*)Menu_SetupRandomStageToggles+0x258, 0x2C19001Eu },
+	std::pair { Menu_SetupRandomStageToggles+0x258, 0x2C19001Eu },
 
 	// Allow having all toggles disabled
 	// nop
 #ifdef PAL
-	std::pair { (char*)Menu_RandomStageMenuInput+0xE4,     0x60000000u },
+	std::pair { Menu_RandomStageMenuInput+0xE4,     0x60000000u }
 #else
-	std::pair { (char*)Menu_RandomStageMenuInput+0xD8,     0x60000000u },
+	std::pair { Menu_RandomStageMenuInput+0xD8,     0x60000000u }
 #endif
-};
+);
 
 static int get_page_size(int page)
 {

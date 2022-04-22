@@ -178,7 +178,7 @@ constexpr auto widescreen_descriptions = multi_array {
 static mempool pool;
 static texture_swap *widescreen_text;
 
-static const auto patches = patch_list {
+PATCH_LIST(
 	// Swap text for pause and friendly fire
 	std::pair { &ExtraRuleTextAnimFrames[ExtraRule_Pause].unselected,        24.f },
 	std::pair { &ExtraRuleTextAnimFrames[ExtraRule_Pause].selected,          25.f },
@@ -186,85 +186,85 @@ static const auto patches = patch_list {
 	std::pair { &ExtraRuleTextAnimFrames[ExtraRule_FriendlyFire].selected,   23.f },
 	// Add a value model for index 5
 	// nop
-	std::pair { (char*)Menu_SetupExtraRulesMenu+0x558,                       0x60000000u },
+	std::pair { Menu_SetupExtraRulesMenu+0x558,                       0x60000000u },
 	// Allow scrolling left/right on index 5
 	// nop
-	std::pair { (char*)Menu_ExtraRulesMenuInput+0x394,                       0x60000000u },
+	std::pair { Menu_ExtraRulesMenuInput+0x394,                       0x60000000u },
 	// Don't allow pressing A on index 5
 	// b 0x3CC
-	std::pair { (char*)Menu_ExtraRulesMenuInput+0x50,                        0x480003CCu },
+	std::pair { Menu_ExtraRulesMenuInput+0x50,                        0x480003CCu },
 	// Skip index 5 checks
 	// b 0x14
-	std::pair { (char*)Menu_UpdateExtraRuleDisplay+0x218,                    0x48000014u },
+	std::pair { Menu_UpdateExtraRuleDisplay+0x218,                    0x48000014u },
 	// nop
-	std::pair { (char*)Menu_UpdateExtraRuleDisplay+0x2B8,                    0x60000000u },
+	std::pair { Menu_UpdateExtraRuleDisplay+0x2B8,                    0x60000000u },
 	// b 0x28
-	std::pair { (char*)Menu_UpdateExtraRuleDisplay+0x330,                    0x48000028u },
+	std::pair { Menu_UpdateExtraRuleDisplay+0x330,                    0x48000028u },
 	// nop
-	std::pair { (char*)Menu_UpdateExtraRuleDisplay+0x388,                    0x60000000u },
-	std::pair { (char*)Menu_UpdateExtraRuleDisplay+0x38C,                    0x60000000u },
+	std::pair { Menu_UpdateExtraRuleDisplay+0x388,                    0x60000000u },
+	std::pair { Menu_UpdateExtraRuleDisplay+0x38C,                    0x60000000u },
 	// nop
-	std::pair { (char*)Menu_UpdateExtraRuleDisplay+0x4FC,                    0x60000000u },
+	std::pair { Menu_UpdateExtraRuleDisplay+0x4FC,                    0x60000000u },
 	// b 0x20
-	std::pair { (char*)Menu_UpdateExtraRuleDisplay+0x510,                    0x48000020u },
+	std::pair { Menu_UpdateExtraRuleDisplay+0x510,                    0x48000020u },
 	// b 0x24
-	std::pair { (char*)Menu_GetExtraRuleValueAnimLoop+0x10,                  0x48000024u },
+	std::pair { Menu_GetExtraRuleValueAnimLoop+0x10,                  0x48000024u },
 	// b 0x8
-	std::pair { (char*)Menu_UpdateExtraRuleValueAnim+0x1C,                   0x48000008u },
+	std::pair { Menu_UpdateExtraRuleValueAnim+0x1C,                   0x48000008u },
 
 	// Add a 7th rotator to extra rules
 	std::pair { &MenuTypeDataTable[MenuType_ExtraRules].option_count,        (u8)7 },
 	// cmpwi r31, 7
-	std::pair { (char*)Menu_SetupExtraRulesMenu+0x388,                       0x2C1F0007u },
+	std::pair { Menu_SetupExtraRulesMenu+0x388,                       0x2C1F0007u },
 	// li r0, 6
-	std::pair { (char*)Menu_ExtraRulesMenuInput+0x214,                       0x38000006u },
+	std::pair { Menu_ExtraRulesMenuInput+0x214,                       0x38000006u },
 	// cmpwi r3, 6
-	std::pair { (char*)Menu_ExtraRulesMenuInput+0x2D8,                       0x2C030006u },
+	std::pair { Menu_ExtraRulesMenuInput+0x2D8,                       0x2C030006u },
 	// cmplwi r5, 6
-	std::pair { (char*)Menu_ExtraRulesMenuInput+0x390,                       0x28050006u },
+	std::pair { Menu_ExtraRulesMenuInput+0x390,                       0x28050006u },
 
 	// Move data->state from 0x08 to 0x09
 	// stb r16, 0x9(r25)
-	std::pair { (char*)Menu_SetupExtraRulesMenu+0x220,                       0x9A190009u },
+	std::pair { Menu_SetupExtraRulesMenu+0x220,                       0x9A190009u },
 	// lbz r0, 0x9(r25)
-	std::pair { (char*)Menu_SetupExtraRulesMenu+0x27C,                       0x88190009u },
+	std::pair { Menu_SetupExtraRulesMenu+0x27C,                       0x88190009u },
 	// lbz r0, 0x9(r31)
-	std::pair { (char*)Menu_ExtraRulesMenuThink+0x2C,                        0x881F0009u },
+	std::pair { Menu_ExtraRulesMenuThink+0x2C,                        0x881F0009u },
 	// stb r0, 0x9(r31)
-	std::pair { (char*)Menu_ExtraRulesMenuThink+0x6C,                        0x981F0009u },
+	std::pair { Menu_ExtraRulesMenuThink+0x6C,                        0x981F0009u },
 	// stb r0, 0x9(r31)
-	std::pair { (char*)Menu_ExtraRulesMenuThink+0x78,                        0x981F0009u },
+	std::pair { Menu_ExtraRulesMenuThink+0x78,                        0x981F0009u },
 	// lbz r0, 0x9(r31)
-	std::pair { (char*)Menu_ExtraRulesMenuThink+0x7C,                        0x881F0009u },
+	std::pair { Menu_ExtraRulesMenuThink+0x7C,                        0x881F0009u },
 	// lbz r0, 0x9(r31)
-	std::pair { (char*)Menu_ExtraRulesMenuThink+0xDC,                        0x881F0009u },
+	std::pair { Menu_ExtraRulesMenuThink+0xDC,                        0x881F0009u },
 	// lbz r0, 0x9(r31)
-	std::pair { (char*)Menu_ExtraRulesMenuThink+0x104,                       0x881F0009u },
+	std::pair { Menu_ExtraRulesMenuThink+0x104,                       0x881F0009u },
 	// lbz r0, 0x9(r31)
-	std::pair { (char*)Menu_ExtraRulesMenuThink+0x170,                       0x881F0009u },
+	std::pair { Menu_ExtraRulesMenuThink+0x170,                       0x881F0009u },
 	// stb r0, 0x9(r31)
-	std::pair { (char*)Menu_ExtraRulesMenuThink+0x1A0,                       0x981F0009u },
+	std::pair { Menu_ExtraRulesMenuThink+0x1A0,                       0x981F0009u },
 	// lbz r0, 0x9(r31)
-	std::pair { (char*)Menu_ExtraRulesMenuThink+0x1BC,                       0x881F0009u },
+	std::pair { Menu_ExtraRulesMenuThink+0x1BC,                       0x881F0009u },
 
 	// Increase ExtraRulesMenuData size from 0xE0 to 0xFC
 	// li r3, 0xE4
-	std::pair { (char*)Menu_SetupExtraRulesMenu+0x180,                       0x386000FCu },
+	std::pair { Menu_SetupExtraRulesMenu+0x180,                       0x386000FCu },
 
 	// Move data->description_text from 0xDC to 0xF8
 	// stw r24, 0xE0(r25)
-	std::pair { (char*)Menu_SetupExtraRulesMenu+0x224,                       0x931900F8u },
+	std::pair { Menu_SetupExtraRulesMenu+0x224,                       0x931900F8u },
 	// lwz r3, 0xE0(r25)
-	std::pair { (char*)Menu_SetupExtraRulesMenu+0x72C,                       0x807900F8u },
+	std::pair { Menu_SetupExtraRulesMenu+0x72C,                       0x807900F8u },
 	// stw r0, 0xE0(r25)
-	std::pair { (char*)Menu_SetupExtraRulesMenu+0x748,                       0x901900F8u },
+	std::pair { Menu_SetupExtraRulesMenu+0x748,                       0x901900F8u },
 	// stw r3, 0xE0(r25)
-	std::pair { (char*)Menu_SetupExtraRulesMenu+0x79C,                       0x907900F8u },
+	std::pair { Menu_SetupExtraRulesMenu+0x79C,                       0x907900F8u },
 
 	// Always use count of 7 to populate value_jobj_trees to avoid overread from extra rotator
 	// li r0, 7
-	std::pair { (char*)Menu_SetupExtraRulesMenu+0x600,                       0x38000007u },
-};
+	std::pair { Menu_SetupExtraRulesMenu+0x600,                       0x38000007u }
+);
 
 extern "C" bool is_rule_visible(int index)
 {

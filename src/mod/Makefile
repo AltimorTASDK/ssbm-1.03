@@ -28,6 +28,7 @@ TITLE     := "Super Smash Bros. Melee         1.03 Data"
 DIFFSRC  := bin/mod.bin
 
 DOLFILE  := $(ISODIR)/sys/main.dol
+PATCHES  := bin/patches.bin
 DOLELF   := bin/dol.elf
 DOLSRC   := main.dol
 DOLDATA  := obj/dol_data.bin
@@ -66,10 +67,14 @@ endif
 .PHONY: dol
 dol: $(DOLFILE)
 
-$(DOLFILE): $(DOLELF) $(TOOLS)/patch_dol.py
+$(DOLFILE): $(DOLELF) $(PATCHES) $(TOOLS)/patch_dol.py
 	@[ -d $(@D) ] || mkdir -p $(@D)
-	$(OBJCOPY) -O binary $< $@
-	python $(TOOLS)/patch_dol.py $@ $@ $(OUTPUTMAP)
+	$(OBJCOPY) -O binary -R .patches $< $@
+	python $(TOOLS)/patch_dol.py $@ $@ $(OUTPUTMAP) $(PATCHES)
+
+$(PATCHES): $(DOLELF)
+	@[ -d $(@D) ] || mkdir -p $(@D)
+	$(OBJCOPY) -O binary -j .patches $< $@
 
 $(DOLELF): $(OBJFILES) $(DOLDATA) $(DOLLD) $(MELEELD) ../common.ld | clean_unused
 	@[ -d $(@D) ] || mkdir -p $(@D)

@@ -124,21 +124,46 @@ def apply_hooks(data, map_path):
 
     print(f"Applied {hook_count} hooks")
 
+def apply_patches(data, patch_path):
+    with open(patch_path, "rb") as f:
+        patches = f.read()
+
+    offset = 0
+    count  = 0
+
+    while offset < len(patches):
+        # void   *target
+        # size_t size
+        # char   value[size]
+        target = word(patches, offset)
+        size   = word(patches, offset + 4)
+        value  = patches[offset+8:offset+8+size]
+
+        target_offset = address_to_offset(data, target)
+        data[target_offset:target_offset+size] = value
+
+        offset += size + 8
+        count  += 1
+
+    print(f"Applied {count} patches")
+
 def main():
     if len(sys.argv) < 3:
-        print("Usage: patch_dol.py <in.dol> <out.dol> <map file>",
+        print("Usage: patch_dol.py <in.dol> <out.dol> <map file> <patches.bin>",
               file=sys.stderr)
         sys.exit(1)
 
-    in_path  = sys.argv[1]
-    out_path = sys.argv[2]
-    map_path = sys.argv[3]
+    in_path    = sys.argv[1]
+    out_path   = sys.argv[2]
+    map_path   = sys.argv[3]
+    patch_path = sys.argv[4]
 
     with open(in_path, "rb") as f:
         data = bytearray(f.read())
 
     patch_stack_and_heap(data)
     apply_hooks(data, map_path)
+    apply_patches(data, patch_path)
 
     with open(out_path, "wb") as f:
         f.write(data)

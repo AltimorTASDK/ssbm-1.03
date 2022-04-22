@@ -104,18 +104,21 @@ SECTIONS
     } >disk
 
     /* original data */
-    .old : ALIGN(32) { obj/dol_data.bin } >disk
+    .old     : ALIGN(32) { obj/dol_data.bin } >disk
 
     /* new sections */
-    .text2 : ALIGN(32) {
+    .text2   : ALIGN(32) {
         *(  .init   .init.*)
         *(  .text   .text.*)
         *(.rodata .rodata.*)
     } >new AT>disk
-    .hooks  : ALIGN(32) { KEEP(*(.hooks))  } >new AT>disk
-    .ctors  : ALIGN(32) { KEEP(*(.ctors))  } >new AT>disk
-    .data8  : ALIGN(32) { *(.data .data.*) } >new AT>disk
-    .bss    : ALIGN(32) { *( .bss  .bss.*) } >new AT>disk
+    .hooks   : ALIGN(32) { KEEP(*(.hooks))   } >new AT>disk
+    .ctors   : ALIGN(32) { KEEP(*(.ctors))   } >new AT>disk
+    .data8   : ALIGN(32) { *(.data .data.*)  } >new AT>disk
+    .bss     : ALIGN(32) { *( .bss  .bss.*)  } >new AT>disk
+
+    /* split from output and passed to patch_dol.py */
+    .patches : ALIGN(32) { KEEP(*(.patches)) } >new AT>disk
 
     PROVIDE(__BSS_START__ = ADDR(.bss));
     PROVIDE(__BSS_SIZE__  = SIZEOF(.bss));

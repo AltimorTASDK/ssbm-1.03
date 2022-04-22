@@ -24,21 +24,21 @@ extern "C" bool is_20XX()
 	if (!is_20XX())
 		return;
 
-	patch_list {
+	PATCH_LIST(
 		// Remove 20XX's results screen hook
 		// addi r27, r4, 0
-		std::pair { (char*)Scene_Match_Exit+0x10,   0x3B640000u },
+		std::pair { Scene_Match_Exit+0x10,   0x3B640000u },
 		// Disable 20XX's lagless FoD patch
 		// stwu r1, -8(r1)
-		std::pair { (char*)Stage_Fountain_Init+0x8, 0x9421FFF8u },
+		std::pair { Stage_Fountain_Init+0x8, 0x9421FFF8u },
 		// Disable 20XX's built in half frame lag reduction
 		// bl MCCUpdate
-		std::pair { (char*)Scene_RunLoop+0x64,      0x481EE0E9u },
+		std::pair { Scene_RunLoop+0x64,      0x481EE0E9u },
 		// li r3, 0
-		std::pair { (char*)Scene_RunLoop+0x31C,     0x38600000u },
+		std::pair { Scene_RunLoop+0x31C,     0x38600000u },
 		// subi r3, r13, 0x4278
-		std::pair { (char*)VIRetraceHandler+0x1FC,  0x386DBD88u },
-	};
+		std::pair { VIRetraceHandler+0x1FC,  0x386DBD88u }
+	);
 }
 
 extern "C" bool is_20XX_stage_select()

@@ -5,9 +5,9 @@
 
 extern "C" ActionStateInfo SamusActionStates[18];
 
-static const auto patches = patch_list {
+PATCH_LIST(
 	// Allow Samus to bomb jump out of zair in PAL
-	std::pair { &SamusActionStates[16].stat_flags, 0x00200000u },
-};
+	std::pair { &SamusActionStates[16].stat_flags, 0x00200000u }
+);
 
 #endif

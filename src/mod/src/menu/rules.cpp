@@ -143,37 +143,37 @@ constexpr auto stage_music_description = make_description_text<
 
 static mempool pool;
 
-static const auto patches = patch_list {
+PATCH_LIST(
 	// Hide left/right arrows for menu music when selected
 	// cmplwi r24, 4
-	std::pair { (char*)Menu_UpdateRuleDisplay+0x2B8, 0x28180004u },
+	std::pair { Menu_UpdateRuleDisplay+0x2B8, 0x28180004u },
 	// bge 0x44
-	std::pair { (char*)Menu_UpdateRuleDisplay+0x2BC, 0x40800044u },
+	std::pair { Menu_UpdateRuleDisplay+0x2BC, 0x40800044u },
 
 	// Display submenu arrow for menu music when selected
 	// subi r0, r24, 4
-	std::pair { (char*)Menu_UpdateRuleDisplay+0x364, 0x3818FFFCu },
+	std::pair { Menu_UpdateRuleDisplay+0x364, 0x3818FFFCu },
 	// cmplwi r0, 2
-	std::pair { (char*)Menu_UpdateRuleDisplay+0x36C, 0x28000002u },
+	std::pair { Menu_UpdateRuleDisplay+0x36C, 0x28000002u },
 
 	// Use submenu anim frames for menu music
 	// subi r0, r25, 4
-	std::pair { (char*)Menu_UpdateRuleDisplay+0x484, 0x3819FFFCu },
+	std::pair { Menu_UpdateRuleDisplay+0x484, 0x3819FFFCu },
 	// cmplwi r0, 2
-	std::pair { (char*)Menu_UpdateRuleDisplay+0x488, 0x28000002u },
+	std::pair { Menu_UpdateRuleDisplay+0x488, 0x28000002u },
 
 	// Allow pressing A on menu music
 	// cmplwi r0, 4
-	std::pair { (char*)Menu_RulesMenuInput+0x54,     0x28000004u },
+	std::pair { Menu_RulesMenuInput+0x54,     0x28000004u },
 	// bge 0xC
-	std::pair { (char*)Menu_RulesMenuInput+0x58,     0x4080000Cu },
+	std::pair { Menu_RulesMenuInput+0x58,     0x4080000Cu },
 
 	// Don't allow scrolling through menu music values
 	// cmplwi r5, 4
-	std::pair { (char*)Menu_RulesMenuInput+0x420,    0x28050004u },
+	std::pair { Menu_RulesMenuInput+0x420,    0x28050004u },
 	// bge 0x20C
-	std::pair { (char*)Menu_RulesMenuInput+0x424,    0x4080020Cu },
-};
+	std::pair { Menu_RulesMenuInput+0x424,    0x4080020Cu }
+);
 
 static void replace_value_jobj(HSD_JObj *parent, HSD_JObj **jobj_tree)
 {

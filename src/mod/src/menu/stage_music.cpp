@@ -137,101 +137,101 @@ constexpr int bgm_ids[] = {
 
 static mempool pool;
 
-static const auto patches = patch_list {
+PATCH_LIST(
 	// Start cursor on BF
 	// li r3, 5
-	std::pair { (char*)Menu_SetupItemMenu+0x154,     0x38600005u },
+	std::pair { Menu_SetupItemMenu+0x154,     0x38600005u },
 
 	// Change item frequency index/toggle count checks from 31/32 to 32/33
 	// cmplwi r27, 33
-	std::pair { (char*)Menu_UpdateItemDisplay+0x38,  0x281B0021u },
+	std::pair { Menu_UpdateItemDisplay+0x38,  0x281B0021u },
 	// cmplwi r0, 33
-	std::pair { (char*)Menu_UpdateItemDisplay+0x64,  0x28000021u },
+	std::pair { Menu_UpdateItemDisplay+0x64,  0x28000021u },
 	// cmplwi r27, 33
-	std::pair { (char*)Menu_UpdateItemDisplay+0x168, 0x281B0021u },
+	std::pair { Menu_UpdateItemDisplay+0x168, 0x281B0021u },
 	// cmplwi r0, 33
-	std::pair { (char*)Menu_UpdateItemDisplay+0x188, 0x28000021u },
+	std::pair { Menu_UpdateItemDisplay+0x188, 0x28000021u },
 	// subi r0, r27, 32
-	std::pair { (char*)Menu_UpdateItemDisplay+0x28C, 0x381BFFE0u },
+	std::pair { Menu_UpdateItemDisplay+0x28C, 0x381BFFE0u },
 	// cmplwi r0, 33
-	std::pair { (char*)Menu_UpdateItemDisplay+0x5A0, 0x28000021u },
+	std::pair { Menu_UpdateItemDisplay+0x5A0, 0x28000021u },
 	// cmplwi r0, 33
-	std::pair { (char*)Menu_UpdateItemDisplay+0x5C0, 0x28000021u },
+	std::pair { Menu_UpdateItemDisplay+0x5C0, 0x28000021u },
 	// cmplwi r4, 33
-	std::pair { (char*)Menu_UpdateItemDisplay+0x66C, 0x28040021u },
+	std::pair { Menu_UpdateItemDisplay+0x66C, 0x28040021u },
 #ifdef PAL
 	// subi r0, r4, 32
-	std::pair { (char*)Menu_ItemMenuThink+0x2A8,     0x3804FFE0u },
+	std::pair { Menu_ItemMenuThink+0x2A8,     0x3804FFE0u },
 	// cmplwi r4, 33
-	std::pair { (char*)Menu_ItemMenuThink+0x350,     0x28040021u },
+	std::pair { Menu_ItemMenuThink+0x350,     0x28040021u },
 	// cmpwi r26, 32
-	std::pair { (char*)Menu_ItemMenuThink+0x388,     0x2C1A0020u },
+	std::pair { Menu_ItemMenuThink+0x388,     0x2C1A0020u },
 #else
 	// subi r0, r4, 32
-	std::pair { (char*)Menu_ItemMenuThink+0x2DC,     0x3804FFE0u },
+	std::pair { Menu_ItemMenuThink+0x2DC,     0x3804FFE0u },
 	// cmplwi r4, 33
-	std::pair { (char*)Menu_ItemMenuThink+0x37C,     0x28040021u },
+	std::pair { Menu_ItemMenuThink+0x37C,     0x28040021u },
 	// cmpwi r26, 32
-	std::pair { (char*)Menu_ItemMenuThink+0x3BC,     0x2C1A0020u },
+	std::pair { Menu_ItemMenuThink+0x3BC,     0x2C1A0020u },
 #endif
 	// cmplwi r0, 32
-	std::pair { (char*)Menu_SetupItemMenu+0x13C,     0x28000020u },
+	std::pair { Menu_SetupItemMenu+0x13C,     0x28000020u },
 	// cmplwi r0, 33
-	std::pair { (char*)Menu_SetupItemMenu+0x190,     0x28000021u },
+	std::pair { Menu_SetupItemMenu+0x190,     0x28000021u },
 	// cmpwi r27, 32
-	std::pair { (char*)Menu_SetupItemMenu+0x370,     0x2C1B0020u },
+	std::pair { Menu_SetupItemMenu+0x370,     0x2C1B0020u },
 	// cmplwi r27, 33
-	std::pair { (char*)Menu_SetupItemMenu+0x398,     0x281B0021u },
+	std::pair { Menu_SetupItemMenu+0x398,     0x281B0021u },
 	// cmplwi r0, 33
-	std::pair { (char*)Menu_SetupItemMenu+0x6B0,     0x28000021u },
+	std::pair { Menu_SetupItemMenu+0x6B0,     0x28000021u },
 	// cmpwi r27, 32
-	std::pair { (char*)Menu_SetupItemToggles+0x100,  0x2C1B0020u },
+	std::pair { Menu_SetupItemToggles+0x100,  0x2C1B0020u },
 	// cmplwi r29, 33
-	std::pair { (char*)Menu_SetupItemToggles+0x114,  0x281D0021u },
+	std::pair { Menu_SetupItemToggles+0x114,  0x281D0021u },
 	// cmpwi r30, 32
-	std::pair { (char*)Menu_ItemMenuInput+0x78,      0x2C1E0020u },
+	std::pair { Menu_ItemMenuInput+0x78,      0x2C1E0020u },
 	// cmplwi r0, 32
-	std::pair { (char*)Menu_ItemMenuInput+0xC8,      0x28000020u },
+	std::pair { Menu_ItemMenuInput+0xC8,      0x28000020u },
 	// cmpwi r27, 32
-	std::pair { (char*)Menu_ItemMenuInput+0x118,     0x2C1B0020u },
+	std::pair { Menu_ItemMenuInput+0x118,     0x2C1B0020u },
 	// cmpwi r30, 32
-	std::pair { (char*)Menu_ItemMenuInput+0x17C,     0x2C1E0020u },
+	std::pair { Menu_ItemMenuInput+0x17C,     0x2C1E0020u },
 	// cmpwi r30, 32
-	std::pair { (char*)Menu_ItemMenuInput+0x1C8,     0x2C1E0020u },
+	std::pair { Menu_ItemMenuInput+0x1C8,     0x2C1E0020u },
 
 	// Move data->selected_stage from 0x21 to 0x22
 	// lbz r4, 0x22(r28)
-	std::pair { (char*)Menu_UpdateItemDisplay+0x50,  0x889C0022u },
+	std::pair { Menu_UpdateItemDisplay+0x50,  0x889C0022u },
 #ifdef PAL
 	// lbz r4, 0x22(r30)
-	std::pair { (char*)Menu_ItemMenuThink+0x2BC,     0x889E0022u },
+	std::pair { Menu_ItemMenuThink+0x2BC,     0x889E0022u },
 	// stb r0, 0x22(r30)
-	std::pair { (char*)Menu_ItemMenuThink+0x36C,     0x981E0022u },
+	std::pair { Menu_ItemMenuThink+0x36C,     0x981E0022u },
 	// lbz r3, 0x22(r25)
-	std::pair { (char*)Menu_ItemMenuThink+0x394,     0x88790022u },
+	std::pair { Menu_ItemMenuThink+0x394,     0x88790022u },
 #else
 	// lbz r4, 0x22(r30)
-	std::pair { (char*)Menu_ItemMenuThink+0x2F0,     0x889E0022u },
+	std::pair { Menu_ItemMenuThink+0x2F0,     0x889E0022u },
 	// stb r0, 0x22(r30)
-	std::pair { (char*)Menu_ItemMenuThink+0x3A0,     0x981E0022u },
+	std::pair { Menu_ItemMenuThink+0x3A0,     0x981E0022u },
 	// lbz r3, 0x22(r25)
-	std::pair { (char*)Menu_ItemMenuThink+0x3C8,     0x88790022u },
+	std::pair { Menu_ItemMenuThink+0x3C8,     0x88790022u },
 #endif
 	// stb r3, 0x22(r25)
-	std::pair { (char*)Menu_SetupItemMenu+0x158,     0x98790022u },
+	std::pair { Menu_SetupItemMenu+0x158,     0x98790022u },
 	// lbz r0, 0x22(r25)
-	std::pair { (char*)Menu_SetupItemMenu+0x1A4,     0x88190022u },
+	std::pair { Menu_SetupItemMenu+0x1A4,     0x88190022u },
 	// lbz r3, 0x22(r25)
-	std::pair { (char*)Menu_SetupItemMenu+0x6A4,     0x88790022u },
+	std::pair { Menu_SetupItemMenu+0x6A4,     0x88790022u },
 	// lbz r3, 0x22(r29)
-	std::pair { (char*)Menu_ItemMenuInput+0x84,      0x887D0022u },
+	std::pair { Menu_ItemMenuInput+0x84,      0x887D0022u },
 	// lbz r3, 0x22(r29)
-	std::pair { (char*)Menu_ItemMenuInput+0x124,     0x887D0022u },
+	std::pair { Menu_ItemMenuInput+0x124,     0x887D0022u },
 	// lbz r3, 0x22(r28)
-	std::pair { (char*)Menu_ItemMenuInput+0x188,     0x887C0022u },
+	std::pair { Menu_ItemMenuInput+0x188,     0x887C0022u },
 	// lbz r3, 0x22(r28)
-	std::pair { (char*)Menu_ItemMenuInput+0x1D4,     0x887C0022u },
-};
+	std::pair { Menu_ItemMenuInput+0x1D4,     0x887C0022u }
+);
 
 static int get_selected_bgm_id(ItemMenuData *data, u8 stage)
 {

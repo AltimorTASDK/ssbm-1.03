@@ -11,7 +11,6 @@
 #include "rules/values.h"
 #include "util/texture_swap.h"
 #include "util/meta.h"
-#include "util/patch_list.h"
 #include "util/melee/text_builder.h"
 #include <gctypes.h>
 
@@ -108,15 +107,12 @@ constexpr auto manual_description = make_description_text<
 	"Read the 1.03 memory card",
 	"manual.">();
 
-static const auto patches = patch_list {
+[[gnu::constructor]] static void set_preview_anims()
+{
 	// Swap previews for debug menu and controls
-	std::pair { &MenuTypeDataTable[MenuType_VsMode].preview_anims[1], HSD_AnimLoop {
-		800, 849, 820
-	} },
-	std::pair { &MenuTypeDataTable[MenuType_VsMode].preview_anims[2], HSD_AnimLoop {
-		750, 799, 770
-	} },
-};
+	MenuTypeDataTable[MenuType_VsMode].preview_anims[1] = { 800, 849, 820 };
+	MenuTypeDataTable[MenuType_VsMode].preview_anims[2] = { 750, 799, 770 };
+}
 
 extern "C" void orig_VsMenu_Think(HSD_GObj *gobj);
 extern "C" void hook_VsMenu_Think(HSD_GObj *gobj)

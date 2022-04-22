@@ -130,11 +130,11 @@ constexpr auto TOGGLE_HOLD_TIME = 60;
 constexpr auto crew_text = text_builder::build(
 	text_builder::text<"An epic crew battle!">());
 
-static const auto patches = patch_list {
+PATCH_LIST(
 	// Use "Survival!" voice clip for crew
 	// li r3, 0x7538
-	std::pair { (char*)CSS_Setup+0xF8, 0x38607538 },
-};
+	std::pair { CSS_Setup+0xF8, 0x38607538 }
+);
 
 static mempool pool;
 

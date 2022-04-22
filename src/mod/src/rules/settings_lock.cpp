@@ -13,11 +13,11 @@
 extern "C" void Scene_Execute(struct SceneMajorData *major);
 
 #ifndef PAL
-static const auto patches = patch_list {
+PATCH_LIST(
 	// Go to CSS on reset
 	// li r3, Scene_VsMode
-	std::pair { (char*)Scene_Execute+0x244, 0x38600002u },
-};
+	std::pair { Scene_Execute+0x244, 0x38600002u }
+);
 #else
 extern "C" void orig_Scene_Reset();
 extern "C" void hook_Scene_Reset()

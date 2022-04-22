@@ -7,12 +7,12 @@ extern "C" void Player_UpdatePhysicsJointAnimFrameAndRate(Player *player);
 extern "C" void Player_SetBoneAnimFrameAndRate(Player *player, u32 bone,
                                                SubactionData *subaction_data, f32 frame, f32 rate);
 
-static const auto patches = patch_list {
+PATCH_LIST(
 	// Patch out Player_SetAnimationFrameAndRate calls
 	// nop
-	std::pair { (char*)Player_UpdatePhysicsJointAnimFrameAndRate+0xB0, 0x60000000u },
-	std::pair { (char*)Player_UpdatePhysicsJointAnimFrameAndRate+0xFC, 0x60000000u },
-};
+	std::pair { Player_UpdatePhysicsJointAnimFrameAndRate+0xB0, 0x60000000u },
+	std::pair { Player_UpdatePhysicsJointAnimFrameAndRate+0xFC, 0x60000000u }
+);
 
 extern "C" void orig_Player_UpdatePhysicsJointAnimFrameAndRate(Player *player);
 extern "C" void hook_Player_UpdatePhysicsJointAnimFrameAndRate(Player *player)
