@@ -96,6 +96,7 @@ dol: export OBJDIR  := obj/DOL
 dol: export DEPDIR  := dep/DOL
 dol: export DEFINES += -DDOL -DNOPAL
 dol: $(MELEELD)
+	@[[ $(VERSION) == 102 ]] || ( echo "DOL builds are supported only for NTSC 1.02." >& 2; exit 1 )
 	+@cd src/mod && $(MAKE) dol
 
 .PHONY: resources
