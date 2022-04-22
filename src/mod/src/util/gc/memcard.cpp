@@ -72,11 +72,10 @@ extern "C" u32 hook_GetNextSceneMajorCallback()
 {
 	if (!first_save_check) {
 		// Load the new save file after loading 1.03
-		const auto result = orig_GetNextSceneMajorCallback();
 		first_save_check = true;
-		return result;
+		return orig_GetNextSceneMajorCallback();
 	} else {
-		return Scene_Transition;
+		return Scene_None;
 	}
 }
 

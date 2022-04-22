@@ -15,7 +15,7 @@ enum Scene {
 	Scene_Training     = 31,
 	Scene_Boot         = 43,
 	Scene_ReloadData   = 44,
-	Scene_Transition   = 48,
+	Scene_None         = 48,
 #else
 	Scene_AttractMode  = 24,
 	Scene_Tournament   = 27,
@@ -23,7 +23,7 @@ enum Scene {
 	Scene_Training     = 28,
 	Scene_Boot         = 40,
 	Scene_ReloadData   = 41,
-	Scene_Transition   = 45,
+	Scene_None         = 45,
 #endif
 };
 
