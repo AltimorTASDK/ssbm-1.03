@@ -1,5 +1,7 @@
 bin/*
 iso/*
+!iso/sys/boot.bin
+!iso/files/opening.bnr
 src/*/bin/*
 src/*/obj/*
 src/*/dep/*
