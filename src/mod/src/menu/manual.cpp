@@ -18,7 +18,10 @@
 #include <cmath>
 #include <gctypes.h>
 
-#ifdef NOPAL
+#if defined(DOL)
+#include "resources/manual/dol/manual_p1.tex.h"
+#include "resources/manual/dol/manual_p2.tex.h"
+#elif defined(NOPAL)
 #include "resources/manual/a/manual_p1.tex.h"
 #include "resources/manual/a/manual_p2.tex.h"
 #else
