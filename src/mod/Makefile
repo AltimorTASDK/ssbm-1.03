@@ -26,7 +26,6 @@ ICON      := icon.tex
 TITLE     := "Super Smash Bros. Melee         1.03 Data"
 DIFFSRC   := bin/mod.bin
 
-REALDOLSRC := $(shell echo "$(DOLSRC)" | sed -e 's/^\([a-zA-Z]\):/\/\1/')
 DOLFILE    := $(ISODIR)/sys/main.dol
 PATCHES    := bin/patches.bin
 DOLELF     := bin/dol.elf
@@ -68,8 +67,7 @@ dol: $(DOLFILE)
 
 $(DOLFILE): $(DOLELF) $(PATCHES) $(TOOLS)/patch_dol.py
 	@[ -d $(@D) ] || mkdir -p $(@D)
-	@[ $(DOLSRC)        ] || ( echo "\$$DOLSRC must be set to the path of an NTSC 1.02 main.dol file." >& 2; exit 1 )
-	@[ -f $(REALDOLSRC) ] || ( echo "\$$DOLSRC is set, but does not contain a valid file path."        >& 2; exit 1 )
+	@[ $(DOLSRC) ] || ( echo "\$$DOLSRC must be set to the path of an NTSC 1.02 main.dol file." >& 2; exit 1 )
 	$(OBJCOPY) -O binary -R .patches $< $@
 	python $(TOOLS)/patch_dol.py $@ $@ $(OUTPUTMAP) $(PATCHES)
 
@@ -81,10 +79,10 @@ $(DOLELF): $(OBJFILES) $(DOLDATA) $(DOLLD) $(MELEELD) ../common.ld | clean_unuse
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(CC) $(LDFLAGS) -T$(DOLLD) -T$(MELEELD) $(OBJFILES) -o $@
 
-$(DOLDATA): $(REALDOLSRC)
+$(DOLDATA): $(DOLSRC)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 # skip dol header
-	dd if=$(REALDOLSRC) of=$(DOLDATA) bs=256 skip=1
+	dd if=$(DOLSRC) of=$(DOLDATA) bs=256 skip=1
 
 $(BANNER): $(BANNERSRC) $(TOOLS)/encode_texture.py
 	python $(TOOLS)/encode_texture.py $< $@
