@@ -55,6 +55,7 @@ static char text_buf[TEXT_WIDTH * TEXT_HEIGHT * 2];
 #endif
 
 static bool faster_melee;
+static bool checked_fm;
 
 static bool needs_depth_clear;
 
@@ -64,8 +65,50 @@ static u32 last_poll_retrace_count;
 static u32 half_vb_retrace_count;
 static OSThreadQueue half_vb_thread_queue;
 
+static bool detect_fm_impl()
+{
+	constexpr auto magic = 0xFFFFFFFF;
+
+	SICHANNEL[0].in.lo = magic;
+
+	if (SICHANNEL[0].in.lo != magic) {
+		// Console ignores writes to SIC0INBUF
+		OSReport("Detected console\n");
+		return false;
+	}
+
+	SICHANNEL[0].in.hi = magic;
+
+	if (SICHANNEL[0].in.hi == magic) {
+		// Mainline Dolphin allows SIC0INBUFH writes to persist
+		OSReport("Detected mainline Dolphin\n");
+		return false;
+	} else {
+		// FM renews inputs when SIC0INBUFH is read
+		OSReport("Detected FM Dolphin\n");
+		return true;
+	}
+}
+
+static bool detect_fm()
+{
+	const auto irq_enable = OSDisableInterrupts();
+	const auto sipoll = Si.poll.raw;
+	SIDisablePolling(0b11110000 << 24);
+	const auto result = detect_fm_impl();
+	SIEnablePolling(sipoll << 24);
+	OSRestoreInterrupts(irq_enable);
+
+	return result;
+}
+
 extern "C" bool is_faster_melee()
 {
+	if (!checked_fm) {
+		faster_melee = detect_fm();
+		checked_fm = true;
+	}
+
 	return faster_melee;
 }
 
@@ -131,22 +174,21 @@ extern "C" bool hook_SIGetResponseRaw(u32 port)
 extern "C" void orig_UpdatePadFetchRate();
 extern "C" void hook_UpdatePadFetchRate()
 {
-	if (is_faster_melee())
-		return;
+	orig_UpdatePadFetchRate();
 
 	// Don't use the fetch timer
-	orig_UpdatePadFetchRate();
-	OSCancelAlarm(&PadFetchAlarm);
+	if (!is_faster_melee())
+		OSCancelAlarm(&PadFetchAlarm);
 }
 
 extern "C" void orig_SISetSamplingRate(u32 msecs);
 extern "C" void hook_SISetSamplingRate(u32 msecs)
 {
-	if (is_faster_melee())
-		return;
-
 	// Always use default polling rate/interval
-	orig_SISetSamplingRate(16);
+	if (!is_faster_melee())
+		msecs = 16;
+
+	orig_SISetSamplingRate(msecs);
 }
 
 extern "C" void scene_loop_start()
@@ -338,49 +380,10 @@ extern "C" void hook_Scene_RunLoop(void(*think_callback)())
 }
 #endif
 
-static bool detect_fm_impl()
-{
-	constexpr auto magic = 0xFFFFFFFF;
-
-	SICHANNEL[0].in.lo = magic;
-
-	if (SICHANNEL[0].in.lo != magic) {
-		// Console ignores writes to SIC0INBUF
-		OSReport("Detected console\n");
-		return false;
-	}
-
-	SICHANNEL[0].in.hi = magic;
-
-	if (SICHANNEL[0].in.hi == magic) {
-		// Mainline Dolphin allows SIC0INBUFH writes to persist
-		OSReport("Detected mainline Dolphin\n");
-		return false;
-	} else {
-		// FM renews inputs when SIC0INBUFH is read
-		OSReport("Detected FM Dolphin\n");
-		return true;
-	}
-}
-
-static bool detect_fm()
-{
-	const auto irq_enable = OSDisableInterrupts();
-	const auto sipoll = Si.poll.raw;
-	SIDisablePolling(0b11110000 << 24);
-	const auto result = detect_fm_impl();
-	SIEnablePolling(sipoll << 24);
-	OSRestoreInterrupts(irq_enable);
-
-	return result;
-}
-
 [[gnu::constructor]] static void init_latency()
 {
-	if (detect_fm()) {
-		faster_melee = true;
+	if (is_faster_melee())
 		return;
-	}
 
 	SIEnablePollingInterrupt(true);
 	HSD_VISetUserPostRetraceCallback(post_retrace_callback);
