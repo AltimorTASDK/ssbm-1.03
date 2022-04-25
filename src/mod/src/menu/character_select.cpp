@@ -114,6 +114,7 @@ extern "C" struct {
 
 extern "C" u8 CSSReadyFrames;
 extern "C" u8 CSSPendingSceneChange;
+extern "C" u8 CSSSingleplayerPort;
 extern "C" u8 CSSPortCount;
 extern "C" HSD_JObj *CSSMenuJObj;
 extern "C" CSSPlayerData *CSSPlayers[4];
@@ -223,23 +224,40 @@ extern "C" bool check_if_any_players()
 	return false;
 }
 
+static controller_config *get_css_config(u8 port)
+{
+	if (CSSPortCount == 1)
+		return &controller_configs[CSSSingleplayerPort];
+	else
+		return &controller_configs[port];
+}
+
+static const HSD_PadStatus &get_css_input(u8 port)
+{
+	if (CSSPortCount == 1)
+		return HSD_PadCopyStatus[CSSSingleplayerPort];
+	else
+		return HSD_PadCopyStatus[port];
+}
+
 static void rumble_toggle(u8 port)
 {
 	// 20XX uses dpad up for metal characters
 	if (is_20XX())
 		return;
 
-	if (!(HSD_PadCopyStatus[port].instant_buttons & Button_DPadUp))
+	if (!(get_css_input(port).instant_buttons & Button_DPadUp))
 		return;
 
 	const auto nametag = CSSData->data.players[port].nametag;
 
 	if (nametag == NAMETAG_MAX) {
 		// Toggle port rumble setting
-		const auto rumble = !GetPortRumbleFlag(port);
-		SetPortRumbleFlag(port, rumble);
+		const auto real_port = CSSPortCount == 1 ? CSSSingleplayerPort : port;
+		const auto rumble = !GetPortRumbleFlag(real_port);
+		SetPortRumbleFlag(real_port, rumble);
 		if (rumble)
-			HSD_PadRumble(port, 0, 0, 60);
+			HSD_PadRumble(real_port, 0, 0, 60);
 	} else {
 		// Toggle nametag rumble setting
 		auto *nametag_entry = NameTag_GetEntry(nametag);
@@ -281,8 +299,8 @@ static void show_illegal_controls(u8 port)
 
 static void z_jump_toggle(u8 port)
 {
-	auto *config = &controller_configs[port];
-	const auto &pad = HSD_PadCopyStatus[port];
+	auto *config = get_css_config(port);
+	const auto &pad = get_css_input(port);
 
 	check_css_toggle(port, &toggle_timers[port].z_jump,
 		[&] {
@@ -302,7 +320,8 @@ static void z_jump_toggle(u8 port)
 #ifdef OLD_CSS_TOGGLES
 static void perfect_angles_toggle(u8 port)
 {
-	auto *config = &controller_configs[port];
+	auto *config = get_css_config(port);
+	const auto &pad = get_css_input(port);
 
 	check_css_toggle(port, &toggle_timers[port].perfect_angles,
 		[&] {
@@ -315,7 +334,6 @@ static void perfect_angles_toggle(u8 port)
 				return false;
 
 			// Must be holding L/R only
-			const auto &pad = HSD_PadCopyStatus[port];
 			constexpr auto mask = Button_L | Button_R;
 			return (pad.buttons & mask) != 0 && (pad.buttons & ~mask) == 0;
 		},
@@ -327,7 +345,8 @@ static void perfect_angles_toggle(u8 port)
 
 static void c_up_toggle(u8 port)
 {
-	auto *config = &controller_configs[port];
+	auto *config = get_css_config(port);
+	const auto &pad = get_css_input(port);
 
 	check_css_toggle(port, &toggle_timers[port].c_up,
 		[&] {
@@ -339,7 +358,6 @@ static void c_up_toggle(u8 port)
 			if (config->c_up == cstick_type::tilt)
 				return false;
 
-			const auto &pad = HSD_PadCopyStatus[port];
 			return pad.cstick.y >= YSMASH_THRESHOLD;
 		},
 		[&] {
@@ -350,7 +368,8 @@ static void c_up_toggle(u8 port)
 
 static void c_horizontal_toggle(u8 port)
 {
-	auto *config = &controller_configs[port];
+	auto *config = get_css_config(port);
+	const auto &pad = get_css_input(port);
 
 	check_css_toggle(port, &toggle_timers[port].c_horizontal,
 		[&] {
@@ -362,7 +381,6 @@ static void c_horizontal_toggle(u8 port)
 			if (config->c_horizontal == cstick_type::tilt)
 				return false;
 
-			const auto &pad = HSD_PadCopyStatus[port];
 			return std::abs(pad.cstick.x) >= XSMASH_THRESHOLD;
 		},
 		[&] {
@@ -373,7 +391,8 @@ static void c_horizontal_toggle(u8 port)
 
 static void c_down_toggle(u8 port)
 {
-	auto *config = &controller_configs[port];
+	auto *config = get_css_config(port);
+	const auto &pad = get_css_input(port);
 
 	check_css_toggle(port, &toggle_timers[port].c_down,
 		[&] {
@@ -385,7 +404,6 @@ static void c_down_toggle(u8 port)
 			if (config->c_down == cstick_type::tilt)
 				return false;
 
-			const auto &pad = HSD_PadCopyStatus[port];
 			return pad.cstick.y <= -YSMASH_THRESHOLD;
 		},
 		[&] {
@@ -396,7 +414,8 @@ static void c_down_toggle(u8 port)
 
 static void tap_jump_toggle(u8 port)
 {
-	auto *config = &controller_configs[port];
+	auto *config = get_css_config(port);
+	const auto &pad = get_css_input(port);
 
 	check_css_toggle(port, &toggle_timers[port].tap_jump,
 		[&] {
@@ -413,7 +432,6 @@ static void tap_jump_toggle(u8 port)
 				return false;
 
 			// Require 6625 upward input
-			const auto &pad = HSD_PadCopyStatus[port];
 			return pad.stick.y >= YSMASH_THRESHOLD;
 		},
 		[&] {
@@ -435,6 +453,28 @@ static void reset_toggle_timers(u8 port)
 #endif
 }
 
+static void check_to_drop_puck(CSSPlayerData *data)
+{
+	if (data->state != CSSPlayerState_HoldingPuck)
+		return;
+
+	// Drop fake HMN puck if a real player plugs in
+	const auto puck = data->held_puck;
+
+	if (puck >= 4 || puck == data->port)
+		return;
+
+	if (CSSPlayers[puck]->state == CSSPlayerState_Unplugged)
+		return;
+
+	if (CSSPorts[puck].slot_type != SlotType_Human)
+		return;
+
+	CSS_DropPuck(puck);
+	CSS_UpdatePortrait(puck);
+	data->state = CSSPlayerState_Idle;
+}
+
 extern "C" void orig_CSS_PlayerThink(HSD_GObj *gobj);
 extern "C" void hook_CSS_PlayerThink(HSD_GObj *gobj)
 {
@@ -442,11 +482,8 @@ extern "C" void hook_CSS_PlayerThink(HSD_GObj *gobj)
 
 	auto *data = gobj->get<CSSPlayerData>();
 
-	if (CSSPendingSceneChange == 0)
-		player_states[data->port] = data->state;
-
 	// CSS toggles
-	if (HSD_PadCopyStatus[data->port].err == 0) {
+	if (get_css_input(data->port).err == 0) {
 		rumble_toggle(data->port);
 		z_jump_toggle(data->port);
 #ifdef OLD_CSS_TOGGLES
@@ -471,26 +508,10 @@ extern "C" void hook_CSS_PlayerThink(HSD_GObj *gobj)
 	if (CSSPendingSceneChange != 0)
 		return;
 
+	player_states[data->port] = data->state;
 	is_unplugged[data->port] = data->state == CSSPlayerState_Unplugged;
 
-	if (data->state != CSSPlayerState_HoldingPuck)
-		return;
-
-	// Drop fake HMN puck if a real player plugs in
-	const auto puck = data->held_puck;
-
-	if (puck >= 4 || puck == data->port)
-		return;
-
-	if (CSSPlayers[puck]->state == CSSPlayerState_Unplugged)
-		return;
-
-	if (CSSPorts[puck].slot_type != SlotType_Human)
-		return;
-
-	CSS_DropPuck(puck);
-	CSS_UpdatePortrait(puck);
-	data->state = CSSPlayerState_Idle;
+	check_to_drop_puck(data);
 }
 
 #ifdef OLD_CSS_TOGGLES
@@ -499,7 +520,7 @@ extern "C" void hook_CSS_UpdatePortrait(u8 port)
 {
 	orig_CSS_UpdatePortrait(port);
 
-	if (CSSPorts[port].slot_type == SlotType_Human && controller_configs[port].is_illegal())
+	if (CSSPorts[port].slot_type == SlotType_Human && get_css_config(port)->is_illegal())
 		show_illegal_controls(port);
 }
 #endif
@@ -602,6 +623,10 @@ static void create_watermark()
 extern "C" void orig_CSS_Setup();
 extern "C" void hook_CSS_Setup()
 {
+	// Initialize toggle timers
+	for (u8 i = 0; i < CSSPortCount; i++)
+		reset_toggle_timers(i);
+
 	if (SceneMajor != Scene_VsMode)
 		return orig_CSS_Setup();
 
@@ -656,9 +681,6 @@ extern "C" void hook_CSS_Setup()
 			CSSPlayers[i]->state = CSSPlayerState_Unplugged;
 
 		player_states[CSSPlayers[i]->port] = CSSPlayers[i]->state;
-
-		// Initialize toggle timers
-		reset_toggle_timers(i);
 	}
 
 #ifdef BETA
