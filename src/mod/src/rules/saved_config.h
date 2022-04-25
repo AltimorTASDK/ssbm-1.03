@@ -39,7 +39,7 @@ struct [[gnu::packed]] config_values<config_version::a2> : config_values<config_
 template<>
 struct [[gnu::packed]] config_values<config_version::a3> : config_values<config_version::a2> {
 	// Added in A3/B3
-	controls_type controls = controls_type::all;
+	controls_type controls = controls_type::z_jump;
 };
 
 struct [[gnu::packed]] saved_config : config_values<config_version::current> {
