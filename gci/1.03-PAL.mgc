@@ -24,4 +24,4 @@ DDDDDDDD 804ee8f8 8045ae08 00000000
 
 # PAL loader
 !loc 8046a000
-!file "1.03_data/loader-pal.bin"
+!file "loader-b/loader-pal.bin"

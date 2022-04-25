@@ -1,22 +1,28 @@
-ELFFILE  := $(GCIDIR)/1.03_data/loader.elf
-BINFILE  := $(GCIDIR)/1.03_data/loader.bin
+ifdef NOPAL
+OUTDIR  := $(GCIDIR)/loader-a
+else
+OUTDIR  := $(GCIDIR)/loader-b
+endif
+
+ELFFILE := $(OUTDIR)/loader.elf
+BINFILE := $(OUTDIR)/loader.bin
 
 ifeq ($(VERSION), 100)
-ELFFILE  := $(GCIDIR)/1.03_data/loader-ntsc100.elf
-BINFILE  := $(GCIDIR)/1.03_data/loader-ntsc100.bin
+ELFFILE := $(OUTDIR)/loader-ntsc100.elf
+BINFILE := $(OUTDIR)/loader-ntsc100.bin
 else ifeq ($(VERSION), 101)
-ELFFILE  := $(GCIDIR)/1.03_data/loader-ntsc101.elf
-BINFILE  := $(GCIDIR)/1.03_data/loader-ntsc101.bin
+ELFFILE := $(OUTDIR)/loader-ntsc101.elf
+BINFILE := $(OUTDIR)/loader-ntsc101.bin
 else ifeq ($(VERSION), 102)
-ELFFILE  := $(GCIDIR)/1.03_data/loader-ntsc102.elf
-BINFILE  := $(GCIDIR)/1.03_data/loader-ntsc102.bin
+ELFFILE := $(OUTDIR)/loader-ntsc102.elf
+BINFILE := $(OUTDIR)/loader-ntsc102.bin
 else ifeq ($(VERSION), PAL)
-ELFFILE  := $(GCIDIR)/1.03_data/loader-pal.elf
-BINFILE  := $(GCIDIR)/1.03_data/loader-pal.bin
+ELFFILE := $(OUTDIR)/loader-pal.elf
+BINFILE := $(OUTDIR)/loader-pal.bin
 endif
 
 ifdef NOPAL
-ZLIBBIN  := $(GCIDIR)/1.03_data/zlib.bin
+ZLIBBIN := $(OUTDIR)/zlib.bin
 endif
 
 CFILES   := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.c'))
@@ -48,11 +54,11 @@ else
 GCIFILE    := $(BINDIR)/$(MODNAME)-loader-NTSC.gci
 GCISRC     := $(GCIDIR)/ssbm-NTSC.gci
 ifdef NOPAL
-MGCMAIN    := $(GCIDIR)/1.03-NTSC-NOPAL.mgc
-LINKSCRIPT := loader-NTSC-NOPAL.ld
+MGCMAIN    := $(GCIDIR)/1.03-a-NTSC.mgc
+LINKSCRIPT := loader-a-NTSC.ld
 else
-MGCMAIN    := $(GCIDIR)/1.03-NTSC.mgc
-LINKSCRIPT := loader-NTSC.ld
+MGCMAIN    := $(GCIDIR)/1.03-b-NTSC.mgc
+LINKSCRIPT := loader-b-NTSC.ld
 endif
 endif
 
