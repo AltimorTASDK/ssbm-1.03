@@ -135,7 +135,7 @@ struct CharacterData {
 	u8 *archive_base;
 	char pad00C[0x2C - 0x0C];
 	JointData *joint_data;
-	char pad030[0x54 - 0x30];
+	char pad030[0x60 - 0x30];
 };
 
 struct Player {
