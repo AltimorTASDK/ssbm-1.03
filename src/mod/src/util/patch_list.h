@@ -37,8 +37,8 @@ struct patch_list {
 	{
 		([&] {
 			*(U*)patches.first = patches.second;
-			DCStoreRange(patches.first, sizeof(U));
-			ICInvalidateRange(patches.first, sizeof(U));
+			DCStoreRange((void*)patches.first, sizeof(U));
+			ICInvalidateRange((void*)patches.first, sizeof(U));
 		}(), ...);
 	}
 };
