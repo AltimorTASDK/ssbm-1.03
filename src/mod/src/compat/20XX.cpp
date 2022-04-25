@@ -24,7 +24,7 @@ extern "C" bool is_20XX()
 	if (!is_20XX())
 		return;
 
-	PATCH_LIST(
+	patch_list {
 		// Remove 20XX's results screen hook
 		// addi r27, r4, 0
 		std::pair { Scene_Match_Exit+0x10,   0x3B640000u },
@@ -38,7 +38,7 @@ extern "C" bool is_20XX()
 		std::pair { Scene_RunLoop+0x31C,     0x38600000u },
 		// subi r3, r13, 0x4278
 		std::pair { VIRetraceHandler+0x1FC,  0x386DBD88u }
-	);
+	};
 }
 
 extern "C" bool is_20XX_stage_select()

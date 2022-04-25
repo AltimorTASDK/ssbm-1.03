@@ -29,7 +29,7 @@ extern "C" bool is_unclepunch()
 	if (!is_unclepunch())
 		return;
 
-	PATCH_LIST(
+	patch_list {
 		// Remove UP's built in UCF
 		// stfs f0, 0x2C(r31)
 		std::pair { Interrupt_AS_Turn+0x4C,           0xD01F002Cu },
@@ -64,7 +64,7 @@ extern "C" bool is_unclepunch()
 
 		// Disable UP's results screen check hook
 		std::pair { Scene_Match_Exit+0x24,            0x3BA00000u }
-	);
+	};
 }
 
 // Check for the flag UnclePunch uses to indicate the OSD menu
