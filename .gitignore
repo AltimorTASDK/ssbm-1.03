@@ -10,7 +10,7 @@ GALE01r0.ld
 GALE01r1.ld
 GALE01r2.ld
 GALP01.ld
-gci/1.03_data/*.bin
-gci/1.03_data/*.elf
+gci/a
+gci/b
 gci/tmp_*
 src/mod/src/resources
