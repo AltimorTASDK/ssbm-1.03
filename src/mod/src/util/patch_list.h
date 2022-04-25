@@ -29,6 +29,7 @@ inline constexpr auto patch_list(const std::pair<T*, U> &...patches)
 #else
 // Apply patches in constructor
 #define PATCH_LIST(...) \
+	[[gnu::used]] \
 	static const auto patches##__COUNTER__ = patch_list { __VA_ARGS__ }
 
 struct patch_list {
