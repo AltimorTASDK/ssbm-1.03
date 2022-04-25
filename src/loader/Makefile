@@ -1,7 +1,7 @@
 ifdef NOPAL
-OUTDIR  := $(GCIDIR)/loader-a
+OUTDIR  := $(GCIDIR)/a
 else
-OUTDIR  := $(GCIDIR)/loader-b
+OUTDIR  := $(GCIDIR)/b
 endif
 
 ELFFILE := $(OUTDIR)/loader.elf
