@@ -151,20 +151,9 @@ hooks_start:
         .int hook_\name
 .endm
 
-.set UpdatePadButtons,        HSD_PadRenewMasterStatus+0x400
 .set CheckScrollingRuleIndex, Menu_UpdateRuleDisplay+0x418
 .set ShowNameTagCheck,        NameTag_Think+0x28
 .set CheckStockStealInput,    Match_CheckStockSteal+0xF8
-.set CheckUTiltInput,         Interrupt_UTilt+0x24
-.set CheckFTiltInput,         Interrupt_FTilt+0x24
-.set CheckDTiltInput,         Interrupt_DTilt+0x24
-.set CheckDTiltInputRapid,    Interrupt_AS_DTilt+0x80
-.set CheckDTiltInputIASA,     Interrupt_AS_DTilt+0xE8
-.set CheckJabInput,           Interrupt_Jab+0x20
-.set CheckJab2Input,          Interrupt_Jab2+0x40
-.set CheckJab3Input,          Interrupt_Jab3+0x3C
-.set CheckRapidJabInput,      Interrupt_RapidJab+0x18
-.set CheckFTiltAngle,         AS_053_056_FTilt+0x34
 
 #ifdef DOL
 add_hook Scene_Main
@@ -172,16 +161,6 @@ add_hook Scene_Main
 add_hook Bubble_GetPosition
 add_hook CheckScrollingRuleIndex
 add_hook CheckStockStealInput
-add_hook CheckUTiltInput
-add_hook CheckFTiltInput
-add_hook CheckDTiltInput
-add_hook CheckDTiltInputRapid
-add_hook CheckDTiltInputIASA
-add_hook CheckJabInput
-add_hook CheckJab2Input
-add_hook CheckJab3Input
-add_hook CheckRapidJabInput
-add_hook CheckFTiltAngle
 add_hook CmSubject_WorldToScreen
 add_hook CObjLoad
 add_hook DevelopText_Draw
@@ -206,7 +185,6 @@ add_hook NameTag_SetupForPlayer
 add_hook Player_CheckCStickUSmashInput
 add_hook Player_CheckCStickFSmashInput
 add_hook Player_CheckCStickDSmashInput
-add_hook Player_GetAirdodgeAngle
 add_hook Scene_Match_Exit
 add_hook ShowNameTagCheck
 add_hook Stage_Dreamland_WhispyUpdate
@@ -221,7 +199,6 @@ add_hook Stage_YoshisStory_ShyGuyUpdate
 add_hook Text_UpdateSubtextSize
 add_hook TrainingMenu_Create
 add_hook TrainingMenu_Think
-add_hook UpdatePadButtons
 # Controller fix
 .set TumbleWiggleCheck, Interrupt_AS_DamageFall+0x9C
 .set UpdatePlayerStick, PlayerThink_Input+0x1D0
@@ -238,6 +215,40 @@ add_hook Player_EnterDamageState
 add_hook Player_SDICallback
 add_hook AS_029_Fall
 add_hook Interrupt_Walljump
+# Z jump
+add_hook PADRead
+# Perfect angles
+add_hook Player_GetAirdodgeAngle
+add_hook AS_356_Spacie_UpBAirMiddle
+add_hook AS_359_Sheik_UpBAirMiddle
+add_hook AS_357_Pika_UpBAirMiddle
+add_hook Player_Pika_CheckDoubleUpB
+add_hook AS_357_Mewtwo_UpBAirMiddle
+add_hook AS_353_Zelda_UpBAirMiddle
+#ifdef YOSHI_PERFECT_ANGLES
+add_hook Player_Yoshi_GetEggVelocity
+#endif
+# Tilt stick
+.set CheckUTiltInput,         Interrupt_UTilt+0x24
+.set CheckFTiltInput,         Interrupt_FTilt+0x24
+.set CheckDTiltInput,         Interrupt_DTilt+0x24
+.set CheckDTiltInputRapid,    Interrupt_AS_DTilt+0x80
+.set CheckDTiltInputIASA,     Interrupt_AS_DTilt+0xE8
+.set CheckJabInput,           Interrupt_Jab+0x20
+.set CheckJab2Input,          Interrupt_Jab2+0x40
+.set CheckJab3Input,          Interrupt_Jab3+0x3C
+.set CheckRapidJabInput,      Interrupt_RapidJab+0x18
+.set CheckFTiltAngle,         AS_053_056_FTilt+0x34
+add_hook CheckUTiltInput
+add_hook CheckFTiltInput
+add_hook CheckDTiltInput
+add_hook CheckDTiltInputRapid
+add_hook CheckDTiltInputIASA
+add_hook CheckJabInput
+add_hook CheckJab2Input
+add_hook CheckJab3Input
+add_hook CheckRapidJabInput
+add_hook CheckFTiltAngle
 # Tap jump toggle
 .set TapJumpCheck_Jump,           Interrupt_Jump+0x40
 .set TapJumpCheck_JumpAerial,     Interrupt_JumpAerial+0x44
@@ -396,16 +407,6 @@ add_hook IsFeatureUnlocked
 add_hook IsTrophyUnlocked
 add_hook GetUnlockedEventMatchCount
 add_hook ShouldShowUnlockMessage
-# Perfect Up B
-add_hook AS_356_Spacie_UpBAirMiddle
-add_hook AS_359_Sheik_UpBAirMiddle
-add_hook AS_357_Pika_UpBAirMiddle
-add_hook Player_Pika_CheckDoubleUpB
-add_hook AS_357_Mewtwo_UpBAirMiddle
-add_hook AS_353_Zelda_UpBAirMiddle
-#ifdef YOSHI_PERFECT_ANGLES
-add_hook Player_Yoshi_GetEggVelocity
-#endif
 #if defined(NTSC100) || defined(NTSC101)
 # v1.02 hitlag
 .set RoundDealtDamage, Player_MeleeDamage+0x36C

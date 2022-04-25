@@ -6,31 +6,26 @@
 #include <numeric>
 #include <gctypes.h>
 
-// X/Y + Z for 1 second at CSS
-constexpr auto REMAP_HOLD_TIME = 60;
-
-static void apply_remap(int port)
+extern "C" void orig_PADRead(PADStatus *status);
+extern "C" void hook_PADRead(PADStatus *status)
 {
-	const auto &config = controller_configs[port];
+	orig_PADRead(status);
 
-	if (config.z_jump_bit == 0)
-		return;
+	for (auto i = 0; i < 4; i++) {
+		if (status[i].err != 0) {
+			// Reset config if unplugged and not in-game
+			if (GetMatchInfo()->match_over)
+				controller_configs[i].reset(i);
+			continue;
+		}
 
-	// Swap X/Y bit with Z bit
-	auto *status = &HSD_PadMasterStatus[port];
-	status->buttons = bit_swap(status->buttons, config.z_jump_bit, __builtin_ctz(Button_Z));
-}
+		const auto xy_bit = controller_configs[i].z_jump_bit;
+		constexpr auto z_bit = __builtin_ctz(Button_Z);
 
-extern "C" void process_remapping(int port);
-extern "C" void process_remapping(int port)
-{
-	// Reset config if unplugged and not in-game
-	if (HSD_PadMasterStatus[port].err != 0 && GetMatchInfo()->match_over) {
-		controller_configs[port].reset(port);
-		return;
+		// Swap X/Y bit with Z bit
+		if (xy_bit != 0)
+			status[i].buttons = (u16)bit_swap(status[i].buttons, xy_bit, z_bit);
 	}
-
-	apply_remap(port);
 }
 
 [[gnu::constructor]] static void set_match_over()
