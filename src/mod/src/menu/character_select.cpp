@@ -536,14 +536,12 @@ extern "C" void hook_CSS_Init(void *menu)
 
 	orig_CSS_Init(menu);
 
+#ifndef PAL
 	if (!IsLanguageUS()) {
 		// Always load English text for accented E
-#ifdef PAL
-		LoadSIS(1, "SdSlChr.ukd", "SIS_SelCharData");
-#else
 		LoadSIS(1, "SdSlChr.usd", "SIS_SelCharData");
-#endif
 	}
+#endif
 }
 
 static void replace_textures()
