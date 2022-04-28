@@ -66,6 +66,7 @@ def patch_branch(data, address, target):
     offset = address_to_offset(data, address)
     data[offset:offset+4] = word_to_bytes(0x48000000 | (delta & 0x3FFFFFC))
 
+# Not used, extra code now goes to the top of memory
 def patch_stack_and_heap(data):
     delta = get_dol_end(data) - ORIGINAL_DOL_END
     print(f"DOL virtual size delta: 0x{delta:X} bytes")
@@ -161,7 +162,8 @@ def main():
     with open(in_path, "rb") as f:
         data = bytearray(f.read())
 
-    patch_stack_and_heap(data)
+    # Not used, extra code now goes to the top of memory
+    # patch_stack_and_heap(data)
     apply_hooks(data, map_path)
     apply_patches(data, patch_path)
 

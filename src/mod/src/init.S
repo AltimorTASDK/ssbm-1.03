@@ -157,6 +157,7 @@ hooks_start:
 
 #ifdef DOL
 add_hook Scene_Main
+add_hook OSSetArenaHi
 #endif
 add_hook Bubble_GetPosition
 add_hook CheckScrollingRuleIndex
