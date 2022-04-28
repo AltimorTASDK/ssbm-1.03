@@ -1,7 +1,9 @@
 bin/*
-iso/*
-!iso/sys/boot.bin
+iso/files/*
 !iso/files/opening.bnr
+iso/sys/*
+!iso/sys/boot.bin
+!iso/sys/apploader.img
 src/*/bin/*
 src/*/obj/*
 src/*/dep/*
