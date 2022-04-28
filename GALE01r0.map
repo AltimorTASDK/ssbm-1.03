@@ -508,7 +508,9 @@
 800927d0 000000f8 800927d0 0 Interrupt_AS_Guard
 80092924 0000001c 80092924 0 DataOffset_PressingL&R_ThisFrame_SetFlag
 800929ac 00000058 800929ac 0 AS_180_GuardOff
-80092c84 00000314 80092c84 0 AS_181_GuardSetOff_CalcShieldStun
+80092ba8 00000088 80092ba8 0 Player_ShieldHitCallback
+80092c84 00000314 80092c84 0 AS_181_GuardSetOff
+80092f98 0000009c 80092f98 0 Player_ShieldSDICallback
 800930ac 000002d0 800930ac 0 AS_179&180_Guard&GuardOff_AfterShieldStun
 800933ec 00000078 800933ec 0 Interrupt_GuardReflect
 800935a8 0000003c 800935a8 0 AS_182_GuardReflect_YoshiCheck
@@ -1254,7 +1256,7 @@
 80127f9c 0000005c 80127f9c 0 ch_Samus_SpecialN_Charge
 8012b840 00000164 8012b840 0 Yoshi_AS_341_GuardOn
 8012be10 000000b0 8012be10 0 ch_Yoshi_343_GuardOff
-8012bf74 000001a4 8012bf74 0 ch_Yoshi_344_GuardDamageBreak
+8012bf74 000001a4 8012bf74 0 AS_344_Yoshi_GuardSetOff
 8012c118 00000068 8012c118 0 ch_Yoshi_GuardDamageBreakEggshellTimer?
 8012c1c4 000000c4 8012c1c4 0 ch_Yoshi_345_GuardReflect
 80133054 00000170 80133054 0 ch_Bowser_SpecialSHit_AnimationInterrupt

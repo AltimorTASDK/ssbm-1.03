@@ -41,7 +41,9 @@ struct PlayerConstants {
 	f32 sdi_stick_threshold;
 	s32 sdi_stick_frames;
 	f32 sdi_distance;
-	char pad4BC[0x5F0 - 0x4BC];
+	f32 asdi_distance;
+	f32 shield_sdi_mult;
+	char pad4C4[0x5F0 - 0x4C4];
 	s32 idle_timer;
 	char pad5F4[0x76C - 0x5F4];
 	f32 walljump_stick_threshold;

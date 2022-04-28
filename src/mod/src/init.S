@@ -212,7 +212,9 @@ add_hook Interrupt_Throw
 add_hook Interrupt_DK_ThrowFDecide
 add_hook Interrupt_TurnOrDash
 add_hook Player_EnterDamageState
+add_hook Player_ShieldHitCallback
 add_hook Player_SDICallback
+add_hook Player_ShieldSDICallback
 add_hook AS_029_Fall
 add_hook Interrupt_Walljump
 # Z jump
