@@ -11,14 +11,14 @@ TARGET(binary)
 INPUT(obj/dol_data.bin);
 
 __LOAD_BASE__  = 0x80003000;
-__NEW_BASE__   = 0x817B0000; /* starting VMA of new code */
-__MAX_ADDR__   = 0x81800000;
-__MAX_SIZE__   = __MAX_ADDR__ - __LOAD_BASE__;
+__NEW_BASE__   = 0x817A8000; /* starting VMA of new code */
+__MAX_ADDR__   = 0x817F8AC0; /* start of FileStringTable */
+__OLD_SIZE__   = __NEW_BASE__ - __LOAD_BASE__;
 __NEW_SIZE__   = __MAX_ADDR__ - __NEW_BASE__;
 
 MEMORY
 {
-    disk (rwx) : ORIGIN = 0,            LENGTH = __MAX_SIZE__
+    disk (rwx) : ORIGIN = 0,            LENGTH = __OLD_SIZE__
     new  (rwx) : ORIGIN = __NEW_BASE__, LENGTH = __NEW_SIZE__
 }
 
