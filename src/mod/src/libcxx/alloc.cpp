@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <new>
 
+#ifndef DOL
 extern "C" char __LOAD_BASE__;
 constexpr void *load_base = &__LOAD_BASE__;
 
@@ -62,6 +63,17 @@ void free(void *ptr)
 	else
 		HSD_Free(ptr);
 }
+#else
+void *malloc(size_t count)
+{
+	return HSD_MemAlloc(count);
+}
+
+void free(void *ptr)
+{
+	HSD_Free(ptr);
+}
+#endif
 
 void *operator new(size_t count)
 {
@@ -154,11 +166,13 @@ extern "C" void hook_HSD_ResetScene()
 	// Run destructors and clear pool refcounts on heap destruction
 	mempool::free_all();
 
+#ifndef DOL
 	// Reset 1.03 heap
 	if (heap != -1) {
 		OSDestroyHeap(heap);
 		heap = -1;
 	}
+#endif
 
 	orig_HSD_ResetScene();
 }
