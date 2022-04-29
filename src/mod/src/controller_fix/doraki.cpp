@@ -18,6 +18,8 @@ struct doraki_data {
 	u32 doraki_ecb_flags;
 };
 
+extern "C" bool orig_Interrupt_Walljump(HSD_GObj *gobj);
+
 extern "C" void orig_AS_029_Fall(HSD_GObj *gobj);
 extern "C" void hook_AS_029_Fall(HSD_GObj *gobj)
 {
@@ -45,7 +47,33 @@ static bool check_doraki_input(const Player *player)
 	return check_ucf_xsmash(player);
 }
 
-extern "C" bool orig_Interrupt_Walljump(HSD_GObj *gobj);
+static bool attempt_doraki(Player *player)
+{
+	const auto *as_data = player->custom_as_data<doraki_data>();
+
+	// The player missed the f1 smash input and drifted away, allow an f2 doraki
+	const auto position = player->position;
+	const auto collide = player->phys.collide;
+	const auto ecb = player->phys.ecb;
+	const auto ecb_flags = player->phys.ecb_flags;
+	player->position = as_data->doraki_position;
+	player->phys.position = player->position;
+	player->phys.collide = player->phys.last_collide;
+	player->phys.ecb = player->phys.last_ecb;
+	player->phys.ecb_flags = as_data->doraki_ecb_flags;
+
+	if (orig_Interrupt_Walljump(player->gobj))
+		return true;
+
+	// Walljump failed, restore position/collide/ECB
+	player->position = position;
+	player->phys.position = position;
+	player->phys.collide = collide;
+	player->phys.ecb = ecb;
+	player->phys.ecb_flags = ecb_flags;
+	return false;
+}
+
 extern "C" bool hook_Interrupt_Walljump(HSD_GObj *gobj)
 {
 	constexpr auto wall_hug_mask = Collide_LeftWallHug | Collide_RightWallHug;
@@ -58,29 +86,8 @@ extern "C" bool hook_Interrupt_Walljump(HSD_GObj *gobj)
 	if (as_data->can_doraki) {
 		as_data->can_doraki = false;
 
-		if ((player->phys.collide & wall_hug_mask) == 0 && check_doraki_input(player)) {
-			// The player missed the f1 smash input and drifted away, allow an f2 doraki
-			const auto position = player->position;
-			const auto collide = player->phys.collide;
-			const auto ecb = player->phys.ecb;
-			const auto ecb_flags = player->phys.ecb_flags;
-			player->position = as_data->doraki_position;
-			player->phys.position = player->position;
-			player->phys.collide = player->phys.last_collide;
-			player->phys.ecb = player->phys.last_ecb;
-			player->phys.ecb_flags = as_data->doraki_ecb_flags;
-
-			if (orig_Interrupt_Walljump(player->gobj))
-				return true;
-
-			// Walljump failed, restore position/collide/ECB
-			player->position = position;
-			player->phys.position = position;
-			player->phys.collide = collide;
-			player->phys.ecb = ecb;
-			player->phys.ecb_flags = ecb_flags;
-			return false;
-		}
+		if ((player->phys.collide & wall_hug_mask) == 0 && check_doraki_input(player))
+			return attempt_doraki(player);
 	}
 
 	if (orig_Interrupt_Walljump(gobj))
