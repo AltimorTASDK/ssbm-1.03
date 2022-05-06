@@ -110,7 +110,7 @@ extern "C" void hook_TrainingMenu_Think()
 		return;
 
 	// Calc offset based on the X coord at the edge of the camera
-	constexpr auto screen_edge = 64.f * (float)tan(deg_to_rad(41.539f / 2.f)) * (73.f / 60.f);
+	constexpr auto screen_edge = 64.f * (float)tan(.725f / 2.f) * (73.f / 60.f);
 	constexpr auto offset = screen_edge * (aspect_ratio_factor - 1.f);
 
 	for (auto i = 0; i < 39; i++) {
