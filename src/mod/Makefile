@@ -163,13 +163,13 @@ clean:
 # Remove unused obj/dep/resource files
 .PHONY: clean_unused
 clean_unused:
-	$(foreach file, $(shell find $(OBJDIR) -type f), \
+	$(foreach file, $(shell find $(OBJDIR) -type f 2> /dev/null), \
 		$(if $(filter $(file), $(OBJFILES) $(OUTPUTMAP)),, \
 		$(shell rm $(file))))
-	$(foreach file, $(shell find $(DEPDIR) -type f), \
+	$(foreach file, $(shell find $(DEPDIR) -type f 2> /dev/null), \
 		$(if $(filter $(file), $(DEPFILES)),, \
 		$(shell rm $(file))))
-	$(foreach file, $(shell find $(RESOURCE_DIR_OUT) -type f), \
+	$(foreach file, $(shell find $(RESOURCE_DIR_OUT) -type f 2> /dev/null), \
 		$(if $(filter $(file), $(RESOURCES_OUT) $(RESOURCE_HEADERS)),, \
 		$(shell rm $(file))))
 
