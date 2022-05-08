@@ -61,6 +61,7 @@ export ISODIR  := $(abspath iso)
 export TOOLS   := $(abspath tools)
 export GCIDIR  := $(abspath gci)
 
+export SRCDIR  := src
 ifdef NOPAL
 export BINDIR  := $(abspath bin/a)
 export OBJDIR  := obj/a/$(VERSION)
@@ -70,7 +71,6 @@ export BINDIR  := $(abspath bin/b)
 export OBJDIR  := obj/b/$(VERSION)
 export DEPDIR  := dep/b/$(VERSION)
 endif
-export SOURCES := src
 
 export OUTPUTMAP = $(OBJDIR)/output.map
 export LDFLAGS   = -Wl,-Map=$(OUTPUTMAP) -Wl,--gc-sections
@@ -84,7 +84,7 @@ export CFLAGS    = $(DEFINES) -mogc -mcpu=750 -meabi -mhard-float -Os \
 				   -fno-builtin-sqrt -fno-builtin-sqrtf
 export ASFLAGS   = $(DEFINES) -Wa,-mregnames -Wa,-mgekko
 export CXXFLAGS  = $(CFLAGS) -std=c++2b -fconcepts -fno-rtti -fno-exceptions
-export INCLUDE  := -I$(SOURCES) -I$(abspath src/mod/$(SOURCES)) -I$(DEVKITPATH)/libogc/include
+export INCLUDE  := -I$(SRCDIR) -I$(abspath src/mod/$(SRCDIR)) -I$(DEVKITPATH)/libogc/include
 
 .PHONY: all
 all: loader mod

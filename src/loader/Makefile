@@ -25,9 +25,9 @@ ifdef NOPAL
 ZLIBBIN := $(OUTDIR)/zlib.bin
 endif
 
-CFILES   := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.c'))
-CXXFILES := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.cpp'))
-SFILES   := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.S'))
+CFILES   := $(foreach dir, $(SRCDIR), $(shell find $(dir) -type f -name '*.c'))
+CXXFILES := $(foreach dir, $(SRCDIR), $(shell find $(dir) -type f -name '*.cpp'))
+SFILES   := $(foreach dir, $(SRCDIR), $(shell find $(dir) -type f -name '*.S'))
 
 ifdef NOPAL
 ZLIB     := third_party/zlib

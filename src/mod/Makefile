@@ -32,9 +32,9 @@ DOLELF     := bin/dol.elf
 DOLDATA    := obj/dol_data.bin
 DOLLD      := dol.ld
 
-CFILES   := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.c'))
-CXXFILES := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.cpp'))
-SFILES   := $(foreach dir, $(SOURCES), $(shell find $(dir) -type f -name '*.S'))
+CFILES   := $(foreach dir, $(SRCDIR), $(shell find $(dir) -type f -name '*.c'))
+CXXFILES := $(foreach dir, $(SRCDIR), $(shell find $(dir) -type f -name '*.cpp'))
+SFILES   := $(foreach dir, $(SRCDIR), $(shell find $(dir) -type f -name '*.S'))
 
 OBJFILES := \
     $(patsubst %, $(OBJDIR)/%.o, $(CFILES)) \
@@ -117,7 +117,7 @@ $(OBJDIR)/%.S.o: %.S
 	$(CC) $(ASFLAGS) -c $< -o $@
 
 RESOURCE_DIR_IN  := resources
-RESOURCE_DIR_OUT := $(SOURCES)/resources
+RESOURCE_DIR_OUT := $(SRCDIR)/resources
 RESOURCES        := $(foreach dir, $(RESOURCE_DIR_IN), $(shell find $(dir) -type f))
 RESOURCES        := $(filter-out %.docx, $(filter-out %.psd, $(RESOURCES)))
 TEXTURES         := $(filter     %.png,  $(RESOURCES))
