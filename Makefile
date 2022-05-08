@@ -84,7 +84,7 @@ export CFLAGS    = $(DEFINES) -mogc -mcpu=750 -meabi -mhard-float -Os \
 				   -fno-builtin-sqrt -fno-builtin-sqrtf
 export ASFLAGS   = $(DEFINES) -Wa,-mregnames -Wa,-mgekko
 export CXXFLAGS  = $(CFLAGS) -std=c++2b -fconcepts -fno-rtti -fno-exceptions
-export INCLUDE  := -I$(SRCDIR) -I$(abspath src/mod/$(SRCDIR)) -I$(DEVKITPATH)/libogc/include
+export INCLUDE  := $(foreach dir, $(SRCDIR), -I$(dir)) -I$(abspath src/mod/src) -I$(DEVKITPATH)/libogc/include
 
 .PHONY: all
 all: loader mod

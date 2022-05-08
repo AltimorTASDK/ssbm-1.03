@@ -117,7 +117,7 @@ $(OBJDIR)/%.S.o: %.S
 	$(CC) $(ASFLAGS) -c $< -o $@
 
 RESOURCE_DIR_IN  := resources
-RESOURCE_DIR_OUT := $(SRCDIR)/resources
+RESOURCE_DIR_OUT := src/resources
 RESOURCES        := $(foreach dir, $(RESOURCE_DIR_IN), $(shell find $(dir) -type f))
 RESOURCES        := $(filter-out %.docx, $(filter-out %.psd, $(RESOURCES)))
 TEXTURES         := $(filter     %.png,  $(RESOURCES))
