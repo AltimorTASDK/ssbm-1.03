@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util/preprocessor.h"
 #include <cstddef>
 #include <ogc/cache.h>
 #include <tuple>
@@ -8,7 +9,7 @@
 // Store patches to be applied by patch_dol.py
 #define PATCH_LIST(...) \
 	[[gnu::section(".patches"), gnu::used]] \
-	static constinit auto patches##__COUNTER__ = patch_list(__VA_ARGS__)
+	static constinit auto CONCAT(patches, __COUNTER__) = patch_list(__VA_ARGS__)
 
 template<typename T, typename U>
 struct [[gnu::packed]] patch_entry {
@@ -30,7 +31,7 @@ inline constexpr auto patch_list(const std::pair<T*, U> &...patches)
 // Apply patches in constructor
 #define PATCH_LIST(...) \
 	[[gnu::used]] \
-	static const auto patches##__COUNTER__ = patch_list { __VA_ARGS__ }
+	static const auto CONCAT(patches, __COUNTER__) = patch_list { __VA_ARGS__ }
 
 struct patch_list {
 	template<typename ...T, typename ...U>
