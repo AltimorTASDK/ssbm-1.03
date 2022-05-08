@@ -119,5 +119,5 @@ clean_tmp:
 .PHONY: clean
 clean:
 	rm -rf $(BINDIR)
-	@cd src/loader && make clean
-	@cd src/mod    && make clean
+	@cd src/loader && $(MAKE) clean
+	@cd src/mod    && $(MAKE) clean
