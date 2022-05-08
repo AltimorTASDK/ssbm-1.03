@@ -128,7 +128,7 @@ $(subst $(RESOURCE_DIR_IN), $(RESOURCE_DIR_OUT), $1)
 endef
 
 define get_texture_out
-$(shell echo $(call get_resource_out, $1) | sed -r "s/((.*)(\\.[^./\]*)|(.*))\\.png$/\\2\\4.tex/")
+$(shell echo $(call get_resource_out, $1) | sed -r "s/((.*)(\\.[^./\]*)|(.*))\\.png$$/\\2\\4.tex/")
 endef
 
 define make_resource_rule
