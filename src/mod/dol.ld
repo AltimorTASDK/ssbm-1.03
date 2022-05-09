@@ -8,7 +8,7 @@ EXTERN(__start);
 ENTRY(__start);
 
 TARGET(binary)
-INPUT(obj/dol_data.bin);
+INPUT(obj/DOL/dol_data.bin);
 
 __LOAD_BASE__  = 0x80003000;
 __NEW_BASE__   = 0x817A8000; /* starting VMA of new code */
@@ -104,7 +104,7 @@ SECTIONS
     } >disk
 
     /* original data */
-    .old     : ALIGN(32) { obj/dol_data.bin } >disk
+    .old     : ALIGN(32) { obj/DOL/dol_data.bin } >disk
 
     /* new sections */
     .text2   : ALIGN(32) {      *(   .text    .text.*)

@@ -29,7 +29,7 @@ DIFFSRC   := bin/mod.bin
 DOLFILE    := $(ISODIR)/sys/main.dol
 PATCHES    := bin/patches.bin
 DOLELF     := bin/dol.elf
-DOLDATA    := obj/dol_data.bin
+DOLDATA    := $(OBJDIR)/dol_data.bin
 DOLLD      := dol.ld
 
 CFILES   := $(foreach dir, $(SRCDIR), $(shell find $(dir) -type f -name '*.c'   2> /dev/null))
@@ -165,7 +165,7 @@ clean:
 .PHONY: clean_unused
 clean_unused:
 	$(foreach file, $(shell find $(OBJDIR) -type f 2> /dev/null), \
-		$(if $(filter $(file), $(OBJFILES) $(OUTPUTMAP)),, \
+		$(if $(filter $(file), $(OBJFILES) $(OUTPUTMAP) $(DOLDATA)),, \
 		$(shell rm $(file))))
 	$(foreach file, $(shell find $(DEPDIR) -type f 2> /dev/null), \
 		$(if $(filter $(file), $(DEPFILES)),, \
