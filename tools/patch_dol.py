@@ -114,7 +114,7 @@ def apply_hooks(data, map_path):
         opcode = instruction >> 26
         if opcode == OP_BRANCH:
             # branch instruction, fix up offset
-            target = instruction + address - orig
+            target = instruction + orig - address
             instruction = (instruction & ~BRANCH_MASK) | (target & BRANCH_MASK)
 
         data[offset:offset+4] = word_to_bytes(instruction)
