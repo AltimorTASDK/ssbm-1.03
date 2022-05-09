@@ -57,19 +57,20 @@ else
 $(error Unsupported Melee version "$(VERSION)")
 endif
 
-export ISODIR  := $(abspath iso)
-export TOOLS   := $(abspath tools)
-export GCIDIR  := $(abspath gci)
+export ISODIR := $(abspath iso)
+export TOOLS  := $(abspath tools)
+export GCIDIR := $(abspath gci)
 
-export SRCDIR  := src
+export GENDIR := gen
+export SRCDIR := src $(GENDIR)
 ifdef NOPAL
-export BINDIR  := $(abspath bin/a)
-export OBJDIR  := obj/a/$(VERSION)
-export DEPDIR  := dep/a/$(VERSION)
+export BINDIR := $(abspath bin/a)
+export OBJDIR := obj/a/$(VERSION)
+export DEPDIR := dep/a/$(VERSION)
 else
-export BINDIR  := $(abspath bin/b)
-export OBJDIR  := obj/b/$(VERSION)
-export DEPDIR  := dep/b/$(VERSION)
+export BINDIR := $(abspath bin/b)
+export OBJDIR := obj/b/$(VERSION)
+export DEPDIR := dep/b/$(VERSION)
 endif
 
 export OUTPUTMAP = $(OBJDIR)/output.map

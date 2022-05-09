@@ -32,9 +32,9 @@ DOLELF     := bin/dol.elf
 DOLDATA    := obj/dol_data.bin
 DOLLD      := dol.ld
 
-CFILES   := $(foreach dir, $(SRCDIR), $(shell find $(dir) -type f -name '*.c'))
-CXXFILES := $(foreach dir, $(SRCDIR), $(shell find $(dir) -type f -name '*.cpp'))
-SFILES   := $(foreach dir, $(SRCDIR), $(shell find $(dir) -type f -name '*.S'))
+CFILES   := $(foreach dir, $(SRCDIR), $(shell find $(dir) -type f -name '*.c'   2> /dev/null))
+CXXFILES := $(foreach dir, $(SRCDIR), $(shell find $(dir) -type f -name '*.cpp' 2> /dev/null))
+SFILES   := $(foreach dir, $(SRCDIR), $(shell find $(dir) -type f -name '*.S'   2> /dev/null))
 
 OBJFILES := \
     $(patsubst %, $(OBJDIR)/%.o, $(CFILES)) \
@@ -45,8 +45,9 @@ DEPFILES := $(patsubst $(OBJDIR)/%.o, $(DEPDIR)/%.d, $(OBJFILES))
 
 LINKSCRIPT := mod.ld
 
-CFLAGS  += -flto
-LDFLAGS += -flto
+CFLAGS    += -flto
+CXXFLAGS  += -flto
+LDFLAGS   += -flto
 
 ifeq ($(VERSION), 102)
 $(GCIFILE): $(BINFILE) $(BANNER) $(ICON) $(TOOLS)/bin_to_gci.py
@@ -117,7 +118,7 @@ $(OBJDIR)/%.S.o: %.S
 	$(CC) $(ASFLAGS) -c $< -o $@
 
 RESOURCE_DIR_IN  := resources
-RESOURCE_DIR_OUT := src/resources
+RESOURCE_DIR_OUT := $(GENDIR)/resources
 RESOURCES        := $(foreach dir, $(RESOURCE_DIR_IN), $(shell find $(dir) -type f))
 RESOURCES        := $(filter-out %.docx, $(filter-out %.psd, $(RESOURCES)))
 TEXTURES         := $(filter     %.png,  $(RESOURCES))
@@ -147,8 +148,8 @@ RESOURCES_OUT    := $(foreach resource, $(RESOURCES), $(call get_resource_out, $
                     $(foreach texture,  $(TEXTURES),  $(call get_texture_out,  $(texture)))
 RESOURCE_HEADERS := $(RESOURCES_OUT:%=%.h)
 
-$(foreach resource, $(RESOURCES),     $(eval $(call make_resource_rule, $(resource))))
-$(foreach texture,  $(TEXTURES),      $(eval $(call make_texture_rule,  $(texture))))
+$(foreach resource, $(RESOURCES), $(eval $(call make_resource_rule, $(resource))))
+$(foreach texture,  $(TEXTURES),  $(eval $(call make_texture_rule,  $(texture))))
 
 $(RESOURCE_DIR_OUT)/%.h: $(RESOURCE_DIR_OUT)/% $(TOOLS)/bin_to_header.py
 	python $(TOOLS)/bin_to_header.py $< $@
@@ -158,7 +159,7 @@ resources: $(RESOURCE_HEADERS)
 
 .PHONY: clean
 clean:
-	rm -rf $(OBJDIR) $(DEPDIR) $(ELFFILE) $(BINFILE) $(RESOURCE_DIR_OUT)
+	rm -rf $(OBJDIR) $(DEPDIR) $(ELFFILE) $(BINFILE) $(GENDIR)
 
 # Remove unused obj/dep/resource files
 .PHONY: clean_unused

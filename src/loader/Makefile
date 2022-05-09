@@ -25,9 +25,9 @@ ifdef NOPAL
 ZLIBBIN := $(OUTDIR)/zlib.bin
 endif
 
-CFILES   := $(foreach dir, $(SRCDIR), $(shell find $(dir) -type f -name '*.c'))
-CXXFILES := $(foreach dir, $(SRCDIR), $(shell find $(dir) -type f -name '*.cpp'))
-SFILES   := $(foreach dir, $(SRCDIR), $(shell find $(dir) -type f -name '*.S'))
+CFILES   := $(foreach dir, $(SRCDIR), $(shell find $(dir) -type f -name '*.c'   2> /dev/null))
+CXXFILES := $(foreach dir, $(SRCDIR), $(shell find $(dir) -type f -name '*.cpp' 2> /dev/null))
+SFILES   := $(foreach dir, $(SRCDIR), $(shell find $(dir) -type f -name '*.S'   2> /dev/null))
 
 ifdef NOPAL
 ZLIB     := third_party/zlib
@@ -144,10 +144,10 @@ clean:
 # Remove unused obj/dep/resource files
 .PHONY: clean_unused
 clean_unused:
-	$(foreach file, $(shell find $(OBJDIR) -type f), \
+	$(foreach file, $(shell find $(OBJDIR) -type f 2> /dev/null), \
 		$(if $(filter $(file), $(OBJFILES) $(OUTPUTMAP)),, \
 		$(shell rm $(file))))
-	$(foreach file, $(shell find $(DEPDIR) -type f), \
+	$(foreach file, $(shell find $(DEPDIR) -type f 2> /dev/null), \
 		$(if $(filter $(file), $(DEPFILES)),, \
 		$(shell rm $(file))))
 
