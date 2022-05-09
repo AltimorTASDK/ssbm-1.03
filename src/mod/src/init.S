@@ -137,11 +137,7 @@ write_branch:
         blr
 #endif
 
-#ifdef DOL
-.section .hooks, "a"
-#else
 .section .hooks, "aw"
-#endif
 
 hooks_start:
 .macro add_hook name
