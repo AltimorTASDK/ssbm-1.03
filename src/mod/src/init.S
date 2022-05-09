@@ -4,15 +4,15 @@
  * branch to the hook, and then overwrite the hook definition with the original
  * instruction and a branch back to the original function.
  */
-.section .init, "ax"
-
 #ifdef DOL
+.section .text
 /*
  * void hook_Scene_Main()
  */
  .global hook_Scene_Main
  hook_Scene_Main:
 #else
+.section .init, "ax"
 /*
  * void _start()
  */
