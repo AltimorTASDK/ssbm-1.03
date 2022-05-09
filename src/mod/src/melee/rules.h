@@ -99,12 +99,15 @@ struct GameRules {
 	u8 widescreen;
 };
 
-extern "C" {
-
-extern struct {
+struct RuleBounds {
 	u8 min;
 	u8 max;
-} RuleValueBounds[7], ExtraRuleValueBounds[7];
+};
+
+extern "C" {
+
+extern RuleBounds RuleValueBounds[7];
+extern RuleBounds ExtraRuleValueBounds[7];
 
 GameRules *GetGameRules();
 
