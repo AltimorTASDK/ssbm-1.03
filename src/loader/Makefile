@@ -146,9 +146,9 @@ clean:
 clean_unused:
 	$(foreach file, $(shell find $(OBJDIR) -type f 2> /dev/null), \
 		$(if $(filter $(file), $(OBJFILES) $(OUTPUTMAP)),, \
-		$(shell rm $(file))))
+		rm $(file)))
 	$(foreach file, $(shell find $(DEPDIR) -type f 2> /dev/null), \
 		$(if $(filter $(file), $(DEPFILES)),, \
-		$(shell rm $(file))))
+		rm $(file)))
 
 -include $(DEPFILES)
