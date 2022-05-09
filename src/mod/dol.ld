@@ -7,8 +7,10 @@ OUTPUT_ARCH(powerpc:common);
 EXTERN(__start);
 ENTRY(__start);
 
-TARGET(binary)
+TARGET(binary);
 INPUT(obj/DOL/dol_data.bin);
+
+TARGET(elf32-powerpc);
 
 __LOAD_BASE__  = 0x80003000;
 __NEW_BASE__   = 0x817A8000; /* starting VMA of new code */
