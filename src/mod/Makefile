@@ -78,7 +78,7 @@ $(PATCHES): $(DOLELF)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(OBJCOPY) -O binary -j .patches $< $@
 
-$(DOLELF): $(OBJFILES) $(DOLDATA) $(DOLLD) $(MELEELD) ../common.ld | clean_unused
+$(DOLELF): $(OBJFILES) $(DOLDATA) $(DOLLD) $(MELEELD) ../common.ld | clean-unused
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(CC) $(LDFLAGS) -T$(DOLLD) -T$(MELEELD) $(OBJFILES) -o $@
 
@@ -100,7 +100,7 @@ ifeq ($(VERSION), 102)
 	rm -f $(LOCALBIN)/mod-pal.bin.diff
 endif
 
-$(ELFFILE): $(OBJFILES) $(LINKSCRIPT) $(MELEELD) ../common.ld | clean_unused
+$(ELFFILE): $(OBJFILES) $(LINKSCRIPT) $(MELEELD) ../common.ld | clean-unused
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(CC) $(LDFLAGS) -T$(LINKSCRIPT) -T$(MELEELD) $(OBJFILES) -o $@
 
@@ -164,8 +164,8 @@ clean:
 	rm -rf $(OBJDIR) $(DEPDIR) $(ELFFILE) $(BINFILE) $(GENDIR)
 
 # Remove unused obj/dep/resource files
-.PHONY: clean_unused
-clean_unused:
+.PHONY: clean-unused
+clean-unused:
 	$(foreach file, $(shell find $(OBJDIR) -type f 2> /dev/null), \
 		$(if $(filter $(file), $(OBJFILES) $(OUTPUTMAP) $(DOLDATA)),, \
 		rm $(file);))

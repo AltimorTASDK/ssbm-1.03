@@ -116,8 +116,8 @@ resources:
 $(MELEELD): $(MELEEMAP) $(TOOLS)/map_to_linker_script.py
 	python $(TOOLS)/map_to_linker_script.py $(MELEEMAP) $(MELEELD)
 
-.PHONY: clean_tmp
-clean_tmp:
+.PHONY: clean-tmp
+clean-tmp:
 	@rm -rf $(GCIDIR)/tmp_*
 
 .PHONY: clean
