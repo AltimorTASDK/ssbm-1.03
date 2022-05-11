@@ -121,43 +121,7 @@ $(OBJDIR)/%.S.o: %.S
 
 RESOURCE_DIR_IN  := resources
 RESOURCE_DIR_OUT := $(GENDIR)/resources
-RESOURCES        := $(foreach dir, $(RESOURCE_DIR_IN), $(shell find $(dir) -type f))
-RESOURCES        := $(filter-out %.docx, $(filter-out %.psd, $(RESOURCES)))
-TEXTURES         := $(filter     %.png,  $(RESOURCES))
-RESOURCES        := $(filter-out %.png,  $(RESOURCES))
-
-define get_resource_out
-$(subst $(RESOURCE_DIR_IN), $(RESOURCE_DIR_OUT), $1)
-endef
-
-define get_texture_out
-$(shell echo $(call get_resource_out, $1) | sed -r "s/((.*)(\\.[^./\]*)|(.*))\\.png$$/\\2\\4.tex/")
-endef
-
-define make_resource_rule
-$(call get_resource_out, $1): $1
-	@mkdir -p $$(dir $$@)
-	cp $$< $$@
-endef
-
-define make_texture_rule
-$(call get_texture_out, $1): $1 $(TOOLS)/compress_resource.py $(TOOLS)/encode_texture.py
-	python $(TOOLS)/encode_texture.py    $$< $$@
-	python $(TOOLS)/compress_resource.py $$@ $$@
-endef
-
-RESOURCES_OUT    := $(foreach resource, $(RESOURCES), $(call get_resource_out, $(resource))) \
-                    $(foreach texture,  $(TEXTURES),  $(call get_texture_out,  $(texture)))
-RESOURCE_HEADERS := $(RESOURCES_OUT:%=%.h)
-
-$(foreach resource, $(RESOURCES), $(eval $(call make_resource_rule, $(resource))))
-$(foreach texture,  $(TEXTURES),  $(eval $(call make_texture_rule,  $(texture))))
-
-$(RESOURCE_DIR_OUT)/%.h: $(RESOURCE_DIR_OUT)/% $(TOOLS)/bin_to_header.py
-	python $(TOOLS)/bin_to_header.py $< $@
-
-.PHONY: resources
-resources: $(RESOURCE_HEADERS)
+-include resources.mk
 
 .PHONY: clean
 clean:
