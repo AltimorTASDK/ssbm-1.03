@@ -62,6 +62,7 @@ export TOOLS  := $(abspath tools)
 export GCIDIR := $(abspath gci)
 
 export GENDIR := gen
+export LIBDIR := lib
 export SRCDIR := src $(GENDIR)
 ifdef NOPAL
 export BINDIR := $(abspath bin/a)

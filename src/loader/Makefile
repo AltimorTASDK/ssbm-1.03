@@ -30,7 +30,7 @@ CXXFILES := $(foreach dir, $(SRCDIR), $(shell find $(dir) -type f -name '*.cpp' 
 SFILES   := $(foreach dir, $(SRCDIR), $(shell find $(dir) -type f -name '*.S'   2> /dev/null))
 
 ifdef NOPAL
-ZLIB     := third_party/zlib
+ZLIB     := $(LIBDIR)/zlib
 CFLAGS   += -Wno-conversion -DZLIB_CONST -DMY_ZCALLOC
 CXXFLAGS += -DZLIB_CONST
 INCLUDE  += -I$(ZLIB)
