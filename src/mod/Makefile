@@ -168,12 +168,12 @@ clean:
 clean_unused:
 	$(foreach file, $(shell find $(OBJDIR) -type f 2> /dev/null), \
 		$(if $(filter $(file), $(OBJFILES) $(OUTPUTMAP) $(DOLDATA)),, \
-		rm $(file)))
+		rm $(file);))
 	$(foreach file, $(shell find $(DEPDIR) -type f 2> /dev/null), \
 		$(if $(filter $(file), $(DEPFILES)),, \
-		rm $(file)))
+		rm $(file);))
 	$(foreach file, $(shell find $(RESOURCE_DIR_OUT) -type f 2> /dev/null), \
 		$(if $(filter $(file), $(RESOURCES_OUT) $(RESOURCE_HEADERS)),, \
-		rm $(file)))
+		rm $(file);))
 
 -include $(DEPFILES)
