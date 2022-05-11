@@ -8,7 +8,7 @@ EXTERN(__start);
 ENTRY(__start);
 
 TARGET(binary);
-INPUT(obj/DOL/dol_data.bin);
+INPUT(build/obj/DOL/dol_data.bin);
 
 TARGET(elf32-powerpc);
 
@@ -106,7 +106,7 @@ SECTIONS
     } >disk
 
     /* original data */
-    .old     : ALIGN(32) { obj/DOL/dol_data.bin } >disk
+    .old     : ALIGN(32) { build/obj/DOL/dol_data.bin } >disk
 
     /* new sections */
     .text2   : ALIGN(32) {      *(   .text    .text.*)
