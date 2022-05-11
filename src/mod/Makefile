@@ -1,21 +1,23 @@
 ifeq ($(VERSION), 100)
-ELFFILE := bin/mod-ntsc100.elf
-BINFILE := bin/mod-ntsc100.bin
+ELFFILE := $(LOCALBIN)/mod-ntsc100.elf
+BINFILE := $(LOCALBIN)/mod-ntsc100.bin
 else ifeq ($(VERSION), 101)
-ELFFILE := bin/mod-ntsc101.elf
-BINFILE := bin/mod-ntsc101.bin
+ELFFILE := $(LOCALBIN)/mod-ntsc101.elf
+BINFILE := $(LOCALBIN)/mod-ntsc101.bin
 else ifeq ($(VERSION), 102)
-ELFFILE := bin/mod.elf
-BINFILE := bin/mod.bin
+ELFFILE := $(LOCALBIN)/mod.elf
+BINFILE := $(LOCALBIN)/mod.bin
 else ifeq ($(VERSION), PAL)
-ELFFILE := bin/mod-pal.elf
-BINFILE := bin/mod-pal.bin
+ELFFILE := $(LOCALBIN)/mod-pal.elf
+BINFILE := $(LOCALBIN)/mod-pal.bin
 endif
 
 ifdef NOPAL
-ALLBINS  := --compress bin/mod.bin bin/mod-ntsc100.bin.diff bin/mod-ntsc101.bin.diff
+ALLBINS  := --compress \
+            $(LOCALBIN)/mod.bin $(LOCALBIN)/mod-ntsc100.bin.diff $(LOCALBIN)/mod-ntsc101.bin.diff
 else
-ALLBINS  := bin/mod.bin bin/mod-ntsc100.bin.diff bin/mod-ntsc101.bin.diff bin/mod-pal.bin.diff
+ALLBINS  := $(LOCALBIN)/mod.bin $(LOCALBIN)/mod-ntsc100.bin.diff $(LOCALBIN)/mod-ntsc101.bin.diff \
+            $(LOCALBIN)/mod-pal.bin.diff
 endif
 
 GCINAME   := 103Code
@@ -24,11 +26,11 @@ BANNERSRC := banner.rgb5a3.png
 BANNER    := banner.tex
 ICON      := icon.tex
 TITLE     := "Super Smash Bros. Melee         1.03 Data"
-DIFFSRC   := bin/mod.bin
+DIFFSRC   := $(LOCALBIN)/mod.bin
 
 DOLFILE    := $(ISODIR)/sys/main.dol
-PATCHES    := bin/patches.bin
-DOLELF     := bin/dol.elf
+PATCHES    := $(LOCALBIN)/patches.bin
+DOLELF     := $(LOCALBIN)/dol.elf
 DOLDATA    := $(OBJDIR)/dol_data.bin
 DOLLD      := dol.ld
 
@@ -93,9 +95,9 @@ $(BINFILE): $(ELFFILE)
 	$(OBJCOPY) -O binary $< $@
 ifeq ($(VERSION), 102)
 # diffs are no longer valid
-	rm -f bin/mod-ntsc100.bin.diff
-	rm -f bin/mod-ntsc101.bin.diff
-	rm -f bin/mod-pal.bin.diff
+	rm -f $(LOCALBIN)/mod-ntsc100.bin.diff
+	rm -f $(LOCALBIN)/mod-ntsc101.bin.diff
+	rm -f $(LOCALBIN)/mod-pal.bin.diff
 endif
 
 $(ELFFILE): $(OBJFILES) $(LINKSCRIPT) $(MELEELD) ../common.ld | clean_unused
