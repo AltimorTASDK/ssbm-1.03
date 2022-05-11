@@ -525,8 +525,8 @@ extern "C" void hook_CSS_UpdatePortrait(u8 port)
 }
 #endif
 
-extern "C" void orig_CSS_Init(void *menu);
-extern "C" void hook_CSS_Init(void *menu)
+extern "C" void orig_CSS_Init(void *enter_data);
+extern "C" void hook_CSS_Init(void *enter_data)
 {
 	// Forget unplugged state on entry from main menu
 	if (SceneMinorPrevious == 0) {
@@ -534,7 +534,7 @@ extern "C" void hook_CSS_Init(void *menu)
 			is_unplugged[i] = saved_is_unplugged[i];
 	}
 
-	orig_CSS_Init(menu);
+	orig_CSS_Init(enter_data);
 
 #ifndef PAL
 	if (!IsLanguageUS()) {
