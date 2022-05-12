@@ -94,7 +94,7 @@ export INCLUDE  := $(foreach dir, $(SRCDIR), -I$(dir)) -I$(abspath src/mod/src) 
 all: loader mod
 
 .PHONY: loader
-loader: $(MELEELD) | clean_tmp
+loader: $(MELEELD) | clean-tmp
 	+@cd src/loader && $(MAKE)
 
 .PHONY: mod
