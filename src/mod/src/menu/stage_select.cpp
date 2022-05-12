@@ -269,9 +269,9 @@ static void mask_unfrozen_texture(HSD_ImageDesc *image)
 	if (image->format != GX_TF_I4)
 		return;
 
-	constexpr auto block_size = 64;
 	constexpr auto block_width = 8;
 	constexpr auto block_height = 8;
+	constexpr auto block_size = block_width * block_height;
 	const auto width = align_up(image->width, block_width);
 	const auto height = align_up(image->height, block_height);
 	const auto size = width * height / 2;

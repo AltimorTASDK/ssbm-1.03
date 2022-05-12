@@ -316,9 +316,9 @@ extern "C" void hook_Menu_UpdateItemDisplay(HSD_GObj *gobj, bool index_changed, 
 static void apply_texture_mask(u8 *texture, const u8 *mask, int width, int height,
                                int mask_x, int mask_y, int mask_w, int mask_h)
 {
-	constexpr auto block_size = 64;
 	constexpr auto block_width = 8;
 	constexpr auto block_height = 8;
+	constexpr auto block_size = block_width * block_height;
 	const auto size = width * height / 2;
 	const auto block_num_x = width / block_width;
 
