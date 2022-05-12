@@ -56,17 +56,4 @@ struct SIChannel {
 inline volatile auto *SICHANNEL = (SIChannel*)0xCC006400;
 inline volatile auto *SISR = (SIStatus*)0xCC006438;
 
-extern "C" {
-
-// mask bits 24-27: vblank copy, 28-31: enable
-u32 SIDisablePolling(u32 mask);
-u32 SIEnablePolling(u32 mask);
-
-u32 SIGetType(u32 port);
-u32 SITransfer(s32 chan, void *out, u32 out_len, void *in, u32 in_len, SICallback cb, u32 us_delay);
-
-bool SIEnablePollingInterrupt(bool enable);
-
-extern SIControl Si;
-
-} // extern "C"
+extern "C" SIControl Si;

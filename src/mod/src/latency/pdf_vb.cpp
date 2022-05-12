@@ -94,9 +94,9 @@ static bool detect_fm()
 {
 	const auto irq_enable = OSDisableInterrupts();
 	const auto sipoll = Si.poll.raw;
-	SIDisablePolling(0b11110000 << 24);
+	SI_DisablePolling(0b11110000 << 24);
 	const auto result = detect_fm_impl();
-	SIEnablePolling(sipoll << 24);
+	SI_EnablePolling(sipoll << 24);
 	OSRestoreInterrupts(irq_enable);
 
 	return result;
@@ -132,10 +132,10 @@ static void post_retrace_callback(u32 retrace_count)
 		OSWakeupThread(&half_vb_thread_queue);
 }
 
-extern "C" bool orig_SIGetResponseRaw(u32 port);
-extern "C" bool hook_SIGetResponseRaw(u32 port)
+extern "C" bool orig_SI_GetResponseRaw(u32 port);
+extern "C" bool hook_SI_GetResponseRaw(u32 port)
 {
-	const auto result = orig_SIGetResponseRaw(port);
+	const auto result = orig_SI_GetResponseRaw(port);
 
 	if (is_faster_melee())
 		return result;
@@ -181,14 +181,14 @@ extern "C" void hook_UpdatePadFetchRate()
 		OSCancelAlarm(&PadFetchAlarm);
 }
 
-extern "C" void orig_SISetSamplingRate(u32 msecs);
-extern "C" void hook_SISetSamplingRate(u32 msecs)
+extern "C" void orig_SI_SetSamplingRate(u32 msecs);
+extern "C" void hook_SI_SetSamplingRate(u32 msecs)
 {
 	// Always use default polling rate/interval
 	if (!is_faster_melee())
 		msecs = 16;
 
-	orig_SISetSamplingRate(msecs);
+	orig_SI_SetSamplingRate(msecs);
 }
 
 extern "C" void scene_loop_start()
@@ -385,6 +385,6 @@ extern "C" void hook_Scene_RunLoop(void(*think_callback)())
 	if (is_faster_melee())
 		return;
 
-	SIEnablePollingInterrupt(true);
+	SI_EnablePollingInterrupt(true);
 	HSD_VISetUserPostRetraceCallback(post_retrace_callback);
 }
