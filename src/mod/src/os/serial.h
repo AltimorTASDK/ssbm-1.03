@@ -1,15 +1,8 @@
 #pragma once
 
 #include <gctypes.h>
+#include <ogc/si.h>
 #include "util/vector.h"
-
-enum SIType {
-	SI_ERROR_NO_RESPONSE = 0x00000008,
-	SI_ERROR_UNKNOWN     = 0x00000040,
-	SI_ERROR_BUSY        = 0x00000080,
-	SI_GC_CONTROLLER     = 0x09000000,
-	SI_GC_KEYBOARD       = 0x08200000
-};
 
 union SIPoll {
 	u32 raw;
@@ -22,7 +15,7 @@ union SIPoll {
 	};
 };
 
-struct SIData {
+struct SIControl {
 	char pad000[0x04];
 	SIPoll poll;
 	char pad008[0x14 - 0x08];
@@ -70,9 +63,10 @@ u32 SIDisablePolling(u32 mask);
 u32 SIEnablePolling(u32 mask);
 
 u32 SIGetType(u32 port);
+u32 SITransfer(s32 chan, void *out, u32 out_len, void *in, u32 in_len, SICallback cb, u32 us_delay);
 
 bool SIEnablePollingInterrupt(bool enable);
 
-extern SIData Si;
+extern SIControl Si;
 
 } // extern "C"
