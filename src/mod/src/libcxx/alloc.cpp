@@ -71,7 +71,8 @@ void *malloc(size_t count)
 
 void free(void *ptr)
 {
-	HSD_Free(ptr);
+	if (ptr != nullptr)
+		HSD_Free(ptr);
 }
 #endif
 
