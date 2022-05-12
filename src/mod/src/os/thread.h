@@ -1,8 +1,6 @@
 #pragma once
 
-struct OSContext {
-	char pad000[0x2C8];
-};
+#include "os/context.h"
 
 struct OSThread {
 	OSContext ctx;
