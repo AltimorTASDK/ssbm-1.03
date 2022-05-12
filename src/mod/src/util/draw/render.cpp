@@ -106,6 +106,8 @@ void render_state::reset()
 	GX_SetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
 
 	GX_SetCullMode(GX_NONE);
+
+	set_scissor(0, 0, 640, 480);
 }
 
 void render_state::reset_2d()
@@ -120,7 +122,6 @@ void render_state::reset_2d()
 	GX_SetCurrentMtx(0);
 	GX_LoadProjectionMtx(is_widescreen() ? proj_wide : proj, GX_ORTHOGRAPHIC);
 	GX_LoadPosMtxImm(matrix3x4::identity, GX_PNMTX0);
-	set_scissor(0, 0, 640, 480);
 }
 
 void render_state::reset_3d()
@@ -131,7 +132,6 @@ void render_state::reset_3d()
 	const auto *cobj = HSD_CObjGetCurrent();
 	HSD_CObjGetViewingMtx(cobj, view_matrix);
 	GX_LoadPosMtxImm(view_matrix, GX_PNMTX0);
-	set_scissor(0, 0, 640, 480);
 }
 
 void render_state::set_scissor(u32 x, u32 y, u32 w, u32 h)
