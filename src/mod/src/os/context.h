@@ -5,6 +5,8 @@ struct OSContext {
 };
 
 extern "C" {
+
 void OSSaveFPUContext(OSContext *context);
 void OSLoadFPUContext(OSContext *context);
-}
+
+} // extern "C"
