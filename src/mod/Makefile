@@ -125,9 +125,9 @@ RESOURCE_DIR_OUT := $(GENDIR)/resources
 
 .PHONY: clean
 clean:
-	rm -rf $(OBJDIR) $(DEPDIR) $(ELFFILE) $(BINFILE) $(GENDIR)
+	rm -rf $(BUILDDIR)
 
-# Remove unused obj/dep/resource files
+# Remove unused obj/dep/gen files
 .PHONY: clean-unused
 clean-unused:
 	$(foreach file, $(shell find $(OBJDIR) -type f 2> /dev/null), \
@@ -136,7 +136,7 @@ clean-unused:
 	$(foreach file, $(shell find $(DEPDIR) -type f 2> /dev/null), \
 		$(if $(filter $(file), $(DEPFILES)),, \
 		rm $(file);))
-	$(foreach file, $(shell find $(RESOURCE_DIR_OUT) -type f 2> /dev/null), \
+	$(foreach file, $(shell find $(GENDIR) -type f 2> /dev/null), \
 		$(if $(filter $(file), $(RESOURCES_OUT) $(RESOURCE_HEADERS)),, \
 		rm $(file);))
 

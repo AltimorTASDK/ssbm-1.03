@@ -139,9 +139,9 @@ $(OBJDIR)/%.S.o: %.S
 
 .PHONY: clean
 clean:
-	rm -rf $(OBJDIR) $(DEPDIR) $(ELFFILE) $(BINFILE)
+	rm -rf $(BUILDDIR) $(OUTDIR)
 
-# Remove unused obj/dep/resource files
+# Remove unused obj/dep files
 .PHONY: clean-unused
 clean-unused:
 	$(foreach file, $(shell find $(OBJDIR) -type f 2> /dev/null), \
