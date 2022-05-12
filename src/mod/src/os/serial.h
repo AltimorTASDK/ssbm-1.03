@@ -3,6 +3,14 @@
 #include <gctypes.h>
 #include "util/vector.h"
 
+enum SIType {
+	SI_ERROR_NO_RESPONSE = 0x00000008,
+	SI_ERROR_UNKNOWN     = 0x00000040,
+	SI_ERROR_BUSY        = 0x00000080,
+	SI_GC_CONTROLLER     = 0x09000000,
+	SI_GC_KEYBOARD       = 0x08200000
+};
+
 union SIPoll {
 	u32 raw;
 	struct {
@@ -60,6 +68,8 @@ extern "C" {
 // mask bits 24-27: vblank copy, 28-31: enable
 u32 SIDisablePolling(u32 mask);
 u32 SIEnablePolling(u32 mask);
+
+u32 SIGetType(u32 port);
 
 bool SIEnablePollingInterrupt(bool enable);
 
