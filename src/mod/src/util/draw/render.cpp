@@ -107,6 +107,8 @@ void render_state::reset()
 
 	GX_SetCullMode(GX_NONE);
 
+	GX_SetFog(GX_FOG_NONE, 0, 0, 0, 0, {0});
+
 	set_scissor(0, 0, 640, 480);
 }
 
