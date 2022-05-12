@@ -15,4 +15,7 @@ u64 OSGetTime();
 bool OSDisableInterrupts();
 void OSRestoreInterrupts(bool level);
 
+u32 PPCMfmsr();
+void PPCMtmsr(u32 msr);
+
 } // extern "C"
