@@ -278,7 +278,7 @@ static void mask_unfrozen_texture(HSD_ImageDesc *image)
 	const auto block_num_x = width / block_width;
 	auto *texture = (u8*)image->img_ptr;
 
-	for (auto i = 0; i < width * height / 2; i++) {
+	for (auto i = 0; i < size; i++) {
 		const auto pixel = i * 2; // 4bpp
 		const auto block_index = pixel / block_size;
 		const auto block_y = (block_index / block_num_x) * block_height;
