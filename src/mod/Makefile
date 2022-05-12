@@ -125,7 +125,7 @@ RESOURCE_DIR_OUT := $(GENDIR)/resources
 
 .PHONY: clean
 clean:
-	rm -rf $(BUILDDIR)
+	rm -rf build
 
 # Remove unused obj/dep/gen files
 .PHONY: clean-unused

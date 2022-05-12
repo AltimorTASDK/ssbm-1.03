@@ -139,7 +139,7 @@ $(OBJDIR)/%.S.o: %.S
 
 .PHONY: clean
 clean:
-	rm -rf $(BUILDDIR) $(OUTDIR)
+	rm -rf build $(OUTDIR)
 
 # Remove unused obj/dep files
 .PHONY: clean-unused
