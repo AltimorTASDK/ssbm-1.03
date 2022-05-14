@@ -61,6 +61,7 @@ static bool needs_depth_clear;
 
 static u32 frame_retrace_count;
 static u32 last_poll_retrace_count;
+static s32 poll_index;
 
 static u32 half_vb_retrace_count;
 static OSThreadQueue half_vb_thread_queue;
@@ -149,24 +150,27 @@ extern "C" bool hook_SI_GetResponseRaw(s32 chan)
 	const auto current_poll_line = VIGetCurrentLine();
 #endif
 	const auto current_retrace_count = VIGetRetraceCount();
-	const auto index = current_retrace_count > last_poll_retrace_count ? 0 : 1;
+
+	if (current_retrace_count > last_poll_retrace_count)
+		poll_index = 0;
 
 #ifdef POLL_DEBUG
-	poll_line[index] = current_poll_line;
-	poll_interval[index] = current_poll_time - poll_time;
+	poll_line[poll_index] = current_poll_line;
+	poll_interval[poll_index] = current_poll_time - poll_time;
 	poll_time = current_poll_time;
 #endif
 
-	last_poll_retrace_count = current_retrace_count;
-
-	if (index == 0 && get_latency() != latency_mode::crt) {
+	if (poll_index == 0 && get_latency() != latency_mode::crt) {
 		// Use first poll rather than previous mid-frame poll for LCD/LOW
 		PadFetchCallback();
-	} else if (index == 1 && get_latency() == latency_mode::lcd) {
+	} else if (poll_index == Si.poll.y - 1 && get_latency() == latency_mode::lcd) {
 		// Delay processing (and audio+rumble) by half a frame on LCD
-		half_vb_retrace_count = VIGetRetraceCount();
+		half_vb_retrace_count = current_retrace_count;
 		OSWakeupThread(&half_vb_thread_queue);
 	}
+
+	last_poll_retrace_count = current_retrace_count;
+	poll_index++;
 
 	return result;
 }
