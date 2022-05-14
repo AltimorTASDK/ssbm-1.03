@@ -181,6 +181,24 @@ struct SIStatus {
 	u8 unrun : 1;
 };
 
+struct SIPadStatus {
+	u16 errstat : 1;
+	u16 errlatch : 1;
+	u16 buttons : 14;
+	s8 stick_x;
+	s8 stick_y;
+	s8 cstick_x;
+	s8 cstick_y;
+	u8 analog_l;
+	u8 analog_r;
+};
+
+struct SIKeyboardStatus {
+	u32 counter;
+	u8 keys[3];
+	u8 checksum;
+};
+
 struct SIChannel {
 	u32 out;
 	union {
@@ -188,24 +206,8 @@ struct SIChannel {
 			u32 hi;
 			u32 lo;
 		};
-		struct {
-			u16 errstat : 1;
-			u16 errlatch : 1;
-			u16 buttons : 14;
-			s8 stick_x;
-			s8 stick_y;
-			s8 cstick_x;
-			s8 cstick_y;
-			u8 analog_l;
-			u8 analog_r;
-		};
+		SIPadStatus status;
 	} in;
-};
-
-struct SIKeyboard {
-	u32 counter;
-	u8 keys[3];
-	u8 checksum;
 };
 
 inline volatile auto *SICHANNEL = (SIChannel*)0xCC006400;
