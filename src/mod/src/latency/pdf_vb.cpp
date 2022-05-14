@@ -163,7 +163,7 @@ extern "C" bool hook_SI_GetResponseRaw(s32 chan)
 	if (poll_index == 0 && get_latency() != latency_mode::crt) {
 		// Use first poll rather than previous mid-frame poll for LCD/LOW
 		PadFetchCallback();
-	} else if (poll_index == Si.poll.y - 1 && get_latency() == latency_mode::lcd) {
+	} else if (poll_index == Si.poll.y / 2 && get_latency() == latency_mode::lcd) {
 		// Delay processing (and audio+rumble) by half a frame on LCD
 		half_vb_retrace_count = current_retrace_count;
 		OSWakeupThread(&half_vb_thread_queue);
