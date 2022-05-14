@@ -132,16 +132,16 @@ static void post_retrace_callback(u32 retrace_count)
 		OSWakeupThread(&half_vb_thread_queue);
 }
 
-extern "C" bool orig_SI_GetResponseRaw(u32 port);
-extern "C" bool hook_SI_GetResponseRaw(u32 port)
+extern "C" bool orig_SI_GetResponseRaw(s32 chan);
+extern "C" bool hook_SI_GetResponseRaw(s32 chan)
 {
-	const auto result = orig_SI_GetResponseRaw(port);
+	const auto result = orig_SI_GetResponseRaw(chan);
 
 	if (is_faster_melee())
 		return result;
 
 	// Wait until all ports are polled
-	if (port != 3)
+	if (chan != 3)
 		return result;
 
 #ifdef POLL_DEBUG
