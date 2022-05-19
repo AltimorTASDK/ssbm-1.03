@@ -1,35 +1,13 @@
 #pragma once
 
+#include "os/pad.h"
 #include "util/vector.h"
 #include <gctypes.h>
 
 constexpr auto PAD_QNUM = 5;
 
-enum Button {
-	Button_DPadLeft  = 0x00000001,
-	Button_DPadRight = 0x00000002,
-	Button_DPadDown  = 0x00000004,
-	Button_DPadUp    = 0x00000008,
-	Button_Z         = 0x00000010,
-	Button_R         = 0x00000020,
-	Button_L         = 0x00000040,
-	Button_A         = 0x00000100,
-	Button_B         = 0x00000200,
-	Button_X         = 0x00000400,
-	Button_Y         = 0x00000800,
-	Button_Start     = 0x00001000,
+enum HSD_Button {
 	Button_AnalogLR  = 0x80000000
-};
-
-struct PADStatus {
-	u16 buttons;
-	vec2c stick;
-	vec2c cstick;
-	u8 analog_l;
-	u8 analog_r;
-	u8 analog_a;
-	u8 analog_b;
-	u8 err;
 };
 
 struct HSD_PadData {
