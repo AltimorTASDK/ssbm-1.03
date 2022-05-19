@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util/vector.h"
 #include <gctypes.h>
 
 #define SI_CHAN0                0
@@ -185,10 +186,8 @@ struct SIPadStatus {
 	u16 errstat : 1;
 	u16 errlatch : 1;
 	u16 buttons : 14;
-	s8 stick_x;
-	s8 stick_y;
-	s8 cstick_x;
-	s8 cstick_y;
+	vec2c stick;
+	vec2c cstick;
 	u8 analog_l;
 	u8 analog_r;
 };
