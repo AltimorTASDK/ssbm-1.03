@@ -66,12 +66,12 @@ export LIBDIR   := lib
 export SRCDIR   := src $(GENDIR)
 ifdef NOPAL
 export LOCALBIN := build/bin/a
-export BINDIR   := $(abspath build/bin/a)
+export BINDIR   := $(abspath bin/a)
 export OBJDIR   := build/obj/a/$(VERSION)
 export DEPDIR   := build/dep/a/$(VERSION)
 else
 export LOCALBIN := build/bin/b
-export BINDIR   := $(abspath build/bin/b)
+export BINDIR   := $(abspath bin/b)
 export OBJDIR   := build/obj/b/$(VERSION)
 export DEPDIR   := build/dep/b/$(VERSION)
 endif
