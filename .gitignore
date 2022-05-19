@@ -4,10 +4,7 @@ iso/files/*
 iso/sys/*
 !iso/sys/boot.bin
 !iso/sys/apploader.img
-src/*/bin/*
-src/*/obj/*
-src/*/dep/*
-src/*/gen/*
+src/*/build/*
 .vscode
 GALE01r0.ld
 GALE01r1.ld
