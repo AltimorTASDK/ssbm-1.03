@@ -73,6 +73,9 @@ inline bool should_use_oss()
 
 inline bool is_stage_frozen(int id)
 {
+	if (is_20XX_stage_select())
+		return false;
+
 	const auto *rules = GetGameRules();
 
 	switch (id) {
