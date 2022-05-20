@@ -11,11 +11,13 @@ enum Button {
 	Button_Z         = 0x0010,
 	Button_R         = 0x0020,
 	Button_L         = 0x0040,
+	Button_UseOrigin = 0x0080,
 	Button_A         = 0x0100,
 	Button_B         = 0x0200,
 	Button_X         = 0x0400,
 	Button_Y         = 0x0800,
-	Button_Start     = 0x1000
+	Button_Start     = 0x1000,
+	Button_GetOrigin = 0x2000
 };
 
 struct PADStatus {
