@@ -358,7 +358,7 @@ struct Player {
 	u8 flags17;
 	u8 flags18;
 	u8 flags19;
-	char pad2226[0x222C - 0x222B];
+	char pad222B[0x222C - 0x222B];
 	union {
 		char raw[0xD0];
 		struct {
