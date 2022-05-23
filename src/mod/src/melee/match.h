@@ -186,4 +186,6 @@ bool MatchInfo_ShouldDisplayPortTag(u32 slot);
 
 void Match_NoContestOrRetry(s32 unused, u32 result);
 
+void Match_Exit(MatchExitData *data);
+
 } // extern "C"

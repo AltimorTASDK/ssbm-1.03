@@ -1484,7 +1484,7 @@
 8016d8b4 00000304 8016d8b4 0 Match_InitPlayers
 8016dd28 00000204 8016dd28 0 StartMelee
 8016df2c 00000094 8016df2c 0 fk_MatchStart?
-8016dfc0 000001f8 8016dfc0 0 wP_PopulateRewardScreen?
+8016dfc0 000001f8 8016dfc0 0 Match_Exit
 801717c4 000000d0 801717c4 0 ShouldShowUnlockMessage
 80171f54 00000070 80171f54 0 UnlockAllFeatures
 8017377c 000000d0 8017377c 0 UnlockAllTrophies
