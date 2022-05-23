@@ -235,6 +235,7 @@ struct vec2_base {
 
 using vec2 = vec_impl<vec2_base<f32>>;
 using vec2c = vec_impl<vec2_base<s8>>;
+using vec2b = vec_impl<vec2_base<u8>>;
 using vec2i = vec_impl<vec2_base<s32>>;
 using vec2d = vec_impl<vec2_base<f64>>;
 
