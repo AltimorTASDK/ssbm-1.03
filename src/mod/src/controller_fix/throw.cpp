@@ -71,7 +71,7 @@ static int get_throw_state(const Player *player)
 	if (check_dthrow(cstick, c_angle) && check_dthrow(last_cstick, last_c_angle))
 		return AS_ThrowLw;
 
-	return -1;
+	return AS_None;
 }
 
 extern "C" bool orig_Interrupt_Throw(HSD_GObj *gobj);
@@ -87,7 +87,7 @@ extern "C" bool hook_Interrupt_Throw(HSD_GObj *gobj)
 		return orig_Interrupt_Throw(gobj);
 
 	// Check for throws with 50d line, try old logic if no throw with 50d
-	if (const auto state = get_throw_state(player); state != -1) {
+	if (const auto state = get_throw_state(player); state != AS_None) {
 		Player_DoThrow(gobj, state);
 		return true;
 	}
@@ -112,7 +112,7 @@ static int get_cargo_throw_state(const Player *player)
 	if (check_dthrow(stick, angle))
 		return AS_DK_ThrowFLw;
 
-	return -1;
+	return AS_None;
 }
 
 extern "C" bool orig_Interrupt_DK_ThrowFDecide(HSD_GObj *gobj);
@@ -128,7 +128,7 @@ extern "C" bool hook_Interrupt_DK_ThrowFDecide(HSD_GObj *gobj)
 		return false;
 
 	// Check for throws with 50d line
-	if (const auto state = get_cargo_throw_state(player); state != -1) {
+	if (const auto state = get_cargo_throw_state(player); state != AS_None) {
 		AS_DK_ThrowFDecide(gobj, state);
 		return true;
 	}

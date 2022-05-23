@@ -3,6 +3,7 @@
 #include "hsd/gobj.h"
 
 enum ActionState {
+	AS_None = -1,
 	AS_DeadDown,
 	AS_DeadLeft,
 	AS_DeadRight,
