@@ -215,6 +215,7 @@ inline volatile auto *SISR = (SIStatus*)0xCC006438;
 extern "C" {
 
 extern SIControl Si;
+extern SIPadStatus SILastPadStatus[4];
 
 u32 SI_Sync(void);
 u32 SI_Busy(void);
