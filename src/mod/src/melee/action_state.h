@@ -4,6 +4,7 @@
 
 enum ActionState {
 	AS_None = -1,
+
 	AS_DeadDown,
 	AS_DeadLeft,
 	AS_DeadRight,
@@ -345,7 +346,8 @@ enum ActionState {
 	AS_CapturewaitCrazyhand,
 	AS_ThrownCrazyhand,
 	AS_BarrelCannonWait,
-	AS_NAMED_MAX
+
+	AS_CommonMax
 };
 
 struct ActionStateInfo {
