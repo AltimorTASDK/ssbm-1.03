@@ -32,6 +32,8 @@ struct PlayerConstants {
 	char pad0DC[0x210 - 0xDC];
 	f32 tumble_wiggle_threshold;
 	s32 tumble_wiggle_frames;
+	f32 x_special_threshold;
+	f32 y_special_threshold;
 	char pad218[0x314 - 0x218];
 	f32 spot_dodge_stick_threshold;
 	s32 spot_dodge_stick_frames;
