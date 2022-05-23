@@ -76,4 +76,6 @@ extern PadLibData HSD_PadLibData;
 
 void HSD_PadRumble(u32 port, s32 id1, s32 id2, s32 duration);
 
+void HSD_PadClamp(s8 *x, s8 *y, bool shift, s8 min, s8 max);
+
 } // extern "C"
