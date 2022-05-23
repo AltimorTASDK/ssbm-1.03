@@ -301,7 +301,25 @@ struct Player {
 	u8 flags5;
 	u8 flags6;
 	struct {
+#ifdef PAL
+		u8 flags7_80 : 1;
 		u8 is_invisible : 1;
+		u8 flags7_20 : 1;
+		u8 flags7_10 : 1;
+		u8 flags7_08 : 1;
+		u8 flags7_04 : 1;
+		u8 flags7_02 : 1;
+		u8 flags7_01 : 1;
+#else
+		u8 is_invisible : 1;
+		u8 flags7_40 : 1;
+		u8 flags7_20 : 1;
+		u8 flags7_10 : 1;
+		u8 flags7_08 : 1;
+		u8 flags7_04 : 1;
+		u8 flags7_02 : 1;
+		u8 flags7_01 : 1;
+#endif
 	};
 	struct {
 #ifdef PAL
