@@ -4,22 +4,22 @@
 #include "os/thread.h"
 
 class wait_object {
-	bool complete = true;
+	bool waiting;
 	OSThreadQueue queue;
-	
+
 public:
 	void reset()
 	{
-		complete = false;
+		waiting = true;
 	}
-	
+
 	void sleep()
 	{
 		const auto irq_enable = OSDisableInterrupts();
 
 		if (CurrentThread != nullptr) {
 			// Don't sleep if operation already completed
-			if (!complete)
+			if (waiting)
 				OSSleepThread(&queue);
 
 			OSRestoreInterrupts(irq_enable);
@@ -27,19 +27,19 @@ public:
 			// Fall back to busywait
 			OSRestoreInterrupts(irq_enable);
 
-			while (!complete)
+			while (waiting)
 				continue;
 		}
 	}
-	
+
 	void wake()
 	{
-		complete = true;
+		waiting = false;
 		OSWakeupThread(&queue);
 	}
-	
+
 	bool is_complete() const
 	{
-		return complete;
+		return !waiting;
 	}
 };
