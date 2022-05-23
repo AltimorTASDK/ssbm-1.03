@@ -67,6 +67,18 @@ constexpr int abs_coord_to_int(float x)
 	return static_cast<int>(std::abs(x) * 80 - .0001f) + 1;
 }
 
+inline vec2 convert_hw_coords(vec2c hw)
+{
+	// Convert hardware stick coordinates to what Melee uses
+	HSD_PadClamp(&hw.x, &hw.y, HSD_PadLibData.clamp_stickShift,
+				   HSD_PadLibData.clamp_stickMin,
+				   HSD_PadLibData.clamp_stickMax);
+
+	return hw.map<vec2>([](auto x) {
+		return x > DEADZONE ? (float)x / HSD_PadLibData.scale_stick : 0.f;
+	});
+}
+
 constexpr bool is_rim_coord(const vec2 &coords)
 {
 	const auto converted = vec2i(abs_coord_to_int(coords.x) + 1,
