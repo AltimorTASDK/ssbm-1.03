@@ -67,14 +67,16 @@ constexpr int abs_coord_to_int(float x)
 	return static_cast<int>(std::abs(x) * 80 - .0001f) + 1;
 }
 
-inline vec2 convert_hw_coords(vec2c hw)
+inline vec2 convert_hw_coords(const vec2b &hw)
 {
 	// Convert hardware stick coordinates to what Melee uses
-	HSD_PadClamp(&hw.x, &hw.y, HSD_PadLibData.clamp_stickShift,
-				   HSD_PadLibData.clamp_stickMin,
-				   HSD_PadLibData.clamp_stickMax);
+	auto hw_signed = vec2c(hw - vec2b(128, 128));
 
-	return hw.map<vec2>([](auto x) {
+	HSD_PadClamp(&hw_signed.x, &hw_signed.y, HSD_PadLibData.clamp_stickShift,
+				                 HSD_PadLibData.clamp_stickMin,
+				                 HSD_PadLibData.clamp_stickMax);
+
+	return hw_signed.map<vec2>([](auto x) {
 		return x > DEADZONE ? (float)x / HSD_PadLibData.scale_stick : 0.f;
 	});
 }
