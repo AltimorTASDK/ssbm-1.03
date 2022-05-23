@@ -77,7 +77,7 @@ inline vec2 convert_hw_coords(const vec2b &hw)
 				                 HSD_PadLibData.clamp_stickMax);
 
 	return hw_signed.map<vec2>([](auto x) {
-		return x > DEADZONE ? (float)x / HSD_PadLibData.scale_stick : 0.f;
+		return std::abs(x) > DEADZONE ? (float)x / HSD_PadLibData.scale_stick : 0.f;
 	});
 }
 
