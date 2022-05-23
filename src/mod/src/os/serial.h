@@ -186,8 +186,8 @@ struct SIPadStatus {
 	u16 errstat : 1;
 	u16 errlatch : 1;
 	u16 buttons : 14;
-	vec2c stick;
-	vec2c cstick;
+	vec2b stick;
+	vec2b cstick;
 	u8 analog_l;
 	u8 analog_r;
 };
