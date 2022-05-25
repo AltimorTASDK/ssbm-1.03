@@ -29,7 +29,9 @@ struct PlayerConstants {
 	f32 usmash_frames;
 	f32 dsmash_threshold;
 	f32 dsmash_frames;
-	char pad0DC[0x210 - 0xDC];
+	f32 aerial_threshold_x;
+	f32 aerial_threshold_y;
+	char pad0E4[0x210 - 0xE4];
 	f32 tumble_wiggle_threshold;
 	s32 tumble_wiggle_frames;
 	f32 x_special_threshold;
