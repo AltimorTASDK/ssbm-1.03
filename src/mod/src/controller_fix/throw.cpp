@@ -27,11 +27,6 @@ static bool check_dthrow(const vec2 &stick, float angle)
 	return stick.y <= plco->dtilt_threshold && angle >= plco->angle_50d;
 }
 
-static float get_stick_angle(const vec2 &stick)
-{
-	return std::atan2(std::abs(stick.y), std::abs(stick.x));
-}
-
 static int get_throw_state(const Player *player)
 {
 	const auto stick        = player->input.stick       * vec2(player->direction, 1);
