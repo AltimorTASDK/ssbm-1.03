@@ -5,7 +5,11 @@
 
 struct PlayerConstants {
 	vec2 deadzone;
-	char pad008[0x20 - 0x08];
+	vec2 stick_hold_threshold;
+	f32 lr_deadzone;
+	f32 z_analog_value;
+	f32 lr_hold_threshold;
+	s32 tech_lockout;
 	f32 angle_50d;
 	f32 x_tilt_threshold;
 	char pad028[0x3C - 0x28];
