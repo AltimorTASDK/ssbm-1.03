@@ -4,9 +4,6 @@ else
 OUTDIR  := $(GCIDIR)/b
 endif
 
-ELFFILE := $(OUTDIR)/loader.elf
-BINFILE := $(OUTDIR)/loader.bin
-
 ifeq ($(VERSION), 100)
 ELFFILE := $(OUTDIR)/loader-ntsc100.elf
 BINFILE := $(OUTDIR)/loader-ntsc100.bin
