@@ -27,7 +27,7 @@ extern "C" void hook_Player_UpdatePhysicsJointAnimFrameAndRate(Player *player)
 
 	// Update physics joints individually like 1.01+
 	for (auto i = 0u; i < player->physics_joint_count; i++) {
-		const auto bone = player->char_data->joint_data->phys_joints[i].bone;
+		const auto bone = player->char_dat->joint_data->phys_joints[i].bone;
 		const auto frame = player->animation_frame;
 		const auto rate = player->animation_speed;
 		Player_SetBoneAnimFrameAndRate(player, bone, player->subaction_data, frame, rate);

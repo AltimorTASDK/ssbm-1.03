@@ -130,12 +130,20 @@ struct JointData {
 	char pad008[0x18 - 0x08];
 };
 
-struct CharacterData {
+struct CharacterDat {
 	char pad000[0x08];
 	u8 *archive_base;
 	char pad00C[0x2C - 0x0C];
 	JointData *joint_data;
 	char pad030[0x60 - 0x30];
+};
+
+struct CharacterStats {
+	char pad000[0x38];
+	f32 jumpsquat;
+	char pad03C[0x58 - 0x3C];
+	s32 jumps;
+	char pad05C[0x1E0 - 0x5C];
 };
 
 struct Player {
@@ -173,8 +181,9 @@ struct Player {
 	f32 jostle_delta_x;
 	f32 jostle_delta_z;
 	char pad0100[0x10C - 0x100];
-	CharacterData *char_data;
-	char pad0110[0x3E0 - 0x110];
+	CharacterDat *char_dat;
+	CharacterStats char_stats;
+	char pad02F0[0x3E0 - 0x2F0];
 	u32 physics_joint_count;
 	SubactionState subaction_state;
 	char pad0400[0x4B8 - 0x400];
