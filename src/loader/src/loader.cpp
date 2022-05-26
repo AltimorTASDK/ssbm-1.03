@@ -23,6 +23,7 @@ extern void *CardWorkArea;
 extern char SaveFileName[25];
 
 extern char __MOD_BASE__;
+extern char __MAX_ADDR__;
 
 extern u8 CSSPendingSceneChange;
 
@@ -229,8 +230,11 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 	const auto code_size = apply_diff(base->data, diff->data, &__MOD_BASE__);
 #endif
 #else
-	auto *buffer = &__MOD_BASE__;
+	// Use the top of the address space as a temporary buffer, make sure not to clobber the FST
+	const auto total_size = card_read("103Code", nullptr);
+	auto *buffer = (char*)(((uintptr_t)&__MAX_ADDR__ - total_size) & ~0x20);
 	card_read("103Code", buffer);
+
 	const auto *base = get_file(buffer, 0);
 	const auto code_size = base->uncompressed_len;
 
@@ -238,9 +242,9 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 	// Copy compressed data past end of space reserved for uncompressed data and decompress
 	auto *compressed = (char*)base->data + code_size;
 	memcpy(compressed, base->data, code_size);
-	decompress(compressed, base->compressed_len, buffer, code_size);
+	decompress(compressed, base->compressed_len, &__MOD_BASE__, code_size);
 #else
-	memmove(buffer, base->data, code_size);
+	memmove(&__MOD_BASE__, base->data, code_size);
 #endif
 #endif
 
