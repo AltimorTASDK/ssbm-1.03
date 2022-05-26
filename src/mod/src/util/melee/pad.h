@@ -13,10 +13,10 @@ constexpr auto DEADZONE = 22;
 constexpr auto STICK_MAX = 80;
 
 // 0.3
-constexpr auto TRIGGER_DEADZONE = 42;
+constexpr auto LR_DEADZONE = 42;
 
 // 1.0
-constexpr auto TRIGGER_MAX = 140;
+constexpr auto LR_MAX = 140;
 
 constexpr auto XSMASH_THRESHOLD = .8000f;
 
