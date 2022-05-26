@@ -274,7 +274,16 @@ struct Player {
 	u8 walljump_eligible_frames;
 	f32 walljump_direction;
 	char pad2114[0x2218 - 0x2114];
-	u8 flags1;
+	struct {
+		u8 iasa : 1;
+		u8 flags1_40 : 1;
+		u8 flags1_20 : 1;
+		u8 flags1_10 : 1;
+		u8 flags1_08 : 1;
+		u8 flags1_04 : 1;
+		u8 flags1_02 : 1;
+		u8 flags1_01 : 1;
+	};
 	u8 flags2;
 	struct {
 #ifdef PAL
