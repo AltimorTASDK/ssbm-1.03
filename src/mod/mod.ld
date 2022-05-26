@@ -9,7 +9,7 @@ OUTPUT_ARCH(powerpc:common);
 ENTRY(_start);
 
 __LOAD_BASE__ = __MOD_BASE__;
-__MAX_SIZE__  = 0x817EC000 - __LOAD_BASE__;
+__MAX_SIZE__  = __MAX_ADDR__ - __LOAD_BASE__;
 
 MEMORY
 {
