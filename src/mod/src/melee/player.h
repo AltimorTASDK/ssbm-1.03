@@ -173,7 +173,7 @@ struct Player {
 	f32 jostle_delta_x;
 	f32 jostle_delta_z;
 	char pad0100[0x10C - 0x100];
-	CharacterData *character_data;
+	CharacterData *char_data;
 	char pad0110[0x3E0 - 0x110];
 	u32 physics_joint_count;
 	SubactionState subaction_state;
