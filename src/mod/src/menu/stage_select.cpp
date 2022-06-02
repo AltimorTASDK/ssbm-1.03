@@ -218,7 +218,7 @@ static void strike_stage()
 	for (auto i = 0; i < Icon_Random; i++) {
 		if (i != SelectedStageIcon && StageSelectIcons[i].unlocked == UnlockType_Unlocked)
 			break;
-		else if (i == Icon_Random - 1)
+		if (i == Icon_Random - 1)
 			return;
 	}
 
@@ -233,14 +233,15 @@ static void strike_stage()
 extern "C" bool orig_Stage_IsValidRandomChoice(u16 index);
 extern "C" bool hook_Stage_IsValidRandomChoice(u16 index)
 {
-	// Only select from visible stages
+	// Only select from visible legal stages
 	for (auto i = 0; i < Icon_Random; i++) {
 		const auto &icon = StageSelectIcons[i];
-		if (icon.stage_index == index && icon.unlocked != UnlockType_Unlocked)
-			return false;
+		if (icon.stage_index != index)
+			continue;
+		return icon.unlocked == UnlockType_Unlocked && is_legal_stage(icon.stage_id);
 	}
 
-	return true;
+	return false;
 }
 
 extern "C" void orig_SSS_Think();
