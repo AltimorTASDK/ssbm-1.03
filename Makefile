@@ -13,13 +13,13 @@ export DEFINES := $(foreach def, $(USERDEFS), -D$(def))
 export DEFINES += -DGEKKO
 
 ifdef MODVERSION
-ifneq ($(shell echo "$(MODVERSION)" | grep -P '^a($$|[\d-])'),)
+ifneq ($(shell echo "$(MODVERSION)" | grep -P '(^|-)a($$|[\d-])'),)
 export NOPAL := 1
 endif
 ifneq ($(shell echo "$(MODVERSION)" | grep -P '(^|-)(beta|rc)($$|[\d-])'),)
 export BETA := 1
 endif
-ifneq ($(shell echo "$(MODVERSION)" | grep -P '^te($$|[\d-])'),)
+ifneq ($(shell echo "$(MODVERSION)" | grep -P '(^|-)te($$|[\d-])'),)
 export TOURNAMENT := 1
 endif
 export MODNAME := ssbm-1.03-$(MODVERSION)
