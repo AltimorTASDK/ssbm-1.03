@@ -18,15 +18,22 @@
 #include <cmath>
 #include <gctypes.h>
 
-#if defined(DOL)
-#include "resources/manual/dol/manual_p1.tex.h"
-#include "resources/manual/dol/manual_p2.tex.h"
-#elif defined(NOPAL)
-#include "resources/manual/a/manual_p1.tex.h"
-#include "resources/manual/a/manual_p2.tex.h"
+#ifdef TOURNAMENT
+#ifdef DOL
+#include "resources/manual/te/dol/manual_p1.tex.h"
+#include "resources/manual/te/dol/manual_p2.tex.h"
 #else
-#include "resources/manual/b/manual_p1.tex.h"
-#include "resources/manual/b/manual_p2.tex.h"
+#include "resources/manual/te/manual_p1.tex.h"
+#include "resources/manual/te/manual_p2.tex.h"
+#endif
+#else
+#ifdef DOL
+#include "resources/manual/le/dol/manual_p1.tex.h"
+#include "resources/manual/le/dol/manual_p2.tex.h"
+#else
+#include "resources/manual/le/manual_p1.tex.h"
+#include "resources/manual/le/manual_p2.tex.h"
+#endif
 #endif
 #include "resources/manual/manual_border.tex.h"
 #include "resources/manual/scrollbar.tex.h"
