@@ -9,7 +9,6 @@ enum class config_version : u8 {
 	a1 = 0,
 	a2 = 1,
 	a3 = 2,
-	te = 3,
 	max,
 	current = max - 1
 };
@@ -41,11 +40,6 @@ template<>
 struct [[gnu::packed]] config_values<config_version::a3> : config_values<config_version::a2> {
 	// Added in A3/B3
 	controls_type controls = controls_type::z_jump;
-};
-
-template<>
-struct [[gnu::packed]] config_values<config_version::te> : config_values<config_version::a3> {
-	// Only difference is controls_type enum
 };
 
 struct [[gnu::packed]] saved_config : config_values<config_version::current> {
