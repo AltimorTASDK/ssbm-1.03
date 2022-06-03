@@ -10,7 +10,7 @@ enum class sss_type : u8 {
 #ifdef FULL_SSS_ROTATOR
 	max
 #else
-	max = none
+	max = oss + 1
 #endif
 };
 
