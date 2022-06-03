@@ -41,10 +41,10 @@ void saved_config::load()
 		(config_values<v::a1>&)*this = (config_values<v::a1>&)*read;
 
 #ifndef FULL_SSS_ROTATOR
-	if (stage_mods == stage_mod_type::none)
-		stage_mods = stage_mod_type::oss;
-	else if (stage_mods == stage_mod_type::fdps)
-		stage_mods = stage_mod_type::all;
+	if (stage_mods == sss_type::none)
+		stage_mods = sss_type::oss;
+	else if (stage_mods == sss_type::fdps)
+		stage_mods = sss_type::all;
 #endif
 
 	// Update to current version

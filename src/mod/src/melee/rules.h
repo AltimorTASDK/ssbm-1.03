@@ -2,7 +2,7 @@
 
 #include <gctypes.h>
 
-enum class stage_mod_type : u8 {
+enum class sss_type : u8 {
 	all  = 0,
 	oss  = 1,
 	none = 2,
@@ -89,7 +89,7 @@ struct GameRules {
 	u8 pause;
 	union {
 		u8 friendly_fire;
-		stage_mod_type stage_mods;
+		sss_type stage_mods;
 	};
 	union {
 		u8 score_display;

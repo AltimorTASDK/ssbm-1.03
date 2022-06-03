@@ -41,7 +41,7 @@ struct ExtraRulesMenuData {
 			u8 stock_time_limit;
 			// Pause is moved up a row
 			u8 pause;
-			stage_mod_type stage_mods;
+			sss_type stage_mods;
 			controls_type controls;
 			ucf_type controller_fix;
 			latency_mode latency;

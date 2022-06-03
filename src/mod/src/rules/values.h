@@ -85,7 +85,7 @@ inline bool should_use_oss()
 		return true;
 
 	const auto *rules = GetGameRules();
-	return rules->stage_mods == stage_mod_type::oss;
+	return rules->stage_mods == sss_type::oss;
 }
 
 inline bool is_stage_frozen(int id)
@@ -99,13 +99,13 @@ inline bool is_stage_frozen(int id)
 	case Stage_FD:
 	case Stage_PS:
 #ifdef FULL_SSS_ROTATOR
-		if (rules->stage_mods == stage_mod_type::fdps)
+		if (rules->stage_mods == sss_type::fdps)
 			return true;
 #endif
 	case Stage_FoD:
 	case Stage_YS:
 	case Stage_DL:
-		if (rules->stage_mods == stage_mod_type::all)
+		if (rules->stage_mods == sss_type::all)
 			return true;
 	default:
 		return false;

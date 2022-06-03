@@ -11,7 +11,7 @@
 	RuleValueBounds[Rule_LedgeGrabLimit] = { 0, ledge_grab_limit_values.size() - 1 };
 	RuleValueBounds[Rule_AirTimeLimit]   = { 0, air_time_limit_values.size()   - 1 };
 
-	ExtraRuleValueBounds[ExtraRule_StageMods]     = { 0, (u8)stage_mod_type::max - 1 };
+	ExtraRuleValueBounds[ExtraRule_StageMods]     = { 0, (u8)sss_type::max - 1 };
 	ExtraRuleValueBounds[ExtraRule_Controls]      = { 0, (u8)controls_type::max  - 1 };
 	ExtraRuleValueBounds[ExtraRule_ControllerFix] = { 0, (u8)ucf_type::max       - 1 };
 	ExtraRuleValueBounds[ExtraRule_Latency]       = { 0, (u8)latency_mode::max   - 1 };

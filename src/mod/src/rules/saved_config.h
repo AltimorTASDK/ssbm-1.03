@@ -33,7 +33,7 @@ struct [[gnu::packed]] config_values<config_version::a2> : config_values<config_
 	u8 air_time_limit         = 0;
 	u8 stock_time_limit       = 8;
 	ucf_type controller_fix   = ucf_type::hax;
-	stage_mod_type stage_mods = stage_mod_type::all;
+	sss_type stage_mods = sss_type::all;
 };
 
 template<>
