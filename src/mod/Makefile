@@ -131,7 +131,7 @@ clean:
 .PHONY: clean-unused
 clean-unused:
 	$(foreach file, $(shell find $(OBJDIR) -type f 2> /dev/null), \
-		$(if $(filter $(file), $(OBJFILES) $(OUTPUTMAP) $(DOLDATA)),, \
+		$(if $(filter $(file), $(OBJFILES) $(OUTPUTMAP)),, \
 		rm $(file);))
 	$(foreach file, $(shell find $(DEPDIR) -type f 2> /dev/null), \
 		$(if $(filter $(file), $(DEPFILES)),, \
