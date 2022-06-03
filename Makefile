@@ -115,8 +115,13 @@ mod: $(MELEELD)
 	+@cd src/mod && $(MAKE)
 
 .PHONY: dol
-dol: export OBJDIR  := obj/DOL
-dol: export DEPDIR  := dep/DOL
+ifdef TOURNAMENT
+dol: export OBJDIR  := build/obj/te/DOL
+dol: export DEPDIR  := build/dep/te/DOL
+else
+dol: export OBJDIR  := build/obj/le/DOL
+dol: export DEPDIR  := build/dep/le/DOL
+endif
 dol: export DEFINES += -DDOL -DNOPAL
 dol: $(MELEELD)
 	@[[ $(VERSION) == 102 ]] || ( echo "DOL builds are supported only for NTSC 1.02." >& 2; exit 1 )
