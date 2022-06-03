@@ -7,7 +7,11 @@ enum class stage_mod_type : u8 {
 	oss  = 1,
 	none = 2,
 	fdps = 3,
+#ifdef FULL_SSS_ROTATOR
 	max
+#else
+	max = none
+#endif
 };
 
 enum class controls_type : u8 {

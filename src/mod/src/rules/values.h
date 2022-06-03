@@ -98,8 +98,10 @@ inline bool is_stage_frozen(int id)
 	switch (id) {
 	case Stage_FD:
 	case Stage_PS:
+#ifdef FULL_SSS_ROTATOR
 		if (rules->stage_mods == stage_mod_type::fdps)
 			return true;
+#endif
 	case Stage_FoD:
 	case Stage_YS:
 	case Stage_DL:
