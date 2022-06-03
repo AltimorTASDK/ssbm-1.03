@@ -1,25 +1,19 @@
-ifdef NOPAL
-OUTDIR  := $(GCIDIR)/a
-else
-OUTDIR  := $(GCIDIR)/b
-endif
-
 ifeq ($(VERSION), 100)
-ELFFILE := $(OUTDIR)/loader-ntsc100.elf
-BINFILE := $(OUTDIR)/loader-ntsc100.bin
+ELFFILE := $(GCIBIN)/loader-ntsc100.elf
+BINFILE := $(GCIBIN)/loader-ntsc100.bin
 else ifeq ($(VERSION), 101)
-ELFFILE := $(OUTDIR)/loader-ntsc101.elf
-BINFILE := $(OUTDIR)/loader-ntsc101.bin
+ELFFILE := $(GCIBIN)/loader-ntsc101.elf
+BINFILE := $(GCIBIN)/loader-ntsc101.bin
 else ifeq ($(VERSION), 102)
-ELFFILE := $(OUTDIR)/loader-ntsc102.elf
-BINFILE := $(OUTDIR)/loader-ntsc102.bin
+ELFFILE := $(GCIBIN)/loader-ntsc102.elf
+BINFILE := $(GCIBIN)/loader-ntsc102.bin
 else ifeq ($(VERSION), PAL)
-ELFFILE := $(OUTDIR)/loader-pal.elf
-BINFILE := $(OUTDIR)/loader-pal.bin
+ELFFILE := $(GCIBIN)/loader-pal.elf
+BINFILE := $(GCIBIN)/loader-pal.bin
 endif
 
 ifdef NOPAL
-ZLIBBIN := $(OUTDIR)/zlib.bin
+ZLIBBIN := $(GCIBIN)/zlib.bin
 endif
 
 CFILES   := $(foreach dir, $(SRCDIR), $(shell find $(dir) -type f -name '*.c'   2> /dev/null))
@@ -45,16 +39,15 @@ DEPFILES := $(patsubst $(OBJDIR)/%.o, $(DEPDIR)/%.d, $(OBJFILES))
 ifeq ($(VERSION), PAL)
 GCIFILE    := $(BINDIR)/$(MODNAME)-loader-PAL.gci
 GCISRC     := $(GCIDIR)/ssbm-PAL.gci
-MGCMAIN    := $(GCIDIR)/1.03-PAL.mgc
+MGCMAIN    := $(MGCDIR)/1.03-PAL.mgc
 LINKSCRIPT := loader-PAL.ld
 else
 GCIFILE    := $(BINDIR)/$(MODNAME)-loader-NTSC.gci
 GCISRC     := $(GCIDIR)/ssbm-NTSC.gci
+MGCMAIN    := $(MGCDIR)/1.03-NTSC.mgc
 ifdef NOPAL
-MGCMAIN    := $(GCIDIR)/1.03-a-NTSC.mgc
 LINKSCRIPT := loader-a-NTSC.ld
 else
-MGCMAIN    := $(GCIDIR)/1.03-b-NTSC.mgc
 LINKSCRIPT := loader-b-NTSC.ld
 endif
 endif
@@ -63,10 +56,10 @@ ifeq ($(VERSION), 102)
 ifndef NOPAL
 GCIFILE20XX := $(BINDIR)/$(MODNAME)-loader-20XX.gci
 GCISRC20XX  := $(GCIDIR)/ssbm-20XX.gci
-MGCMAIN20XX := $(GCIDIR)/1.03-20XX.mgc
+MGCMAIN20XX := $(MGCDIR)/1.03-20XX.mgc
 GCIFILEUP := $(BINDIR)/$(MODNAME)-loader-UP.gci
 GCISRCUP  := $(GCIDIR)/ssbm-UP.gci
-MGCMAINUP := $(GCIDIR)/1.03-UP.mgc
+MGCMAINUP := $(MGCDIR)/1.03-UP.mgc
 
 .PHONY: all
 all: ssbm 20XX UP
@@ -136,7 +129,7 @@ $(OBJDIR)/%.S.o: %.S
 
 .PHONY: clean
 clean:
-	rm -rf build $(OUTDIR)
+	rm -rf build $(GCIBIN)
 
 # Remove unused obj/dep files
 .PHONY: clean-unused

@@ -10,6 +10,7 @@ GALE01r0.ld
 GALE01r1.ld
 GALE01r2.ld
 GALP01.ld
-gci/a
-gci/b
+gci/**/*.bin
+gci/**/*.elf
+gci/**/*.gci
 gci/tmp_*

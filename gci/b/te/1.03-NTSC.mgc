@@ -1,0 +1,45 @@
+!begin
+
+!gci 40
+!string "Super Smash Bros. Melee         1.03 Loader (NTSC)"
+# Pad to 0x40 length
+00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+# Make the first nametag so long that it overflows into the stack's return pointer
+!loc 8045d850
+DDDDDDDD DDDDDDDD DDDDDDDD DDDDDDDD
+DDDDDDDD DDDDDDDD DDDDDDDD DDDDDDDD
+DDDDDDDD DDDDDDDD DDDDDDDD DDDDDDDD
+DDDDDDDD DDDDDDDD DDDDDDDD DDDDDDDD
+DDDDDDDD DDDDDDDD DDDDDDDD DDDDDDDD
+DDDDDDDD DDDDDDDD DDDDDDDD DDDDDDDD
+DDDDDDDD DDDDDDDD DDDDDDDD DDDDDDDD
+DDDDDDDD DDDDDDDD DDDDDDDD DDDDDDDD
+DDDDDDDD DDDDDDDD DDDDDDDD DDDDDDDD
+DDDDDDDD DDDDDDDD DDDDDDDD DDDDDDDD
+DDDDDDDD 8045d93c DDDDDDDD DDDDDDDD
+DDDDDDDD DDDDDDDD DDDDDDDD DDDDDDDD
+DDDDDDDD DDDDDDDD DDDDDDDD DDDDDDDD
+DDDDDDDD 804ee8f8 8045d930 00000000
+
+# This forces execution to branch to 8045d930 instead of back to the nametag
+# function. Better yet, 8045d930 is at a different offset in each version
+# of Melee, because the save file loads into slightly different spots.
+# This means we can conveniently run different code for each Melee version
+# using only one save file.
+#
+# v1.02: 8045d930
+# v1.01: 8045e610
+# v1.00: 8045f8f8
+
+# 1.02 loader
+!loc 8045d930
+!file "bin/loader-ntsc102.bin"
+
+# 1.01 loader
+!loc 8045e610
+!file "bin/loader-ntsc101.bin"
+
+# 1.00 loader
+!loc 8045f8f8
+!file "bin/loader-ntsc100.bin"

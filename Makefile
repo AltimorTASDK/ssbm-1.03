@@ -19,6 +19,9 @@ endif
 ifneq ($(shell echo "$(MODVERSION)" | grep -P '(^|-)(beta|rc)($$|[\d-])'),)
 export BETA := 1
 endif
+ifneq ($(shell echo "$(MODVERSION)" | grep -P '^te($$|[\d-])'),)
+export TOURNAMENT := 1
+endif
 export MODNAME := ssbm-1.03-$(MODVERSION)
 else
 export MODNAME := ssbm-1.03
@@ -29,6 +32,9 @@ export DEFINES += -DNOPAL
 endif
 ifdef BETA
 export DEFINES += -DBETA
+endif
+ifdef TOURNAMENT
+export DEFINES += -DTOURNAMENT
 endif
 
 export DEFINES += -DMODNAME=\"$(MODNAME)\"
@@ -57,6 +63,18 @@ else
 $(error Unsupported Melee version "$(VERSION)")
 endif
 
+ifdef NOPAL
+export SUBDIR := a
+else
+export SUBDIR := b
+endif
+
+ifdef TOURNAMENT
+export SUBDIR := $(SUBDIR)/te
+else
+export SUBDIR := $(SUBDIR)/le
+endif
+
 export ISODIR   := $(abspath iso)
 export TOOLS    := $(abspath tools)
 export GCIDIR   := $(abspath gci)
@@ -64,17 +82,12 @@ export GCIDIR   := $(abspath gci)
 export GENDIR   := build/gen
 export LIBDIR   := lib
 export SRCDIR   := src $(GENDIR)
-ifdef NOPAL
-export LOCALBIN := build/bin/a
-export BINDIR   := $(abspath bin/a)
-export OBJDIR   := build/obj/a/$(VERSION)
-export DEPDIR   := build/dep/a/$(VERSION)
-else
-export LOCALBIN := build/bin/b
-export BINDIR   := $(abspath bin/b)
-export OBJDIR   := build/obj/b/$(VERSION)
-export DEPDIR   := build/dep/b/$(VERSION)
-endif
+export LOCALBIN := build/bin/$(SUBDIR)
+export BINDIR   := $(abspath bin/$(SUBDIR))
+export OBJDIR   := build/obj/$(SUBDIR)/$(VERSION)
+export DEPDIR   := build/dep/$(SUBDIR)/$(VERSION)
+export MGCDIR   := $(GCIDIR)/$(SUBDIR)
+export GCIBIN   := $(GCIDIR)/$(SUBDIR)/bin
 
 export OUTPUTMAP = $(OBJDIR)/output.map
 export LDFLAGS   = -Wl,-Map=$(OUTPUTMAP) -Wl,--gc-sections
