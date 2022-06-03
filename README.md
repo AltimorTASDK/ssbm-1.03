@@ -40,15 +40,20 @@ indicates the target Melee version.
 `NOPAL` may be specified to exclude PAL, 20XX, and UnclePunch support from the
 build. This helps 1.03 fit on 4Mb memory cards.
 
+`TOURNAMENT` may be specified to exclude non-Z jump Controls options.
+
 `BETA` may be specified to include a version watermark on the character select
 screen.
 
 `MODVERSION` may be specified to add a suffix to the output gci filenames.
 `MODVERSION` may imply other build options.
 
-* If `MODVERSION` starts with "a" followed by a digit, hyphen, or EOL, `NOPAL`
-is implied.
+* If `MODVERSION` contains "a" followed by a digit, hyphen, or EOL at the start
+or after a hyphen, `NOPAL` is implied.
 * * Example: `MODVERSION=a3.4`
+* If `MODVERSION` contains "te" followed by a digit, hyphen, or EOL at the start
+or after a hyphen, `TOURNAMENT` is implied.
+* * Example: `MODVERSION=te`
 * If `MODVERSION` contains "beta" or "rc" followed by a digit, hyphen, or EOL
 at the start or after a hyphen, `BETA` is implied.
 * * Example: `MODVERSION=b3.4-beta1`
@@ -63,6 +68,9 @@ of 1.03
 and latency
 * `POLL_DEBUG_VERBOSE` - Show additional poll debug info
 * `UCF_ROTATOR` - Reinstate the UCF toggle in the additional rules menu
+* `LGL_ROTATOR` - Reinstate the LGL rotator in the rules menu
+* `ATL_ROTATOR` - Reinstate the AGL rotator in the rules menu
+* `FULL_SSS_ROTATOR` - Reinstate the FD/PS and None options for Stage Mods
 
 **Example `make` command:**
 
