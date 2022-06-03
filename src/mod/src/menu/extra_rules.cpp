@@ -273,6 +273,9 @@ extern "C" bool is_extra_rule_visible(int index)
 #ifndef UCF_ROTATOR
 	case ExtraRule_ControllerFix: return false;
 #endif
+#ifdef TOURNAMENT
+	case ExtraRule_Controls:      return false;
+#endif
 	default:                      return true;
 	}
 }
@@ -331,6 +334,9 @@ static void set_to_rotator(ExtraRulesMenuData *data, int index)
 
 static void fix_value_position(ExtraRulesMenuData *data, int index)
 {
+	if (!is_extra_rule_visible(index))
+		return;
+
 	// Set to proper position for additional rules value
 	auto *jobj = data->value_jobj_trees[index].tree[1];
 	jobj->position.x = 4.8f;

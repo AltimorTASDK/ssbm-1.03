@@ -71,8 +71,12 @@ inline latency_mode get_latency()
 
 inline controls_type get_controls()
 {
+#ifndef TOURNAMENT
 	const auto *rules = GetGameRules();
 	return rules->controls;
+#else
+	return controls_type::z_jump;
+#endif
 }
 
 inline bool should_use_oss()
