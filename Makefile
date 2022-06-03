@@ -75,7 +75,11 @@ else
 export SUBDIR := $(SUBDIR)/le
 endif
 
-export ISODIR   := $(abspath iso)
+ifdef TOURNAMENT
+export ISODIR   := $(abspath iso/te)
+else
+export ISODIR   := $(abspath iso/le)
+endif
 export TOOLS    := $(abspath tools)
 export GCIDIR   := $(abspath gci)
 

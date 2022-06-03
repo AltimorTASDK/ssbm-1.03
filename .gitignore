@@ -1,9 +1,9 @@
 bin/*
-iso/files/*
-!iso/files/opening.bnr
-iso/sys/*
-!iso/sys/boot.bin
-!iso/sys/apploader.img
+iso/*/files/*
+!iso/*/files/opening.bnr
+iso/*/sys/*
+!iso/*/sys/boot.bin
+!iso/*/sys/apploader.img
 src/*/build/*
 .vscode
 GALE01r0.ld
