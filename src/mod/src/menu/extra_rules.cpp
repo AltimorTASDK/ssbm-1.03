@@ -23,8 +23,13 @@
 #include <ogc/gx.h>
 
 #include "resources/rules/pause_values.tex.h"
-#include "resources/rules/stage_mods.tex.h"
-#include "resources/rules/stage_mods_values.tex.h"
+#ifdef FULL_SSS_ROTATOR
+#include "resources/rules/old/sss.tex.h"
+#include "resources/rules/old/sss_values.tex.h"
+#else
+#include "resources/rules/sss.tex.h"
+#include "resources/rules/sss_values.tex.h"
+#endif
 #include "resources/rules/controls.tex.h"
 #include "resources/rules/controls_values.tex.h"
 #include "resources/rules/controller_fix.tex.h"
@@ -138,6 +143,12 @@ constexpr auto pause_auto_description =
 	                      "pause during 4-stock matches.">();
 
 constexpr auto stage_mod_descriptions = multi_array {
+#ifndef FULL_SSS_ROTATOR
+	make_description_text<"Use 1.03's stage select screen",
+	                      "and play with stage modifications.">(),
+	make_description_text<"Use the original stage select screen",
+	                      "and play without stage modifications.">()
+#else
 	make_description_text<"Modify all tournament legal",
 	                      "stages except for Battlefield.">(),
 	make_description_text<"Use the original stage select screen",
@@ -145,6 +156,7 @@ constexpr auto stage_mod_descriptions = multi_array {
 	make_description_text<"Play without stage modifications.">(),
 	make_description_text<u"Freeze Final Destination and",
 	                      u"Pokémon Stadium.">()
+#endif
 };
 
 constexpr auto controls_descriptions = multi_array {
@@ -396,8 +408,10 @@ static void load_textures()
 {
 	// Replace rule name textures
 	const auto *rule_names = MenMainCursorRl_Top.matanim_joint->child->child->next->matanim;
-	pool.add_texture_swap(stage_mods_tex_data,      rule_names->texanim->imagetbl[ 9]);
+	pool.add_texture_swap(sss_tex_data,             rule_names->texanim->imagetbl[ 9]);
+#ifndef TOURNAMENT
 	pool.add_texture_swap(controls_tex_data,        rule_names->texanim->imagetbl[11]);
+#endif
 	pool.add_texture_swap(controller_fix_tex_data,  rule_names->texanim->imagetbl[12]);
 	pool.add_texture_swap(latency_tex_data,         rule_names->texanim->imagetbl[13]);
 	widescreen_text = pool.add_texture_swap(widescreen_tex_data);
@@ -408,7 +422,11 @@ extern "C" ArchiveModel *select_extra_rule_model(u32 index)
 	return std::array {
 		&MenMainCursorTr01_Top, // Stock Match Time Limit
 		&MenMainCursorTr03_Top, // Pause
-		&MenMainCursorRl01_Top, // Stage Modifications
+#ifdef FULL_SSS_ROTATOR
+		&MenMainCursorRl01_Top, // Stage Select Screen
+#else
+		&MenMainCursorTr03_Top, // Stage Select Screen
+#endif
 		&MenMainCursorRl05_Top, // Controls
 		&MenMainCursorTr03_Top, // Controller Fix
 		&MenMainCursorTr04_Top, // Latency
@@ -518,8 +536,14 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 
 	// Replace rule value textures
 	replace_toggle_texture(data, ExtraRule_Pause,         pause_values_tex_data, true);
-	replace_toggle_texture(data, ExtraRule_StageMods,     stage_mods_values_tex_data);
+#ifdef FULL_SSS_ROTATOR
+	replace_toggle_texture(data, ExtraRule_StageMods,     sss_values_tex_data);
+#else
+	replace_toggle_texture(data, ExtraRule_StageMods,     sss_values_tex_data, true);
+#endif
+#ifndef TOURNAMENT
 	replace_toggle_texture(data, ExtraRule_Controls,      controls_values_tex_data);
+#endif
 	replace_toggle_texture(data, ExtraRule_ControllerFix, controller_fix_values_tex_data, true);
 	replace_toggle_texture(data, ExtraRule_Latency,       latency_values_tex_data);
 
