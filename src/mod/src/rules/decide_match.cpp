@@ -133,6 +133,10 @@ static bool decide_winners(MatchController *match, bool teams)
 	if (match->result != MatchResult_Timeout)
 		return false;
 
+	// Only apply for stock mode
+	if (GetMatchInfo()->rules.is_stock_match)
+		return false;
+
 	// Don't check singles win conditions in teams and vice versa
 	if(match->is_teams != teams)
 		return false;
