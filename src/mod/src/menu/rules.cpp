@@ -18,8 +18,12 @@
 #include "util/melee/text_builder.h"
 #include <gctypes.h>
 
+#ifdef LGL_ROTATOR
 #include "resources/rules/ledge_grab_limit.tex.h"
+#endif
+#ifdef ATL_ROTATOR
 #include "resources/rules/air_time_limit.tex.h"
+#endif
 #include "resources/rules/menu_music.tex.h"
 #include "resources/rules/menu_music_header.tex.h"
 #include "resources/rules/stage_music.tex.h"
@@ -175,6 +179,30 @@ PATCH_LIST(
 	std::pair { Menu_RulesMenuInput+0x424,    0x4080020Cu }
 );
 
+extern "C" bool is_rule_visible(int index)
+{
+	switch (index) {
+#ifndef LGL_ROTATOR
+	case Rule_LedgeGrabLimit: return false;
+#endif
+#ifndef ATL_ROTATOR
+	case Rule_AirTimeLimit:   return false;
+#endif
+	default:                  return true;
+	}
+}
+
+static int get_jobj_index(int index)
+{
+	// Fix up indices for hidden rotators
+	for (auto i = index - 1; i >= 0; i--) {
+		if (!is_rule_visible(i))
+			index--;
+	}
+
+	return index;
+}
+
 static void replace_value_jobj(HSD_JObj *parent, HSD_JObj **jobj_tree)
 {
 	// Remove existing value jobj
@@ -195,7 +223,10 @@ static void replace_value_jobj(HSD_JObj *parent, HSD_JObj **jobj_tree)
 
 static void replace_counter_jobj(RulesMenuData *data, int index)
 {
-	auto *parent = data->jobj_tree.rules[index];
+	if (!is_rule_visible(index))
+		return;
+
+	auto *parent = data->jobj_tree.rules[get_jobj_index(index)];
 	auto **jobj_tree = data->value_jobj_trees[index].tree;
 	replace_value_jobj(parent, jobj_tree);
 
@@ -209,7 +240,10 @@ static void replace_counter_jobj(RulesMenuData *data, int index)
 
 static void replace_timer_jobj(RulesMenuData *data, int index)
 {
-	auto *parent = data->jobj_tree.rules[index];
+	if (!is_rule_visible(index))
+		return;
+
+	auto *parent = data->jobj_tree.rules[get_jobj_index(index)];
 	auto **jobj_tree = data->value_jobj_trees[index].tree;
 	replace_value_jobj(parent, jobj_tree);
 
@@ -259,6 +293,9 @@ static void show_counter_value(HSD_JObj **jobj_tree, bool show)
 
 static void update_lgl_value(HSD_GObj *gobj, u32 value)
 {
+	if (!is_rule_visible(Rule_LedgeGrabLimit))
+		return;
+
 	auto *data = gobj->get<RulesMenuData>();
 	auto **jobj_tree = data->value_jobj_trees[Rule_LedgeGrabLimit].tree;
 
@@ -277,6 +314,9 @@ static void update_lgl_value(HSD_GObj *gobj, u32 value)
 
 static void update_atl_value(HSD_GObj *gobj, u32 value)
 {
+	if (!is_rule_visible(Rule_AirTimeLimit))
+		return;
+
 	auto *data = gobj->get<RulesMenuData>();
 	auto **jobj_tree = data->value_jobj_trees[Rule_AirTimeLimit].tree;
 
@@ -299,7 +339,10 @@ static void update_atl_value(HSD_GObj *gobj, u32 value)
 
 static void hide_rule_value(RulesMenuData *data, int index)
 {
-	auto *cursor = data->jobj_tree.rules[index]->child;
+	if (!is_rule_visible(index))
+		return;
+
+	auto *cursor = data->jobj_tree.rules[get_jobj_index(index)]->child;
 
 	// Hide value background + arrows
 	for (auto *jobj : HSD_JObjGetFromTreeByIndices<6, 13>(cursor))
@@ -311,7 +354,10 @@ static void hide_rule_value(RulesMenuData *data, int index)
 
 static void fix_rule_scale(RulesMenuData *data, int index)
 {
-	auto *cursor = data->jobj_tree.rules[index]->child;
+	if (!is_rule_visible(index))
+		return;
+
+	auto *cursor = data->jobj_tree.rules[get_jobj_index(index)]->child;
 	auto *label = HSD_JObjGetFromTreeByIndex(cursor, 7);
 	label->scale.x = 1.5f;
 	HSD_JObjSetMtxDirty(label);
@@ -336,8 +382,12 @@ static void load_textures()
 {
 	// Replace rule name textures
 	const auto *rule_names = MenMainCursorRl_Top.matanim_joint->child->child->next->matanim;
+#ifdef LGL_ROTATOR
 	pool.add_texture_swap(ledge_grab_limit_tex_data, rule_names->texanim->imagetbl[3]);
+#endif
+#ifdef ATL_ROTATOR
 	pool.add_texture_swap(air_time_limit_tex_data,   rule_names->texanim->imagetbl[4]);
+#endif
 	pool.add_texture_swap(menu_music_tex_data,       rule_names->texanim->imagetbl[5]);
 	pool.add_texture_swap(stage_music_tex_data,      rule_names->texanim->imagetbl[6]);
 

@@ -5,6 +5,62 @@
 .set Mode_Stock, 1
 .set Mode_Crew,  3
 
+.global hook_CheckRuleVisible1
+hook_CheckRuleVisible1:
+        mr      r3, r29
+        bl      is_rule_visible
+        mr      r0, r3
+        b       Menu_SetupRulesMenu+0x2F0
+
+.global hook_CheckRuleVisible2
+hook_CheckRuleVisible2:
+        mr      r3, r29
+        bl      is_rule_visible
+        mr      r0, r3
+        b       Menu_SetupRulesMenu+0x34C
+
+.global hook_CheckRuleVisible3
+hook_CheckRuleVisible3:
+        mr      r3, r27
+        bl      is_rule_visible
+        mr      r0, r3
+        b       Menu_SetupRulesMenu+0x3B0
+
+.global hook_CheckRuleVisible4
+hook_CheckRuleVisible4:
+        mr      r3, r29
+        bl      is_rule_visible
+        mr      r0, r3
+        b       Menu_RulesMenuInput+0x310
+
+.global hook_CheckRuleVisible5
+hook_CheckRuleVisible5:
+        mr      r3, r29
+        bl      is_rule_visible
+        mr      r0, r3
+        b       Menu_RulesMenuInput+0x3C4
+
+.global hook_CheckRuleVisible6
+hook_CheckRuleVisible6:
+        mr      r3, r25
+        bl      is_rule_visible
+        mr      r0, r3
+        b       Menu_UpdateRuleDisplay+0x110
+
+.global hook_CheckRuleVisible7
+hook_CheckRuleVisible7:
+        mr      r3, r29
+        bl      is_rule_visible
+        mr      r0, r3
+        b       Menu_UpdateRuleDisplay+0x150
+
+.global hook_CheckRuleVisible8
+hook_CheckRuleVisible8:
+        mr      r3, r25
+        bl      is_rule_visible
+        mr      r0, r3
+        b       Menu_UpdateRuleDisplay+0x418
+
 .global hook_CheckScrollingRuleIndex
 hook_CheckScrollingRuleIndex:
         # Don't interfere with custom handicap/ledge grab limit display

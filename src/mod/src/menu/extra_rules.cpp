@@ -266,17 +266,14 @@ PATCH_LIST(
 	std::pair { Menu_SetupExtraRulesMenu+0x600,                       0x38000007u }
 );
 
-extern "C" bool is_rule_visible(int index)
+extern "C" bool is_extra_rule_visible(int index)
 {
 	switch (index) {
-	case ExtraRule_Latency:
-		return !is_faster_melee();
+	case ExtraRule_Latency:       return !is_faster_melee();
 #ifndef UCF_ROTATOR
-	case ExtraRule_ControllerFix:
-		return false;
+	case ExtraRule_ControllerFix: return false;
 #endif
-	default:
-		return true;
+	default:                      return true;
 	}
 }
 
@@ -284,7 +281,7 @@ static int get_jobj_index(int index)
 {
 	// Fix up indices for hidden rotators
 	for (auto i = index - 1; i >= 0; i--) {
-		if (!is_rule_visible(i))
+		if (!is_extra_rule_visible(i))
 			index--;
 	}
 
@@ -294,7 +291,7 @@ static int get_jobj_index(int index)
 static void replace_toggle_texture(ExtraRulesMenuData *data, int index, u8 *tex_data,
                                    bool force_allocation = false)
 {
-	if (!is_rule_visible(index))
+	if (!is_extra_rule_visible(index))
 		return;
 
 	auto *tobj = data->value_jobj_trees[index].tree[1]->u.dobj->mobj->tobj;
@@ -315,7 +312,7 @@ static void fix_widescreen_text(ExtraRulesMenuData *data)
 
 static void set_to_rotator(ExtraRulesMenuData *data, int index)
 {
-	if (!is_rule_visible(index))
+	if (!is_extra_rule_visible(index))
 		return;
 
 	auto *cursor = data->jobj_tree.rules[get_jobj_index(index)]->child;
@@ -351,7 +348,7 @@ static u8 get_model_max_value(int index)
 
 static void set_value_anim(ExtraRulesMenuData *data, int index)
 {
-	if (!is_rule_visible(index))
+	if (!is_extra_rule_visible(index))
 		return;
 
 	// Set initial value anim frame with support for more than 3 values
@@ -365,7 +362,7 @@ static void set_value_anim(ExtraRulesMenuData *data, int index)
 
 static void fix_rule_scale(ExtraRulesMenuData *data, int index)
 {
-	if (!is_rule_visible(index))
+	if (!is_extra_rule_visible(index))
 		return;
 
 	auto *cursor = data->jobj_tree.rules[get_jobj_index(index)]->child;
@@ -544,7 +541,7 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 extern "C" bool orig_Menu_IsExtraRuleVisible(u8 index);
 extern "C" bool hook_Menu_IsExtraRuleVisible(u8 index)
 {
-	return is_rule_visible(index);
+	return is_extra_rule_visible(index);
 }
 
 extern "C" void orig_Menu_ExtraRulesMenuInput(HSD_GObj *gobj);
@@ -563,7 +560,7 @@ extern "C" void hook_Menu_ExtraRulesMenuInput(HSD_GObj *gobj)
 	if (!(buttons & MenuButton_A) && (buttons & (MenuButton_B | MenuButton_Start)))
 		config.save();
 
-	while (!is_rule_visible(MenuSelectedIndex)) {
+	while (!is_extra_rule_visible(MenuSelectedIndex)) {
 		// Skip over the nonexistent rotator
 		if (buttons & MenuButton_Up)
 			MenuSelectedIndex--;

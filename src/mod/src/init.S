@@ -147,7 +147,6 @@ hooks_start:
         .int hook_\name
 .endm
 
-.set CheckScrollingRuleIndex, Menu_UpdateRuleDisplay+0x418
 .set ShowNameTagCheck,        NameTag_Think+0x28
 .set CheckStockStealInput,    Match_CheckStockSteal+0xF8
 
@@ -156,7 +155,6 @@ add_hook Scene_Main
 add_hook OSSetArenaHi
 #endif
 add_hook Bubble_GetPosition
-add_hook CheckScrollingRuleIndex
 add_hook CheckStockStealInput
 add_hook CmSubject_WorldToScreen
 add_hook CObjLoad
@@ -166,18 +164,13 @@ add_hook HUD_GetPlayerHUDPosition
 add_hook Match_HandlePause
 add_hook MatchController_UpdateTeamWinners
 add_hook MatchController_UpdateWinners
-add_hook Menu_CreateRuleDescriptionText
 add_hook Menu_GetBGM
 add_hook Menu_MenuPanelThink
 add_hook Menu_RandomStageMenuInput
 add_hook Menu_RandomStageMenuScroll
-add_hook Menu_RulesMenuInput
-add_hook Menu_SetupRulesMenu
 add_hook Menu_SetupRandomStageMenu
 add_hook Menu_SetupRandomStageToggles
 add_hook Menu_UpdateRandomStageDisplay
-add_hook Menu_UpdateRuleDisplay
-add_hook Menu_UpdateRuleValue
 add_hook NameTag_SetupForPlayer
 add_hook Player_CheckCStickUSmashInput
 add_hook Player_CheckCStickFSmashInput
@@ -279,6 +272,56 @@ add_hook Menu_ItemMenuScroll
 add_hook Menu_SetupItemToggles
 add_hook Menu_UpdateItemDisplay
 add_hook Stage_GetBGM
+# Rules menu
+.set CheckRuleVisible1,       Menu_SetupRulesMenu+0x2CC
+.set CheckRuleVisible2,       Menu_SetupRulesMenu+0x328
+.set CheckRuleVisible3,       Menu_SetupRulesMenu+0x388
+.set CheckRuleVisible4,       Menu_RulesMenuInput+0x2EC
+.set CheckRuleVisible5,       Menu_RulesMenuInput+0x3A0
+.set CheckRuleVisible6,       Menu_UpdateRuleDisplay+0xE8
+.set CheckRuleVisible7,       Menu_UpdateRuleDisplay+0x12C
+.set CheckRuleVisible8,       Menu_UpdateRuleDisplay+0x3F0
+.set CheckScrollingRuleIndex, Menu_UpdateRuleDisplay+0x418
+add_hook CheckRuleVisible1
+add_hook CheckRuleVisible2
+add_hook CheckRuleVisible3
+add_hook CheckRuleVisible4
+add_hook CheckRuleVisible5
+add_hook CheckRuleVisible6
+add_hook CheckRuleVisible7
+add_hook CheckRuleVisible8
+add_hook CheckScrollingRuleIndex
+add_hook Menu_CreateRuleDescriptionText
+add_hook Menu_RulesMenuInput
+add_hook Menu_SetupRulesMenu
+add_hook Menu_UpdateRuleDisplay
+add_hook Menu_UpdateRuleValue
+# Rules menu (crew mode)
+.set CheckToSetStockCount,             Menu_RulesMenuThink+0x2AC
+.set CheckToUseStockCountText,         Menu_SetupRulesMenu+0x410
+.set CheckToUseStockCountDescription,  Menu_CreateRuleDescriptionText+0x48
+.set CheckToUpdateStockCountText,      Menu_UpdateRuleDisplay+0x230
+.set CheckToUpdateStockCountTextAgain, Menu_UpdateRuleDisplay+0x32C
+.set CheckToCycleToStockCountText,     Menu_UpdateRuleDisplay+0x504
+.set CheckToUpdateStockCountValue,     Menu_UpdateRuleValue+0x6C
+.set CheckToSetStockCountValue1,       Menu_RulesMenuInput+0x328
+.set CheckToSetStockCountValue2,       Menu_RulesMenuInput+0x3DC
+.set CheckToSetStockCountValue3,       Menu_RulesMenuInput+0x43C
+.set CheckToSetStockCountValue4,       Menu_RulesMenuInput+0x510
+.set CheckToSetStockCountValue5,       Menu_RulesMenuInput+0x5FC
+add_hook CheckToSetStockCount
+add_hook CheckToUseStockCountText
+add_hook CheckToUseStockCountDescription
+add_hook CheckToUpdateStockCountText
+add_hook CheckToUpdateStockCountTextAgain
+add_hook CheckToCycleToStockCountText
+add_hook CheckToUpdateStockCountValue
+add_hook CheckToSetStockCountValue1
+add_hook CheckToSetStockCountValue2
+add_hook CheckToSetStockCountValue3
+add_hook CheckToSetStockCountValue4
+add_hook CheckToSetStockCountValue5
+add_hook Menu_UpdateStockCountOrTimerText
 # Additional rules menu
 .set SelectExtraRuleModel,   Menu_SetupExtraRulesMenu+0x55C
 .set CheckExtraRuleVisible1, Menu_UpdateExtraRuleDisplay+0xE8
@@ -331,32 +374,6 @@ add_hook Player_StopAllSFX
 add_hook Stage_GetSpawnPoint
 add_hook PlayerBlock_GetRespawnPoint
 add_hook Match_SetSpawnFacingDirections
-# Crew mode
-.set CheckToSetStockCount,             Menu_RulesMenuThink+0x2AC
-.set CheckToUseStockCountText,         Menu_SetupRulesMenu+0x410
-.set CheckToUseStockCountDescription,  Menu_CreateRuleDescriptionText+0x48
-.set CheckToUpdateStockCountText,      Menu_UpdateRuleDisplay+0x230
-.set CheckToUpdateStockCountTextAgain, Menu_UpdateRuleDisplay+0x32C
-.set CheckToCycleToStockCountText,     Menu_UpdateRuleDisplay+0x504
-.set CheckToUpdateStockCountValue,     Menu_UpdateRuleValue+0x6C
-.set CheckToSetStockCountValue1,       Menu_RulesMenuInput+0x328
-.set CheckToSetStockCountValue2,       Menu_RulesMenuInput+0x3DC
-.set CheckToSetStockCountValue3,       Menu_RulesMenuInput+0x43C
-.set CheckToSetStockCountValue4,       Menu_RulesMenuInput+0x510
-.set CheckToSetStockCountValue5,       Menu_RulesMenuInput+0x5FC
-add_hook CheckToSetStockCount
-add_hook CheckToUseStockCountText
-add_hook CheckToUseStockCountDescription
-add_hook CheckToUpdateStockCountText
-add_hook CheckToUpdateStockCountTextAgain
-add_hook CheckToCycleToStockCountText
-add_hook CheckToUpdateStockCountValue
-add_hook CheckToSetStockCountValue1
-add_hook CheckToSetStockCountValue2
-add_hook CheckToSetStockCountValue3
-add_hook CheckToSetStockCountValue4
-add_hook CheckToSetStockCountValue5
-add_hook Menu_UpdateStockCountOrTimerText
 # Match rules
 add_hook VsMode_InitDataFromRules
 add_hook Match_Init

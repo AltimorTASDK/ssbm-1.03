@@ -25,13 +25,26 @@ inline bool is_match_crew(const StartMeleeRules &rules)
 inline int get_ledge_grab_limit()
 {
 	const auto *rules = GetGameRules();
+#ifdef LGL_ROTATOR
 	return ledge_grab_limit_values[rules->ledge_grab_limit];
+#else
+	switch (rules->stock_time_limit) {
+		case 8:  return 50;
+		case 7:  return 45;
+		case 6:  return 40;
+		default: return 0;
+	}
+#endif
 }
 
 inline int get_air_time_limit()
 {
+#ifdef ATL_ROTATOR
 	const auto *rules = GetGameRules();
 	return air_time_limit_values[rules->air_time_limit];
+#else
+	return false;
+#endif
 }
 
 inline ucf_type get_ucf_type()
