@@ -19,11 +19,10 @@
 #include "resources/portals/controls_preview.tex.h"
 #include "resources/portals/debug_menu.tex.h"
 #include "resources/portals/debug_menu_preview.tex.h"
+#include "resources/portals/manual.tex.h"
 #ifdef TOURNAMENT
-#include "resources/portals/te/manual.tex.h"
 #include "resources/portals/te/manual_preview.tex.h"
 #else
-#include "resources/portals/le/manual.tex.h"
 #include "resources/portals/le/manual_preview.tex.h"
 #endif
 #include "resources/manual/manual_header.tex.h"
