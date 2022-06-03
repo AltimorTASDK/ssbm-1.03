@@ -31,7 +31,7 @@ DIFFSRC   := $(LOCALBIN)/mod.bin
 DOLFILE    := $(ISODIR)/sys/main.dol
 PATCHES    := $(LOCALBIN)/patches.bin
 DOLELF     := $(LOCALBIN)/dol.elf
-DOLDATA    := $(OBJDIR)/dol_data.bin
+DOLDATA    := build/dol_data.bin
 DOLLD      := dol.ld
 
 CFILES   := $(foreach dir, $(SRCDIR), $(shell find $(dir) -type f -name '*.c'   2> /dev/null))
