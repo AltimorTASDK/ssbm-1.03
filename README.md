@@ -62,7 +62,7 @@ of 1.03
 * `POLL_DEBUG` - Show debug information on the game's input poll/fetch timing
 and latency
 * `POLL_DEBUG_VERBOSE` - Show additional poll debug info
-* `UCF_TOGGLE` - Reinstate the UCF toggle in the additional rules menu
+* `UCF_ROTATOR` - Reinstate the UCF toggle in the additional rules menu
 
 **Example `make` command:**
 

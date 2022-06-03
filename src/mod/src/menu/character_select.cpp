@@ -28,7 +28,7 @@
 #include <cmath>
 #include <cstring>
 
-#ifdef UCF_TOGGLE
+#ifdef UCF_ROTATOR
 #include "resources/css/banner_103.tex.h"
 #include "resources/css/banner_103_team.tex.h"
 #include "resources/css/banner_ucf.tex.h"
@@ -546,7 +546,7 @@ extern "C" void hook_CSS_Init(void *enter_data)
 
 static void replace_textures()
 {
-#ifdef UCF_TOGGLE
+#ifdef UCF_ROTATOR
 	// Replace MELEE/TEAM BATTLE textures
 	auto *banner = MnSlChrModels->Menu.matanim_joint->child->next->next->next->child->matanim;
 

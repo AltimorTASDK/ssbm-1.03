@@ -36,7 +36,7 @@ inline int get_air_time_limit()
 
 inline ucf_type get_ucf_type()
 {
-#ifdef UCF_TOGGLE
+#ifdef UCF_ROTATOR
 	const auto *rules = GetGameRules();
 	return rules->controller_fix;
 #else

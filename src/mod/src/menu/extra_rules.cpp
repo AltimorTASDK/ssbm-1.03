@@ -271,7 +271,7 @@ extern "C" bool is_rule_visible(int index)
 	switch (index) {
 	case ExtraRule_Latency:
 		return !is_faster_melee();
-#ifndef UCF_TOGGLE
+#ifndef UCF_ROTATOR
 	case ExtraRule_ControllerFix:
 		return false;
 #endif
