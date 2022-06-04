@@ -134,7 +134,7 @@ static bool decide_winners(MatchController *match, bool teams)
 		return false;
 
 	// Only apply for stock mode
-	if (GetMatchInfo()->rules.is_stock_match)
+	if (!GetMatchInfo()->rules.is_stock_match)
 		return false;
 
 	// Don't check singles win conditions in teams and vice versa
