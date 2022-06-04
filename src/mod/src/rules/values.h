@@ -43,7 +43,7 @@ inline int get_air_time_limit()
 	const auto *rules = GetGameRules();
 	return air_time_limit_values[rules->air_time_limit];
 #else
-	return false;
+	return 0;
 #endif
 }
 
