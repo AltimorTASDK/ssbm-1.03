@@ -138,7 +138,7 @@ static bool decide_winners(MatchController *match, bool teams)
 		return false;
 
 	// Don't check singles win conditions in teams and vice versa
-	if(match->is_teams != teams)
+	if (match->is_teams != teams)
 		return false;
 
 	score scores[6];
