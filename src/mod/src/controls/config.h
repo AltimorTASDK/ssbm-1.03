@@ -14,11 +14,13 @@ struct controller_config {
 	static const controller_config defaults;
 
 	u8 z_jump_bit            = 0;
+#ifndef TOURNAMENT
 	bool perfect_angles      = false;
 	cstick_type c_up         = cstick_type::smash;
 	cstick_type c_horizontal = cstick_type::smash;
 	cstick_type c_down       = cstick_type::smash;
 	bool tap_jump            = true;
+#endif
 
 	void reset(int port)
 	{
@@ -29,6 +31,7 @@ struct controller_config {
 
 	void make_legal()
 	{
+#ifndef TOURNAMENT
 		switch (get_controls()) {
 		case controls_type::z_jump:
 			perfect_angles   = defaults.perfect_angles;
@@ -38,15 +41,20 @@ struct controller_config {
 			c_down           = defaults.c_down;
 			tap_jump         = defaults.tap_jump;
 		}
+#endif
 	}
 
 	bool is_illegal() const
 	{
+#ifndef TOURNAMENT
 		return perfect_angles
 		    || c_up         != cstick_type::smash
 		    || c_horizontal != cstick_type::smash
 		    || c_down       != cstick_type::smash
 		    || !tap_jump;
+#else
+		return false;
+#endif
 	}
 };
 

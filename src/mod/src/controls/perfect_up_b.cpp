@@ -1,3 +1,5 @@
+#ifndef TOURNAMENT
+
 #include "controls/config.h"
 #include "hsd/gobj.h"
 #include "hsd/pad.h"
@@ -93,4 +95,6 @@ extern "C" void hook_Player_Yoshi_GetEggVelocity(HSD_GObj *gobj, vec3 *velocity)
 {
 	apply_perfect_up_b(gobj, orig_Player_Yoshi_GetEggVelocity, velocity);
 }
+#endif
+
 #endif

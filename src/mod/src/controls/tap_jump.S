@@ -1,3 +1,5 @@
+#ifndef TOURNAMENT
+
 .section .text
 
 suppress_tap_jump:
@@ -86,3 +88,5 @@ hook_TapJumpCheck_FirstMultiJump:
         addi    r1, r1, 0x10
         mtlr    r0
         b       orig_TapJumpCheck_FirstMultiJump
+
+#endif

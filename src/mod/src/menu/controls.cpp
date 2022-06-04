@@ -22,11 +22,13 @@ enum class option {
 	min,
 
 	z_jump = min,
+#ifndef TOURNAMENT
 	perfect_angles,
 	c_up,
 	c_horizontal,
 	c_down,
 	tap_jump,
+#endif
 
 	max_toggle,
 
@@ -88,15 +90,18 @@ static consteval auto make_description_text()
 
 constexpr auto label_text_data = multi_array {
 	make_label_text<"Z Jump">(),
+#ifndef TOURNAMENT
 	make_label_text<"Perfect Angles">(),
 	make_label_text<"C-Stick Up">(),
 	make_label_text<"C-Stick Horizontal", 124>(),
 	make_label_text<"C-Stick Down">(),
 	make_label_text<"Tap Jump">()
+#endif
 };
 
 constexpr auto description_text_data = multi_array {
 	make_description_text<"Jump with the Z button.">(),
+#ifndef TOURNAMENT
 	make_description_text<"Wavedash and up-B perfectly.">(),
 	make_description_text<"Customize the C-stick.">(),
 	make_description_text<"Customize the C-stick.">(),
@@ -104,6 +109,7 @@ constexpr auto description_text_data = multi_array {
 	make_description_text<"Toggle tap jump.">(),
 	make_description_text<"Is this correct?">(),
 	make_description_text<"Is this correct?">()
+#endif
 };
 
 constexpr auto value_text_data = multi_array {
@@ -112,6 +118,7 @@ constexpr auto value_text_data = multi_array {
 		make_value_text<"Swap X/Z">(),
 		make_value_text<"Swap Y/Z">()
 	},
+#ifndef TOURNAMENT
 	multi_array {
 		make_value_text<"Off">(),
 		make_value_text<"On">()
@@ -132,6 +139,7 @@ constexpr auto value_text_data = multi_array {
 		make_value_text<"On">(),
 		make_value_text<"Off">()
 	}
+#endif
 };
 
 constexpr auto value_counts = for_range<value_text_data.size()>([]<size_t ...I> {
@@ -161,11 +169,15 @@ static struct {
 
 	void init()
 	{
+#ifndef TOURNAMENT
 		switch (get_controls()) {
 		case controls_type::z_jump:   max_toggle = option::z_jump + 1;         break;
 		case controls_type::z_angles: max_toggle = option::perfect_angles + 1; break;
 		case controls_type::all:      max_toggle = option::max_toggle;         break;
 		}
+#else
+		max_toggle = option::z_jump + 1;
+#endif
 
 		selected = option::min;
 		footer_timer = 0;
@@ -185,7 +197,11 @@ static struct {
 
 	void update_value_text(int index)
 	{
+#ifndef TOURNAMENT
 		toggles[index].value_text->data = value_text_data[index][toggles[index].value];
+#else
+		toggles[index].value_text->data = value_text_data[toggles[index].value];
+#endif
 	}
 
 	void update_description()
@@ -295,6 +311,7 @@ static struct {
 			config->z_jump_bit == __builtin_ctz(Button_X) ? 1 :
 			config->z_jump_bit == __builtin_ctz(Button_Y) ? 2 : 0;
 
+#ifndef TOURNAMENT
 		if (get_controls() == controls_type::z_jump)
 			return;
 
@@ -315,6 +332,7 @@ static struct {
 
 		get_toggle(option::tap_jump)->value =
 			config->tap_jump ? 0 : 1;
+#endif
 	}
 
 	void save_config()
@@ -327,6 +345,7 @@ static struct {
 			__builtin_ctz(Button_Y)
 		}[get_toggle(option::z_jump)->value];
 
+#ifndef TOURNAMENT
 		if (get_controls() == controls_type::z_jump)
 			return;
 
@@ -357,6 +376,7 @@ static struct {
 			true,
 			false
 		}[get_toggle(option::tap_jump)->value];
+#endif
 	}
 } menu_state;
 
@@ -417,11 +437,15 @@ static HSD_GObj *create_model(ArchiveModelScene *model, GObjProcCallback callbac
 
 static float get_y_index(auto index)
 {
+#ifndef TOURNAMENT
 	switch (get_controls()) {
 	case controls_type::z_jump:   return 2.5f;               break;
 	case controls_type::z_angles: return (float)index + 2.f; break;
 	default:                      return (float)index;       break;
 	}
+#else
+	return 2.5f;
+#endif
 }
 
 static float calc_toggle_y_position(option index)

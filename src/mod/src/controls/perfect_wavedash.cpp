@@ -1,3 +1,5 @@
+#ifndef TOURNAMENT
+
 #include "controls/config.h"
 #include "melee/player.h"
 #include "util/math.h"
@@ -33,3 +35,5 @@ extern "C" float hook_Player_GetAirdodgeAngle(Player *player)
 	else
 		return pad.stick.x > 0 ? nana_angle_pos : nana_angle_neg;
 }
+
+#endif

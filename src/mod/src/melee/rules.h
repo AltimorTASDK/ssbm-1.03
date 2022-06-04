@@ -16,8 +16,10 @@ enum class sss_type : u8 {
 
 enum class controls_type : u8 {
 	z_jump   = 0,
+#ifndef TOURNAMENT
 	z_angles = 1,
 	all      = 2,
+#endif
 	max
 };
 

@@ -172,9 +172,6 @@ add_hook Menu_SetupRandomStageMenu
 add_hook Menu_SetupRandomStageToggles
 add_hook Menu_UpdateRandomStageDisplay
 add_hook NameTag_SetupForPlayer
-add_hook Player_CheckCStickUSmashInput
-add_hook Player_CheckCStickFSmashInput
-add_hook Player_CheckCStickDSmashInput
 add_hook Scene_Match_Exit
 add_hook ShowNameTagCheck
 add_hook Stage_Dreamland_WhispyUpdate
@@ -209,6 +206,7 @@ add_hook AS_029_Fall
 add_hook Interrupt_Walljump
 # Z jump
 add_hook PADRead
+#ifndef TOURNAMENT
 # Perfect angles
 add_hook Player_GetAirdodgeAngle
 add_hook AS_356_Spacie_UpBAirMiddle
@@ -241,6 +239,9 @@ add_hook CheckJab2Input
 add_hook CheckJab3Input
 add_hook CheckRapidJabInput
 add_hook CheckFTiltAngle
+add_hook Player_CheckCStickUSmashInput
+add_hook Player_CheckCStickFSmashInput
+add_hook Player_CheckCStickDSmashInput
 # Tap jump toggle
 .set TapJumpCheck_Jump,           Interrupt_Jump+0x40
 .set TapJumpCheck_JumpAerial,     Interrupt_JumpAerial+0x44
@@ -256,6 +257,7 @@ add_hook TapJumpCheck_JumpOoRun
 add_hook TapJumpCheck_JumpOoS
 add_hook TapJumpCheck_MultiJump
 add_hook TapJumpCheck_FirstMultiJump
+#endif
 # Debug menu
 .set GetDebugMenuButtons, DebugMenu_Input+0x1C
 add_hook GetDebugMenuButtons

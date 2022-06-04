@@ -1,3 +1,5 @@
+#ifndef TOURNAMENT
+
 .section .text
 
 .set HSD_GObj.data, 0x2C
@@ -139,3 +141,5 @@ hook_CheckRapidJabInput:
         b       orig_CheckRapidJabInput
 1:
         b       orig_CheckRapidJabInput+4
+
+#endif

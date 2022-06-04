@@ -1,3 +1,5 @@
+#ifndef TOURNAMENT
+
 #include "controls/config.h"
 #include "hsd/pad.h"
 #include "melee/constants.h"
@@ -79,3 +81,5 @@ extern "C" bool check_cstick_rapid_jab(const Player *player)
 	return (player->input.cstick.x      * -player->direction >= plco->x_smash_threshold) !=
 	       (player->input.last_cstick.x * -player->direction >= plco->x_smash_threshold);
 }
+
+#endif
