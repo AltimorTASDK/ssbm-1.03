@@ -139,6 +139,9 @@ constexpr auto value_text_data = multi_array {
 		make_value_text<"On">(),
 		make_value_text<"Off">()
 	}
+#else
+	// Don't use copy ctor
+	multi_array { std::array<char, 0> { } }
 #endif
 };
 
@@ -197,11 +200,7 @@ static struct {
 
 	void update_value_text(int index)
 	{
-#ifndef TOURNAMENT
 		toggles[index].value_text->data = value_text_data[index][toggles[index].value];
-#else
-		toggles[index].value_text->data = value_text_data[toggles[index].value];
-#endif
 	}
 
 	void update_description()
