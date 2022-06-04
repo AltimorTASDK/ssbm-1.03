@@ -51,7 +51,7 @@ screen.
 * If `MODVERSION` contains "a" followed by a digit, hyphen, or EOL at the start
 or after a hyphen, `NOPAL` is implied.
 * * Example: `MODVERSION=a3.4`
-* If `MODVERSION` contains "te" followed by a digit, hyphen, or EOL at the start
+* If `MODVERSION` contains "TE" followed by a digit, hyphen, or EOL at the start
 or after a hyphen, `TOURNAMENT` is implied.
 * * Example: `MODVERSION=te`
 * If `MODVERSION` contains "beta" or "rc" followed by a digit, hyphen, or EOL
