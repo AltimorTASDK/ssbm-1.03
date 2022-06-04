@@ -32,8 +32,10 @@
 #endif
 #include "resources/rules/controls.tex.h"
 #include "resources/rules/controls_values.tex.h"
+#ifdef UCF_ROTATOR
 #include "resources/rules/controller_fix.tex.h"
 #include "resources/rules/controller_fix_values.tex.h"
+#endif
 #include "resources/rules/latency.tex.h"
 #include "resources/rules/latency_values.tex.h"
 #include "resources/rules/widescreen.tex.h"
@@ -412,7 +414,9 @@ static void load_textures()
 #ifndef TOURNAMENT
 	pool.add_texture_swap(controls_tex_data,        rule_names->texanim->imagetbl[11]);
 #endif
+#ifdef UCF_ROTATOR
 	pool.add_texture_swap(controller_fix_tex_data,  rule_names->texanim->imagetbl[12]);
+#endif
 	pool.add_texture_swap(latency_tex_data,         rule_names->texanim->imagetbl[13]);
 	widescreen_text = pool.add_texture_swap(widescreen_tex_data);
 }
@@ -544,7 +548,9 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 #ifndef TOURNAMENT
 	replace_toggle_texture(data, ExtraRule_Controls,      controls_values_tex_data);
 #endif
+#ifdef UCF_ROTATOR
 	replace_toggle_texture(data, ExtraRule_ControllerFix, controller_fix_values_tex_data, true);
+#endif
 	replace_toggle_texture(data, ExtraRule_Latency,       latency_values_tex_data);
 
 	// Make Rl01 and Rl05 use proper additional rules position
