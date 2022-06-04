@@ -19,7 +19,7 @@ endif
 ifneq ($(shell echo "$(MODVERSION)" | grep -P '(^|-)(beta|rc)($$|[\d-])'),)
 export BETA := 1
 endif
-ifneq ($(shell echo "$(MODVERSION)" | grep -P '(^|-)te($$|[\d-])'),)
+ifneq ($(shell echo "$(MODVERSION)" | grep -P '(^|-)TE($$|[\d-])'),)
 export TOURNAMENT := 1
 endif
 export MODNAME := ssbm-1.03-$(MODVERSION)
@@ -70,15 +70,15 @@ export SUBDIR := b
 endif
 
 ifdef TOURNAMENT
-export SUBDIR := $(SUBDIR)/te
+export SUBDIR := $(SUBDIR)/TE
 else
-export SUBDIR := $(SUBDIR)/le
+export SUBDIR := $(SUBDIR)/LE
 endif
 
 ifdef TOURNAMENT
-export ISODIR   := $(abspath iso/te)
+export ISODIR   := $(abspath iso/TE)
 else
-export ISODIR   := $(abspath iso/le)
+export ISODIR   := $(abspath iso/LE)
 endif
 export TOOLS    := $(abspath tools)
 export GCIDIR   := $(abspath gci)
