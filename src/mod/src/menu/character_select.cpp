@@ -8,7 +8,7 @@
 #include "hsd/mobj.h"
 #include "hsd/pad.h"
 #include "hsd/tobj.h"
-#include "latency/pdf_vb.h"
+#include "latency/polling.h"
 #include "melee/constants.h"
 #include "melee/match.h"
 #include "melee/nametag.h"

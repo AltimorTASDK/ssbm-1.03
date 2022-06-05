@@ -2,7 +2,7 @@
 #include "hsd/gobj.h"
 #include "hsd/pad.h"
 #include "hsd/video.h"
-#include "latency/pdf_vb.h"
+#include "latency/polling.h"
 #include "melee/text.h"
 #include "os/alarm.h"
 #include "os/os.h"

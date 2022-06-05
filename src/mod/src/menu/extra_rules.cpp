@@ -6,7 +6,7 @@
 #include "hsd/memory.h"
 #include "hsd/mobj.h"
 #include "hsd/tobj.h"
-#include "latency/pdf_vb.h"
+#include "latency/polling.h"
 #include "melee/menu.h"
 #include "melee/preferences.h"
 #include "melee/rules.h"
