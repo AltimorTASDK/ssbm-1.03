@@ -11,7 +11,7 @@ struct PlayerConstants {
 	f32 lr_hold_threshold;
 	s32 tech_lockout;
 	f32 angle_50d;
-	f32 x_tilt_threshold;
+	f32 walk_threshold;
 	char pad028[0x3C - 0x28];
 	f32 x_smash_threshold;
 	s32 x_smash_frames;
