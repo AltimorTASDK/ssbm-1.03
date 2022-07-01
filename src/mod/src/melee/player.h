@@ -1,7 +1,9 @@
 #pragma once
 
-#include "hsd/jobj.h"
+#include "hsd/figatree.h"
 #include "hsd/gobj.h"
+#include "hsd/jobj.h"
+#include "melee/ftcmd.h"
 #include "melee/object.h"
 #include "util/vector.h"
 #include <gctypes.h>
@@ -118,10 +120,13 @@ struct PhysicsJointData {
 	char pad004[0x18 - 0x04];
 };
 
-struct SubactionData {
-	char pad000[0x08];
-	f32 length;
-	char pad00C[0x14 - 0x0C];
+struct SubactionInfo {
+	char *name;
+	u32 anim_offset;
+	u32 anim_size;
+	u8 *script;
+	u32 anim_flags;
+	HSD_RawArchive *anim_data;
 };
 
 struct JointData {
@@ -185,8 +190,8 @@ struct Player {
 	CharacterStats char_stats;
 	char pad02F0[0x3E0 - 0x2F0];
 	u32 physics_joint_count;
-	SubactionState subaction_state;
-	char pad0400[0x4B8 - 0x400];
+	FtCmdState ftcmd_state;
+	char pad0408[0x4B8 - 0x408];
 	f32 overlay_r;
 	f32 overlay_g;
 	f32 overlay_b;
@@ -199,7 +204,7 @@ struct Player {
 	u8 overlay_flags;
 	char pad0505[0x58C - 0x505];
 	u32 subaction_count;
-	SubactionData *subaction_data;
+	HSD_FigaTree *figatree;
 	struct {
 		u8 anim_flags_80 : 1;
 		u8 anim_flags_40 : 1;
@@ -451,6 +456,8 @@ u8 PlayerBlock_GetTeam(s32 slot);
 u32 PlayerBlock_GetSlotType(s32 slot);
 bool PlayerBlock_ShouldDisplayPortTag(s32 slot);
 void PlayerBlock_AddTotalSDIDistance(s32 slot, f32 x, f32 y);
+
+SubactionInfo *Player_GetSubactionInfo(const Player *player, u32 index);
 
 PlayerBlockStats *PlayerBlock_GetStats(s32 slot);
 s32 PlayerBlockStats_GetActionStat(const PlayerBlockStats *stats, u32 index);

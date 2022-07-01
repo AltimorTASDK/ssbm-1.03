@@ -51,16 +51,6 @@ struct Physics {
 	CollisionContact ceiling;
 };
 
-struct SubactionState {
-	f32 timer;
-	f32 frame_count;
-	char *script_pointer;
-	u32 loop_count;
-	void *event_return;
-	u32 loop_count_2;
-	char pad0018[0x1C - 0x18];
-};
-
 struct Hitbox {
 	u32 state;
 	u32 active;

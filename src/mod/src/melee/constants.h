@@ -15,7 +15,9 @@ struct PlayerConstants {
 	char pad028[0x3C - 0x28];
 	f32 x_smash_threshold;
 	s32 x_smash_frames;
-	char pad044[0x70 - 0x44];
+	char pad044[0x58 - 0x44];
+	f32 run_threshold;
+	char pad05C[0x70 - 0x5C];
 	f32 y_smash_threshold;
 	s32 y_smash_frames;
 	char pad078[0x90 - 0x78];

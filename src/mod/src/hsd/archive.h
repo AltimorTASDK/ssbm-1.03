@@ -48,6 +48,11 @@ struct HSD_Archive {
 	void *top_ptr;
 };
 
+struct HSD_RawArchive {
+	HSD_ArchiveHeader header;
+	u8 data[];
+};
+
 struct ArchiveModel {
 	HSD_JObjDesc *joint;
 	HSD_AnimJoint *animjoint;
