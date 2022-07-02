@@ -521,6 +521,7 @@ bool PlayerBlock_ShouldDisplayPortTag(s32 slot);
 void PlayerBlock_AddTotalSDIDistance(s32 slot, f32 x, f32 y);
 
 SubactionInfo *Player_GetSubactionInfo(const Player *player, s32 subaction);
+HSD_FigaTree *Player_GetFigaTree(const Player *player, s32 subaction);
 
 PlayerBlockStats *PlayerBlock_GetStats(s32 slot);
 s32 PlayerBlockStats_GetActionStat(const PlayerBlockStats *stats, u32 index);
