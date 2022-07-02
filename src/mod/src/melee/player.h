@@ -26,7 +26,7 @@ enum CID {
 	CID_Pikachu,
 	CID_Samus,
 	CID_Yoshi,
-	CID_Jigglypuff,
+	CID_Puff,
 	CID_Mewtwo,
 	CID_Luigi,
 	CID_Marth,
