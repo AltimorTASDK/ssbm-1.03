@@ -10,7 +10,7 @@ bool should_suppress_squatrv(const HSD_GObj *gobj)
 		return false;
 
 	const auto *player = gobj->get<Player>();
-	
+
 	if (Player_IsCPUControlled(player))
 		return false;
 
@@ -21,7 +21,7 @@ bool should_suppress_squatrv(const HSD_GObj *gobj)
 	// Extend window to 2f to match 3f dbooc
 	if (player->input.stick_x_hold_time >= 2)
 		return false;
-		
+
 	// Must be rim coord (quarter circle motion)
 	if (!is_rim_coord(player->input.stick))
 		return false;
@@ -30,7 +30,7 @@ bool should_suppress_squatrv(const HSD_GObj *gobj)
 	// This would be 6000, but 5900 avoids an ICs desync.
 	if (player->input.stick.y > -.5900f)
 		return false;
-	
+
 	return true;
 }
 
@@ -45,25 +45,25 @@ extern "C" bool hook_Interrupt_TurnOrDash(HSD_GObj *gobj)
 {
 	if (orig_Interrupt_TurnOrDash(gobj))
 		return true;
-	
+
 	if (get_ucf_type() == ucf_type::ucf)
 		return false;
 
 	auto *player = gobj->get<Player>();
-	
+
 	if (Player_IsCPUControlled(player))
 		return false;
 
-	// DBOOC only
+	// DOOC only
 	if (player->action_state != AS_SquatWait)
 		return false;
-		
-	// Check xsmash back with 3f window
+
+	// Check xsmash with 3f window
 	if (player->input.stick_x_hold_time >= 3)
 		return false;
-		
+
 	const auto forward_x = player->input.stick.x * player->direction;
-		
+
 	if (forward_x >= plco->x_smash_threshold)
 		AS_020_Dash(gobj, true);
 	else if (-forward_x >= plco->x_smash_threshold)
