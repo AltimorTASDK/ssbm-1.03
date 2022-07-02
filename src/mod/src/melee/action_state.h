@@ -351,7 +351,7 @@ enum ActionState {
 };
 
 struct ActionStateInfo {
-	u32 subaction;
+	s32 subaction;
 	u32 stat_flags;
 	u8 flags1;
 	u8 flags2;

@@ -150,7 +150,40 @@ struct CharacterStats {
 	s32 jumps;
 	char pad05C[0x84 - 0x5C];
 	f32 tilt_turn_frames;
-	char pad088[0x1E0 - 0x88];
+	char pad088[0x184 - 0x88];
+};
+
+struct ItemGrabBox {
+	f32 offset_x;
+	f32 offset_y;
+	f32 width;
+	f32 height;
+};
+
+struct JostleBox {
+	f32 size;
+	f32 size_front;
+};
+
+struct MultiJumpStats {
+	s32 turn_frames;
+	f32 turn_threshold;
+	f32 x_impulse;
+	f32 accel_mult;
+	f32 speed_mult;
+	f32 y_impulse[5];
+	s32 state_count;
+	s32 start_state;
+	// Used when Kirby has a transformation with a helmet
+	s32 start_state_helmet;
+};
+
+struct ExtraStats {
+	ItemGrabBox item_grab_box[3];
+	JostleBox jostle;
+	void *dk_stats;
+	MultiJumpStats *multijump_stats;
+	char pad040[0x5C - 0x40];
 };
 
 struct Player {
@@ -161,9 +194,13 @@ struct Player {
 	u32 character_id;
 	u32 spawn_count;
 	u8 slot;
-	u32 action_state;
-	u32 subaction;
-	char pad0018[0x2C - 0x18];
+	s32 action_state;
+	s32 subaction;
+	u32 max_common_as_index;
+	struct ActionStateInfo *common_as_table;
+	struct ActionStateInfo *character_as_table;
+	SubactionInfo *subaction_table;
+	struct AnimationInfo *animation_info_table;
 	f32 direction;
 	f32 model_direction;
 	f32 initial_scale;
@@ -190,6 +227,7 @@ struct Player {
 	char pad0100[0x10C - 0x100];
 	CharacterDat *char_dat;
 	CharacterStats char_stats;
+	ExtraStats extra_stats;
 	char pad02F0[0x3E0 - 0x2F0];
 	u32 physics_joint_count;
 	FtCmdState ftcmd_state;
@@ -256,7 +294,10 @@ struct Player {
 	s16 damage_shake_frames;
 	char pad18FC[0x1900 - 0x18FC];
 	vec2 hit_ground_normal;
-	char pad1908[0x1974 - 0x1908];
+	char pad1908[0x1968 - 0x1908];
+	u8 jumps_used;
+	u8 walljump_count;
+	char pad196A[0x1974 - 0x196A];
 	HSD_GObj *held_item;
 	char pad1978[0x1988 - 0x1978];
 	u32 body_state_subaction;
@@ -369,7 +410,27 @@ struct Player {
 	};
 	u8 flags9;
 	u8 flags10;
-	u8 flags11;
+	struct {
+#ifdef PAL
+		u8 flags11_80 : 1;
+		u8 flags11_40 : 1;
+		u8 multijump : 1;
+		u8 flags11_10 : 1;
+		u8 flags11_08 : 1;
+		u8 flags11_04 : 1;
+		u8 flags11_02 : 1;
+		u8 flags11_01 : 1;
+#else
+		u8 flags11_80 : 1;
+		u8 multijump : 1;
+		u8 flags11_20 : 1;
+		u8 flags11_10 : 1;
+		u8 flags11_08 : 1;
+		u8 flags11_04 : 1;
+		u8 flags11_02 : 1;
+		u8 flags11_01 : 1;
+#endif
+	};
 	u8 flags12;
 #ifdef PAL
 	u8 flags13;
@@ -459,7 +520,7 @@ u32 PlayerBlock_GetSlotType(s32 slot);
 bool PlayerBlock_ShouldDisplayPortTag(s32 slot);
 void PlayerBlock_AddTotalSDIDistance(s32 slot, f32 x, f32 y);
 
-SubactionInfo *Player_GetSubactionInfo(const Player *player, u32 index);
+SubactionInfo *Player_GetSubactionInfo(const Player *player, s32 subaction);
 
 PlayerBlockStats *PlayerBlock_GetStats(s32 slot);
 s32 PlayerBlockStats_GetActionStat(const PlayerBlockStats *stats, u32 index);
