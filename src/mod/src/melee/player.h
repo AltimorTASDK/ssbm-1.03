@@ -148,7 +148,9 @@ struct CharacterStats {
 	f32 jumpsquat;
 	char pad03C[0x58 - 0x3C];
 	s32 jumps;
-	char pad05C[0x1E0 - 0x5C];
+	char pad05C[0x84 - 0x5C];
+	f32 tilt_turn_frames;
+	char pad088[0x1E0 - 0x88];
 };
 
 struct Player {
