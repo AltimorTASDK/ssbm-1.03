@@ -47,7 +47,13 @@ struct PlayerConstants {
 	s32 spot_dodge_stick_frames;
 	f32 roll_stick_threshold;
 	s32 roll_stick_frames;
-	char pad324[0x4B0 - 0x324];
+	char pad324[0x480 - 0x324];
+	f32 pass_ledge_threshold;
+	char pad484[0x494 - 0x484];
+	f32 ledge_deadzone;
+	s32 ledge_regrab_timer;
+	s32 ledge_iframes;
+	char pad4A0[0x4B0 - 0x4A0];
 	f32 sdi_stick_threshold;
 	s32 sdi_stick_frames;
 	f32 sdi_distance;
