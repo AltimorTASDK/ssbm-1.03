@@ -40,6 +40,7 @@ struct PreloadEntry {
 	u8 pad005;
 	u16 entry_num;
 	u16 pad008;
+	u16 pad00A;
 	u32 size;
 	HSD_AllocEntry *raw_data;
 	HSD_AllocEntry *archive;
