@@ -28,12 +28,12 @@ struct [[gnu::packed]] config_values<config_version::a1> {
 template<>
 struct [[gnu::packed]] config_values<config_version::a2> : config_values<config_version::a1> {
 	// Added in A2
-	config_version version    = config_version::current;
-	u8 ledge_grab_limit       = 0;
-	u8 air_time_limit         = 0;
-	u8 stock_time_limit       = 8;
-	ucf_type controller_fix   = ucf_type::hax;
-	sss_type stage_mods = sss_type::all;
+	config_version version  = config_version::current;
+	u8 ledge_grab_limit     = 0;
+	u8 air_time_limit       = 0;
+	u8 stock_time_limit     = 8;
+	ucf_type controller_fix = ucf_type::hax;
+	sss_type stage_mods     = sss_type::all;
 };
 
 template<>
