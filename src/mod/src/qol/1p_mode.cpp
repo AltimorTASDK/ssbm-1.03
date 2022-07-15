@@ -51,13 +51,13 @@ extern "C" void hook_Camera_GetBounds(CameraBounds *out, CameraMovement *movemen
 	const auto limits_max = vec2(Stage_GetCameraLimitRight(), Stage_GetCameraLimitTop());
 	const auto center = (limits_min + limits_max) / 2;
 
-	constexpr auto limit_scale = .75f;
+	constexpr auto limit_scale = 0.75f;
 	const auto scaled_min = lerp(center, limits_min, limit_scale);
 	const auto scaled_max = lerp(center, limits_max, limit_scale);
 	const auto new_min = vec2::min(out->min, scaled_min);
 	const auto new_max = vec2::max(out->max, scaled_max);
 
-	constexpr auto lerp_strength = .5f;
+	constexpr auto lerp_strength = 0.5f;
 	out->min = lerp(out->min, new_min, lerp_strength);
 	out->max = lerp(out->max, new_max, lerp_strength);
 }

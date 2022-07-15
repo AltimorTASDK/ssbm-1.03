@@ -64,7 +64,7 @@ inline bool check_ucf_xsmash(const Player *player)
 constexpr int abs_coord_to_int(float x)
 {
 	// Small bias converts Nana coords back to the corresponding Popo coords
-	return static_cast<int>(std::abs(x) * 80 - .0001f) + 1;
+	return static_cast<int>(std::abs(x) * 80 - 0.0001f) + 1;
 }
 
 inline vec2 convert_hw_coords(const vec2b &hw)

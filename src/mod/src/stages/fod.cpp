@@ -59,9 +59,9 @@ extern "C" void hook_Stage_Fountain_UpdateReflection(HSD_GObj *gobj)
 	auto *cobj = MainCamera.gobj->get_hsd_obj<HSD_CObj>();
 	const auto inv_fov_tan = 1.f / std::tan(deg_to_rad(cobj->u.perspective.fov / 2.f));
 	const auto aspect = cobj->u.perspective.aspect;
-	const auto x_scale = inv_fov_tan * aspect * .49f;
-	const auto y_scale = inv_fov_tan * -.49f;
-	const auto z_scale = -.5f;
+	const auto x_scale = inv_fov_tan * aspect * 0.49f;
+	const auto y_scale = inv_fov_tan * -0.49f;
+	const auto z_scale = -0.5f;
 
 	const auto proj_matrix = matrix3x3 {
 		x_scale, 0.f,     z_scale,

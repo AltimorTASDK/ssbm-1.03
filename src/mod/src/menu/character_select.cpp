@@ -600,8 +600,8 @@ static void create_watermark()
 
 	constexpr auto watermark_x = -2.9f;
 	constexpr auto watermark_y = 24.5f;
-	constexpr auto shadow_x = watermark_x + .2f;
-	constexpr auto shadow_y = watermark_y + .15f;
+	constexpr auto shadow_x = watermark_x + 0.2f;
+	constexpr auto shadow_y = watermark_y + 0.15f;
 
 	auto *shadow = Text_Create(0, 0, shadow_x, shadow_y, 0.f, 640.f, 480.f);
 	shadow->stretch.x = 0.0521f;

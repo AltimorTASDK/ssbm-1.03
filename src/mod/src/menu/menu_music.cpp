@@ -340,7 +340,7 @@ static void menu_music_gx(HSD_GObj *gobj, u32 pass)
 
 	constexpr auto offset_l = vec3(-2.5f, 7.625f, 17.f);
 	constexpr auto offset_r = offset_l * vec3(-1, 1, 1);
-	constexpr auto size = vec2(1.f, -.5f) * 2.f;
+	constexpr auto size = vec2(1.f, -0.5f) * 2.f;
 
 	auto &rs = render_state::get();
 	rs.reset_3d();
