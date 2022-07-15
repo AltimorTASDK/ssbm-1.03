@@ -39,7 +39,11 @@ struct [[gnu::packed]] config_values<config_version::a2> : config_values<config_
 template<>
 struct [[gnu::packed]] config_values<config_version::a3> : config_values<config_version::a2> {
 	// Added in A3/B3
+#ifdef TOURNAMENT
 	controls_type controls = controls_type::z_jump;
+#else
+	controls_type controls = controls_type::all;
+#endif
 };
 
 struct [[gnu::packed]] saved_config : config_values<config_version::current> {
