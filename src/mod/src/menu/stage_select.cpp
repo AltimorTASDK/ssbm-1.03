@@ -48,7 +48,7 @@ enum IconID {
 
 struct StageSelectIcon {
 	HSD_JObj *jobj;
-	u32 pad004;
+	s32 random_cooldown;
 	u8 unlocked;
 	u8 anim_frame;
 	u8 stage_index;
