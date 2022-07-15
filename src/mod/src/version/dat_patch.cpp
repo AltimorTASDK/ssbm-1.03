@@ -37,6 +37,7 @@ struct PreloadEntry {
 	u8 heap;
 	u8 load_state;
 	u8 pad004;
+	u8 pad005;
 	u16 entry_num;
 	u16 pad008;
 	u32 size;
