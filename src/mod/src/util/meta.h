@@ -126,13 +126,6 @@ constexpr auto for_range_product(auto &&callable, auto &&...args)
 	}, tuple_product(constant_range<N>()...));
 }
 
-// Replaces empty tuples with void.
-constexpr auto tuple_or_void(auto &&tuple)
-{
-	if constexpr (sizeof_tuple<decltype(tuple)> != 0)
-		return std::move(tuple);
-}
-
 // Make a tuple with a given value repeated N times.
 template<size_t N>
 constexpr auto fill_tuple(auto &&value)
@@ -210,7 +203,7 @@ constexpr auto zip(auto &&...tuples)
 }
 
 // Given a tuple of tuples, unpack the values of all contained tuples into a single continuous tuple
-constexpr auto chain(auto &&tuple)
+constexpr auto tuple_chain(auto &&tuple)
 {
 	return std::apply([](auto &&...tuples) {
 		return std::tuple_cat(tuples...);
@@ -218,18 +211,17 @@ constexpr auto chain(auto &&tuple)
 }
 
 // Use std::apply with multiple argument tuples, returning a tuple of results.
-// void results are omitted from the tuple. If no results are returned,
-// this function returns void.
+// void results are omitted from the tuple.
 constexpr auto apply_multi(auto &&callable, auto &&...tuples)
 {
-	return tuple_or_void(std::tuple_cat([&] {
+	return std::tuple_cat([&] {
 		if constexpr (!is_void<decltype(std::apply(callable, tuples))>) {
 			return std::make_tuple(std::apply(callable, tuples));
 		} else {
 			std::apply(callable, tuples);
 			return std::make_tuple();
 		}
-	}()...));
+	}()...);
 }
 
 // Given tuple A of length 3, tuple B of length 2, and tuple C of length 4,
