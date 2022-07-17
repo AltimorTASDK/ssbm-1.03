@@ -5,6 +5,7 @@
 #include "hsd/mobj.h"
 #include "hsd/pad.h"
 #include "hsd/robj.h"
+#include "melee/match.h"
 #include "melee/menu.h"
 #include "melee/stage.h"
 #include "rules/values.h"
@@ -58,6 +59,18 @@ struct StageSelectIcon {
 };
 
 extern "C" struct {
+	u8 stage_picker;
+	u8 pad001;
+	u8 pad002;
+	u8 force_stage_id;
+	bool starting_game;
+	u8 pad005;
+	u8 pad006;
+	u8 pad007;
+	VsModeData data;
+} *SSSData;
+
+extern "C" struct {
 	ArchiveModel IconLarge;
 	ArchiveModel RandomIcon;
 	ArchiveModel IconSpecial;
@@ -79,16 +92,22 @@ extern "C" StageSelectIcon StageSelectIcons[Icon_Max];
 // Back up select region/select box size
 static auto oss_icons = std::to_array(StageSelectIcons);
 
+static bool is_teams()
+{
+	return SSSData->data.data.rules.is_teams;
+}
+
 static bool is_legal_stage(int id)
 {
 	switch (id) {
 	case Stage_BF:
 	case Stage_DL:
 	case Stage_FD:
-	case Stage_FoD:
 	case Stage_PS:
 	case Stage_YS:
 		return true;
+	case Stage_FoD:
+		return !is_teams();
 	default:
 		return false;
 	}
@@ -118,6 +137,10 @@ static void stage_icon_proc(HSD_GObj *gobj)
 	GObj_ProcAnimate(gobj);
 	HSD_JObjSetupMatrix(jobj);
 	jobj->flags |= USER_DEF_MTX;
+
+	// Move over by half an icon width to center if FoD is removed
+	if (is_teams())
+		jobj->position.x += 3.3f;
 
 	jobj->mtx.get<0, 3>() = jobj->position.x *= ICON_SCALE;
 	jobj->mtx.get<1, 3>() = jobj->position.y = 3.8f;
@@ -327,9 +350,13 @@ static void setup_stage_names()
 extern "C" void orig_SSS_Init(void *menu);
 extern "C" void hook_SSS_Init(void *menu)
 {
-	// Restore old icon select boxes for OSS
-	if (should_use_oss())
-		std::copy(oss_icons.begin(), oss_icons.end(), StageSelectIcons);
+	if (should_use_oss()) {
+		// Restore old icon select boxes for OSS
+		for (auto i = 0; i < Icon_Max; i++) {
+			StageSelectIcons[i].select_region_size = oss_icons[i].select_region_size;
+			StageSelectIcons[i].select_box_scale   = oss_icons[i].select_box_scale;
+		}
+	}
 
 	orig_SSS_Init(menu);
 
@@ -346,7 +373,7 @@ extern "C" void hook_SSS_Init(void *menu)
 
 	// Create a matanimjoint to apply the top row of IconDouble to other types of icons. This
 	// has to be done because the top row's matanimjoint is the *2nd* child of the root.
-	const HSD_MatAnimJoint matanim_double_top_row = {
+	const HSD_MatAnimJoint matanim_double = {
 		.child = MnSlMapModels->IconDouble.matanim_joint->child->next,
 		.next = nullptr,
 		.matanim = nullptr
@@ -359,12 +386,18 @@ extern "C" void hook_SSS_Init(void *menu)
 	HSD_JObj *icon_joints[7];
 	HSD_JObjGetTree<7>(position_jobj, icon_joints);
 
-	setup_icon(&StageSelectIcons[Icon_BF],  icon_joints[1], matanim_special,         2.f);
-	setup_icon(&StageSelectIcons[Icon_DL],  icon_joints[2], matanim_special,         4.f);
-	setup_icon(&StageSelectIcons[Icon_FD],  icon_joints[3], matanim_special,         3.f);
-	setup_icon(&StageSelectIcons[Icon_FoD], icon_joints[4], &matanim_double_top_row, 7.f);
-	setup_icon(&StageSelectIcons[Icon_PS],  icon_joints[5], &matanim_double_top_row, 9.f);
-	setup_icon(&StageSelectIcons[Icon_YS],  icon_joints[6], &matanim_double_top_row, 6.f);
+	setup_icon(&StageSelectIcons[Icon_BF], icon_joints[1], matanim_special, 2.f);
+	setup_icon(&StageSelectIcons[Icon_DL], icon_joints[2], matanim_special, 4.f);
+	setup_icon(&StageSelectIcons[Icon_FD], icon_joints[3], matanim_special, 3.f);
+
+	if (!is_teams()) {
+		setup_icon(&StageSelectIcons[Icon_FoD], icon_joints[4], &matanim_double, 7.f);
+		setup_icon(&StageSelectIcons[Icon_PS],  icon_joints[5], &matanim_double, 9.f);
+		setup_icon(&StageSelectIcons[Icon_YS],  icon_joints[6], &matanim_double, 6.f);
+	} else {
+		setup_icon(&StageSelectIcons[Icon_PS],  icon_joints[4], &matanim_double, 9.f);
+		setup_icon(&StageSelectIcons[Icon_YS],  icon_joints[5], &matanim_double, 6.f);
+	}
 
 	// Hide non-legal stages
 	for (auto i = 0; i < Icon_Random; i++) {
