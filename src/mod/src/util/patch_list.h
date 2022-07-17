@@ -9,7 +9,7 @@
 // Store patches to be applied by patch_dol.py
 #define PATCH_LIST(...) \
 	[[gnu::section(".patches"), gnu::used]] \
-	static constinit auto CONCAT(patches, __COUNTER__) = patch_list(__VA_ARGS__)
+	static constinit auto CONCAT(patches, __COUNTER__) = static_patch_list(__VA_ARGS__)
 
 template<typename T, typename U>
 struct [[gnu::packed]] patch_entry {
@@ -19,7 +19,7 @@ struct [[gnu::packed]] patch_entry {
 };
 
 template<typename ...T, typename ...U>
-inline constexpr auto patch_list(const std::pair<T*, U> &...patches)
+inline constexpr auto static_patch_list(const std::pair<T*, U> &...patches)
 {
 	return std::make_tuple(patch_entry {
 		patches.first,
@@ -31,11 +31,12 @@ inline constexpr auto patch_list(const std::pair<T*, U> &...patches)
 // Apply patches in constructor
 #define PATCH_LIST(...) \
 	[[gnu::used]] \
-	static const auto CONCAT(patches, __COUNTER__) = patch_list { __VA_ARGS__ }
+	static const auto CONCAT(patches, __COUNTER__) = runtime_patch_list { __VA_ARGS__ }
+#endif
 
-struct patch_list {
+struct runtime_patch_list {
 	template<typename ...T, typename ...U>
-	patch_list(const std::pair<T*, U> &...patches)
+	runtime_patch_list(const std::pair<T*, U> &...patches)
 	{
 		([&] {
 			*(U*)patches.first = patches.second;
@@ -44,4 +45,3 @@ struct patch_list {
 		}(), ...);
 	}
 };
-#endif

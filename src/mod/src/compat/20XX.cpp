@@ -24,7 +24,7 @@ extern "C" bool is_20XX()
 	if (!is_20XX())
 		return;
 
-	patch_list {
+	runtime_patch_list {
 		// Remove 20XX's results screen hook
 		// addi r27, r4, 0
 		std::pair { Scene_Match_Exit+0x10,   0x3B640000u },
