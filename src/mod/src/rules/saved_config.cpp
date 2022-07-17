@@ -1,5 +1,6 @@
 #include "rules/saved_config.h"
 #include "rules/values.h"
+#include "util/enum_math.h"
 #include "util/gc/memcard.h"
 
 static constexpr char filename[] = "103Config";
@@ -33,12 +34,16 @@ void saved_config::load()
 	using v = config_version;
 
 	// Copy values for the highest matching version
-	if (read->version >= v::a3)
-		(config_values<v::a3>&)*this = (config_values<v::a3>&)*read;
-	else if (read->version >= v::a2)
-		(config_values<v::a2>&)*this = (config_values<v::a2>&)*read;
+	if (read->version >= v::v3)
+		(config_values<v::v3>&)*this = (config_values<v::v3>&)*read;
+	else if (read->version >= v::v2)
+		(config_values<v::v2>&)*this = (config_values<v::v2>&)*read;
 	else
-		(config_values<v::a1>&)*this = (config_values<v::a1>&)*read;
+		(config_values<v::v1>&)*this = (config_values<v::v1>&)*read;
+
+	// Adjust for new enum member
+	if (read->version < v::v4 && controls >= controls_type::no_angles)
+		controls++;
 
 #ifndef FULL_SSS_ROTATOR
 	if (stage_mods == sss_type::none)

@@ -165,6 +165,8 @@ constexpr auto controls_descriptions = multi_array {
 	make_description_text<"Allow the use of Z jump.">(),
 	make_description_text<"Allow the use of Z jump and",
 	                      "perfect angles.">(),
+	make_description_text<"Allow the use of all controls",
+	                      "except perfect angles.">(),
 	make_description_text<"Allow the use of all controls.">()
 };
 
@@ -375,8 +377,14 @@ static void set_value_anim(ExtraRulesMenuData *data, int index)
 	auto *jobj = data->value_jobj_trees[index].tree[0];
 	const auto value = data->values[index];
 
-	const auto anim_index = value == 0 ? get_model_max_value(index) : value - 1;
-	HSD_JObjReqAnimAll(jobj, RuleValueAnimLoops[anim_index].start);
+	if (index == ExtraRule_Controls) {
+		// Shift value for controls to allow for 4-value rotator on 5-value model
+		HSD_JObjReqAnimAll(jobj, RuleValueAnimLoops[value].start);
+	} else {
+		const auto anim_index = value == 0 ? get_model_max_value(index) : value - 1;
+		HSD_JObjReqAnimAll(jobj, RuleValueAnimLoops[anim_index].start);
+	}
+
 	HSD_JObjAnimAll(jobj);
 }
 
@@ -618,6 +626,10 @@ extern "C" const HSD_AnimLoop &hook_Menu_GetExtraRuleValueAnimLoop(u8 index, u8 
 
 	// Use max value corresponding to 5-value model for controls
 	const auto max = get_model_max_value(index);
+
+	// Shift value for controls to allow for 4-value rotator on 5-value model
+	if (index == ExtraRule_Controls)
+		value++;
 
 	if (!scroll_right)
 		return RuleValueAnimLoops[max - value + 5];

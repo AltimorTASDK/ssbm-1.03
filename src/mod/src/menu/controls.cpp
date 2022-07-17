@@ -23,7 +23,7 @@ enum class option {
 
 	z_jump = min,
 #ifndef TOURNAMENT
-	perfect_angles,
+	angles,
 	c_up,
 	c_horizontal,
 	c_down,
@@ -48,6 +48,8 @@ struct TournamentModels {
 };
 
 using scene_type = ArchiveScene<TournamentModels>;
+
+using ctype = controls_type;
 
 constexpr auto max_toggle_count = std::to_underlying(option::max_toggle);
 
@@ -174,9 +176,10 @@ static struct {
 	{
 #ifndef TOURNAMENT
 		switch (get_controls()) {
-		case controls_type::z_jump:   max_toggle = option::z_jump + 1;         break;
-		case controls_type::z_angles: max_toggle = option::perfect_angles + 1; break;
-		case controls_type::all:      max_toggle = option::max_toggle;         break;
+		case ctype::z_jump:    max_toggle = option::z_jump + 1; break;
+		case ctype::z_angles:  max_toggle = option::angles + 1; break;
+		case ctype::no_angles: max_toggle = option::max_toggle; break;
+		case ctype::all:       max_toggle = option::max_toggle; break;
 		}
 #else
 		max_toggle = option::z_jump + 1;
@@ -196,6 +199,15 @@ static struct {
 	auto *get_toggle(option index)
 	{
 		return &toggles[std::to_underlying(index)];
+	}
+
+	bool is_option_enabled(option index)
+	{
+#ifndef TOURNAMENT
+		return index != option::angles || get_controls() != controls_type::no_angles;
+#else
+		return true;
+#endif
 	}
 
 	void update_value_text(int index)
@@ -232,24 +244,28 @@ static struct {
 
 	void scroll_up()
 	{
-		if (selected == option::min)
-			set_selected(option::ok);
-		else if (selected >= max_toggle)
-			set_selected(max_toggle - 1);
-		else
-			set_selected(selected - 1);
+		do {
+			if (selected == option::min)
+				set_selected(option::ok);
+			else if (selected >= max_toggle)
+				set_selected(max_toggle - 1);
+			else
+				set_selected(selected - 1);
+		} while (!is_option_enabled(selected));
 
 		Menu_PlaySFX(MenuSFX_Scroll);
 	}
 
 	void scroll_down()
 	{
-		if (selected >= max_toggle)
-			set_selected(option::min);
-		else if (selected == max_toggle - 1)
-			set_selected(option::ok);
-		else
-			set_selected(selected + 1);
+		do {
+			if (selected >= max_toggle)
+				set_selected(option::min);
+			else if (selected == max_toggle - 1)
+				set_selected(option::ok);
+			else
+				set_selected(selected + 1);
+		} while (!is_option_enabled(selected));
 
 		Menu_PlaySFX(MenuSFX_Scroll);
 	}
@@ -311,13 +327,15 @@ static struct {
 			config->z_jump_bit == __builtin_ctz(Button_Y) ? 2 : 0;
 
 #ifndef TOURNAMENT
-		if (get_controls() == controls_type::z_jump)
+		if (get_controls() == ctype::z_jump)
 			return;
 
-		get_toggle(option::perfect_angles)->value =
-			config->perfect_angles ? 1 : 0;
+		if (get_controls() != ctype::no_angles) {
+			get_toggle(option::angles)->value =
+				config->perfect_angles ? 1 : 0;
+		}
 
-		if (get_controls() == controls_type::z_angles)
+		if (get_controls() == ctype::z_angles)
 			return;
 
 		get_toggle(option::c_up)->value =
@@ -345,15 +363,18 @@ static struct {
 		}[get_toggle(option::z_jump)->value];
 
 #ifndef TOURNAMENT
-		if (get_controls() == controls_type::z_jump)
+		if (get_controls() == ctype::z_jump)
 			return;
 
-		config->perfect_angles = std::array {
-			false,
-			true
-		}[get_toggle(option::perfect_angles)->value];
 
-		if (get_controls() == controls_type::z_angles)
+		if (get_controls() != ctype::no_angles) {
+			config->perfect_angles = std::array {
+				false,
+				true
+			}[get_toggle(option::angles)->value];
+		}
+
+		if (get_controls() == ctype::z_angles)
 			return;
 
 		config->c_up = std::array {
@@ -434,13 +455,14 @@ static HSD_GObj *create_model(ArchiveModelScene *model, GObjProcCallback callbac
 	return gobj;
 }
 
-static float get_y_index(auto index)
+static float get_y_index(option index)
 {
 #ifndef TOURNAMENT
 	switch (get_controls()) {
-	case controls_type::z_jump:   return 2.5f;               break;
-	case controls_type::z_angles: return (float)index + 2.f; break;
-	default:                      return (float)index;       break;
+	case ctype::z_jump:    return 2.5f;
+	case ctype::z_angles:  return (float)index + 2.f;
+	case ctype::no_angles: return (float)index + (index >= option::angles ? -0.5f : 0.5f);
+	default:               return (float)index;
 	}
 #else
 	return 2.5f;
@@ -514,6 +536,9 @@ static void update_selection(HSD_GObj *gobj)
 static void create_toggles()
 {
 	for (auto index = option::min; index < menu_state.max_toggle; index++) {
+		if (!menu_state.is_option_enabled(index))
+			continue;
+
 		const auto position = calc_toggle_y_position(index);
 
 		auto *arrows = create_model(scene->models->arrows, update_arrows);
@@ -575,17 +600,20 @@ static void create_text(int canvas)
 	Text_SetFromSIS(menu_state.description_text, 0);
 	menu_state.update_description();
 
-	for (auto index = 0; index < menu_state.max_toggle; index++) {
+	for (auto index = option::min; index < menu_state.max_toggle; index++) {
+		if (!menu_state.is_option_enabled(index))
+			continue;
+
 		const auto y_pos = 113.f + get_y_index(index) * 35.7f;
-		auto *toggle = &menu_state.toggles[index];
+		auto *toggle = &menu_state.toggles[std::to_underlying(index)];
 
 		toggle->label_text = Text_Create(0, canvas, 123, y_pos, 0, 360, 40);
 		Text_SetFromSIS(toggle->label_text, 0);
-		toggle->label_text->data = label_text_data[index];
+		toggle->label_text->data = label_text_data[std::to_underlying(index)];
 
 		toggle->value_text = Text_Create(0, canvas, 343, y_pos, 0, 360, 40);
 		Text_SetFromSIS(toggle->value_text, 0);
-		menu_state.update_value_text(index);
+		menu_state.update_value_text(std::to_underlying(index));
 	}
 }
 

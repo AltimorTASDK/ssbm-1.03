@@ -33,6 +33,9 @@ struct controller_config {
 	{
 #ifndef TOURNAMENT
 		switch (get_controls()) {
+		case controls_type::no_angles:
+			perfect_angles   = defaults.perfect_angles;
+			break;
 		case controls_type::z_jump:
 			perfect_angles   = defaults.perfect_angles;
 		case controls_type::z_angles:
@@ -44,6 +47,7 @@ struct controller_config {
 #endif
 	}
 
+#ifdef OLD_CSS_TOGGLES
 	bool is_illegal() const
 	{
 #ifndef TOURNAMENT
@@ -56,6 +60,7 @@ struct controller_config {
 		return false;
 #endif
 	}
+#endif
 };
 
 inline const controller_config controller_config::defaults;
