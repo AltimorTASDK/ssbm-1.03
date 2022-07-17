@@ -14,7 +14,7 @@
 
 render_state render_state::instance;
 
-static void write_vector(const vector_type auto &vector)
+static void write_vector(const Vector auto &vector)
 {
 	std::apply([](auto ...values) { gx_fifo->write(values...); }, vector.elems());
 }

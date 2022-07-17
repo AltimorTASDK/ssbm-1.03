@@ -12,13 +12,7 @@ template<typename base>
 class vec_impl;
 
 template<typename T>
-constexpr auto is_vector_type = false;
-
-template<typename T>
-constexpr auto is_vector_type<vec_impl<T>> = true;
-
-template<typename T>
-concept vector_type = is_vector_type<T>;
+concept Vector = requires(T t) { []<typename U>(vec_impl<U>){}(t); };
 
 template<typename base>
 class vec_impl : public base {
@@ -137,7 +131,7 @@ public:
 	}
 
 	// Create a new vector by applying a function to each component
-	template<vector_type T = vec_impl>
+	template<Vector T = vec_impl>
 	constexpr T map(auto &&callable) const
 	{
 		return T(foreach(callable));

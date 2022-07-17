@@ -28,9 +28,9 @@ struct vertex_pos_clr : vertex {
 
 	vec3 position;
 	color_rgba color;
-	
+
 	vertex_pos_clr(vec3 position, color_rgba color) : position(position), color(color) {}
-	
+
 	static void set_format();
 	void write() const;
 };
@@ -40,9 +40,9 @@ struct vertex_pos_uv : vertex {
 
 	vec3 position;
 	uv_coord uv;
-	
+
 	vertex_pos_uv(vec3 position, uv_coord uv) : position(position), uv(uv) {}
-	
+
 	static void set_format();
 	void write() const;
 };
@@ -53,29 +53,29 @@ struct vertex_pos_clr_uv : vertex {
 	vec3 position;
 	color_rgba color;
 	uv_coord uv;
-	
+
 	vertex_pos_clr_uv(vec3 position, color_rgba color, uv_coord uv) :
 		position(position), color(color), uv(uv) {}
-	
+
 	static void set_format();
 	void write() const;
 };
 
 template<typename T>
-concept vertex_format = std::is_base_of_v<vertex, T>;
+concept VertexFormat = std::is_base_of_v<vertex, T>;
 
 vec3 alignment_offset(const vec2 &size, align alignment);
 
 class render_state {
 	static constexpr auto resolution = vec2(640, 480);
-	
+
 	static render_state instance;
 
 	int current_vertex_fmt = -1;
 	GXTexObj *current_tex_obj = nullptr;
 	std::array<u32, 4> current_scissor;
 	std::stack<std::array<u32, 4>> scissor_stack;
-	
+
 public:
 	static render_state &get()
 	{
@@ -85,7 +85,7 @@ public:
 	void reset();
 	void reset_2d();
 	void reset_3d();
-	
+
 	void set_scissor(u32 x, u32 y, u32 w, u32 h);
 	void push_scissor();
 	void pop_scissor();
@@ -103,7 +103,7 @@ public:
 	{
 		restrict_scissor(origin.x, origin.y, size.x, size.y);
 	}
-	
+
 	void load_tex_obj(GXTexObj *obj)
 	{
 		if (obj == current_tex_obj)
@@ -113,7 +113,7 @@ public:
 		GX_LoadTexObj(obj, GX_TEXMAP0);
 	}
 
-	template<vertex_format T>
+	template<VertexFormat T>
 	void draw_primitive(u8 prim_type, const std::vector<T> &vertices)
 	{
 		// Ensure correct vertex desc is set
@@ -127,7 +127,7 @@ public:
 			vertex.write();
 	}
 
-	template<vertex_format T>
+	template<VertexFormat T>
 	void draw_quads(const std::vector<T> &vertices)
 	{
 		draw_primitive(GX_QUADS, vertices);
