@@ -13,12 +13,12 @@ constexpr auto mod = std::modulus();
 constexpr auto neg = std::negate();
 
 // Assignment operators
-constexpr auto eq     = [](auto &a, auto &&b) { return a  = b; };
-constexpr auto add_eq = [](auto &a, auto &&b) { return a += b; };
-constexpr auto sub_eq = [](auto &a, auto &&b) { return a -= b; };
-constexpr auto mul_eq = [](auto &a, auto &&b) { return a *= b; };
-constexpr auto div_eq = [](auto &a, auto &&b) { return a /= b; };
-constexpr auto mod_eq = [](auto &a, auto &&b) { return a %= b; };
+constexpr auto eq     = [](auto &a, auto &&b) -> decltype(auto) { return a  = b; };
+constexpr auto add_eq = [](auto &a, auto &&b) -> decltype(auto) { return a += b; };
+constexpr auto sub_eq = [](auto &a, auto &&b) -> decltype(auto) { return a -= b; };
+constexpr auto mul_eq = [](auto &a, auto &&b) -> decltype(auto) { return a *= b; };
+constexpr auto div_eq = [](auto &a, auto &&b) -> decltype(auto) { return a /= b; };
+constexpr auto mod_eq = [](auto &a, auto &&b) -> decltype(auto) { return a %= b; };
 
 // Allow min/max to be passed without overloading issues
 constexpr auto min = [](auto &a, auto &&b) { return std::min(a, b); };
