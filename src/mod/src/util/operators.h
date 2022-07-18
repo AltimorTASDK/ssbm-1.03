@@ -5,12 +5,12 @@
 namespace operators {
 
 // Aliases for the generic versions of the STL operator functors
-constexpr auto add = std::plus<>();
-constexpr auto sub = std::minus<>();
-constexpr auto mul = std::multiplies<>();
-constexpr auto div = std::divides<>();
-constexpr auto mod = std::modulus<>();
-constexpr auto neg = std::negate<>();
+constexpr auto add = std::plus();
+constexpr auto sub = std::minus();
+constexpr auto mul = std::multiplies();
+constexpr auto div = std::divides();
+constexpr auto mod = std::modulus();
+constexpr auto neg = std::negate();
 
 // Assignment operators
 constexpr auto eq     = [](auto &a, auto &&b) { return a  = b; };
