@@ -113,7 +113,7 @@ extern "C" bool is_faster_melee()
 	return faster_melee;
 }
 
-static void post_retrace_callback(u32 retrace_count)
+void post_retrace_callback(u32 retrace_count)
 {
 	if (get_latency() == latency_mode::crt) {
 		// Fetch on retrace in CRT mode
@@ -155,9 +155,11 @@ extern "C" bool hook_SI_GetResponseRaw(s32 chan)
 		poll_index = 0;
 
 #ifdef POLL_DEBUG
-	poll_line[poll_index] = current_poll_line;
-	poll_interval[poll_index] = current_poll_time - poll_time;
-	poll_time = current_poll_time;
+	if (poll_index < 2) {
+		poll_line[poll_index] = current_poll_line;
+		poll_interval[poll_index] = current_poll_time - poll_time;
+		poll_time = current_poll_time;
+	}
 #endif
 
 	if (poll_index == 0 && get_latency() != latency_mode::crt) {
