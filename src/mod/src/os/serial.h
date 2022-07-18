@@ -155,7 +155,7 @@ enum SIKey
 };
 
 union SIPoll {
-	u32 raw;
+	u32 word;
 	struct {
 		u32 : 6;
 		u32 x : 10;
