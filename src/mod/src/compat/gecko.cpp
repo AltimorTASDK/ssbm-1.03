@@ -1,6 +1,7 @@
 #if defined(NTSC102) && defined(DOL)
 
 #include "hsd/video.h"
+#include "os/serial.h"
 #include "latency/polling.h"
 #include "melee/rules.h"
 #include "rules/saved_config.h" // Must be included to ensure config is already initialized
@@ -78,6 +79,7 @@ struct u32_patch_list {
 	};
 
 	PADSetSamplingCallback(nullptr);
+	SI_EnablePollingInterrupt(true);
 	HSD_VISetUserPostRetraceCallback(post_retrace_callback);
 }
 
