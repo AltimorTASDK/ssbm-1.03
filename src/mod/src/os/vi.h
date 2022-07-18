@@ -12,14 +12,24 @@ union display_interrupt {
 		u32 : 6;
 		u32 position_h : 10;
 	} bits;
-	u32 word;
+	u32 raw;
 };
 
 struct vi_regdef {
 	char pad000[0x2C];
-	u16 scan_h;
 	u16 scan_v;
-	display_interrupt display_int[4];
+	u16 scan_h;
+	display_interrupt pre_retrace;
+	display_interrupt post_retrace;
+	display_interrupt interrupt2;
+	display_interrupt interrupt3;
+	char pad040[0x48 - 0x40];
+	union {
+		struct {
+			u32 : 1;
+		};
+		u16 raw;
+	} picture_config;
 };
 
 inline volatile auto *vi_regs = (vi_regdef*)0xCC002000;
