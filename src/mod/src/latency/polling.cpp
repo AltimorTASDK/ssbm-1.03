@@ -59,11 +59,11 @@ static bool checked_fm;
 
 static bool needs_depth_clear;
 
-static u32 frame_retrace_count;
-static u32 last_poll_retrace_count;
+static bool is_polling;
+
+static bool simulated_this_frame;
 static s32 poll_index;
 
-static u32 half_vb_retrace_count;
 static OSThreadQueue half_vb_thread_queue;
 
 static bool detect_fm_impl()
@@ -115,17 +115,18 @@ extern "C" bool is_faster_melee()
 
 void post_retrace_callback(u32 retrace_count)
 {
-	if (get_latency() == latency_mode::crt) {
-		// Fetch on retrace in CRT mode
-		PadFetchCallback();
-		return;
-	}
+	// Check if there were any poll interrupts this frame
+	if (poll_index == 0)
+		is_polling = false;
+	else
+		poll_index = 0;
 
-	// Check poll retrace count as well to catch Dolphin/Nintendont hacks
-	if (Si.poll.enable != 0 || last_poll_retrace_count >= retrace_count - 1)
+	simulated_this_frame = false;
+
+	// Fetch on retrace in CRT or in LCD/LOW if there are no poll interrupts
+	if (get_latency() != latency_mode::crt && is_polling)
 		return;
 
-	// Fetch on retrace in LCD/LOW if there are no SI reads
 	PadFetchCallback();
 
 	// Wake game thread when polling is disabled so it doesn't hang
@@ -146,16 +147,9 @@ extern "C" bool hook_SI_GetResponseRaw(s32 chan)
 		return result;
 
 #ifdef POLL_DEBUG
-	const auto current_poll_time = OSGetTime();
-	const auto current_poll_line = VIGetCurrentLine();
-#endif
-	const auto current_retrace_count = VIGetRetraceCount();
-
-	if (current_retrace_count > last_poll_retrace_count)
-		poll_index = 0;
-
-#ifdef POLL_DEBUG
 	if (poll_index < 2) {
+		const auto current_poll_time = OSGetTime();
+		const auto current_poll_line = VIGetCurrentLine();
 		poll_line[poll_index] = current_poll_line;
 		poll_interval[poll_index] = current_poll_time - poll_time;
 		poll_time = current_poll_time;
@@ -167,11 +161,10 @@ extern "C" bool hook_SI_GetResponseRaw(s32 chan)
 		PadFetchCallback();
 	} else if (poll_index == Si.poll.y / 2 && get_latency() == latency_mode::lcd) {
 		// Delay processing (and audio+rumble) by half a frame on LCD
-		half_vb_retrace_count = current_retrace_count;
 		OSWakeupThread(&half_vb_thread_queue);
 	}
 
-	last_poll_retrace_count = current_retrace_count;
+	is_polling = true;
 	poll_index++;
 
 	return result;
@@ -202,13 +195,13 @@ extern "C" void scene_loop_start()
 	if (is_faster_melee())
 		return;
 
-	if (get_latency() != latency_mode::lcd || Si.poll.enable == 0)
+	if (get_latency() != latency_mode::lcd || !is_polling)
 		return;
 
 	const auto irq_enable = OSDisableInterrupts();
 
 	// Wait for 2nd poll to start processing in LCD mode unless we're already late
-	if (VIGetRetraceCount() != half_vb_retrace_count)
+	if (poll_index <= Si.poll.y / 2)
 		OSSleepThread(&half_vb_thread_queue);
 
 	OSRestoreInterrupts(irq_enable);
@@ -220,7 +213,7 @@ extern "C" void first_engine_frame()
 	frame_time = OSGetTime();
 	frame_line = VIGetCurrentLine();
 #endif
-	frame_retrace_count = VIGetRetraceCount();
+	simulated_this_frame = true;
 }
 
 extern "C" void orig_HSD_VICopyXFBASync(u32 pass);
@@ -237,7 +230,7 @@ extern "C" void hook_HSD_VICopyXFBASync(u32 pass)
 	const auto irq_enable = OSDisableInterrupts();
 
 	// Artifically induce VB if not on LOW latency
-	if (VIGetRetraceCount() == frame_retrace_count && get_latency() != latency_mode::low)
+	if (simulated_this_frame && get_latency() != latency_mode::low)
 		VIWaitForRetrace();
 
 	// Skip EFB copy if no XFB is ready and process a new frame instead
