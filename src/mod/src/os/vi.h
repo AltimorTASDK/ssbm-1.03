@@ -23,13 +23,6 @@ struct vi_regdef {
 	display_interrupt post_retrace;
 	display_interrupt interrupt2;
 	display_interrupt interrupt3;
-	char pad040[0x48 - 0x40];
-	union {
-		struct {
-			u32 : 1;
-		};
-		u16 raw;
-	} picture_config;
 };
 
 inline volatile auto *vi_regs = (vi_regdef*)0xCC002000;
