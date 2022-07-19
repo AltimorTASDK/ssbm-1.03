@@ -20,12 +20,9 @@ extern "C" void hook_PADRead(PADStatus *status)
 			continue;
 		}
 
-		const auto xy_bit = controller_configs[i].z_jump_bit;
-		constexpr auto z_bit = ButtonBit_Z;
-
 		// Swap X/Y bit with Z bit
-		if (xy_bit != 0)
-			status[i].buttons = (u16)bit_swap(status[i].buttons, xy_bit, z_bit);
+		if (const auto xy_bit = controller_configs[i].z_jump_bit; xy_bit != 0)
+			status[i].buttons = (u16)bit_swap(status[i].buttons, xy_bit, ButtonBit_Z);
 	}
 }
 
