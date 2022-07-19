@@ -25,6 +25,7 @@
 #include "util/melee/match.h"
 #include "util/melee/pad.h"
 #include "util/melee/text_builder.h"
+#include <bit>
 #include <cmath>
 #include <cstring>
 
@@ -313,7 +314,8 @@ static void z_jump_toggle(u8 port)
 			    || pad.buttons == (Button_Y | Button_Z);
 		},
 		[&] {
-			config->z_jump_bit = (u8)__builtin_ctz(pad.buttons & (Button_X | Button_Y));
+			config->z_jump_bit = (u8)std::countr_zero(pad.buttons & (Button_X |
+			                                                         Button_Y));
 		});
 }
 

@@ -3,6 +3,7 @@
 #include "hsd/pad.h"
 #include "util/melee/pad.h"
 #include "util/math.h"
+#include <bit>
 #include <numeric>
 #include <gctypes.h>
 
@@ -20,7 +21,7 @@ extern "C" void hook_PADRead(PADStatus *status)
 		}
 
 		const auto xy_bit = controller_configs[i].z_jump_bit;
-		constexpr auto z_bit = __builtin_ctz(Button_Z);
+		constexpr auto z_bit = ButtonBit_Z;
 
 		// Swap X/Y bit with Z bit
 		if (xy_bit != 0)

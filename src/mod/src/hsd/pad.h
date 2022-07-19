@@ -2,12 +2,17 @@
 
 #include "os/pad.h"
 #include "util/vector.h"
+#include <bit>
 #include <gctypes.h>
 
 constexpr auto PAD_QNUM = 5;
 
 enum HSD_Button {
-	Button_AnalogLR  = 0x80000000
+	Button_AnalogLR = 0x80000000
+};
+
+enum HSD_ButtonBit {
+	ButtonBit_AnalogLR = std::countr_zero((u32)Button_AnalogLR)
 };
 
 struct HSD_PadData {

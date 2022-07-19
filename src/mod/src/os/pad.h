@@ -1,6 +1,7 @@
 #pragma once
 
 #include "util/vector.h"
+#include <bit>
 #include <gctypes.h>
 
 enum Button {
@@ -18,6 +19,23 @@ enum Button {
 	Button_Y         = 0x0800,
 	Button_Start     = 0x1000,
 	Button_GetOrigin = 0x2000
+};
+
+enum ButtonBit {
+	ButtonBit_DPadLeft  = std::countr_zero((u32)Button_DPadLeft),
+	ButtonBit_DPadRight = std::countr_zero((u32)Button_DPadRight),
+	ButtonBit_DPadDown  = std::countr_zero((u32)Button_DPadDown),
+	ButtonBit_DPadUp    = std::countr_zero((u32)Button_DPadUp),
+	ButtonBit_Z         = std::countr_zero((u32)Button_Z),
+	ButtonBit_R         = std::countr_zero((u32)Button_R),
+	ButtonBit_L         = std::countr_zero((u32)Button_L),
+	ButtonBit_UseOrigin = std::countr_zero((u32)Button_UseOrigin),
+	ButtonBit_A         = std::countr_zero((u32)Button_A),
+	ButtonBit_B         = std::countr_zero((u32)Button_B),
+	ButtonBit_X         = std::countr_zero((u32)Button_X),
+	ButtonBit_Y         = std::countr_zero((u32)Button_Y),
+	ButtonBit_Start     = std::countr_zero((u32)Button_Start),
+	ButtonBit_GetOrigin = std::countr_zero((u32)Button_GetOrigin)
 };
 
 struct PADStatus {

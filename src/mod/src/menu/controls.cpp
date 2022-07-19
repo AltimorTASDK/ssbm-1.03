@@ -16,6 +16,7 @@
 #include "util/enum_math.h"
 #include "util/math.h"
 #include "util/melee/text_builder.h"
+#include <bit>
 #include <type_traits>
 
 enum class option {
@@ -323,8 +324,8 @@ static struct {
 		auto *config = &controller_configs[port];
 
 		get_toggle(option::z_jump)->value =
-			config->z_jump_bit == __builtin_ctz(Button_X) ? 1 :
-			config->z_jump_bit == __builtin_ctz(Button_Y) ? 2 : 0;
+			config->z_jump_bit == ButtonBit_X ? 1 :
+			config->z_jump_bit == ButtonBit_Y ? 2 : 0;
 
 #ifndef TOURNAMENT
 		if (get_controls() == ctype::z_jump)
@@ -357,9 +358,9 @@ static struct {
 		auto *config = &controller_configs[port];
 
 		config->z_jump_bit = (u8)std::array {
-			0,
-			__builtin_ctz(Button_X),
-			__builtin_ctz(Button_Y)
+			(u8)0,
+			(u8)ButtonBit_X,
+			(u8)ButtonBit_Y
 		}[get_toggle(option::z_jump)->value];
 
 #ifndef TOURNAMENT

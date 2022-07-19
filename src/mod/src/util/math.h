@@ -23,23 +23,6 @@ constexpr auto align_up(auto value, auto alignment)
 	return align_down(value + alignment - 1, alignment);
 }
 
-constexpr auto is_pow2(auto value)
-{
-	return value != 0 && (value & (value - 1)) == 0;
-}
-
-template<typename T>
-constexpr T prev_pow2(T value)
-{
-	return (T)(((std::make_unsigned_t<T>)-1 >> (__builtin_clz(value) + 1)) + 1);
-}
-
-template<typename T>
-constexpr T next_pow2(T value)
-{
-	return (T)(((std::make_unsigned_t<T>)-1 >> __builtin_clz(value - 1)) + 1);
-}
-
 constexpr auto bit_swap(auto value, auto i, auto j, int count = 1)
 {
 	const auto x = ((value >> i) ^ (value >> j)) & ((1 << count) - 1);
