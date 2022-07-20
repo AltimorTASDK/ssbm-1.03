@@ -25,6 +25,7 @@ enum GObjPLink {
 	GOBJ_PLINK_ITEM        = 9,
 	GOBJ_PLINK_UI          = 15,
 	GOBJ_PLINK_MENU_CAMERA = 18,
+	GOBJ_PLINK_DEV_TEXT    = 24,
 	GOBJ_PLINK_MENU_SCENE  = 26
 };
 

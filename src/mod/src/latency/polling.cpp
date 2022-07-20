@@ -400,7 +400,7 @@ extern "C" void hook_Scene_RunLoop(void(*think_callback)())
 	DevelopText_Print(text, "Latency reduction error");
 #endif // POLL_DEBUG
 
-	auto *gobj = GObj_Create(GOBJ_CLASS_UI, GOBJ_PLINK_UI, 0);
+	auto *gobj = GObj_Create(GOBJ_CLASS_UI, GOBJ_PLINK_DEV_TEXT, 0);
 	GObj_AddProc(gobj, update_text, 0);
 
 	orig_Scene_RunLoop(think_callback);
