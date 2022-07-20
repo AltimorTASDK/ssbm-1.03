@@ -16,14 +16,34 @@ extern "C" OSAlarm PadFetchAlarm;
 
 extern "C" void PadFetchCallback();
 
-#ifdef POLL_DEBUG
 constexpr auto TEXT_WIDTH = 24;
+#ifdef POLL_DEBUG
 #ifdef POLL_DEBUG_VERBOSE
 constexpr auto TEXT_HEIGHT = 13;
-#else
+#else // POLL_DEBUG_VERBOSE
 constexpr auto TEXT_HEIGHT = 3;
-#endif
+#endif // POLL_DEBUG_VERBOSE
+#else // POLL_DEBUG
+constexpr auto TEXT_HEIGHT = 1;
+#endif // POLL_DEBUG
 
+static bool faster_melee;
+static bool checked_fm;
+
+static bool needs_depth_clear;
+
+static bool is_polling;
+static u32 no_poll_frames;
+
+static bool simulated_this_frame;
+static s32 poll_index;
+
+static OSThreadQueue half_vb_thread_queue;
+
+static DevText *text;
+static char text_buf[TEXT_WIDTH * TEXT_HEIGHT * 2];
+
+#ifdef POLL_DEBUG
 static u32 poll_line[2];
 static u64 poll_interval[2];
 
@@ -49,22 +69,7 @@ static u64 efb_copy_poll_time[3];
 
 static u64 retrace_time;
 static u64 retrace_poll_time;
-
-static DevText *text;
-static char text_buf[TEXT_WIDTH * TEXT_HEIGHT * 2];
-#endif
-
-static bool faster_melee;
-static bool checked_fm;
-
-static bool needs_depth_clear;
-
-static bool is_polling;
-
-static bool simulated_this_frame;
-static s32 poll_index;
-
-static OSThreadQueue half_vb_thread_queue;
+#endif // POLL_DEBUG
 
 static bool detect_fm_impl()
 {
@@ -116,10 +121,13 @@ extern "C" bool is_faster_melee()
 void post_retrace_callback(u32 retrace_count)
 {
 	// Check if there were any poll interrupts this frame
-	if (poll_index == 0)
+	if (poll_index == 0) {
 		is_polling = false;
-	else
+		no_poll_frames++;
+	} else {
 		poll_index = 0;
+		no_poll_frames = 0;
+	}
 
 	simulated_this_frame = false;
 
@@ -319,21 +327,23 @@ static double ms(u64 interval)
 	const auto bus_speed = *(volatile u32*)0x800000F8;
 	return (double)interval / ((double)bus_speed / 4000.0);
 }
+#endif
 
 static void update_text(HSD_GObj *gobj)
 {
+#ifdef POLL_DEBUG
+	DevelopText_Erase(text);
+	DevelopText_SetCursor(text, 0, 0);
+	DevelopText_SetColorIndex(text, 0);
+
 	if (efb_copy_late != 0) {
 		DevelopText_SetColorIndex(text, 1);
 		efb_copy_late--;
-	} else {
-		DevelopText_SetColorIndex(text, 0);
 	}
 
-	DevelopText_Erase(text);
-	DevelopText_SetCursor(text, 0, 0);
 #ifdef POLL_DEBUG_VERBOSE
 	DevelopText_Printf(text, "Poll -> Fetch   %.04f\n", ms(frame_fetch_time - frame_poll_time));
-#endif
+#endif // POLL_DEBUG_VERBOSE
 	DevelopText_Printf(text, "Poll -> Engine  %.04f\n", ms(frame_time - frame_poll_time));
 	DevelopText_Printf(text, "Poll -> Display %.04f\n", ms(retrace_time - retrace_poll_time));
 #ifdef POLL_DEBUG_VERBOSE
@@ -347,37 +357,54 @@ static void update_text(HSD_GObj *gobj)
 	DevelopText_Printf(text, "EFB Copy Line   %d\n",    efb_copy_line);
 	DevelopText_Printf(text, "Poll 1 Line     %d\n",    poll_line[0]);
 	DevelopText_Printf(text, "Poll 2 Line     %d",      poll_line[1]);
-#else
+#else // POLL_DEBUG_VERBOSE
 	DevelopText_Printf(text, "Engine Time     %.04f",   ms(frame_interval));
+#endif // POLL_DEBUG_VERBOSE
+#else // POLL_DEBUG
+	if (get_latency() != latency_mode::crt && Si.poll.enable != 0 && no_poll_frames >= 2) {
+		DevelopText_ShowText(text);
+		DevelopText_ShowBackground( text);
+	} else {
+		DevelopText_HideText(text);
+		DevelopText_HideBackground(text);
+	}
 #endif
 }
 
 extern "C" void orig_Scene_RunLoop(void(*think_callback)());
 extern "C" void hook_Scene_RunLoop(void(*think_callback)())
 {
-	text = DevelopText_Create(0x69, 0, 0, TEXT_WIDTH, TEXT_HEIGHT, text_buf);
+	text = DevelopText_Create(0x69, 20, 20, TEXT_WIDTH, TEXT_HEIGHT, text_buf);
 	if (text == nullptr)
 		return orig_Scene_RunLoop(think_callback);
 
-	DevelopText_Show(nullptr, text);
 	DevelopText_HideCursor(text);
 	DevelopText_SetBGColor(text, color_rgba::hex(0x00000060u));
+	DevelopText_Show(nullptr, text);
+
+#ifdef POLL_DEBUG
 	DevelopText_SetColorIndex(text, 1);
 	DevelopText_SetTextColor(text, color_rgba::hex(0xFF0000FFu));
 	DevelopText_SetColorIndex(text, 0);
 	DevelopText_SetTextColor(text, color_rgba::hex(0xFFFFFFFFu));
 #ifdef POLL_DEBUG_VERBOSE
 	DevelopText_SetScale(text, 9, 12);
-#else
+#else // POLL_DEBUG_VERBOSE
 	DevelopText_SetScale(text, 12, 16);
-#endif
+#endif // POLL_DEBUG_VERBOSE
+#else // POLL_DEBUG
+	DevelopText_SetTextColor(text, color_rgba::hex(0xFF0000FFu));
+	DevelopText_SetScale(text, 18, 24);
+	DevelopText_HideText(text);
+	DevelopText_HideBackground(text);
+	DevelopText_Print(text, "Latency reduction error");
+#endif // POLL_DEBUG
 
 	auto *gobj = GObj_Create(GOBJ_CLASS_UI, GOBJ_PLINK_UI, 0);
 	GObj_AddProc(gobj, update_text, 0);
 
 	orig_Scene_RunLoop(think_callback);
 }
-#endif
 
 [[gnu::constructor]] static void init_latency()
 {

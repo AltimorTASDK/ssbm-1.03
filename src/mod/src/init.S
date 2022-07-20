@@ -154,11 +154,7 @@ hooks_start:
 add_hook Scene_Main
 add_hook OSSetArenaHi
 #endif
-add_hook Bubble_GetPosition
 add_hook CheckStockStealInput
-add_hook CmSubject_WorldToScreen
-add_hook CObjLoad
-add_hook DevelopText_Draw
 add_hook HSD_ResetScene
 add_hook HUD_GetPlayerHUDPosition
 add_hook Match_HandlePause
@@ -171,7 +167,6 @@ add_hook Menu_RandomStageMenuScroll
 add_hook Menu_SetupRandomStageMenu
 add_hook Menu_SetupRandomStageToggles
 add_hook Menu_UpdateRandomStageDisplay
-add_hook NameTag_SetupForPlayer
 add_hook Scene_Match_Exit
 add_hook ShowNameTagCheck
 add_hook Stage_Dreamland_WhispyUpdate
@@ -183,9 +178,6 @@ add_hook Stage_Fountain_UpdateReflection
 add_hook Stage_PokemonStadium_TransformationDecide
 add_hook Stage_Setup
 add_hook Stage_YoshisStory_ShyGuyUpdate
-add_hook Text_UpdateSubtextSize
-add_hook TrainingMenu_Create
-add_hook TrainingMenu_Think
 # Controller fix
 .set TumbleWiggleCheck, Interrupt_AS_DamageFall+0x9C
 .set UpdatePlayerStick, PlayerThink_Input+0x1D0
@@ -340,6 +332,15 @@ add_hook Menu_ExtraRulesMenuInput
 add_hook Menu_GetExtraRuleValueAnimLoop
 add_hook Menu_UpdateExtraRuleValueAnim
 add_hook Menu_UpdateExtraRuleDescriptionText
+# Widescreen
+add_hook Bubble_GetPosition
+add_hook CmSubject_WorldToScreen
+add_hook CObjLoad
+add_hook DevelopText_Draw
+add_hook NameTag_SetupForPlayer
+add_hook Text_UpdateSubtextSize
+add_hook TrainingMenu_Create
+add_hook TrainingMenu_Think
 # PDF+Latency
 .set SceneLoopStart,   Scene_RunLoop+0x68
 .set FirstEngineFrame, Scene_RunLoop+0xA8
@@ -347,6 +348,7 @@ add_hook SceneLoopStart
 add_hook FirstEngineFrame
 add_hook HSD_VICopyXFBASync
 add_hook HSD_CObjEraseScreen
+add_hook Scene_RunLoop
 add_hook SI_GetResponseRaw
 add_hook SI_SetSamplingRate
 add_hook UpdatePadFetchRate
@@ -355,7 +357,6 @@ add_hook PadFetchCallback
 add_hook HSD_PerfSetStartTime
 add_hook HSD_VIGetXFBDrawEnable
 add_hook HSD_VIPreRetraceCB
-add_hook Scene_RunLoop
 #endif
 # Nana hardware input buffer
 add_hook Player_Nana_RecordPopoData
