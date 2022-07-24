@@ -32,19 +32,31 @@ struct vi_regdef {
 		u16 rst : 1;
 		u16 enb : 1;
 	} dcr;
-	struct {
-		u32 : 1;
-		u32 hcs : 7;
-		u32 : 1;
-		u32 hce : 7;
-		u32 : 7;
-		u32 hlw : 9;
+	union {
+		struct {
+			u32 : 1;
+			u32 hcs : 7;
+			u32 : 1;
+			u32 hce : 7;
+			u32 : 7;
+			u32 hlw : 9;
+		};
+		struct {
+			u16 hi;
+			u16 lo;
+		};
 	} htr0;
-	struct {
-		u32 : 5;
-		u32 hbs : 10;
-		u32 hbe : 10;
-		u32 hsy : 7;
+	union {
+		struct {
+			u32 : 5;
+			u32 hbs : 10;
+			u32 hbe : 10;
+			u32 hsy : 7;
+		};
+		struct {
+			u16 hi;
+			u16 lo;
+		};
 	} htr1;
 	char pad00C[0x2C - 0x0C];
 	u16 scan_v;
@@ -53,7 +65,15 @@ struct vi_regdef {
 	display_interrupt post_retrace;
 	display_interrupt interrupt2;
 	display_interrupt interrupt3;
-	char pad040[0x78 - 0x40];
+	char pad040[0x6C - 0x40];
+	union {
+		struct {
+			u16 : 15;
+			u16 s : 1;
+		};
+		u16 raw;
+	} viclk;
+	char pad06E[0x78 - 0x6E];
 };
 
 inline volatile auto *vi_regs = (vi_regdef*)0xCC002000;

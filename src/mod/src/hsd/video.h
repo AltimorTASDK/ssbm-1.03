@@ -1,6 +1,7 @@
 #pragma once
 
 #include <gctypes.h>
+#include <ogc/gx_struct.h>
 
 enum HSD_RenderPass {
 	HSD_RP_SCREEN,
@@ -23,8 +24,21 @@ enum HSD_VIXFBDrawDispStatus {
 
 using VIRetraceCallback = void(u32 retrace_count);
 
+struct HSD_VIStatus {
+	GXRModeObj rmode;
+	u32 black;
+	bool vf;
+	u32 gamma;
+	u32 clear_clr;
+	u32 clear_z;
+	bool update_clr;
+	bool update_alpha;
+	bool update_z;
+};
+
 struct VIAll {
-	char pad000[0x58];
+	HSD_VIStatus vi;
+	u8 chg_flag;
 };
 
 struct XFB {
@@ -39,7 +53,8 @@ struct EFB {
 };
 
 struct HSD_VIInfo {
-	char pad0000[0x1458];
+	char pad0000[0x1400];
+	VIAll current;
 	XFB xfb[3];
 	EFB efb;
 	u32 nb_xfb;
