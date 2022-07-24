@@ -121,13 +121,15 @@ extern "C" bool is_faster_melee()
 void post_retrace_callback(u32 retrace_count)
 {
 	// Check if there were any poll interrupts this frame
-	if (poll_index == 0) {
+	if (poll_index == 0)
 		is_polling = false;
-		no_poll_frames++;
-	} else {
+	else
 		poll_index = 0;
+
+	if (Si.poll.enable != 0 && !is_polling)
+		no_poll_frames++;
+	else
 		no_poll_frames = 0;
-	}
 
 	simulated_this_frame = false;
 
@@ -361,7 +363,7 @@ static void update_text(HSD_GObj *gobj)
 	DevelopText_Printf(text, "Engine Time     %.04f",   ms(frame_interval));
 #endif // POLL_DEBUG_VERBOSE
 #else // POLL_DEBUG
-	if (get_latency() != latency_mode::crt && Si.poll.enable != 0 && no_poll_frames >= 2) {
+	if (get_latency() != latency_mode::crt && no_poll_frames >= 2) {
 		DevelopText_ShowText(text);
 		DevelopText_ShowBackground( text);
 	} else {
