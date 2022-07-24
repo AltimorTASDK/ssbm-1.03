@@ -147,28 +147,37 @@ hooks_start:
         .int hook_\name
 .endm
 
-.set ShowNameTagCheck,        NameTag_Think+0x28
-.set CheckStockStealInput,    Match_CheckStockSteal+0xF8
-
 #ifdef DOL
 add_hook Scene_Main
 add_hook OSSetArenaHi
 #endif
+# Allow stealing stocks with A
+.set CheckStockStealInput,    Match_CheckStockSteal+0xF8
 add_hook CheckStockStealInput
-add_hook HSD_ResetScene
+# Centered player HUDs
 add_hook HUD_GetPlayerHUDPosition
+# Skip results on non-timeout and add salty runback
+add_hook Scene_Match_Exit
+# Hide nametags for invisible players
+.set ShowNameTagCheck,        NameTag_Think+0x28
+add_hook ShowNameTagCheck
+# Panel at top of menu for menu music screen
+add_hook Menu_MenuPanelThink
+# Memory management
+add_hook HSD_ResetScene
+# LRAS macro
 add_hook Match_HandlePause
+# LGL/ATL enforcement
 add_hook MatchController_UpdateTeamWinners
 add_hook MatchController_UpdateWinners
+# Custom menu BGM
 add_hook Menu_GetBGM
-add_hook Menu_MenuPanelThink
 add_hook Menu_RandomStageMenuInput
 add_hook Menu_RandomStageMenuScroll
 add_hook Menu_SetupRandomStageMenu
 add_hook Menu_SetupRandomStageToggles
 add_hook Menu_UpdateRandomStageDisplay
-add_hook Scene_Match_Exit
-add_hook ShowNameTagCheck
+# Frozen stages
 add_hook Stage_Dreamland_WhispyUpdate
 add_hook Stage_FinalDestination_BackgroundUpdate
 add_hook Stage_Fountain_CreateReflection
@@ -341,6 +350,7 @@ add_hook NameTag_SetupForPlayer
 add_hook Text_UpdateSubtextSize
 add_hook TrainingMenu_Create
 add_hook TrainingMenu_Think
+add_hook VICopyEFB2XFBPtr
 # PDF+Latency
 .set SceneLoopStart,   Scene_RunLoop+0x68
 .set FirstEngineFrame, Scene_RunLoop+0xA8
