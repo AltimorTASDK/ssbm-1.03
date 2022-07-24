@@ -13,7 +13,7 @@ constexpr void *load_base = &__LOAD_BASE__;
 static constexpr auto NEW_HEAP_COUNT = 5;
 static OSHeap new_heap_list[NEW_HEAP_COUNT];
 
-static char heap_data[0x8000] [[gnu::aligned(32)]];
+alignas(32) static char heap_data[0x8000];
 static auto heap = -1;
 
 static void expand_heap_list()

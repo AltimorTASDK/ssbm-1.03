@@ -10,7 +10,7 @@ constexpr auto CARD_READ_ALIGN  = 0x200;
 
 // Alignment padded memcard buffer
 template<typename T, size_t align>
-class [[gnu::aligned(32)]] card_buffer {
+class alignas(32) card_buffer {
 	T value;
 	char pad[align_up(sizeof(T), align) - sizeof(T)] = { 0 };
 
