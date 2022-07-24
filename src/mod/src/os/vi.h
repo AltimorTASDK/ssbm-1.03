@@ -3,6 +3,8 @@
 #include <gctypes.h>
 #include <ogc/gx_struct.h>
 
+constexpr auto VI_DISPLAY_PIX_SZ = 2;
+
 union display_interrupt {
 	struct {
 		u32 status : 1;
