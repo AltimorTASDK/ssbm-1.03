@@ -38,7 +38,7 @@ static u32 no_poll_frames;
 static bool simulated_this_frame;
 static s32 poll_index;
 
-static OSThreadQueue half_vb_thread_queue;
+static OSThreadQueue lcd_thread_queue;
 
 static DevText *text;
 static char text_buf[TEXT_WIDTH * TEXT_HEIGHT * 2];
@@ -141,7 +141,7 @@ void post_retrace_callback(u32 retrace_count)
 
 	// Wake game thread when polling is disabled so it doesn't hang
 	if (get_latency() == latency_mode::lcd)
-		OSWakeupThread(&half_vb_thread_queue);
+		OSWakeupThread(&lcd_thread_queue);
 }
 
 extern "C" bool orig_SI_GetResponseRaw(s32 chan);
@@ -171,7 +171,7 @@ extern "C" bool hook_SI_GetResponseRaw(s32 chan)
 		PadFetchCallback();
 	} else if (poll_index == Si.poll.y / 2 && get_latency() == latency_mode::lcd) {
 		// Delay processing (and audio+rumble) by half a frame on LCD
-		OSWakeupThread(&half_vb_thread_queue);
+		OSWakeupThread(&lcd_thread_queue);
 	}
 
 	is_polling = true;
@@ -212,7 +212,7 @@ extern "C" void scene_loop_start()
 
 	// Wait for 2nd poll to start processing in LCD mode unless we're already late
 	if (poll_index <= Si.poll.y / 2)
-		OSSleepThread(&half_vb_thread_queue);
+		OSSleepThread(&lcd_thread_queue);
 
 	OSRestoreInterrupts(irq_enable);
 }
