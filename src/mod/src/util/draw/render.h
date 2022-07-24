@@ -69,7 +69,7 @@ vec3 alignment_offset(const vec2 &size, align alignment);
 class render_state {
 	static constexpr auto resolution = vec2(640, 480);
 
-	static render_state instance;
+	inline static render_state instance;
 
 	int current_vertex_fmt = -1;
 	GXTexObj *current_tex_obj = nullptr;
