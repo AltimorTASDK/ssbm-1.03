@@ -39,6 +39,7 @@
 #include "resources/rules/latency.tex.h"
 #include "resources/rules/latency_values.tex.h"
 #include "resources/rules/widescreen.tex.h"
+#include "resources/rules/widescreen_values.tex.h"
 
 struct ExtraRulesMenuData {
 	u8 menu_type;
@@ -188,7 +189,9 @@ constexpr auto widescreen_descriptions = multi_array {
 	make_description_text<"Play with the normal aspect",
 		              "ratio.">(),
 	make_description_text<"Play with a widescreen aspect",
-		              "ratio.">()
+		              "ratio.">(),
+	make_description_text<"Play with the normal aspect",
+		              "ratio on a widescreen display.">()
 };
 
 static mempool pool;
@@ -442,7 +445,7 @@ extern "C" ArchiveModel *select_extra_rule_model(u32 index)
 		&MenMainCursorRl05_Top, // Controls
 		&MenMainCursorTr03_Top, // Controller Fix
 		&MenMainCursorTr04_Top, // Latency
-		&MenMainCursorTr03_Top, // Widescreen
+		&MenMainCursorTr04_Top, // Widescreen
 	}[index];
 }
 
@@ -547,7 +550,7 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 	load_textures();
 
 	// Replace rule value textures
-	replace_toggle_texture(data, ExtraRule_Pause,         pause_values_tex_data, true);
+	replace_toggle_texture(data, ExtraRule_Pause,         pause_values_tex_data);
 #ifdef FULL_SSS_ROTATOR
 	replace_toggle_texture(data, ExtraRule_StageMods,     sss_values_tex_data);
 #else
@@ -560,6 +563,7 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 	replace_toggle_texture(data, ExtraRule_ControllerFix, controller_fix_values_tex_data, true);
 #endif
 	replace_toggle_texture(data, ExtraRule_Latency,       latency_values_tex_data);
+	replace_toggle_texture(data, ExtraRule_Widescreen,    widescreen_values_tex_data), true;
 
 	// Make Rl01 and Rl05 use proper additional rules position
 	fix_value_position(data, ExtraRule_StageMods);
