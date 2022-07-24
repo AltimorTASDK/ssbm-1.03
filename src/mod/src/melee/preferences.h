@@ -13,4 +13,7 @@ extern "C" {
 SavedPreferences *GetSavedPreferences();
 bool IsLanguageUS();
 
+void ApplySoundBalance();
+void ApplyVideoSettings();
+
 } // extern "C"

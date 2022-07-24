@@ -36,7 +36,6 @@ s32 DisplayCrashScreen(OSContext *context);
 void InitCardBuffers();
 
 u32 MemoryCard_DoLoadData();
-void ApplySoundBalance();
 
 } // extern "C"
 
@@ -269,9 +268,6 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 
 	// Load new save file
 	MemoryCard_DoLoadData();
-
-	// Apply sound balance from new save file
-	ApplySoundBalance();
 
 	if (SceneMajor == Scene_VsMode)
 		Scene_SetMajorPending(Scene_VsMode); // Reload CSS
