@@ -25,6 +25,9 @@ saved_config::saved_config()
 
 void saved_config::load()
 {
+	if (!CARD_Probe(CARD_SLOTA))
+		return;
+
 	card_read_buffer<config_values<config_version::current>> read;
 	card_read(CARD_SLOTA, filename, &read, sizeof(read));
 
@@ -58,7 +61,7 @@ void saved_config::load()
 
 void saved_config::save()
 {
-	if (get_settings_lock())
+	if (get_settings_lock() || !CARD_Probe(CARD_SLOTA))
 		return;
 
 	const auto *rules = GetGameRules();
