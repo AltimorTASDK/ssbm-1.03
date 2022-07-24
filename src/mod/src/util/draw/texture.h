@@ -17,10 +17,26 @@ public:
 		init(data, width, height, format, wrap_s, wrap_t, mipmap);
 	}
 
+	texture(void *data, u16 width, u16 height, u8 format,
+	        u8 minfilt, u8 magfilt, f32 minlod, f32 maxlod, f32 lodbias,
+	        u8 biasclamp, u8 edgelod, u8 maxaniso,
+	        u8 wrap_s = GX_CLAMP, u8 wrap_t = GX_CLAMP, u8 mipmap = GX_FALSE)
+	{
+		init(data, width, height, format, wrap_s, wrap_t, mipmap);
+		init_lod(minfilt, magfilt, minlod, maxlod, lodbias, biasclamp, edgelod, maxaniso);
+	}
+
 	void init(void *data, u16 width, u16 height, u8 format,
 	          u8 wrap_s = GX_CLAMP, u8 wrap_t = GX_CLAMP, u8 mipmap = GX_FALSE)
 	{
 		GX_InitTexObj(&tex_obj, data, width, height, format, wrap_s, wrap_t, mipmap);
+	}
+
+	void init_lod(u8 minfilt, u8 magfilt, f32 minlod, f32 maxlod, f32 lodbias,
+	              u8 biasclamp, u8 edgelod, u8 maxaniso)
+	{
+		GX_InitTexObjLOD(&tex_obj, minfilt, magfilt, minlod, maxlod, lodbias,
+		                 biasclamp, edgelod, maxaniso);
 	}
 
 	void apply() const
