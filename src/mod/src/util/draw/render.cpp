@@ -101,8 +101,6 @@ void render_state::reset()
 	GX_SetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE,
 	                   GX_DTTIDENTITY);
 
-	GX_SetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
-
 	GX_SetCullMode(GX_CULL_NONE);
 
 	GX_SetFog(GX_FOG_NONE, 0, 0, 0, 0, {0});
