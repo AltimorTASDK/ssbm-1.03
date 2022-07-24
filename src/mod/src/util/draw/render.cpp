@@ -103,7 +103,7 @@ void render_state::reset()
 
 	GX_SetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
 
-	GX_SetCullMode(GX_NONE);
+	GX_SetCullMode(GX_CULL_NONE);
 
 	GX_SetFog(GX_FOG_NONE, 0, 0, 0, 0, {0});
 
