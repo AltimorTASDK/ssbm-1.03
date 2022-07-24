@@ -194,7 +194,7 @@ extern "C" void hook_HSD_VICopyEFB2XFBPtr(HSD_VIStatus *vi, void *buffer, u32 rp
 	// Draw top half
 	GX_SetTexCopySrc(0, 0, vi->rmode.fbWidth, src_height);
 	GX_SetTexCopyDst(vi->rmode.fbWidth, dst_height, GX_TF_RGBA8, GX_FALSE);
-	GX_CopyTex(buffer, GX_TRUE);
+	GX_CopyTex(buffer, GX_FALSE);
 	rs.fill_rect({crop_left, 0, 0}, {crop_width, 240}, xfb_tex, {0, 0}, {1, 1});
 
 	// Draw bottom half
