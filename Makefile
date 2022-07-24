@@ -120,11 +120,11 @@ mod: $(MELEELD)
 
 .PHONY: dol
 ifdef TOURNAMENT
-dol: export OBJDIR  := build/obj/te/DOL
-dol: export DEPDIR  := build/dep/te/DOL
+dol: export OBJDIR  := build/obj/dol/TE
+dol: export DEPDIR  := build/dep/dol/TE
 else
-dol: export OBJDIR  := build/obj/le/DOL
-dol: export DEPDIR  := build/dep/le/DOL
+dol: export OBJDIR  := build/obj/dol/LE
+dol: export DEPDIR  := build/dep/dol/LE
 endif
 dol: export DEFINES += -DDOL -DNOPAL
 dol: $(MELEELD)
