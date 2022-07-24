@@ -4,12 +4,14 @@
 
 enum class controls_type : u8 {
 	z_jump    = 0,
-#ifndef TOURNAMENT
 	z_angles  = 1,
 	no_angles = 2,
 	all       = 3,
-#endif
+#ifdef TOURNAMENT
 	max
+#else
+	max = z_jump + 1
+#endif
 };
 
 enum class sss_type : u8 {
