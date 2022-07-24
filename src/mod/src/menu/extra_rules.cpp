@@ -23,6 +23,8 @@
 #include <ogc/gx.h>
 
 #include "resources/rules/pause_values.tex.h"
+#include "resources/rules/controls.tex.h"
+#include "resources/rules/controls_values.tex.h"
 #ifdef FULL_SSS_ROTATOR
 #include "resources/rules/old/sss.tex.h"
 #include "resources/rules/old/sss_values.tex.h"
@@ -30,8 +32,6 @@
 #include "resources/rules/sss.tex.h"
 #include "resources/rules/sss_values.tex.h"
 #endif
-#include "resources/rules/controls.tex.h"
-#include "resources/rules/controls_values.tex.h"
 #ifdef UCF_ROTATOR
 #include "resources/rules/controller_fix.tex.h"
 #include "resources/rules/controller_fix_values.tex.h"
@@ -49,8 +49,8 @@ struct ExtraRulesMenuData {
 			u8 stock_time_limit;
 			// Pause is moved up a row
 			u8 pause;
-			sss_type stage_mods;
 			controls_type controls;
+			sss_type stage_mods;
 			ucf_type controller_fix;
 			latency_mode latency;
 			widescreen_mode widescreen;
@@ -145,6 +145,15 @@ constexpr auto pause_auto_description =
 	make_description_text<"Players will not be able to",
 	                      "pause during 4-stock matches.">();
 
+constexpr auto controls_descriptions = multi_array {
+	make_description_text<"Allow the use of Z jump.">(),
+	make_description_text<"Allow the use of Z jump and",
+	                      "perfect angles.">(),
+	make_description_text<"Allow the use of all controls",
+	                      "except perfect angles.">(),
+	make_description_text<"Allow the use of all controls.">()
+};
+
 constexpr auto stage_mod_descriptions = multi_array {
 #ifndef FULL_SSS_ROTATOR
 	make_description_text<"Use 1.03's stage select screen",
@@ -160,15 +169,6 @@ constexpr auto stage_mod_descriptions = multi_array {
 	make_description_text<u"Freeze Final Destination and",
 	                      u"Pokémon Stadium.">()
 #endif
-};
-
-constexpr auto controls_descriptions = multi_array {
-	make_description_text<"Allow the use of Z jump.">(),
-	make_description_text<"Allow the use of Z jump and",
-	                      "perfect angles.">(),
-	make_description_text<"Allow the use of all controls",
-	                      "except perfect angles.">(),
-	make_description_text<"Allow the use of all controls.">()
 };
 
 constexpr auto ucf_type_descriptions = multi_array {
@@ -421,10 +421,10 @@ static void load_textures()
 {
 	// Replace rule name textures
 	const auto *rule_names = MenMainCursorRl_Top.matanim_joint->child->child->next->matanim;
-	pool.add_texture_swap(sss_tex_data,             rule_names->texanim->imagetbl[ 9]);
 #ifndef TOURNAMENT
-	pool.add_texture_swap(controls_tex_data,        rule_names->texanim->imagetbl[11]);
+	pool.add_texture_swap(controls_tex_data,        rule_names->texanim->imagetbl[ 9]);
 #endif
+	pool.add_texture_swap(sss_tex_data,             rule_names->texanim->imagetbl[11]);
 #ifdef UCF_ROTATOR
 	pool.add_texture_swap(controller_fix_tex_data,  rule_names->texanim->imagetbl[12]);
 #endif
@@ -437,12 +437,12 @@ extern "C" ArchiveModel *select_extra_rule_model(u32 index)
 	return std::array {
 		&MenMainCursorTr01_Top, // Stock Match Time Limit
 		&MenMainCursorTr03_Top, // Pause
+		&MenMainCursorRl05_Top, // Controls
 #ifdef FULL_SSS_ROTATOR
 		&MenMainCursorRl01_Top, // Stage Select Screen
 #else
 		&MenMainCursorTr03_Top, // Stage Select Screen
 #endif
-		&MenMainCursorRl05_Top, // Controls
 		&MenMainCursorTr03_Top, // Controller Fix
 		&MenMainCursorTr04_Top, // Latency
 		&MenMainCursorTr04_Top, // Widescreen
@@ -517,8 +517,8 @@ extern "C" void hook_Menu_UpdateExtraRuleDescriptionText(HSD_GObj *gobj,
 			text->data = pause_auto_description.data();
 		}
 		break;
-	case ExtraRule_StageMods:      text->data = stage_mod_descriptions[value];  break;
 	case ExtraRule_Controls:       text->data = controls_descriptions[value];   break;
+	case ExtraRule_StageMods:      text->data = stage_mod_descriptions[value];  break;
 	case ExtraRule_ControllerFix:  text->data = ucf_type_descriptions[value];   break;
 	case ExtraRule_Latency:        text->data = latency_descriptions[value];    break;
 	case ExtraRule_Widescreen:     text->data = widescreen_descriptions[value]; break;
@@ -551,27 +551,27 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 
 	// Replace rule value textures
 	replace_toggle_texture(data, ExtraRule_Pause,         pause_values_tex_data);
+#ifndef TOURNAMENT
+	replace_toggle_texture(data, ExtraRule_Controls,      controls_values_tex_data);
+#endif
 #ifdef FULL_SSS_ROTATOR
 	replace_toggle_texture(data, ExtraRule_StageMods,     sss_values_tex_data);
 #else
 	replace_toggle_texture(data, ExtraRule_StageMods,     sss_values_tex_data, true);
 #endif
-#ifndef TOURNAMENT
-	replace_toggle_texture(data, ExtraRule_Controls,      controls_values_tex_data);
-#endif
 #ifdef UCF_ROTATOR
 	replace_toggle_texture(data, ExtraRule_ControllerFix, controller_fix_values_tex_data, true);
 #endif
 	replace_toggle_texture(data, ExtraRule_Latency,       latency_values_tex_data);
-	replace_toggle_texture(data, ExtraRule_Widescreen,    widescreen_values_tex_data), true;
+	replace_toggle_texture(data, ExtraRule_Widescreen,    widescreen_values_tex_data, true);
 
 	// Make Rl01 and Rl05 use proper additional rules position
-	fix_value_position(data, ExtraRule_StageMods);
 	fix_value_position(data, ExtraRule_Controls);
+	fix_value_position(data, ExtraRule_StageMods);
 
 	// Set anim frame correctly for 4/5-value model
-	set_value_anim(data, ExtraRule_StageMods);
 	set_value_anim(data, ExtraRule_Controls);
+	set_value_anim(data, ExtraRule_StageMods);
 
 	// Use rotator for latency (replacing random stage select)
 	set_to_rotator(data, ExtraRule_Latency);
@@ -625,7 +625,7 @@ extern "C" const HSD_AnimLoop &orig_Menu_GetExtraRuleValueAnimLoop(u8 index, u8 
 extern "C" const HSD_AnimLoop &hook_Menu_GetExtraRuleValueAnimLoop(u8 index, u8 value,
                                                                    bool scroll_right)
 {
-	if (index != ExtraRule_StageMods && index != ExtraRule_Controls)
+	if (index != ExtraRule_Controls && index != ExtraRule_StageMods)
 		return orig_Menu_GetExtraRuleValueAnimLoop(index, value, scroll_right);
 
 	// Use max value corresponding to 5-value model for controls
@@ -646,7 +646,7 @@ extern "C" const HSD_AnimLoop &hook_Menu_GetExtraRuleValueAnimLoop(u8 index, u8 
 extern "C" void orig_Menu_UpdateExtraRuleValueAnim(HSD_GObj *gobj, HSD_JObj *jobj, u8 index);
 extern "C" void hook_Menu_UpdateExtraRuleValueAnim(HSD_GObj *gobj, HSD_JObj *jobj, u8 index)
 {
-	if (index != ExtraRule_StageMods && index != ExtraRule_Controls)
+	if (index != ExtraRule_Controls && index != ExtraRule_StageMods)
 		return orig_Menu_UpdateExtraRuleValueAnim(gobj, jobj, index);
 
 	const auto frame = HSD_JObjGetAnimFrame(jobj);

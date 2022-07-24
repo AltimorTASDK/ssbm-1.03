@@ -2,6 +2,16 @@
 
 #include <gctypes.h>
 
+enum class controls_type : u8 {
+	z_jump    = 0,
+#ifndef TOURNAMENT
+	z_angles  = 1,
+	no_angles = 2,
+	all       = 3,
+#endif
+	max
+};
+
 enum class sss_type : u8 {
 	all  = 0,
 	oss  = 1,
@@ -12,16 +22,6 @@ enum class sss_type : u8 {
 #else
 	max = oss + 1
 #endif
-};
-
-enum class controls_type : u8 {
-	z_jump    = 0,
-#ifndef TOURNAMENT
-	z_angles  = 1,
-	no_angles = 2,
-	all       = 3,
-#endif
-	max
 };
 
 enum class ucf_type : u8 {
@@ -63,9 +63,9 @@ enum ExtraRule {
 	ExtraRule_StockMatchTimeLimit = 0,
 	// Pause is moved up a row
 	ExtraRule_Pause               = 1,
-	ExtraRule_StageMods           = 2,
+	ExtraRule_Controls            = 2,
 	ExtraRule_FriendlyFire        = 2,
-	ExtraRule_Controls            = 3,
+	ExtraRule_StageMods           = 3,
 	ExtraRule_ControllerFix       = 4,
 	ExtraRule_Latency             = 5,
 	ExtraRule_Widescreen          = 6,
@@ -99,11 +99,11 @@ struct GameRules {
 	u8 pause;
 	union {
 		u8 friendly_fire;
-		sss_type stage_mods;
+		controls_type controls;
 	};
 	union {
 		u8 score_display;
-		controls_type controls;
+		sss_type stage_mods;
 	};
 	union {
 		u8 sd_penalty;
