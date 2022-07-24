@@ -195,7 +195,7 @@ static void apply_crop(HSD_VIStatus *vi, void *buffer)
 	auto &rs = render_state::get();
 	rs.reset_2d();
 
-	const auto xfb_tex = texture(buffer, vi->rmode.fbWidth, dst_height, GX_TF_RGBA8);
+	const auto xfb_texture = texture(buffer, vi->rmode.fbWidth, dst_height, GX_TF_RGBA8);
 
 	// Disable depth testing
 	GX_SetZMode(GX_FALSE, GX_NEVER, GX_FALSE);
@@ -204,13 +204,13 @@ static void apply_crop(HSD_VIStatus *vi, void *buffer)
 	GX_SetTexCopySrc(0, 0, vi->rmode.fbWidth, src_height);
 	GX_SetTexCopyDst(vi->rmode.fbWidth, dst_height, GX_TF_RGBA8, GX_FALSE);
 	GX_CopyTex(buffer, GX_FALSE);
-	rs.fill_rect({crop_left, 0, 0}, {crop_width, 240}, xfb_tex, {0, 0}, {1, 1});
+	rs.fill_rect({crop_left, 0, 0}, {crop_width, 240}, xfb_texture, {0, 0}, {1, 1});
 
 	// Draw bottom half
 	GX_SetTexCopySrc(0, src_height, vi->rmode.fbWidth, src_height);
 	GX_SetTexCopyDst(vi->rmode.fbWidth, dst_height, GX_TF_RGBA8, GX_FALSE);
 	GX_CopyTex(buffer, GX_FALSE);
-	rs.fill_rect({crop_left, 240, 0}, {crop_width, 240}, xfb_tex, {0, 0}, {1, 1});
+	rs.fill_rect({crop_left, 240, 0}, {crop_width, 240}, xfb_texture, {0, 0}, {1, 1});
 
 	// Draw black bars
 	rs.fill_rect({0,          0, 0}, {crop_left, 480}, color_rgba::hex(0x000000FF));
