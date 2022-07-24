@@ -207,7 +207,7 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 	InitCardBuffers();
 
 #if defined(PAL) || defined(NTSC102)
-	// Use GALE01 saves for PAL/UP
+	// Use GALE01 saves for PAL/UP/JPN
 	__CARDSetDiskID("GALE01");
 #endif
 

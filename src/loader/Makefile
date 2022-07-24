@@ -60,9 +60,12 @@ MGCMAIN20XX := $(MGCDIR)/1.03-20XX.mgc
 GCIFILEUP := $(BINDIR)/$(MODNAME)-loader-UP.gci
 GCISRCUP  := $(GCIDIR)/ssbm-UP.gci
 MGCMAINUP := $(MGCDIR)/1.03-UP.mgc
+GCIFILEJPN := $(BINDIR)/$(MODNAME)-loader-JPN.gci
+GCISRCJPN  := $(GCIDIR)/ssbm-JPN.gci
+MGCMAINJPN := $(MGCDIR)/1.03-NTSC.mgc
 
 .PHONY: all
-all: ssbm 20XX UP
+all: ssbm 20XX UP JPN
 else
 .PHONY: all
 all: ssbm
@@ -94,6 +97,13 @@ UP: $(GCIFILEUP)
 $(GCIFILEUP): $(BINFILE) $(MGCMAINUP) $(GCISRCUP)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -i $(GCISRCUP) -o $@ $(MGCMAINUP)
+
+.PHONY: JPN
+JPN: $(GCIFILEJPN)
+
+$(GCIFILEJPN): $(BINFILE) $(MGCMAINJPN) $(GCISRCJPN)
+	@[ -d $(@D) ] || mkdir -p $(@D)
+	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -i $(GCISRCJPN) -o $@ $(MGCMAINJPN)
 endif
 endif
 

@@ -190,7 +190,7 @@ static void card_io(s32 card, const char *filename, void *buffer, u32 size, bool
 
 	InitCardBuffers();
 
-	// Use GALE01 saves for PAL/UP
+	// Use GALE01 saves for PAL/UP/JPN
 	__CARDSetDiskID("GALE01");
 
 	const auto callback = read ? read_callback : write_callback;
