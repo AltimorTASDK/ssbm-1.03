@@ -113,6 +113,12 @@ public:
 		GX_LoadTexObj(obj, GX_TEXMAP0);
 	}
 
+	void invalidate_tex_obj(GXTexObj *obj)
+	{
+		if (obj == current_tex_obj)
+			current_tex_obj = nullptr;
+	}
+
 	template<VertexFormat T>
 	void draw_primitive(u8 prim_type, const std::vector<T> &vertices)
 	{

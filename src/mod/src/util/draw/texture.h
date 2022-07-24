@@ -44,6 +44,11 @@ public:
 		render_state::get().load_tex_obj(&tex_obj);
 	}
 
+	void invalidate() const
+	{
+		render_state::get().invalidate_tex_obj(&tex_obj);
+	}
+
 	u16 width() const
 	{
 		return GX_GetTexObjWidth(&tex_obj);

@@ -207,6 +207,8 @@ static void apply_crop(HSD_VIStatus *vi, void *buffer)
 	GX_InvalidateTexAll();
 	rs.fill_rect({crop_left, 0, 0}, {crop_width, 240}, xfb_texture, {0, 0}, {1, 1});
 
+	xfb_texture.invalidate();
+
 	// Draw bottom half
 	GX_SetTexCopySrc(0, src_height, vi->rmode.fbWidth, src_height);
 	GX_SetTexCopyDst(vi->rmode.fbWidth, dst_height, GX_TF_RGBA8, GX_FALSE);
