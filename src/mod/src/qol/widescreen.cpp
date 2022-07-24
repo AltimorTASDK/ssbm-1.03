@@ -2,12 +2,16 @@
 #include "hsd/gobj.h"
 #include "hsd/jobj.h"
 #include "hsd/tobj.h"
+#include "hsd/video.h"
+#include "os/gx.h"
 #include "melee/camera.h"
 #include "melee/text.h"
 #include "qol/widescreen.h"
 #include "rules/values.h"
 #include "util/math.h"
 #include "util/vector.h"
+#include "util/draw/render.h"
+#include "util/draw/texture.h"
 #include <cmath>
 #include <gctypes.h>
 
@@ -166,4 +170,42 @@ extern "C" void hook_DevelopText_Draw(DevText *text)
 	text->scale.x /= aspect_ratio_factor;
 	orig_DevelopText_Draw(text);
 	text->scale.x = old_scale_x;
+}
+
+extern "C" void orig_HSD_VICopyEFB2XFBPtr(HSD_VIStatus *vi, void *buffer, u32 rpass);
+extern "C" void hook_HSD_VICopyEFB2XFBPtr(HSD_VIStatus *vi, void *buffer, u32 rpass)
+{
+	constexpr auto crop_width  = (u16)(640.f / aspect_ratio_factor + .5f);
+	constexpr auto crop_left   = (u16)((640 - crop_width) / 2);
+	constexpr auto crop_right  = crop_left + crop_width;
+
+	// Copy in two halves so the XFB buffer can be reused as 32bpp
+	const auto src_height = (u16)(vi->rmode.efbHeight / 2);
+	const auto dst_height = (u16)(vi->rmode.xfbHeight / 2);
+
+	auto &rs = render_state::get();
+	rs.reset_2d();
+
+	const auto xfb_tex = texture(buffer, vi->rmode.fbWidth, dst_height, GX_TF_RGBA8);
+
+	// Disable depth testing
+	GX_SetZMode(GX_FALSE, GX_NEVER, GX_FALSE);
+
+	// Draw top half
+	GX_SetTexCopySrc(0, 0, vi->rmode.fbWidth, src_height);
+	GX_SetTexCopyDst(vi->rmode.fbWidth, dst_height, GX_TF_RGBA8, GX_FALSE);
+	GX_CopyTex(buffer, GX_TRUE);
+	rs.fill_rect({crop_left, 0, 0}, {crop_width, 240}, xfb_tex, {0, 0}, {1, 1});
+
+	// Draw bottom half
+	GX_SetTexCopySrc(0, src_height, vi->rmode.fbWidth, src_height);
+	GX_SetTexCopyDst(vi->rmode.fbWidth, dst_height, GX_TF_RGBA8, GX_FALSE);
+	GX_CopyTex(buffer, GX_FALSE);
+	rs.fill_rect({crop_left, 240, 0}, {crop_width, 240}, xfb_tex, {0, 0}, {1, 1});
+
+	// Draw black bars
+	rs.fill_rect({0,          0, 0}, {crop_left, 480}, color_rgba::hex(0x000000FF));
+	rs.fill_rect({crop_right, 0, 0}, {crop_left, 480}, color_rgba::hex(0x000000FF));
+
+	orig_HSD_VICopyEFB2XFBPtr(vi, buffer, rpass);
 }

@@ -350,7 +350,7 @@ add_hook NameTag_SetupForPlayer
 add_hook Text_UpdateSubtextSize
 add_hook TrainingMenu_Create
 add_hook TrainingMenu_Think
-add_hook VICopyEFB2XFBPtr
+add_hook HSD_VICopyEFB2XFBPtr
 # PDF+Latency
 .set SceneLoopStart,   Scene_RunLoop+0x68
 .set FirstEngineFrame, Scene_RunLoop+0xA8
