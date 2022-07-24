@@ -69,7 +69,7 @@ vec3 alignment_offset(const vec2 &size, align alignment);
 class render_state {
 	static constexpr auto resolution = vec2(640, 480);
 
-	inline static render_state instance;
+	static render_state instance;
 
 	int current_vertex_fmt = -1;
 	GXTexObj *current_tex_obj = nullptr;
@@ -149,3 +149,5 @@ public:
 	void fill_tiled_rect(const vec3 &origin, const vec2 &size, const color_rgba &color,
 		             const texture &tex, align alignment = align::top_left);
 };
+
+inline render_state render_state::instance;
