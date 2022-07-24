@@ -37,6 +37,13 @@ enum class latency_mode : u8 {
 	max
 };
 
+enum class widescreen_mode : u8 {
+	off  = 0,
+	on   = 1,
+	crop = 2,
+	max
+};
+
 enum Rule {
 	Rule_Mode            = 0,
 	Rule_StockCount      = 1,
@@ -103,7 +110,7 @@ struct GameRules {
 		ucf_type controller_fix;
 	};
 	latency_mode latency;
-	u8 widescreen;
+	widescreen_mode widescreen;
 };
 
 struct RuleBounds {

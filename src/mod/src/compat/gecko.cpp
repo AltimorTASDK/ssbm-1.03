@@ -25,7 +25,7 @@ struct u32_patch_list {
 	if (*(u32*)0x803BB05C != 0x3EB00000)
 		return;
 
-	GetGameRules()->widescreen = true;
+	GetGameRules()->widescreen = widescreen_mode::on;
 
 	// Optional: Widescreen 16:9 [Dan Salvato, mirrorbender, Achilles1515, UnclePunch]
 	u32_patch_list {
@@ -42,6 +42,16 @@ struct u32_patch_list {
 		std::pair { 0x804DDB4C, 0x3DCCCCCD }, // External/Widescreen/Adjust Offscreen Scissor/Fix Bubble Positions/Widen Bubble Region.asm
 		std::pair { 0x802FCFC4, 0xC002E19C }, // External/Widescreen/Nametag Fixes/Adjust Nametag Background X Scale.asm
 		std::pair { 0x804DDB84, 0x3ECCCCCD }, // External/Widescreen/Nametag Fixes/Adjust Nametag Text X Scale.asm
+	};
+
+	if (*(u32*)0x80302784 == 0x93EDB77Cu)
+		return;
+
+	GetGameRules()->widescreen = widescreen_mode::crop;
+
+	// Optional: 16:9 -> 73:60 [Dan Salvato, mirrorbender, Achilles1515, UnclePunch, Fizzi]
+	u32_patch_list {
+		std::pair { 0x80302784, 0x93EDB77Cu }, // External/WidescreenShutters/Add Shutters.asm
 	};
 }
 

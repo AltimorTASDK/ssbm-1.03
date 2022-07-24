@@ -60,7 +60,13 @@ inline ucf_type get_ucf_type()
 inline bool is_widescreen()
 {
 	const auto *rules = GetGameRules();
-	return rules->widescreen;
+	return rules->widescreen == widescreen_mode::on;
+}
+
+inline bool is_widescreen_crop()
+{
+	const auto *rules = GetGameRules();
+	return rules->widescreen == widescreen_mode::crop;
 }
 
 inline latency_mode get_latency()

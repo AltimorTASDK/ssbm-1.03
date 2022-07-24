@@ -52,7 +52,7 @@ struct ExtraRulesMenuData {
 			controls_type controls;
 			ucf_type controller_fix;
 			latency_mode latency;
-			u8 widescreen;
+			widescreen_mode widescreen;
 		};
 		u8 values[ExtraRule_Max];
 	};
@@ -485,7 +485,7 @@ extern "C" void hook_Menu_UpdateExtraRuleDescriptionText(HSD_GObj *gobj,
 		GetGameRules()->latency = (latency_mode)value;
 
 	if (value_changed && index == ExtraRule_Widescreen)
-		GetGameRules()->widescreen = value;
+		GetGameRules()->widescreen = (widescreen_mode)value;
 
 	// Stage mods description needs accented E
 	if (index == ExtraRule_StageMods && !IsLanguageUS())

@@ -19,11 +19,11 @@ struct config_values;
 
 template<>
 struct [[gnu::packed]] config_values<config_version::v1> {
-	u8 widescreen        = false;
-	latency_mode latency = latency_mode::crt;
-	int stage_bgm[6]     = { BGM_Undefined, BGM_Undefined, BGM_Undefined,
-	                         BGM_Undefined, BGM_Undefined, BGM_Undefined };
-	int menu_bgm         = BGM_Undefined;
+	widescreen_mode widescreen = widescreen_mode::off;
+	latency_mode latency       = latency_mode::crt;
+	int stage_bgm[6]           = { BGM_Undefined, BGM_Undefined, BGM_Undefined,
+	                               BGM_Undefined, BGM_Undefined, BGM_Undefined };
+	int menu_bgm               = BGM_Undefined;
 };
 
 template<>

@@ -172,9 +172,18 @@ extern "C" void hook_DevelopText_Draw(DevText *text)
 	text->scale.x = old_scale_x;
 }
 
-extern "C" void orig_HSD_VICopyEFB2XFBPtr(HSD_VIStatus *vi, void *buffer, u32 rpass);
-extern "C" void hook_HSD_VICopyEFB2XFBPtr(HSD_VIStatus *vi, void *buffer, u32 rpass)
+static void apply_crop(HSD_VIStatus *vi, void *buffer)
 {
+	if (!is_widescreen_crop())
+		return;
+
+	if (buffer == nullptr) {
+		// Don't crash from Hannes Mann lag reduction
+		GetGameRules()->widescreen = widescreen_mode::off;
+		return;
+	}
+
+	// Downscale EFB into 73:60 region on 16:9 display
 	constexpr auto crop_width  = (u16)(640.f / aspect_ratio_factor + .5f);
 	constexpr auto crop_left   = (u16)((640 - crop_width) / 2);
 	constexpr auto crop_right  = crop_left + crop_width;
@@ -206,6 +215,11 @@ extern "C" void hook_HSD_VICopyEFB2XFBPtr(HSD_VIStatus *vi, void *buffer, u32 rp
 	// Draw black bars
 	rs.fill_rect({0,          0, 0}, {crop_left, 480}, color_rgba::hex(0x000000FF));
 	rs.fill_rect({crop_right, 0, 0}, {crop_left, 480}, color_rgba::hex(0x000000FF));
+}
 
+extern "C" void orig_HSD_VICopyEFB2XFBPtr(HSD_VIStatus *vi, void *buffer, u32 rpass);
+extern "C" void hook_HSD_VICopyEFB2XFBPtr(HSD_VIStatus *vi, void *buffer, u32 rpass)
+{
+	apply_crop(vi, buffer);
 	orig_HSD_VICopyEFB2XFBPtr(vi, buffer, rpass);
 }
