@@ -177,11 +177,9 @@ static void apply_crop(HSD_VIStatus *vi, void *buffer)
 	if (!is_widescreen_crop())
 		return;
 
-	if (buffer == nullptr) {
-		// Don't crash from Hannes Mann lag reduction
-		GetGameRules()->widescreen = widescreen_mode::off;
+	// Don't crash from Hannes Mann lag reduction
+	if (buffer == nullptr)
 		return;
-	}
 
 	// Downscale EFB into 73:60 region on 16:9 display
 	constexpr auto crop_width = (u16)(640.f / aspect_ratio_factor + .5f);
@@ -192,24 +190,29 @@ static void apply_crop(HSD_VIStatus *vi, void *buffer)
 	const auto src_height = (u16)(vi->rmode.efbHeight / 2);
 	const auto dst_height = (u16)(vi->rmode.xfbHeight / 2);
 
+	const auto xfb_texture = texture(buffer, vi->rmode.fbWidth, dst_height, GX_TF_RGBA8);
+
 	auto &rs = render_state::get();
 	rs.reset_2d();
 
-	const auto xfb_texture = texture(buffer, vi->rmode.fbWidth, dst_height, GX_TF_RGBA8);
-
-	// Disable depth testing
+	GX_SetCopyFilter(GX_FALSE, nullptr, GX_FALSE, nullptr);
+	GX_SetColorUpdate(GX_TRUE);
 	GX_SetZMode(GX_FALSE, GX_NEVER, GX_FALSE);
 
 	// Draw top half
 	GX_SetTexCopySrc(0, 0, vi->rmode.fbWidth, src_height);
 	GX_SetTexCopyDst(vi->rmode.fbWidth, dst_height, GX_TF_RGBA8, GX_FALSE);
 	GX_CopyTex(buffer, GX_FALSE);
+	GX_PixModeSync();
+	GX_InvalidateTexAll();
 	rs.fill_rect({crop_left, 0, 0}, {crop_width, 240}, xfb_texture, {0, 0}, {1, 1});
 
 	// Draw bottom half
 	GX_SetTexCopySrc(0, src_height, vi->rmode.fbWidth, src_height);
 	GX_SetTexCopyDst(vi->rmode.fbWidth, dst_height, GX_TF_RGBA8, GX_FALSE);
 	GX_CopyTex(buffer, GX_FALSE);
+	GX_PixModeSync();
+	GX_InvalidateTexAll();
 	rs.fill_rect({crop_left, 240, 0}, {crop_width, 240}, xfb_texture, {0, 0}, {1, 1});
 
 	// Draw black bars
