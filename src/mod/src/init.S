@@ -64,7 +64,6 @@ store_original:
 
         b       hook_loop
 hook_end:
-#endif
 
         # Zero out the bussy
         lis     r3, __BSS_START__@h
@@ -73,6 +72,7 @@ hook_end:
         lis     r5, __BSS_SIZE__@h
         ori     r5, r5, __BSS_SIZE__@l
         bl      memset
+#endif
 
         # Run C++ constructors
         lis     r31, __CTOR_END__@h
@@ -148,6 +148,7 @@ hooks_start:
 .endm
 
 #ifdef DOL
+add_hook __init_data
 add_hook Scene_Main
 add_hook OSSetArenaHi
 #endif
