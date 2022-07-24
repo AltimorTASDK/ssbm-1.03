@@ -99,15 +99,17 @@ public:
 	template<size_t N>
 	constexpr auto get() const { return std::get<N>(elems()); }
 
-	constexpr auto foreach(auto &&callable, auto &&...tuples)
+	template<typename ...Tuples>
+	constexpr auto foreach(auto &&callable, Tuples &&...tuples)
 	{
-		static_assert(((sizeof_tuple<decltype(tuples)> == elem_count) && ...));
+		static_assert(((sizeof_tuple<Tuples> == elem_count) && ...));
 		return zip_apply(callable, elems(), tuples...);
 	}
 
-	constexpr auto foreach(auto &&callable, auto &&...tuples) const
+	template<typename ...Tuples>
+	constexpr auto foreach(auto &&callable, Tuples &&...tuples) const
 	{
-		static_assert(((sizeof_tuple<decltype(tuples)> == elem_count) && ...));
+		static_assert(((sizeof_tuple<Tuples> == elem_count) && ...));
 		return zip_apply(callable, elems(), tuples...);
 	}
 
