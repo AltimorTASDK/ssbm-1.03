@@ -184,9 +184,9 @@ static void apply_crop(HSD_VIStatus *vi, void *buffer)
 	}
 
 	// Downscale EFB into 73:60 region on 16:9 display
-	constexpr auto crop_width  = (u16)(640.f / aspect_ratio_factor + .5f);
-	constexpr auto crop_left   = (u16)((640 - crop_width) / 2);
-	constexpr auto crop_right  = crop_left + crop_width;
+	constexpr auto crop_width = (u16)(640.f / aspect_ratio_factor + .5f);
+	constexpr auto crop_left  = (u16)((640 - crop_width) / 2);
+	constexpr auto crop_right = crop_left + crop_width;
 
 	// Copy in two halves so the XFB buffer can be reused as 32bpp
 	const auto src_height = (u16)(vi->rmode.efbHeight / 2);
