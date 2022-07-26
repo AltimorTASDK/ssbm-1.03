@@ -24,6 +24,13 @@ constexpr auto sizeof_tuple = std::tuple_size_v<std::remove_reference_t<T>>;
 template<size_t N, typename T>
 constexpr auto tuple_constant = std::tuple_element_t<N, T>::value;
 
+template<typename T>
+concept TupleLike = requires(T t) {
+	[]<size_t ...I>(std::index_sequence<I...>, T t) {
+		(std::get<I>(t), ...);
+	}(std::make_index_sequence<sizeof_tuple<T>>(), t);
+};
+
 template<auto min, auto max, typename head, typename ...tail>
 constexpr auto smallest_int_impl()
 {
@@ -41,7 +48,7 @@ constexpr auto smallest_int_impl()
 template<auto min, auto max>
 using smallest_int_t = decltype(smallest_int_impl<min, max, int8_t, int16_t, int32_t, int64_t>());
 
-constexpr auto sum_tuple(auto &&tuple)
+constexpr auto sum_tuple(TupleLike auto &&tuple)
 {
 	return [&]<size_t ...I>(std::index_sequence<I...>) {
 		return (std::get<I>(tuple) + ...);
@@ -49,7 +56,7 @@ constexpr auto sum_tuple(auto &&tuple)
 }
 
 // Cartesian product of two tuples
-constexpr auto tuple_product(auto &&a, auto &&b)
+constexpr auto tuple_product(TupleLike auto &&a, TupleLike auto &&b)
 {
 	return for_range<sizeof_tuple<decltype(a)>>([&]<size_t ...I> {
 		return std::tuple_cat([&]<size_t n> {
@@ -146,7 +153,7 @@ constexpr auto bind_back(auto &&callable, auto &&...args)
 }
 
 template<ssize_t start, ssize_t end>
-constexpr auto slice_tuple(auto &&tuple)
+constexpr auto slice_tuple(TupleLike auto &&tuple)
 {
 	// Python style indices
 	constexpr auto size = (ssize_t)sizeof_tuple<decltype(tuple)>;
@@ -173,7 +180,7 @@ constexpr auto slice(auto &&...args)
 // Create a tuple of the Nth elements of the given tuples. If a tuple has no Nth
 // element, it's omitted from the result.
 template<size_t N>
-constexpr auto zip_at_index(auto &&...tuples)
+constexpr auto zip_at_index(TupleLike auto &&...tuples)
 {
 	return std::tuple_cat([&] {
 		if constexpr (N < sizeof_tuple<decltype(tuples)>)
@@ -184,7 +191,7 @@ constexpr auto zip_at_index(auto &&...tuples)
 }
 
 // Similar to Python's itertools.zip_longest, but without a fill value.
-constexpr auto zip(auto &&...tuples)
+constexpr auto zip(TupleLike auto &&...tuples)
 {
 	if constexpr (sizeof...(tuples) > 1) {
 		constexpr auto longest = std::max(sizeof_tuple<decltype(tuples)>...);
@@ -203,7 +210,7 @@ constexpr auto zip(auto &&...tuples)
 }
 
 // Given a tuple of tuples, unpack the values of all contained tuples into a single continuous tuple
-constexpr auto tuple_chain(auto &&tuple)
+constexpr auto tuple_chain(TupleLike auto &&tuple)
 {
 	return std::apply([](auto &&...tuples) {
 		return std::tuple_cat(tuples...);
@@ -212,7 +219,7 @@ constexpr auto tuple_chain(auto &&tuple)
 
 // Use std::apply with multiple argument tuples, returning a tuple of results.
 // void results are omitted from the tuple.
-constexpr auto apply_multi(auto &&callable, auto &&...tuples)
+constexpr auto apply_multi(auto &&callable, TupleLike auto &&...tuples)
 {
 	return std::tuple_cat([&] {
 		if constexpr (!is_void<decltype(std::apply(callable, tuples))>) {
@@ -234,7 +241,7 @@ constexpr auto apply_multi(auto &&callable, auto &&...tuples)
 //
 // The results of callable are returned as a tuple. void results are omitted
 // from the tuple. If no results are returned, this function returns void.
-constexpr auto zip_apply(auto &&callable, auto &&...tuples)
+constexpr auto zip_apply(auto &&callable, TupleLike auto &&...tuples)
 {
 	return std::apply([&](auto &&...args) {
 		return apply_multi(callable, std::forward<decltype(args)>(args)...);
