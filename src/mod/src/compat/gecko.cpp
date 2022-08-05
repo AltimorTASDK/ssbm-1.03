@@ -44,7 +44,7 @@ struct u32_patch_list {
 		std::pair { 0x804DDB84, 0x3ECCCCCD }, // External/Widescreen/Nametag Fixes/Adjust Nametag Text X Scale.asm
 	};
 
-	if (*(u32*)0x80302784 == 0x93EDB77Cu)
+	if (*(u32*)0x80302784 == 0x93EDB77C)
 		return;
 
 	GetGameRules()->widescreen = widescreen_mode::crop;
