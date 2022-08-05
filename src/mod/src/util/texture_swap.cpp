@@ -46,8 +46,8 @@ u8 *rle_decode(const rle_data *rle, u8 *out = nullptr)
 	if (out == nullptr)
 		out = new u8[out_len];
 
-	size_t in_idx = 0;
-	size_t out_idx = 0;
+	auto in_idx = 0uz;
+	auto out_idx = 0uz;
 
 	while (out_idx < out_len) {
 		// Run:       0x00 | length, byte
@@ -95,9 +95,9 @@ u8 *index_decode(const index_header *index, u8 *out = nullptr)
 	if (out == nullptr)
 		out = new u8[out_len];
 
-	size_t bitpos = 0;
+	auto bitpos = 0uz;
 
-	for (size_t out_idx = 0; out_idx < out_len; out_idx++) {
+	for (auto out_idx = 0uz; out_idx < out_len; out_idx++) {
 		const auto in_idx = bitpos / 8;
 		const auto offset = bitpos % 8;
 

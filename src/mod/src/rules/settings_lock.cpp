@@ -59,7 +59,7 @@ extern "C" void hook_InitializeGlobalData()
 
 	settings_lock = true;
 
-	for (size_t i = 0; i < std::extent_v<decltype(config.stage_bgm)>; i++)
+	for (auto i = 0uz; i < std::extent_v<decltype(config.stage_bgm)>; i++)
 		config.stage_bgm[i] = BGM_Undefined;
 
 	auto *rules = GetGameRules();

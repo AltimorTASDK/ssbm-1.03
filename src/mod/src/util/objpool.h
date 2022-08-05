@@ -69,13 +69,13 @@ public:
 		auto indices = index_list;
 
 		// Remove any indices that are in the free list
-		for (size_t i = 0; i < N; i++) {
+		for (auto i = 0uz; i < N; i++) {
 			const auto index = free_list[i];
 			if (index != NO_INDEX)
 				indices[index] = NO_INDEX;
 		}
 
-		for (size_t i = 0; i < N; i++) {
+		for (auto i = 0uz; i < N; i++) {
 			const auto index = indices[i];
 			if (index != NO_INDEX)
 				free(&pool[index]);
