@@ -7,7 +7,7 @@ enum class controls_type : u8 {
 	z_angles  = 1,
 	no_angles = 2,
 	all       = 3,
-#ifdef TOURNAMENT
+#ifndef TOURNAMENT
 	max
 #else
 	max = z_jump + 1
