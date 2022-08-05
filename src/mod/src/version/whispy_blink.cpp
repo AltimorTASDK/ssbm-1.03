@@ -5,7 +5,7 @@
 
 extern "C" void Player_UpdatePhysicsJointAnimFrameAndRate(Player *player);
 extern "C" void Player_SetBoneAnimFrameAndRate(Player *player, u32 bone,
-                                               SubactionData *subaction_data, f32 frame, f32 rate);
+                                               HSD_FigaTree *figatree, f32 frame, f32 rate);
 
 PATCH_LIST(
 	// Patch out Player_SetAnimationFrameAndRate calls
@@ -22,7 +22,7 @@ extern "C" void hook_Player_UpdatePhysicsJointAnimFrameAndRate(Player *player)
 	if (player->override_phys_joints == 0 && player->update_phys_joints == 0)
 		return;
 
-	if (player->subaction_data == nullptr)
+	if (player->figatree == nullptr)
 		return;
 
 	// Update physics joints individually like 1.01+
@@ -30,7 +30,7 @@ extern "C" void hook_Player_UpdatePhysicsJointAnimFrameAndRate(Player *player)
 		const auto bone = player->char_dat->joint_data->phys_joints[i].bone;
 		const auto frame = player->animation_frame;
 		const auto rate = player->animation_speed;
-		Player_SetBoneAnimFrameAndRate(player, bone, player->subaction_data, frame, rate);
+		Player_SetBoneAnimFrameAndRate(player, bone, player->figatree, frame, rate);
 	}
 }
 
