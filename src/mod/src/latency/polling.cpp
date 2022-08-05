@@ -27,9 +27,6 @@ constexpr auto TEXT_HEIGHT = 3;
 constexpr auto TEXT_HEIGHT = 1;
 #endif // POLL_DEBUG
 
-static bool faster_melee;
-static bool checked_fm;
-
 static bool needs_depth_clear;
 
 static bool is_polling;
@@ -110,12 +107,15 @@ static bool detect_fm()
 
 extern "C" bool is_faster_melee()
 {
-	if (!checked_fm) {
-		faster_melee = detect_fm();
-		checked_fm = true;
+	static constinit auto initialized = false;
+	static constinit auto result = false;
+
+	if (!initialized) {
+		initialized = true;
+		result = detect_fm();
 	}
 
-	return faster_melee;
+	return result;
 }
 
 void post_retrace_callback(u32 retrace_count)

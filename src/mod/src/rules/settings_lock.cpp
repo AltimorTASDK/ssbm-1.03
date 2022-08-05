@@ -46,10 +46,10 @@ extern "C" void hook_InitializeGlobalData()
 {
 #ifdef DOL
 	// Allow first InitializeGlobalData on boot
-	static auto needs_init = true;
+	static constinit auto initialized = false;
 
-	if (needs_init) {
-		needs_init = false;
+	if (!initialized) {
+		initialized = true;
 		return orig_InitializeGlobalData();
 	}
 #endif
