@@ -172,7 +172,7 @@ extern "C" void hook_DevelopText_Draw(DevText *text)
 	text->scale.x = old_scale_x;
 }
 
-static void apply_crop(HSD_VIStatus *vi, void *buffer)
+static void apply_crop(const HSD_VIStatus *vi, void *buffer)
 {
 	if (!is_widescreen_crop())
 		return;
@@ -195,9 +195,9 @@ static void apply_crop(HSD_VIStatus *vi, void *buffer)
 	auto &rs = render_state::get();
 	rs.reset_2d();
 
-	GX_SetCopyFilter(GX_FALSE, nullptr, GX_FALSE, nullptr);
 	GX_SetColorUpdate(GX_TRUE);
 	GX_SetZMode(GX_FALSE, GX_NEVER, GX_FALSE);
+	GX_SetCopyFilter(GX_FALSE, nullptr, GX_FALSE, nullptr);
 
 	// Draw top half
 	GX_SetTexCopySrc(0, 0, vi->rmode.fbWidth, src_height);
@@ -218,6 +218,10 @@ static void apply_crop(HSD_VIStatus *vi, void *buffer)
 	rs.fill_rect({crop_left, 240, 0}, {crop_width, 240}, xfb_texture, {0, 0}, {1, 1});
 
 	// Draw black bars
+	GX_SetNumTexGens(0);
+	GX_SetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
+	GX_SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORDNULL, GX_TEXMAP_NULL, GX_COLOR0A0);
+
 	rs.fill_rect({0,          0, 0}, {crop_left, 480}, color_rgba::hex(0x000000FF));
 	rs.fill_rect({crop_right, 0, 0}, {crop_left, 480}, color_rgba::hex(0x000000FF));
 }
