@@ -146,9 +146,8 @@ constexpr auto fill_tuple(auto &&value)
 constexpr auto bind_back(auto &&callable, auto &&...args)
 {
 	return [&](auto &&...head) {
-		return callable(
-			std::forward<decltype(head)>(head)...,
-			std::forward<decltype(args)>(args)...);
+		return callable(std::forward<decltype(head)>(head)...,
+		                std::forward<decltype(args)>(args)...);
 	};
 }
 
