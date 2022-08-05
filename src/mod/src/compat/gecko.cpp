@@ -108,7 +108,7 @@ struct u32_patch_list {
 		std::pair { 0x80376200, 0x2C1DFFFF },
 		std::pair { 0x801A5018, 0x3B5A0001 },
 		// Keep this, this patches a reference to a constant that gets clobbered
-		//std::pair { 0x80218D68, 0xC822C150 },
+		// std::pair { 0x80218D68, 0xC822C150 },
 	};
 
 	HSD_VISetUserPostRetraceCallback(post_retrace_callback);
