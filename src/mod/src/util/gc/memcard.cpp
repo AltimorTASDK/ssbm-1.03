@@ -12,8 +12,6 @@
 #include <ogc/cache.h>
 #include <ogc/card.h>
 
-struct buffer_wrapper;
-
 extern "C" void *CardWorkArea;
 extern "C" void(*MemCardErrorCallback)(u32);
 extern "C" u32 MemCardState;
