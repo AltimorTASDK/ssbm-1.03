@@ -13,4 +13,5 @@ GALP01.ld
 gci/**/*.bin
 gci/**/*.elf
 gci/**/*.gci
+!gci/*
 gci/tmp_*
