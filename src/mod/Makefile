@@ -53,8 +53,8 @@ LINKSCRIPT := mod-b.ld
 COMMONLD   := ../common-b.ld
 endif
 
-CFLAGS    += -flto
-CXXFLAGS  += -flto
+CFLAGS    += -flto -fuse-linker-plugin
+CXXFLAGS  += -flto -fuse-linker-plugin
 LDFLAGS   += -flto
 
 ifeq ($(VERSION), 102)
