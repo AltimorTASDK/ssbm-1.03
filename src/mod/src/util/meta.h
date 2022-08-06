@@ -10,6 +10,8 @@
 #include <type_traits>
 #include <utility>
 
+using ssize_t = std::make_signed_t<size_t>;
+
 template<typename T, size_t size>
 using c_array_t = T[size];
 
