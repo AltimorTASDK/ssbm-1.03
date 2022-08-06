@@ -73,6 +73,8 @@ static void update_vi_width()
 extern "C" void orig_HSD_StartRender(u32 pass);
 extern "C" void hook_HSD_StartRender(u32 pass)
 {
+	update_vi_width();
+
 	// Don't scale viewport based on fbWidth vs viWidth
 	orig_HSD_StartRender(HSD_RP_OFFSCREEN);
 }
@@ -81,8 +83,6 @@ extern "C" int orig_CObjLoad(HSD_CObj *cobj, HSD_CObjDesc *desc);
 extern "C" int hook_CObjLoad(HSD_CObj *cobj, HSD_CObjDesc *desc)
 {
 	const auto result = orig_CObjLoad(cobj, desc);
-
-	update_vi_width();
 
 	// Don't prevent screen flash from covering screen
 	if (desc == &ScreenFlashCObjDesc)
