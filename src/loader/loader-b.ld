@@ -2,7 +2,7 @@
  * Produces a code blob to be compiled into a GCI
  */
 
-INCLUDE ../common.ld
+INCLUDE ../common-b.ld
 
 OUTPUT_FORMAT(elf32-powerpc)
 OUTPUT_ARCH(powerpc:common);
@@ -12,8 +12,8 @@ __LOAD_BASE__ = __LOADER_BASE__;
 
 MEMORY
 {
-    bootstrap      : ORIGIN = __BOOTSTRAP_BASE__,                   LENGTH = __LOADER_SIZE__
-    load           : ORIGIN = __LOAD_BASE__,                        LENGTH = __LOADER_SIZE__
+    bootstrap      : ORIGIN = __BOOTSTRAP_BASE__, LENGTH = __LOADER_SIZE__
+    load           : ORIGIN = __LOAD_BASE__,      LENGTH = __LOADER_SIZE__
 }
 
 SECTIONS

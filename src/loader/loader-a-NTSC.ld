@@ -2,7 +2,7 @@
  * Produces a code blob to be compiled into a GCI
  */
 
-INCLUDE ../common.ld
+INCLUDE ../common-a.ld
 
 OUTPUT_FORMAT(elf32-powerpc)
 OUTPUT_ARCH(powerpc:common);

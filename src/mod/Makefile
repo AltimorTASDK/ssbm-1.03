@@ -45,7 +45,13 @@ OBJFILES := \
 
 DEPFILES := $(patsubst $(OBJDIR)/%.o, $(DEPDIR)/%.d, $(OBJFILES))
 
-LINKSCRIPT := mod.ld
+ifdef NOPAL
+LINKSCRIPT := mod-a.ld
+COMMONLD   := ../common-a.ld
+else
+LINKSCRIPT := mod-b.ld
+COMMONLD   := ../common-b.ld
+endif
 
 CFLAGS    += -flto
 CXXFLAGS  += -flto
@@ -78,7 +84,7 @@ $(PATCHES): $(DOLELF)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(OBJCOPY) -O binary -j .patches $< $@
 
-$(DOLELF): $(OBJFILES) $(DOLDATA) $(DOLLD) $(MELEELD) ../common.ld | clean-unused
+$(DOLELF): $(OBJFILES) $(DOLDATA) $(DOLLD) $(MELEELD) $(COMMONLD) | clean-unused
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(CC) $(LDFLAGS) -T$(DOLLD) -T$(MELEELD) $(OBJFILES) -o $@
 
@@ -100,7 +106,7 @@ ifeq ($(VERSION), 102)
 	rm -f $(LOCALBIN)/mod-pal.bin.diff
 endif
 
-$(ELFFILE): $(OBJFILES) $(LINKSCRIPT) $(MELEELD) ../common.ld | clean-unused
+$(ELFFILE): $(OBJFILES) $(LINKSCRIPT) $(MELEELD) $(COMMONLD) | clean-unused
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(CC) $(LDFLAGS) -T$(LINKSCRIPT) -T$(MELEELD) $(OBJFILES) -o $@
 

@@ -41,14 +41,17 @@ GCIFILE    := $(BINDIR)/$(MODNAME)-loader-PAL.gci
 GCISRC     := $(GCIDIR)/ssbm-PAL.gci
 MGCMAIN    := $(MGCDIR)/1.03-PAL.mgc
 LINKSCRIPT := loader-PAL.ld
+COMMONLD   := ../common-b.ld loader-b.ld
 else
 GCIFILE    := $(BINDIR)/$(MODNAME)-loader-NTSC.gci
 GCISRC     := $(GCIDIR)/ssbm-NTSC.gci
 MGCMAIN    := $(MGCDIR)/1.03-NTSC.mgc
 ifdef NOPAL
 LINKSCRIPT := loader-a-NTSC.ld
+COMMONLD   := ../common-a.ld
 else
 LINKSCRIPT := loader-b-NTSC.ld
+COMMONLD   := ../common-b.ld loader-b.ld
 endif
 endif
 
@@ -118,7 +121,7 @@ $(ZLIBBIN): $(ELFFILE)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(OBJCOPY) -O binary -j .zlib $< $@
 
-$(ELFFILE): $(OBJFILES) $(LINKSCRIPT) $(MELEELD) loader.ld ../common.ld | clean-unused
+$(ELFFILE): $(OBJFILES) $(LINKSCRIPT) $(MELEELD) $(COMMONLD) | clean-unused
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(CC) $(LDFLAGS) -T$(LINKSCRIPT) -T$(MELEELD) $(OBJFILES) -o $@
 
