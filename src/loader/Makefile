@@ -43,8 +43,8 @@ MGCMAIN    := $(MGCDIR)/1.03-PAL.mgc
 LINKSCRIPT := loader-PAL.ld
 COMMONLD   := ../common-b.ld loader-b.ld
 else
-GCIFILE    := $(BINDIR)/$(MODNAME)-loader-NTSC.gci
-GCISRC     := $(GCIDIR)/ssbm-NTSC.gci
+GCIFILE    := $(BINDIR)/$(MODNAME)-loader-USA.gci
+GCISRC     := $(GCIDIR)/ssbm-USA.gci
 MGCMAIN    := $(MGCDIR)/1.03-NTSC.mgc
 ifdef NOPAL
 LINKSCRIPT := loader-a-NTSC.ld
