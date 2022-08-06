@@ -124,8 +124,8 @@ static void random_icon_proc(HSD_GObj *gobj)
 	jobj->flags |= USER_DEF_MTX;
 
 	// Place random at (16.4, -9.5), opposite to the stage name
-	jobj->mtx.get<0, 3>() = jobj->position.x += 14.1f + 16.4f;
-	jobj->mtx.get<1, 3>() = jobj->position.y = -9.5f;
+	jobj->mtx[0, 3] = jobj->position.x += 14.1f + 16.4f;
+	jobj->mtx[1, 3] = jobj->position.y = -9.5f;
 }
 
 static void stage_icon_proc(HSD_GObj *gobj)
@@ -142,8 +142,8 @@ static void stage_icon_proc(HSD_GObj *gobj)
 	if (is_teams())
 		jobj->position.x += 3.3f;
 
-	jobj->mtx.get<0, 3>() = jobj->position.x *= ICON_SCALE;
-	jobj->mtx.get<1, 3>() = jobj->position.y = 3.8f;
+	jobj->mtx[0, 3] = jobj->position.x *= ICON_SCALE;
+	jobj->mtx[1, 3] = jobj->position.y = 3.8f;
 }
 
 static void setup_icon(StageSelectIcon *icon, HSD_JObj *constraint,

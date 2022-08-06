@@ -152,10 +152,10 @@ extern "C" void hook_TrainingMenu_Think()
 		case TrainingMenuJoint_ItemText:
 		case TrainingMenuJoint_Banner:
 		case TrainingMenuJoint_LeftPanel:
-			jobj->mtx.get<0, 3>() -= offset;
+			jobj->mtx[0, 3] -= offset;
 			break;
 		case TrainingMenuJoint_RightPanel:
-			jobj->mtx.get<0, 3>() += offset;
+			jobj->mtx[0, 3] += offset;
 			break;
 		}
 	}

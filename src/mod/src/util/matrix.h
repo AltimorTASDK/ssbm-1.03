@@ -36,24 +36,12 @@ public:
 		static_assert(sizeof...(values) == N * M);
 	}
 
-	template<size_t i, size_t j>
-	constexpr T &get()
+	constexpr T &operator[](size_t i, size_t j)
 	{
 		return elems[i * M + j];
 	}
 
-	template<size_t i, size_t j>
-	constexpr T get() const
-	{
-		return elems[i * M + j];
-	}
-
-	constexpr T &get(size_t i, size_t j)
-	{
-		return elems[i * M + j];
-	}
-
-	constexpr T get(size_t i, size_t j) const
+	constexpr T operator[](size_t i, size_t j) const
 	{
 		return elems[i * M + j];
 	}
@@ -62,7 +50,7 @@ public:
 	constexpr auto row()
 	{
 		return for_range<M>([&]<size_t ...J> {
-			return std::tie(get<i, J>()...);
+			return std::tie(*this[i, J]...);
 		});
 	}
 
@@ -70,7 +58,7 @@ public:
 	constexpr auto row() const
 	{
 		return for_range<M>([&]<size_t ...J> {
-			return std::make_tuple(get<i, J>()...);
+			return std::make_tuple(*this[i, J]...);
 		});
 	}
 
@@ -92,7 +80,7 @@ public:
 	constexpr auto col()
 	{
 		return for_range<N>([&]<size_t ...I> {
-			return std::tie(get<I, j>()...);
+			return std::tie(*this[I, j]...);
 		});
 	}
 
@@ -100,7 +88,7 @@ public:
 	constexpr auto col() const
 	{
 		return for_range<N>([&]<size_t ...I> {
-			return std::make_tuple(get<I, j>()...);
+			return std::make_tuple(*this[I, j]...);
 		});
 	}
 
