@@ -4,6 +4,7 @@
 #include "hsd/tobj.h"
 #include "hsd/video.h"
 #include "os/gx.h"
+#include "os/vi.h"
 #include "melee/camera.h"
 #include "melee/text.h"
 #include "qol/widescreen.h"
@@ -54,10 +55,34 @@ extern "C" HSD_GObj *NameTagGObjs[6];
 
 extern "C" TrainingMenuData TrainingMenu;
 
+static void update_vi_width()
+{
+	static constinit auto vi_widescreen = false;
+	const auto widescreen = is_widescreen() || is_widescreen_crop();
+
+	if (vi_widescreen == widescreen)
+		return;
+
+	// Ensure the image fills the display
+	HSD_VIData.current.vi.rmode.viWidth   = widescreen ? 720 : 640;
+	HSD_VIData.current.vi.rmode.viXOrigin = widescreen ?   0 :  40;
+	HSD_VIData.current.chg_flag = true;
+	vi_widescreen = widescreen;
+}
+
+extern "C" void orig_HSD_StartRender(u32 pass);
+extern "C" void hook_HSD_StartRender(u32 pass)
+{
+	// Don't scale viewport based on fbWidth vs viWidth
+	orig_HSD_StartRender(HSD_RP_OFFSCREEN);
+}
+
 extern "C" int orig_CObjLoad(HSD_CObj *cobj, HSD_CObjDesc *desc);
 extern "C" int hook_CObjLoad(HSD_CObj *cobj, HSD_CObjDesc *desc)
 {
 	const auto result = orig_CObjLoad(cobj, desc);
+
+	update_vi_width();
 
 	// Don't prevent screen flash from covering screen
 	if (desc == &ScreenFlashCObjDesc)
@@ -218,10 +243,6 @@ static void apply_crop(const HSD_VIStatus *vi, void *buffer)
 	rs.fill_rect({crop_left, 240, 0}, {crop_width, 240}, xfb_texture, {0, 0}, {1, 1});
 
 	// Draw black bars
-	GX_SetNumTexGens(0);
-	GX_SetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
-	GX_SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORDNULL, GX_TEXMAP_NULL, GX_COLOR0A0);
-
 	rs.fill_rect({0,          0, 0}, {crop_left, 480}, color_rgba::hex(0x000000FF));
 	rs.fill_rect({crop_right, 0, 0}, {crop_left, 480}, color_rgba::hex(0x000000FF));
 }
