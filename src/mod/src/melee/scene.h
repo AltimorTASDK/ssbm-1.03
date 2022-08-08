@@ -11,7 +11,9 @@ enum Scene {
 	Scene_Adventure      = 4,
 	Scene_AllStar        = 5,
 	Scene_DebugMenu      = 6,
+#ifdef NTSC102
 	Scene_Slippi         = 8, // Unused debug CSS in vailla
+#endif
 	Scene_TargetTest     = 15,
 #ifdef PAL
 	Scene_AttractMode    = 27,
