@@ -8,6 +8,15 @@
 
 .set GameRules.mode, 0x02
 
+#ifdef NTSC102
+# Slippi
+.set Scene_Slippi, 8
+.set OnlineMode_Ranked,   0
+.set OnlineMode_Unranked, 1
+.set OnlineMode_Direct,   2
+.set OnlineMode_Teams,    3
+#endif
+
 .global hook_CheckIsCPUPuck
 hook_CheckIsCPUPuck:
         # Check if set to CPU normally
@@ -93,6 +102,28 @@ ready_2p:
 
 .global hook_CheckCSSMatchStartCooldown
 hook_CheckCSSMatchStartCooldown:
+#ifdef NTSC102
+        # Don't allow queuing for non-direct on 1.03
+        lis     r3, SceneMajor@ha
+        lbz     r3, SceneMajor@l(r3)
+        cmplwi  r3, Scene_Slippi
+        bne     not_matchmaking
+
+        lis     r3, SlippiOnlineMode@ha
+        lbz     r3, SlippiOnlineMode@l(r3)
+        cmplwi  r3, OnlineMode_Direct
+        bge     not_matchmaking
+
+        # Only play error sound if pressing start
+        rlwinm. r3, r7, 0, 19, 19
+        beq     1f
+
+        li      r3, MenuSFX_Error
+        bl      Menu_PlaySFX
+        b       1f
+
+not_matchmaking:
+#endif
         # Bail out if ready to start match
         cmplwi  r0, 0
         beq     2f
