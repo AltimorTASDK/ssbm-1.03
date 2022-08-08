@@ -58,9 +58,10 @@ extern "C" TrainingMenuData TrainingMenu;
 static void update_vi_width()
 {
 	static constinit auto vi_widescreen = false;
-	const auto widescreen = is_widescreen() || is_widescreen_crop();
+	static constinit auto initialized = false;
+	const auto widescreen = is_widescreen();
 
-	if (vi_widescreen == widescreen)
+	if (vi_widescreen == widescreen && initialized)
 		return;
 
 	// Ensure the image fills the display
@@ -68,6 +69,7 @@ static void update_vi_width()
 	HSD_VIData.current.vi.rmode.viXOrigin = widescreen ?   0 :  40;
 	HSD_VIData.current.chg_flag = true;
 	vi_widescreen = widescreen;
+	initialized = true;
 }
 
 extern "C" void orig_HSD_StartRender(u32 pass);
@@ -206,9 +208,9 @@ static void apply_crop(const HSD_VIStatus *vi, void *buffer)
 	if (buffer == nullptr)
 		return;
 
-	// Downscale EFB into 73:60 region on 16:9 display
-	constexpr auto crop_width = (u16)(640.f / aspect_ratio_factor + .5f);
-	constexpr auto crop_left  = (u16)((640 - crop_width) / 2);
+	// Downscale EFB into 4:3 region on 16:9 display (73:60 with pixel aspect ratio)
+	constexpr auto crop_width = 640 * 3/4;
+	constexpr auto crop_left  = (640 - crop_width) / 2;
 	constexpr auto crop_right = crop_left + crop_width;
 
 	// Copy in two halves so the XFB buffer can be reused as 32bpp
