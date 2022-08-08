@@ -149,8 +149,9 @@ hooks_start:
 
 #ifdef DOL
 add_hook __init_data
-add_hook Scene_Main
+add_hook HSD_InitComponent
 add_hook OSSetArenaHi
+add_hook Scene_Main
 #endif
 # Allow stealing stocks with A
 .set CheckStockStealInput,    Match_CheckStockSteal+0xF8

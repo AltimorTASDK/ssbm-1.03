@@ -118,7 +118,7 @@ extern "C" bool is_faster_melee()
 	return result;
 }
 
-void post_retrace_callback(u32 retrace_count)
+static void post_retrace_callback(u32 retrace_count)
 {
 	// Check if there were any poll interrupts this frame
 	if (poll_index == 0)

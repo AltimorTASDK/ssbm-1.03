@@ -1,7 +1,5 @@
 #if defined(NTSC102) && defined(DOL)
 
-#include "hsd/video.h"
-#include "os/serial.h"
 #include "latency/polling.h"
 #include "melee/rules.h"
 #include "rules/saved_config.h" // Must be included to ensure config is already initialized
@@ -9,6 +7,13 @@
 #include <gctypes.h>
 
 extern "C" void(*PADSetSamplingCallback(void(*callback)()))();
+
+// Wait to apply settings because gecko code checks happen before C++ constructors
+static bool use_wide;
+static bool use_crop;
+static bool use_crt;
+static bool use_lcd;
+static bool use_low;
 
 struct u32_patch_list {
 	template<typename ...T, typename ...U>
@@ -20,12 +25,12 @@ struct u32_patch_list {
 
 // Disable conflicting gecko codes if found and set the equivalent 1.03 settings
 
-[[gnu::constructor]] static void check_widescreen()
+static void check_widescreen()
 {
 	if (*(u32*)0x803BB05C != 0x3EB00000)
 		return;
 
-	GetGameRules()->widescreen = widescreen_mode::on;
+	use_wide = true;
 
 	// Optional: Widescreen 16:9 [Dan Salvato, mirrorbender, Achilles1515, UnclePunch]
 	u32_patch_list {
@@ -47,7 +52,7 @@ struct u32_patch_list {
 	if (*(u32*)0x80302784 == 0x93EDB77C)
 		return;
 
-	GetGameRules()->widescreen = widescreen_mode::crop;
+	use_crop = true;
 
 	// Optional: 16:9 -> 73:60 [Dan Salvato, mirrorbender, Achilles1515, UnclePunch, Fizzi]
 	u32_patch_list {
@@ -55,12 +60,12 @@ struct u32_patch_list {
 	};
 }
 
-[[gnu::constructor]] static void check_pdf()
+static void check_pdf()
 {
 	if (is_faster_melee() || *(u32*)0x80019860 != 0x4BFFFD9D)
 		return;
 
-	GetGameRules()->latency = latency_mode::crt;
+	use_crt = true;
 
 	// Polling Drift Fix [Dan Salvato]
 	u32_patch_list {
@@ -70,12 +75,12 @@ struct u32_patch_list {
 	};
 }
 
-[[gnu::constructor]] static void check_pdf_half_vb()
+static void check_pdf_half_vb()
 {
 	if (is_faster_melee() || *(u32*)0x80158268 != 0xC82280A0)
 		return;
 
-	GetGameRules()->latency = latency_mode::lcd;
+	use_lcd = true;
 
 	// Polling Drift + Half Visual Buffer Fixes [tauKhan]
 	u32_patch_list {
@@ -89,16 +94,14 @@ struct u32_patch_list {
 	};
 
 	PADSetSamplingCallback(nullptr);
-	SI_EnablePollingInterrupt(true);
-	HSD_VISetUserPostRetraceCallback(post_retrace_callback);
 }
 
-[[gnu::constructor]] static void check_pdf_vb()
+static void check_pdf_vb()
 {
 	if (is_faster_melee() || *(u32*)0x80019860 != 0x91231F5C)
 		return;
 
-	GetGameRules()->latency = latency_mode::low;
+	use_low = true;
 
 	// Polling Drift Fix + Visual Buffer Fixes [tauKhan]
 	u32_patch_list {
@@ -110,8 +113,39 @@ struct u32_patch_list {
 		// Keep this, this patches a reference to a constant that gets clobbered
 		// std::pair { 0x80218D68, 0xC822C150 },
 	};
+}
 
-	HSD_VISetUserPostRetraceCallback(post_retrace_callback);
+extern "C" void orig_HSD_InitComponent();
+extern "C" void hook_HSD_InitComponent()
+{
+	orig_HSD_InitComponent();
+
+	check_widescreen();
+	check_pdf();
+	check_pdf_half_vb();
+	check_pdf_vb();
+
+	// Don't run the codehandler every frame on console
+	u32_patch_list {
+		std::pair { 0x8034BAFC, 0x4E800020 }
+	};
+}
+
+[[gnu::constructor]] static void apply_settings()
+{
+	auto *rules = GetGameRules();
+
+	if (use_crop)
+		rules->widescreen = widescreen_mode::crop;
+	else if (use_wide)
+		rules->widescreen = widescreen_mode::on;
+
+	if (use_low)
+		rules->latency = latency_mode::low;
+	else if (use_lcd)
+		rules->latency = latency_mode::lcd;
+	else if (use_crt)
+		rules->latency = latency_mode::crt;
 }
 
 #endif
