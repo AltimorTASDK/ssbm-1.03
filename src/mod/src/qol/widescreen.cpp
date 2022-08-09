@@ -284,7 +284,7 @@ static void apply_crop(const HSD_VIStatus *vi, void *buffer)
 static widescreen_mode update_vi_widescreen()
 {
 	static constinit auto vi_widescreen = widescreen_mode::max;
-	static constinit auto needs_update = false;
+	static constinit auto needs_update = true;
 	const auto widescreen = GetGameRules()->widescreen;
 	const auto is_wide = widescreen == widescreen_mode::on;
 	const auto vi_is_wide = vi_widescreen == widescreen_mode::on;
