@@ -70,28 +70,9 @@ extern "C" TrainingMenuData TrainingMenu;
 
 extern "C" HSD_JObj *PauseOverlayJObj;
 
-static void update_vi_width()
-{
-	static constinit auto vi_widescreen = false;
-	static constinit auto initialized = false;
-	const auto widescreen = is_widescreen();
-
-	if (vi_widescreen == widescreen && initialized)
-		return;
-
-	// Ensure the image fills the display
-	HSD_VIData.current.vi.rmode.viWidth   = widescreen ? 720 : 640;
-	HSD_VIData.current.vi.rmode.viXOrigin = widescreen ?   0 :  40;
-	HSD_VIData.current.chg_flag = true;
-	vi_widescreen = widescreen;
-	initialized = true;
-}
-
 extern "C" void orig_HSD_StartRender(u32 pass);
 extern "C" void hook_HSD_StartRender(u32 pass)
 {
-	update_vi_width();
-
 	// Don't scale viewport based on fbWidth vs viWidth
 	orig_HSD_StartRender(HSD_RP_OFFSCREEN);
 }
@@ -253,9 +234,6 @@ extern "C" void hook_DevelopText_Draw(DevText *text)
 
 static void apply_crop(const HSD_VIStatus *vi, void *buffer)
 {
-	if (!is_widescreen_crop())
-		return;
-
 	// Don't crash from Hannes Mann lag reduction
 	if (buffer == nullptr)
 		return;
@@ -273,7 +251,7 @@ static void apply_crop(const HSD_VIStatus *vi, void *buffer)
 	const auto xfb_texture = texture(buffer, vi->rmode.fbWidth, dst_height, GX_TF_RGBA8);
 
 	auto &rs = render_state::get();
-	rs.reset_2d();
+	rs.reset_2d(false);
 
 	// Disable depth testing and deinterlacing
 	GX_SetColorUpdate(GX_TRUE);
@@ -303,9 +281,39 @@ static void apply_crop(const HSD_VIStatus *vi, void *buffer)
 	rs.fill_rect({crop_right, 0, 10}, {crop_left, 480}, color_rgba::hex(0x000000FF));
 }
 
+static widescreen_mode update_vi_widescreen()
+{
+	static constinit auto vi_widescreen = widescreen_mode::max;
+	static constinit auto needs_update = false;
+	const auto widescreen = GetGameRules()->widescreen;
+	const auto is_wide = widescreen == widescreen_mode::on;
+	const auto vi_is_wide = vi_widescreen == widescreen_mode::on;
+
+	if (needs_update) {
+		// Ensure the image fills the display on widescreen
+		HSD_VIData.current.vi.rmode.viWidth   = vi_is_wide ? 720 : 640;
+		HSD_VIData.current.vi.rmode.viXOrigin = vi_is_wide ?   0 :  40;
+		HSD_VIData.current.chg_flag = true;
+		needs_update = false;
+	}
+
+	if (vi_widescreen == widescreen)
+		return widescreen;
+
+	// Allow a frame to be rendered with the new aspect ratio before updating VI scaling
+	needs_update = vi_is_wide != is_wide;
+	const auto last_widescreen = vi_widescreen;
+	vi_widescreen = widescreen;
+	return last_widescreen;
+}
+
 extern "C" void orig_HSD_VICopyEFB2XFBPtr(HSD_VIStatus *vi, void *buffer, u32 rpass);
 extern "C" void hook_HSD_VICopyEFB2XFBPtr(HSD_VIStatus *vi, void *buffer, u32 rpass)
 {
-	apply_crop(vi, buffer);
+	const auto widescreen = update_vi_widescreen();
+
+	if (widescreen == widescreen_mode::crop)
+		apply_crop(vi, buffer);
+
 	orig_HSD_VICopyEFB2XFBPtr(vi, buffer, rpass);
 }

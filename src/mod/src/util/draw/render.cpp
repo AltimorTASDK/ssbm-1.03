@@ -108,7 +108,7 @@ void render_state::reset()
 	set_scissor(0, 0, 640, 480);
 }
 
-void render_state::reset_2d()
+void render_state::reset_2d(bool check_widescreen)
 {
 	reset();
 
@@ -117,8 +117,9 @@ void render_state::reset_2d()
 	constexpr auto proj      = ortho_projection(0, 480, 0,      640,    -1000, 1000);
 	constexpr auto proj_wide = ortho_projection(0, 480, wide_l, wide_r, -1000, 1000);
 
+	const auto is_wide = check_widescreen && is_widescreen();
 	GX_SetCurrentMtx(0);
-	GX_LoadProjectionMtx(is_widescreen() ? proj_wide : proj, GX_ORTHOGRAPHIC);
+	GX_LoadProjectionMtx(is_wide ? proj_wide : proj, GX_ORTHOGRAPHIC);
 	GX_LoadPosMtxImm(matrix3x4::identity, GX_PNMTX0);
 }
 

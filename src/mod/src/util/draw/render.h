@@ -83,7 +83,7 @@ public:
 	}
 
 	void reset();
-	void reset_2d();
+	void reset_2d(bool check_widescreen = true);
 	void reset_3d();
 
 	void set_scissor(u32 x, u32 y, u32 w, u32 h);
