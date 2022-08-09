@@ -208,8 +208,9 @@ static void apply_crop(const HSD_VIStatus *vi, void *buffer)
 	if (buffer == nullptr)
 		return;
 
-	// Downscale EFB into 4:3 region on 16:9 display (73:60 with pixel aspect ratio)
-	constexpr auto crop_width = 640 * 3/4;
+	// Downscale EFB into 73:60 region on 16:9 display accounting for Melee's pixel aspect ratio
+	// Thanks to /u/mirrorbender's post for pixel aspect ratio info
+	constexpr auto crop_width = 720 * 73/80 * 3/4;
 	constexpr auto crop_left  = (640 - crop_width) / 2;
 	constexpr auto crop_right = crop_left + crop_width;
 
