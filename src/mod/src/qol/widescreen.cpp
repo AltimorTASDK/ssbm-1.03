@@ -17,10 +17,23 @@
 #include <gctypes.h>
 
 enum TrainingMenuJoint {
-	TrainingMenuJoint_ItemText = 1,
-	TrainingMenuJoint_Banner = 2,
+	TrainingMenuJoint_ItemText   = 1,
+	TrainingMenuJoint_Banner     = 2,
 	TrainingMenuJoint_RightPanel = 3,
-	TrainingMenuJoint_LeftPanel = 22
+	TrainingMenuJoint_LeftPanel  = 22
+};
+
+enum PauseOverlayJoint {
+	PauseOverlayJoint_Stick       = 1,
+	PauseOverlayJoint_Squares     = 3,
+	PauseOverlayJoint_BorderBR    = 4,
+	PauseOverlayJoint_BorderBL    = 5,
+	PauseOverlayJoint_BorderTL    = 6,
+	PauseOverlayJoint_PauseText   = 7,
+	PauseOverlayJoint_PortText    = 8,
+	PauseOverlayJoint_LRAS        = 9,
+	PauseOverlayJoint_Z           = 10,
+	PauseOverlayJoint_StickBorder = 11,
 };
 
 struct BubbleData {
@@ -54,6 +67,8 @@ extern "C" HSD_CObjDesc ScreenFlashCObjDesc;
 extern "C" HSD_GObj *NameTagGObjs[6];
 
 extern "C" TrainingMenuData TrainingMenu;
+
+extern "C" HSD_JObj *PauseOverlayJObj;
 
 static void update_vi_width()
 {
@@ -164,6 +179,43 @@ extern "C" void hook_TrainingMenu_Think()
 
 	// Move item text to accomodate stretched viewport
 	TrainingMenu.item_text->trans.x /= aspect_ratio_factor;
+}
+
+extern "C" void orig_PauseOverlay_Create();
+extern "C" void hook_PauseOverlay_Create()
+{
+	orig_PauseOverlay_Create();
+
+	if (!is_widescreen())
+		return;
+
+	// Calc offset based on the X coord at the edge of the camera
+	constexpr auto screen_edge = 64.f * (float)tan(0.725f / 2.f) * (73.f / 60.f);
+	constexpr auto offset = screen_edge * (aspect_ratio_factor - 1.f);
+
+	const auto left = HSD_JObjGetFromTreeByIndices<
+		PauseOverlayJoint_Stick,
+		PauseOverlayJoint_BorderBL,
+		PauseOverlayJoint_BorderTL,
+		PauseOverlayJoint_StickBorder>(PauseOverlayJObj);
+
+	for (auto *jobj : left) {
+		jobj->position.x -= offset;
+		HSD_JObjSetMtxDirty(jobj);
+	}
+
+	const auto right = HSD_JObjGetFromTreeByIndices<
+		PauseOverlayJoint_Squares,
+		PauseOverlayJoint_BorderBR,
+		PauseOverlayJoint_PauseText,
+		PauseOverlayJoint_PortText,
+		PauseOverlayJoint_LRAS,
+		PauseOverlayJoint_Z>(PauseOverlayJObj);
+
+	for (auto *jobj : right) {
+		jobj->position.x += offset;
+		HSD_JObjSetMtxDirty(jobj);
+	}
 }
 
 extern "C" void orig_NameTag_SetupForPlayer(u32 port);

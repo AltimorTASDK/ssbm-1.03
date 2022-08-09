@@ -350,6 +350,7 @@ add_hook CObjLoad
 add_hook DevelopText_Draw
 add_hook HSD_StartRender
 add_hook NameTag_SetupForPlayer
+add_hook PauseOverlay_Create
 add_hook Text_UpdateSubtextSize
 add_hook TrainingMenu_Create
 add_hook TrainingMenu_Think

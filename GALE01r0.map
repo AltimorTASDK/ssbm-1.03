@@ -1525,6 +1525,7 @@
 8019fe18 0000010c 8019fe18 0 DebugMenu_ComingSoon_ScreenThink
 8019ff24 000001a0 8019ff24 0 DebugMenu_ComingSoon_ScreenLoad_FileLoad
 801a00c4 00000028 801a00c4 0 DebugMenu_StopMusicOnIfComSnExit
+801a03ec 00000190 801a03ec 0 PauseOverlay_Create
 801a0ed0 00000120 801a0ed0 0 TitleScreen_Think
 801a10d8 00000404 801a10d8 0 TitleScreen_Load
 801a15ec 00000208 801a15ec 0 Ab_Menu_TextDraw_CameraMode_4
@@ -4106,6 +4107,7 @@
 80450ca8 00000000 80450ca8 0 MainCamera
 80459f64 00000000 80459f64 0 FeatureUnlockMask
 8047184c 00000000 8047184c 0 TrainingMenu
+80477b48 00000000 80477b48 0 PauseOverlayJObj
 80477d68 00000000 80477d68 0 SceneMajor
 80477d69 00000000 80477d69 0 SceneMajorPending
 80477d6a 00000000 80477d6a 0 SceneMajorPrevious
