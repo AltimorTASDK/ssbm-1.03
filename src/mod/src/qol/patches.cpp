@@ -1,6 +1,7 @@
 #include "hsd/gobj.h"
 #include "melee/player.h"
 #include "melee/match.h"
+#include "os/serial.h"
 #include "util/patch_list.h"
 #include <gctypes.h>
 #include <utility>
@@ -140,8 +141,11 @@ PATCH_LIST(
 	std::pair { MainMenu_Think+0x34,           NOP },
 	// li r0, Scene_VsMode
 	std::pair { MainMenu_Think+0x54,           0x38000002u },
-
 	// Disable attract mode
 	// b 0x18
-	std::pair { TitleScreen_Think+0x48,        0x48000018u }
+	std::pair { TitleScreen_Think+0x48,        0x48000018u },
+#ifdef DOL
+	// Allow the DOL version to be used with EURGB60
+	std::pair { SI_SetSamplingRate+0x60,       NOP }
+#endif
 );
