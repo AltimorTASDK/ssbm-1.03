@@ -284,15 +284,14 @@ static void apply_crop(const HSD_VIStatus *vi, void *buffer)
 static widescreen_mode update_vi_widescreen()
 {
 	static constinit auto vi_widescreen = widescreen_mode::max;
-	static constinit auto needs_update = true;
+	static constinit auto needs_update = false;
 	const auto widescreen = GetGameRules()->widescreen;
-	const auto is_wide = widescreen == widescreen_mode::on;
-	const auto vi_is_wide = vi_widescreen == widescreen_mode::on;
 
 	if (needs_update) {
 		// Ensure the image fills the display on widescreen
-		HSD_VIData.current.vi.rmode.viWidth   = vi_is_wide ? 720 : 640;
-		HSD_VIData.current.vi.rmode.viXOrigin = vi_is_wide ?   0 :  40;
+		const auto is_wide = vi_widescreen == widescreen_mode::on;
+		HSD_VIData.current.vi.rmode.viWidth   = is_wide ? 720 : 640;
+		HSD_VIData.current.vi.rmode.viXOrigin = is_wide ?   0 :  40;
 		HSD_VIData.current.chg_flag = true;
 		needs_update = false;
 	}
@@ -301,7 +300,7 @@ static widescreen_mode update_vi_widescreen()
 		return widescreen;
 
 	// Allow a frame to be rendered with the new aspect ratio before updating VI scaling
-	needs_update = vi_is_wide != is_wide;
+	needs_update = true;
 	const auto last_widescreen = vi_widescreen;
 	vi_widescreen = widescreen;
 	return last_widescreen;
