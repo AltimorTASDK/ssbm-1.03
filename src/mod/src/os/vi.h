@@ -5,6 +5,15 @@
 
 constexpr auto VI_DISPLAY_PIX_SZ = 2;
 
+enum VITVFormat {
+	VI_NTSC      = 0,
+	VI_PAL       = 1,
+	VI_MPAL      = 2,
+	VI_DEBUG     = 3,
+	VI_DEBUG_PAL = 4,
+	VI_EURGB60   = 5
+};
+
 union display_interrupt {
 	struct {
 		u32 status : 1;
