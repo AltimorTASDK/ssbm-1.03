@@ -59,12 +59,12 @@ extern "C" void hook_VsMode_InitDataFromRules(VsModeData *vs_data)
 	}
 }
 
-extern "C" void orig_Match_Init(StartMeleeData *data);
-extern "C" void hook_Match_Init(StartMeleeData *data)
+extern "C" void orig_StartMelee(StartMeleeData *data);
+extern "C" void hook_StartMelee(StartMeleeData *data)
 {
 	if (SceneMajor != Scene_VsMode) {
 		// Don't alter non-VS settings
-		orig_Match_Init(data);
+		orig_StartMelee(data);
 		return;
 	}
 
@@ -99,5 +99,5 @@ extern "C" void hook_Match_Init(StartMeleeData *data)
 			data->players[i].stocks = (u8)get_crew_stocks(i);
 	}
 
-	orig_Match_Init(data);
+	orig_StartMelee(data);
 }
