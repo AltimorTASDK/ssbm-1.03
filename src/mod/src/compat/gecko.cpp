@@ -82,7 +82,7 @@ static void check_pdf()
 
 static void check_pdf_half_vb()
 {
-	if (is_faster_melee() || *(u32*)0x80158268 != 0xC82280A0)
+	if (is_faster_melee() || *(u32*)0x801A4D98 == 0x481EE0E9)
 		return;
 
 	use_lcd = true;
