@@ -408,7 +408,7 @@ extern "C" void hook_Scene_RunLoop(void(*think_callback)())
 	orig_Scene_RunLoop(think_callback);
 }
 
-[[gnu::constructor]] static void init_latency()
+[[gnu::constructor]] void init_latency()
 {
 	if (is_faster_melee())
 		return;

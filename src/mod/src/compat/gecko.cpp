@@ -1,4 +1,4 @@
-#if defined(NTSC102) && defined(DOL)
+#if defined(NTSC102) && (defined(DOL) || !defined(NOPAL))
 
 #include "latency/polling.h"
 #include "melee/rules.h"
@@ -8,13 +8,6 @@
 
 extern "C" void(*PADSetSamplingCallback(void(*callback)()))();
 
-// Wait to apply settings because gecko code checks happen before C++ constructors
-static bool use_wide;
-static bool use_crop;
-static bool use_crt;
-static bool use_lcd;
-static bool use_low;
-
 struct u32_patch_list {
 	template<typename ...T, typename ...U>
 	u32_patch_list(const std::pair<T, U> &...patches)
@@ -22,6 +15,16 @@ struct u32_patch_list {
 		runtime_patch_list { std::pair { (void*)patches.first, patches.second }... };
 	}
 };
+
+// Wait to apply settings because gecko code checks happen before C++ constructors
+static bool use_lcd;
+
+#ifdef DOL
+
+static bool use_wide;
+static bool use_crop;
+static bool use_crt;
+static bool use_low;
 
 // Disable conflicting gecko codes if found and set the equivalent 1.03 settings
 
@@ -75,6 +78,8 @@ static void check_pdf()
 	};
 }
 
+#endif // DOL
+
 static void check_pdf_half_vb()
 {
 	if (is_faster_melee() || *(u32*)0x80158268 != 0xC82280A0)
@@ -95,6 +100,8 @@ static void check_pdf_half_vb()
 
 	PADSetSamplingCallback(nullptr);
 }
+
+#ifdef DOL
 
 static void check_pdf_vb()
 {
@@ -148,4 +155,18 @@ extern "C" void hook_HSD_InitComponent()
 		rules->latency = latency_mode::crt;
 }
 
-#endif
+#else // DOL
+
+[[gnu::constructor]] static void check_20XX_pdf_half_vb()
+{
+	check_pdf_half_vb();
+
+	if (use_lcd) {
+		GetGameRules()->latency = latency_mode::lcd;
+		init_latency();
+	}
+}
+
+#endif // DOL
+
+#endif // defined(NTSC102) && (defined(DOL) || !defined(NOPAL))
