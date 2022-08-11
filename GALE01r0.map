@@ -2210,6 +2210,7 @@
 80236e70 000003c4 80236e70 0 wP_NameEntryMenu?
 80238718 00000498 80238718 0 Menu_LoadNameTags
 8023b240 00000900 8023b240 0 NameEntry_Stuff
+8023ebc8 00000c44 8023ebc8 0 Menu_MeleeRecordsInput
 80249fa4 00000534 80249fa4 0 SoundTest_ControlStuffEveryFrame
 8024bb68 000001a0 8024bb68 0 GetUnlockedEventMatchCount
 8024c558 00000950 8024c558 0 EventMatchThinkAndControl

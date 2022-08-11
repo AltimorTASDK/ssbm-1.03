@@ -112,6 +112,7 @@ struct GameRules {
 		u8 sd_penalty;
 		ucf_type controller_fix;
 	};
+	u8 pad00D;
 	latency_mode latency;
 	widescreen_mode widescreen;
 };

@@ -32,6 +32,8 @@ extern "C" void Damage_DamageStale();
 
 extern "C" void MessageBox_CheckData();
 
+extern "C" void Menu_MeleeRecordsInput(HSD_GObj *gobj);
+
 extern "C" double CSSAnimStartFrame;
 
 constexpr u32 NOP = 0x60000000;
@@ -137,15 +139,22 @@ PATCH_LIST(
 	std::pair { SSS_Think+0x6C,                0x38600002u },
 	// li r3, Scene_VsMode
 	std::pair { CSS_Input+0x1F0,               0x38600002u },
-	// Return to VS menu like normal after exiting CSS
-	std::pair { MainMenu_Think+0x34,           NOP },
 	// li r0, Scene_VsMode
 	std::pair { MainMenu_Think+0x54,           0x38000002u },
+	// Return to VS menu like normal after exiting CSS
+	std::pair { SSS_Think+0x68,                NOP },
+	std::pair { CSS_Input+0x1EC,               NOP },
+	std::pair { MainMenu_Think+0x34,           NOP },
 	// Disable attract mode
 	// b 0x18
 	std::pair { TitleScreen_Think+0x48,        0x48000018u },
 #ifdef DOL
 	// Allow the DOL version to be used with EURGB60
-	std::pair { SI_SetSamplingRate+0x60,       NOP }
+	std::pair { SI_SetSamplingRate+0x60,       NOP },
 #endif
+	// Prevent latency/widescreen from being overwritten when backing out of VS Records
+	std::pair { Menu_MeleeRecordsInput+0x26C,  NOP },
+	std::pair { Menu_MeleeRecordsInput+0x27C,  NOP },
+	std::pair { Menu_MeleeRecordsInput+0x2EC,  NOP },
+	std::pair { Menu_MeleeRecordsInput+0x2FC,  NOP }
 );
