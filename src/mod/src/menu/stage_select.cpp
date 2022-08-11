@@ -223,6 +223,9 @@ static void reset_striking(bool all)
 				HSD_JObjSetFlagsAll(icon->jobj, HIDDEN);
 				icon->unlocked = UnlockType_Hidden;
 				visibility_changed = true;
+
+				if (i == SelectedStageIcon)
+					SelectedStageIcon = Icon_None;
 			}
 		}
 	}
