@@ -83,7 +83,8 @@ enum Mode {
 };
 
 struct GameRules {
-	u16 pad000;
+	bool force_main_menu;
+	u8 menu_bgm;
 	u8 mode;
 	u8 time_limit;
 	u8 stock_count;
