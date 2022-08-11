@@ -240,12 +240,14 @@ static void strike_stage()
 	if (SelectedStageIcon >= Icon_Random)
 		return;
 
-	// Don't allow striking the last visible stage
-	for (auto i = 0; i < Icon_Random; i++) {
+	// Don't allow striking the last visible legal stage
+	for (auto i = 0; i <= Icon_Random; i++) {
+		if (i == Icon_Random)
+			return;
+		if (!is_legal_stage(StageSelectIcons[i].stage_id))
+			continue;
 		if (i != SelectedStageIcon && StageSelectIcons[i].unlocked == UnlockType_Unlocked)
 			break;
-		if (i == Icon_Random - 1)
-			return;
 	}
 
 	// Strike stage
