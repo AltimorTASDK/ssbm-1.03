@@ -1,13 +1,17 @@
+#if defined(NTSC102) && !defined(NOPAL)
+
+#include "hsd/cobj.h"
 #include "hsd/gobj.h"
 #include "hsd/pad.h"
 #include "os/thread.h"
 #include "melee/scene.h"
 #include "util/patch_list.h"
 
-#if defined(NTSC102) && !defined(NOPAL)
 extern "C" char SaveFileName[25];
 extern "C" char MnSlMapPath[];
 
+extern "C" void CObjLoad(HSD_CObj *cobj, HSD_CObjDesc *desc);
+extern "C" void CreateScreenFlash(u8);
 extern "C" void Stage_Fountain_Init();
 extern "C" void Scene_Match_Exit(SceneMinorData *data, u8 victory_screen, u8 sudden_death);
 extern "C" void Scene_RunLoop(void(*think_callback)());
@@ -30,7 +34,12 @@ extern "C" bool is_20XX()
 		std::pair { Scene_Match_Exit+0x10,   0x3B640000u },
 		// Disable 20XX's lagless FoD patch
 		// stwu r1, -8(r1)
-		std::pair { Stage_Fountain_Init+0x8, 0x9421FFF8u }
+		std::pair { Stage_Fountain_Init+0x8, 0x9421FFF8u },
+		// Disable 20XX's widescreen
+		// li r3, 6
+		std::pair { CreateScreenFlash+0xA4,  0x38600006u },
+		// lfs f1, 0x34(r31)
+		std::pair { CObjLoad+0x1BC,          0xC03F0034u }
 	};
 }
 
@@ -60,7 +69,9 @@ extern "C" void hook_SSS_CursorThink(HSD_GObj *gobj)
 	for (auto port = 0; port < 4; port++)
 		queue[0].stat[port].buttons = old_buttons[port];
 }
-#else
+
+#else // defined(NTSC102) && !defined(NOPAL)
+
 extern "C" bool is_20XX()
 {
 	return false;
@@ -70,4 +81,5 @@ extern "C" bool is_20XX_stage_select()
 {
 	return false;
 }
-#endif
+
+#endif // defined(NTSC102) && !defined(NOPAL)
