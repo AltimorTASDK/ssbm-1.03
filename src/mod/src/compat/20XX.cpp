@@ -30,14 +30,7 @@ extern "C" bool is_20XX()
 		std::pair { Scene_Match_Exit+0x10,   0x3B640000u },
 		// Disable 20XX's lagless FoD patch
 		// stwu r1, -8(r1)
-		std::pair { Stage_Fountain_Init+0x8, 0x9421FFF8u },
-		// Disable 20XX's built in half frame lag reduction
-		// bl MCCUpdate
-		std::pair { Scene_RunLoop+0x64,      0x481EE0E9u },
-		// li r3, 0
-		std::pair { Scene_RunLoop+0x31C,     0x38600000u },
-		// subi r3, r13, 0x4278
-		std::pair { VIRetraceHandler+0x1FC,  0x386DBD88u }
+		std::pair { Stage_Fountain_Init+0x8, 0x9421FFF8u }
 	};
 }
 
