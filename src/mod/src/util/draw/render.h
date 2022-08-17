@@ -1,7 +1,7 @@
 #pragma once
 
+#include "dolphin/gx.h"
 #include "util/vector.h"
-#include "os/gx.h"
 #include <ogc/gx.h>
 #include <stack>
 

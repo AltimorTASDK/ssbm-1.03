@@ -1,9 +1,9 @@
 #if defined(NTSC100) || defined(PAL)
 
+#include "dolphin/dvd.h"
 #include "hsd/gobj.h"
 #include "hsd/memory.h"
 #include "melee/player.h"
-#include "os/dvd.h"
 #include "util/diff.h"
 #include <cstring>
 #include <gctypes.h>

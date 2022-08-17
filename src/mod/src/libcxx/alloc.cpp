@@ -1,7 +1,7 @@
+#include "dolphin/heap.h"
+#include "dolphin/os.h"
 #include "hsd/heap.h"
 #include "hsd/memory.h"
-#include "os/heap.h"
-#include "os/os.h"
 #include "util/mempool.h"
 #include <cstddef>
 #include <new>

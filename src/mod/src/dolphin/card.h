@@ -1,6 +1,6 @@
 #pragma once
 
-#include "os/os.h"
+#include "dolphin/os.h"
 #include <gctypes.h>
 
 struct card_block {

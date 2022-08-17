@@ -1,7 +1,7 @@
 #pragma once
 
-#include "os/os.h"
-#include "os/thread.h"
+#include "dolphin/os.h"
+#include "dolphin/thread.h"
 
 class wait_object {
 	bool waiting;

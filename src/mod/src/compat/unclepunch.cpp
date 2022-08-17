@@ -1,8 +1,9 @@
 #if defined(NTSC102) && !defined(NOPAL)
+
+#include "dolphin/os.h"
 #include "hsd/gobj.h"
 #include "melee/menu.h"
 #include "melee/scene.h"
-#include "os/os.h"
 #include "util/patch_list.h"
 #include <cstring>
 
@@ -82,4 +83,5 @@ extern "C" bool is_unclepunch_osd()
 {
 	return false;
 }
+
 #endif

@@ -1,9 +1,9 @@
+#include "dolphin/card.h"
+#include "dolphin/os.h"
+#include "dolphin/thread.h"
 #include "hsd/memory.h"
 #include "melee/nametag.h"
 #include "melee/scene.h"
-#include "os/card.h"
-#include "os/os.h"
-#include "os/thread.h"
 #include "util/diff.h"
 #include "util/gc/wait_object.h"
 #include <cstddef>

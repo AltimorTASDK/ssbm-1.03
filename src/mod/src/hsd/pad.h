@@ -1,6 +1,6 @@
 #pragma once
 
-#include "os/pad.h"
+#include "dolphin/pad.h"
 #include "util/vector.h"
 #include <bit>
 #include <gctypes.h>

@@ -1,5 +1,5 @@
+#include "dolphin/os.h"
 #include "hsd/tobj.h"
-#include "os/os.h"
 #include "util/texture_swap.h"
 #include <cstddef>
 #include <cstring>

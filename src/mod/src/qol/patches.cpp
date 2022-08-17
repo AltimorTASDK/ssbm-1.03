@@ -1,7 +1,7 @@
+#include "dolphin/serial.h"
 #include "hsd/gobj.h"
 #include "melee/player.h"
 #include "melee/match.h"
-#include "os/serial.h"
 #include "util/patch_list.h"
 #include <gctypes.h>
 #include <utility>

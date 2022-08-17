@@ -1,6 +1,6 @@
 #pragma once
 
-#include "os/context.h"
+#include "dolphin/context.h"
 
 struct OSThread {
 	OSContext ctx;

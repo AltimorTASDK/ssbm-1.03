@@ -1,6 +1,6 @@
 #pragma once
 
-#include "os/os.h"
+#include "dolphin/os.h"
 #include "util/meta.h"
 #include <array>
 #include <cstddef>

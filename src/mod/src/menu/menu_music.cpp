@@ -1,4 +1,5 @@
 #include "compat/unclepunch.h"
+#include "dolphin/gx.h"
 #include "hsd/cobj.h"
 #include "hsd/gobj.h"
 #include "hsd/jobj.h"
@@ -9,7 +10,6 @@
 #include "melee/preferences.h"
 #include "melee/rules.h"
 #include "melee/text.h"
-#include "os/gx.h"
 #include "rules/saved_config.h"
 #include "rules/values.h"
 #include "util/texture_swap.h"

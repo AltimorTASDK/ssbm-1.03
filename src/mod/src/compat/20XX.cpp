@@ -1,9 +1,9 @@
 #if defined(NTSC102) && !defined(NOPAL)
 
+#include "dolphin/thread.h"
 #include "hsd/cobj.h"
 #include "hsd/gobj.h"
 #include "hsd/pad.h"
-#include "os/thread.h"
 #include "melee/scene.h"
 #include "util/patch_list.h"
 

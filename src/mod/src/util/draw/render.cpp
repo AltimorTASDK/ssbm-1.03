@@ -1,6 +1,6 @@
+#include "dolphin/gx.h"
+#include "dolphin/os.h"
 #include "hsd/cobj.h"
-#include "os/gx.h"
-#include "os/os.h"
 #include "qol/widescreen.h"
 #include "rules/values.h"
 #include "util/matrix.h"
