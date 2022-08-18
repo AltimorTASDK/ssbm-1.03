@@ -47,6 +47,7 @@ constexpr auto smallest_int_impl()
 		return smallest_int_impl<min, max, tail...>();
 }
 
+// Find the smallest int type capable of holding the given range
 template<auto min, auto max>
 using smallest_int_t = decltype(smallest_int_impl<min, max, int8_t, int16_t, int32_t, int64_t>());
 
@@ -61,10 +62,10 @@ constexpr auto sum_tuple(TupleLike auto &&tuple)
 constexpr auto tuple_product(TupleLike auto &&a, TupleLike auto &&b)
 {
 	return for_range<sizeof_tuple<decltype(a)>>([&]<size_t ...I> {
-		return std::tuple_cat([&]<size_t n> {
+		return std::tuple_cat([&]<size_t i> {
 			return for_range<sizeof_tuple<decltype(b)>>([&]<size_t ...J> {
-				return std::make_tuple(
-					std::make_tuple(std::get<n>(a), std::get<J>(b))...);
+				return std::make_tuple(std::make_tuple(std::get<i>(a),
+				                                       std::get<J>(b))...);
 			});
 		}.template operator()<I>()...);
 	});
