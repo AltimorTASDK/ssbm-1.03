@@ -32,7 +32,20 @@ public:
 
 	~objpool()
 	{
-		free_all();
+		auto indices = index_list;
+
+		// Remove any indices that are in the free list
+		for (auto i = 0uz; i < N; i++) {
+			const auto index = free_list[i];
+			if (index != NO_INDEX)
+				indices[index] = NO_INDEX;
+		}
+
+		for (auto i = 0uz; i < N; i++) {
+			const auto index = indices[i];
+			if (index != NO_INDEX)
+				free(&pool[index]);
+		}
 	}
 
 	T *alloc_uninitialized()
@@ -62,23 +75,5 @@ public:
 		const auto index = object - pool;
 		free_list[--used_count] = (index_type)index;
 		object->~T();
-	}
-
-	void free_all()
-	{
-		auto indices = index_list;
-
-		// Remove any indices that are in the free list
-		for (auto i = 0uz; i < N; i++) {
-			const auto index = free_list[i];
-			if (index != NO_INDEX)
-				indices[index] = NO_INDEX;
-		}
-
-		for (auto i = 0uz; i < N; i++) {
-			const auto index = indices[i];
-			if (index != NO_INDEX)
-				free(&pool[index]);
-		}
 	}
 };
