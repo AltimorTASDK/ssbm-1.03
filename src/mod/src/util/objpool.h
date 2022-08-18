@@ -22,7 +22,7 @@ class objpool {
 	};
 
 	// Store free indices
-	index_type free_index;
+	index_type used_count;
 	std::array<index_type, N> free_list = index_list;
 
 public:
@@ -37,15 +37,15 @@ public:
 
 	T *alloc_uninitialized()
 	{
-		if (free_index >= N)
+		if (used_count >= N)
 			PANIC("Failed to alloc from objpool");
 
-		const auto index = free_list[free_index];
+		const auto index = free_list[used_count];
 
 		if (index == NO_INDEX)
 			PANIC("Failed to alloc from objpool");
 
-		free_list[free_index++] = NO_INDEX;
+		free_list[used_count++] = NO_INDEX;
 		return &pool[index];
 	}
 
@@ -56,11 +56,11 @@ public:
 
 	void free(T *object)
 	{
-		if (free_index == 0)
+		if (used_count == 0)
 			PANIC("Failed to free to objpool");
 
 		const auto index = object - pool;
-		free_list[--free_index] = (index_type)index;
+		free_list[--used_count] = (index_type)index;
 		object->~T();
 	}
 
