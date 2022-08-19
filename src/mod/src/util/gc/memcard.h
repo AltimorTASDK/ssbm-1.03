@@ -9,10 +9,11 @@ constexpr auto CARD_WRITE_ALIGN = 0x2000;
 constexpr auto CARD_READ_ALIGN  = 0x200;
 
 // Alignment padded memcard buffer
-template<typename T, size_t align>
-class alignas(32) card_buffer {
+template<typename T, size_t Align>
+struct alignas(32) card_buffer {
+private:
 	T value;
-	char pad[align_up(sizeof(T), align) - sizeof(T)] = { 0 };
+	char pad[align_up(sizeof(T), Align) - sizeof(T)] = { 0 };
 
 public:
 	card_buffer(auto &&...args) : value(std::forward<decltype(args)>(args)...)
