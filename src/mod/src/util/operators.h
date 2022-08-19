@@ -13,7 +13,7 @@ constexpr auto mod = std::modulus();
 constexpr auto neg = std::negate();
 
 // Assignment operators
-constexpr auto eq     = [](auto &a, auto &&b) -> decltype(auto) { return a  = b; };
+constexpr auto     eq = [](auto &a, auto &&b) -> decltype(auto) { return a  = b; };
 constexpr auto add_eq = [](auto &a, auto &&b) -> decltype(auto) { return a += b; };
 constexpr auto sub_eq = [](auto &a, auto &&b) -> decltype(auto) { return a -= b; };
 constexpr auto mul_eq = [](auto &a, auto &&b) -> decltype(auto) { return a *= b; };
