@@ -128,15 +128,12 @@ static void draw_manual(HSD_GObj *gobj, u32 pass)
 	const auto pos_p1 = vec3(320, scissor_y + manual_margin - scroll_offset, manual_z);
 	const auto pos_p2 = pos_p1 + vec3(0, texture_p1.height(), 0);
 
-	rs.fill_rect(pos_p1, vec2(texture_p1.size()), color_rgba::white, texture_p1,
-	             uv_coord::zero, uv_coord::one, align::top);
-
-	rs.fill_rect(pos_p2, vec2(texture_p2.size()), color_rgba::white, texture_p2,
-	             uv_coord::zero, uv_coord::one, align::top);
+	rs.fill_rect(pos_p1, vec2(texture_p1.size()), texture_p1, align::top);
+	rs.fill_rect(pos_p2, vec2(texture_p2.size()), texture_p2, align::top);
 
 	constexpr auto border_color = color_rgba::hex(0x929196FFu);
 
-	rs.fill_tiled_rect(vec3(scissor_x, scissor_y, manual_z), vec2(scissor_w, scissor_h),
+	rs.fill_tiled_rect({scissor_x, scissor_y, manual_z}, {scissor_w, scissor_h},
 	                   border_color, texture_border, align::top_left);
 
 	constexpr auto scrollbar_margin      = vec2(2, 14);
@@ -149,7 +146,7 @@ static void draw_manual(HSD_GObj *gobj, u32 pass)
 	                              scrollbar_area_bottom - scrollbar_size.y,
 	                              scroll_offset / max_scroll_offset());
 
-	rs.fill_tiled_rect(vec3(scrollbar_area_right, scrollbar_y, manual_z), scrollbar_size,
+	rs.fill_tiled_rect({scrollbar_area_right, scrollbar_y, manual_z}, scrollbar_size,
 	                   border_color, texture_scrollbar, align::top_right);
 }
 

@@ -35,20 +35,8 @@ struct vertex_pos_clr : vertex {
 	void write() const;
 };
 
-struct vertex_pos_uv : vertex {
-	static constexpr auto index = 1;
-
-	vec3 position;
-	uv_coord uv;
-
-	vertex_pos_uv(vec3 position, uv_coord uv) : position(position), uv(uv) {}
-
-	static void set_format();
-	void write() const;
-};
-
 struct vertex_pos_clr_uv : vertex {
-	static constexpr auto index = 2;
+	static constexpr auto index = 1;
 
 	vec3 position;
 	color_rgba color;
@@ -140,20 +128,40 @@ public:
 	}
 
 	void fill_rect(const vec3 &origin, const vec2 &size, const color_rgba &color,
-		align alignment = align::top_left);
+	               align alignment = align::top_left);
 
 	void fill_rect(const vec3 &origin, const vec2 &size, const color_rgba &color,
-		const texture &tex, const uv_coord &uv1, const uv_coord &uv2,
-		align alignment = align::top_left);
+	               const texture &tex, const uv_coord &uv1, const uv_coord &uv2,
+	               align alignment = align::top_left);
 
-	void fill_rect(const vec3 &origin, const vec2 &size, const texture &tex,
-	        const uv_coord &uv1, const uv_coord &uv2, align alignment = align::top_left);
+	void fill_rect(const vec3 &origin, const vec2 &size,
+	               const texture &tex, const uv_coord &uv1, const uv_coord &uv2,
+	               align alignment = align::top_left)
+	{
+		fill_rect(origin, size, color_rgba::white, tex, uv1, uv2, alignment);
+	}
 
-	void fill_tiled_rect(const vec3 &origin, const vec2 &size, const texture &tex,
-	                     align alignment = align::top_left);
+	void fill_rect(const vec3 &origin, const vec2 &size, const color_rgba &color,
+	               const texture &tex, align alignment = align::top_left)
+	{
+		fill_rect(origin, size, color, tex, uv_coord::zero, uv_coord::one, alignment);
+	}
+
+	void fill_rect(const vec3 &origin, const vec2 &size,
+	               const texture &tex, align alignment = align::top_left)
+	{
+		fill_rect(origin, size, color_rgba::white, tex, alignment);
+	}
 
 	void fill_tiled_rect(const vec3 &origin, const vec2 &size, const color_rgba &color,
-		             const texture &tex, align alignment = align::top_left);
+	                     const texture &tex, align alignment = align::top_left);
+
+	void fill_tiled_rect(const vec3 &origin, const vec2 &size,
+	                     const texture &tex, align alignment = align::top_left)
+	{
+		fill_tiled_rect(origin, size, color_rgba::white, tex, alignment);
+	}
+
 };
 
 inline render_state render_state::instance;

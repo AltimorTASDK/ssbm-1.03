@@ -264,8 +264,7 @@ static void apply_crop(const HSD_VIStatus *vi, void *buffer)
 	GX_CopyTex(buffer, GX_FALSE);
 	GX_PixModeSync();
 	GX_InvalidateTexAll();
-	rs.fill_rect({crop_left, 0, 10}, {crop_width, 240},
-	             color_rgba::white, xfb_texture, {0, 0}, {1, 1});
+	rs.fill_rect({crop_left, 0, 10}, {crop_width, 240}, xfb_texture);
 
 	// Draw bottom half
 	GX_SetTexCopySrc(0, src_height, vi->rmode.fbWidth, src_height);
@@ -273,8 +272,7 @@ static void apply_crop(const HSD_VIStatus *vi, void *buffer)
 	GX_CopyTex(buffer, GX_FALSE);
 	GX_PixModeSync();
 	GX_InvalidateTexAll();
-	rs.fill_rect({crop_left, 240, 10}, {crop_width, 240},
-	             color_rgba::white, xfb_texture, {0, 0}, {1, 1});
+	rs.fill_rect({crop_left, 240, 10}, {crop_width, 240}, xfb_texture);
 
 	// Draw black bars
 	rs.fill_rect({0,          0, 10}, {crop_left, 480}, color_rgba::hex(0x000000FF));
