@@ -35,6 +35,10 @@
 1:
         mtlr    r0
 
+        # Zero out the frame pointer to prevent crash dump exception loops
+        li      r0, 0
+        stw     r0, 0x0(r1)
+
         # Check if a memcard save is in progress
         lis     r3, MemCardErrorCallback@ha
         lwz     r0, MemCardErrorCallback@l(r3)
