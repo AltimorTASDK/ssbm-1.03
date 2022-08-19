@@ -6,6 +6,7 @@
 #include "melee/scene.h"
 #include "util/diff.h"
 #include "util/gc/wait_object.h"
+#include "util/patch_list.h"
 #include <cstddef>
 #include <cstdio>
 #include <cstring>
@@ -97,13 +98,11 @@ static void read_callback(s32 chan, s32 result)
 
 static void patch_crash_screen()
 {
-	// Skip crash screen input checks
-	// b +0x220
-	auto *patch_location = (char*)DisplayCrashScreen+0x4C;
-	*(u32*)patch_location = 0x48000220u;
-
-	DCStoreRange(patch_location, 4);
-	ICInvalidateRange(patch_location, 4);
+	runtime_patch_list {
+		// Skip crash screen input checks
+		// b +0x220
+		std::pair { DisplayCrashScreen+0x4C, 0x48000220u },
+	};
 }
 
 static u32 card_read(const char *file, void *dest)
