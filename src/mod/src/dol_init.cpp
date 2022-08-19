@@ -13,8 +13,6 @@ extern "C" char __NEW_BASE__;
 extern "C" char __BSS_START__;
 extern "C" char __BSS_SIZE__;
 
-static bool adjusted_heap;
-
 PATCH_LIST(
 	// Patch end of save file name to match the name normally set by the memcard loader
 	std::pair { &SaveFileName[20],   '_103' },
@@ -37,6 +35,8 @@ extern "C" void hook_OSSetArenaHi(void *hi)
 {
 	// Prevent heap from overrunning mod code
 	orig_OSSetArenaHi(&__NEW_BASE__);
+
+	static constinit auto adjusted_heap = false;
 
 	if (!adjusted_heap) {
 		// Reduce size of grow-down heap so the base remains the same
