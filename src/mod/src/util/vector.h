@@ -8,27 +8,27 @@
 #include <tuple>
 #include <type_traits>
 
-template<typename base>
+template<typename Base>
 class vec_impl;
 
 template<typename T>
 concept Vector = requires(T t) { []<typename U>(vec_impl<U>){}(t); };
 
-template<typename base>
-class vec_impl : public base {
-	template<typename other_base>
+template<typename Base>
+class vec_impl : public Base {
+	template<typename OtherBase>
 	friend class vec_impl;
 
-	using elem_tuple = decltype(std::declval<const base>().elems());
-	using elem_type = std::tuple_element_t<0, elem_tuple>;
+	using elem_tuple = decltype(std::declval<const Base>().elems());
+	using elem_type  = std::tuple_element_t<0, elem_tuple>;
 
 	static constexpr auto elem_count = sizeof_tuple<elem_tuple>;
 
 public:
-	using base::elems;
+	using Base::elems;
 
-	static constexpr vec_impl zero = vec_impl(fill_tuple<elem_count>(elem_type { 0 }));
-	static constexpr vec_impl one = vec_impl(fill_tuple<elem_count>(elem_type { 1 }));
+	static constexpr vec_impl zero = vec_impl(fill_tuple<elem_count>(elem_type{0}));
+	static constexpr vec_impl one  = vec_impl(fill_tuple<elem_count>(elem_type{1}));
 
 	static constexpr elem_type dot(const vec_impl &a, const vec_impl &b)
 	{
@@ -80,8 +80,8 @@ public:
 		elems() = tuple;
 	}
 
-	template<typename other_base>
-	explicit constexpr vec_impl(const vec_impl<other_base> &other)
+	template<typename OtherBase>
+	explicit constexpr vec_impl(const vec_impl<OtherBase> &other)
 	{
 		if constexpr (elem_count > other.elem_count) {
 			constexpr auto pad = elem_count - other.elem_count;
@@ -99,17 +99,14 @@ public:
 	template<size_t N>
 	constexpr auto get() const { return std::get<N>(elems()); }
 
-	template<typename ...Tuples>
-	constexpr auto foreach(auto &&callable, Tuples &&...tuples)
+	constexpr auto foreach(auto &&callable, FixedTuple<elem_count> auto &&...tuples)
 	{
-		static_assert(((sizeof_tuple<Tuples> == elem_count) && ...));
 		return zip_apply(callable, elems(), tuples...);
 	}
 
 	template<typename ...Tuples>
-	constexpr auto foreach(auto &&callable, Tuples &&...tuples) const
+	constexpr auto foreach(auto &&callable, FixedTuple<elem_count> auto &&...tuples) const
 	{
-		static_assert(((sizeof_tuple<Tuples> == elem_count) && ...));
 		return zip_apply(callable, elems(), tuples...);
 	}
 
@@ -225,7 +222,7 @@ public:
 template<typename T>
 struct vec2_base {
 	T x, y;
-	constexpr auto elems() { return std::tie(x, y); }
+	constexpr auto elems()       { return std::tie(x, y); }
 	constexpr auto elems() const { return std::make_tuple(x, y); }
 };
 
@@ -257,7 +254,7 @@ using vec3d = vec_impl<vec3_base<f64>>;
 template<typename T>
 struct vec4_base {
 	T x, y, z, w;
-	constexpr auto elems() { return std::tie(x, y, z, w); }
+	constexpr auto elems()       { return std::tie(x, y, z, w); }
 	constexpr auto elems() const { return std::make_tuple(x, y, z, w); }
 };
 
@@ -266,18 +263,20 @@ using vec4i = vec_impl<vec4_base<s32>>;
 using vec4d = vec_impl<vec4_base<f64>>;
 
 template<typename T>
-struct color_rgb_base {
-	static constexpr vec_impl<color_rgb_base> white = [] {
-		constexpr auto max =
-			std::is_same_v<T, f32> ? 1.f :
-			std::is_same_v<T, f64> ? 1.0 :
-			                         255;
+struct color_util {
+	static constexpr auto max_value =
+		std::is_floating_point_v<T> ? T{1} : std::numeric_limits<T>::max();
+};
 
-		return vec_impl<color_rgb_base>(max, max, max);
-	}();
+template<typename T>
+struct color_rgb_base : color_util<T> {
+	using color_util<T>::max_value;
+
+	static constexpr vec_impl<color_rgb_base> white =
+		{ max_value, max_value, max_value };
 
 	T r, g, b;
-	constexpr auto elems() { return std::tie(r, g, b); }
+	constexpr auto elems()       { return std::tie(r, g, b); }
 	constexpr auto elems() const { return std::make_tuple(r, g, b); }
 };
 
@@ -285,11 +284,8 @@ using color_rgb = vec_impl<color_rgb_base<u8>>;
 using color_rgb_f32 = vec_impl<color_rgb_base<f32>>;
 
 template<typename T>
-struct color_rgba_base {
-	static constexpr auto max_value =
-		std::is_same_v<T, f32> ? 1.f :
-		std::is_same_v<T, f64> ? 1.0 :
-		                         255;
+struct color_rgba_base : color_util<T> {
+	using color_util<T>::max_value;
 
 	static constexpr vec_impl<color_rgba_base> white =
 		{ max_value, max_value, max_value, max_value };
@@ -304,7 +300,7 @@ struct color_rgba_base {
 	}
 
 	T r, g, b, a;
-	constexpr auto elems() { return std::tie(r, g, b, a); }
+	constexpr auto elems()       { return std::tie(r, g, b, a); }
 	constexpr auto elems() const { return std::make_tuple(r, g, b, a); }
 };
 
@@ -313,7 +309,7 @@ using color_rgba_f32 = vec_impl<color_rgba_base<f32>>;
 
 struct uv_coord_base {
 	f32 u, v;
-	constexpr auto elems() { return std::tie(u, v); }
+	constexpr auto elems()       { return std::tie(u, v); }
 	constexpr auto elems() const { return std::make_tuple(u, v); }
 };
 

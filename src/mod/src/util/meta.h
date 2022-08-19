@@ -33,6 +33,10 @@ concept TupleLike = requires(T t) {
 	}(std::make_index_sequence<sizeof_tuple<T>>(), t);
 };
 
+// Requires tuple-likes of specific length
+template<typename T, size_t N>
+concept FixedTuple = sizeof_tuple<T> == N;
+
 template<auto min, auto max, typename head, typename ...tail>
 constexpr auto smallest_int_impl()
 {
