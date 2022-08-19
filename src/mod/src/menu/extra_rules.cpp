@@ -23,8 +23,10 @@
 #include <ogc/gx.h>
 
 #include "resources/rules/pause_values.tex.h"
+#ifndef TOURNAMENT
 #include "resources/rules/controls.tex.h"
 #include "resources/rules/controls_values.tex.h"
+#endif
 #ifdef FULL_SSS_ROTATOR
 #include "resources/rules/old/sss.tex.h"
 #include "resources/rules/old/sss_values.tex.h"
@@ -145,6 +147,7 @@ constexpr auto pause_auto_description =
 	make_description_text<"Players will not be able to",
 	                      "pause during 4-stock matches.">();
 
+#ifndef TOURNAMENT
 constexpr auto controls_descriptions = multi_array {
 	make_description_text<"Allow the use of Z jump.">(),
 	make_description_text<"Allow the use of Z jump and",
@@ -153,6 +156,7 @@ constexpr auto controls_descriptions = multi_array {
 	                      "except perfect angles.">(),
 	make_description_text<"Allow the use of all controls.">()
 };
+#endif
 
 constexpr auto stage_mod_descriptions = multi_array {
 #ifndef FULL_SSS_ROTATOR
@@ -365,9 +369,11 @@ static void fix_value_position(ExtraRulesMenuData *data, int index)
 static u8 get_model_max_value(int index)
 {
 	// Use max value corresponding to 5-value model for controls
+#ifndef TOURNAMENT
 	if (index == ExtraRule_Controls)
 		return 4;
 	else
+#endif
 		return ExtraRuleValueBounds[index].max;
 }
 
@@ -380,10 +386,13 @@ static void set_value_anim(ExtraRulesMenuData *data, int index)
 	auto *jobj = data->value_jobj_trees[index].tree[0];
 	const auto value = data->values[index];
 
+#ifndef TOURNAMENT
 	if (index == ExtraRule_Controls) {
 		// Shift value for controls to allow for 4-value rotator on 5-value model
 		HSD_JObjReqAnimAll(jobj, RuleValueAnimLoops[value].start);
-	} else {
+	} else
+#endif
+	{
 		const auto anim_index = value == 0 ? get_model_max_value(index) : value - 1;
 		HSD_JObjReqAnimAll(jobj, RuleValueAnimLoops[anim_index].start);
 	}
@@ -517,7 +526,9 @@ extern "C" void hook_Menu_UpdateExtraRuleDescriptionText(HSD_GObj *gobj,
 			text->data = pause_auto_description.data();
 		}
 		break;
+#ifndef TOURNAMENT
 	case ExtraRule_Controls:       text->data = controls_descriptions[value];   break;
+#endif
 	case ExtraRule_StageMods:      text->data = stage_mod_descriptions[value];  break;
 	case ExtraRule_ControllerFix:  text->data = ucf_type_descriptions[value];   break;
 	case ExtraRule_Latency:        text->data = latency_descriptions[value];    break;
@@ -566,11 +577,15 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 	replace_toggle_texture(data, ExtraRule_Widescreen,    widescreen_values_tex_data, true);
 
 	// Make Rl01 and Rl05 use proper additional rules position
+#ifndef TOURNAMENT
 	fix_value_position(data, ExtraRule_Controls);
+#endif
 	fix_value_position(data, ExtraRule_StageMods);
 
 	// Set anim frame correctly for 4/5-value model
+#ifndef TOURNAMENT
 	set_value_anim(data, ExtraRule_Controls);
+#endif
 	set_value_anim(data, ExtraRule_StageMods);
 
 	// Use rotator for latency (replacing random stage select)
@@ -625,15 +640,22 @@ extern "C" const HSD_AnimLoop &orig_Menu_GetExtraRuleValueAnimLoop(u8 index, u8 
 extern "C" const HSD_AnimLoop &hook_Menu_GetExtraRuleValueAnimLoop(u8 index, u8 value,
                                                                    bool scroll_right)
 {
-	if (index != ExtraRule_Controls && index != ExtraRule_StageMods)
+#ifndef TOURNAMENT
+	if (index != ExtraRule_Controls && index != ExtraRule_StageMods) {
+#else
+	if (index != ExtraRule_StageMods) {
+#endif
 		return orig_Menu_GetExtraRuleValueAnimLoop(index, value, scroll_right);
+	}
 
 	// Use max value corresponding to 5-value model for controls
 	const auto max = get_model_max_value(index);
 
+#ifndef TOURNAMENT
 	// Shift value for controls to allow for 4-value rotator on 5-value model
 	if (index == ExtraRule_Controls)
 		value++;
+#endif
 
 	if (!scroll_right)
 		return RuleValueAnimLoops[max - value + 5];
@@ -646,8 +668,13 @@ extern "C" const HSD_AnimLoop &hook_Menu_GetExtraRuleValueAnimLoop(u8 index, u8 
 extern "C" void orig_Menu_UpdateExtraRuleValueAnim(HSD_GObj *gobj, HSD_JObj *jobj, u8 index);
 extern "C" void hook_Menu_UpdateExtraRuleValueAnim(HSD_GObj *gobj, HSD_JObj *jobj, u8 index)
 {
-	if (index != ExtraRule_Controls && index != ExtraRule_StageMods)
+#ifndef TOURNAMENT
+	if (index != ExtraRule_Controls && index != ExtraRule_StageMods) {
+#else
+	if (index != ExtraRule_StageMods) {
+#endif
 		return orig_Menu_UpdateExtraRuleValueAnim(gobj, jobj, index);
+	}
 
 	const auto frame = HSD_JObjGetAnimFrame(jobj);
 
