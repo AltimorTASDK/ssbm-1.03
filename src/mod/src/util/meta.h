@@ -62,19 +62,6 @@ constexpr auto sum_tuple(TupleLike auto &&tuple)
 	}(std::make_index_sequence<sizeof_tuple<decltype(tuple)>>());
 }
 
-// Cartesian product of two tuples
-constexpr auto tuple_product(TupleLike auto &&a, TupleLike auto &&b)
-{
-	return for_range<sizeof_tuple<decltype(a)>>([&]<size_t ...I> {
-		return std::tuple_cat([&]<size_t i> {
-			return for_range<sizeof_tuple<decltype(b)>>([&]<size_t ...J> {
-				return std::make_tuple(std::make_tuple(std::get<i>(a),
-				                                       std::get<J>(b))...);
-			});
-		}.template operator()<I>()...);
-	});
-}
-
 // std::make_tuple(0...N)
 template<size_t N>
 constexpr auto range()
@@ -127,6 +114,19 @@ constexpr auto for_range(auto &&callable, auto &&...args)
 		return callable.template operator()<(I + start)...>(
 			std::forward<decltype(args)>(args)...);
 	}(std::make_index_sequence<end - start>());
+}
+
+// Cartesian product of two tuples
+constexpr auto tuple_product(TupleLike auto &&a, TupleLike auto &&b)
+{
+	return for_range<sizeof_tuple<decltype(a)>>([&]<size_t ...I> {
+		return std::tuple_cat([&]<size_t i> {
+			return for_range<sizeof_tuple<decltype(b)>>([&]<size_t ...J> {
+				return std::make_tuple(std::make_tuple(std::get<i>(a),
+				                                       std::get<J>(b))...);
+			});
+		}.template operator()<I>()...);
+	});
 }
 
 // Invoke callable with a template argument list containing the type list of the
