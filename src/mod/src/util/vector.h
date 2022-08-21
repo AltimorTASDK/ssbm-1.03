@@ -247,7 +247,7 @@ struct vec3_base {
 	}
 };
 
-using vec3 = vec_impl<vec3_base<f32>>;
+using vec3  = vec_impl<vec3_base<f32>>;
 using vec3i = vec_impl<vec3_base<s32>>;
 using vec3d = vec_impl<vec3_base<f64>>;
 
@@ -258,7 +258,7 @@ struct vec4_base {
 	constexpr auto elems() const { return std::make_tuple(x, y, z, w); }
 };
 
-using vec4 = vec_impl<vec4_base<f32>>;
+using vec4  = vec_impl<vec4_base<f32>>;
 using vec4i = vec_impl<vec4_base<s32>>;
 using vec4d = vec_impl<vec4_base<f64>>;
 
@@ -280,7 +280,7 @@ struct color_rgb_base : color_util<T> {
 	constexpr auto elems() const { return std::make_tuple(r, g, b); }
 };
 
-using color_rgb = vec_impl<color_rgb_base<u8>>;
+using color_rgb     = vec_impl<color_rgb_base<u8>>;
 using color_rgb_f32 = vec_impl<color_rgb_base<f32>>;
 
 template<typename T>
@@ -304,7 +304,7 @@ struct color_rgba_base : color_util<T> {
 	constexpr auto elems() const { return std::make_tuple(r, g, b, a); }
 };
 
-using color_rgba = vec_impl<color_rgba_base<u8>>;
+using color_rgba     = vec_impl<color_rgba_base<u8>>;
 using color_rgba_f32 = vec_impl<color_rgba_base<f32>>;
 
 struct uv_coord_base {
