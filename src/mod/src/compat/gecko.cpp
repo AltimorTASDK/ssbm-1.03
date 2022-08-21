@@ -1,5 +1,8 @@
 #if defined(NTSC102) && (defined(DOL) || !defined(NOPAL))
 
+#include "compat/20XX.h"
+#include "compat/gecko.h"
+#include "compat/unclepunch.h"
 #include "latency/polling.h"
 #include "melee/rules.h"
 #include "rules/saved_config.h" // Must be included to ensure config is already initialized
@@ -16,11 +19,10 @@ struct u32_patch_list {
 	}
 };
 
-// Wait to apply settings because gecko code checks happen before C++ constructors
-static bool use_lcd;
-
 #ifdef DOL
 
+// Wait to apply settings because gecko code checks happen before C++ constructors
+static bool use_lcd;
 static bool use_wide;
 static bool use_crop;
 static bool use_crt;
@@ -28,10 +30,10 @@ static bool use_low;
 
 // Disable conflicting gecko codes if found and set the equivalent 1.03 settings
 
-static void check_widescreen()
+static bool check_widescreen()
 {
 	if (*(u32*)0x803BB05C != 0x3EB00000)
-		return;
+		return false;
 
 	use_wide = true;
 
@@ -52,23 +54,26 @@ static void check_widescreen()
 		std::pair { 0x804DDB84, 0x3ECCCCCD }, // External/Widescreen/Nametag Fixes/Adjust Nametag Text X Scale.asm
 	};
 
-	if (*(u32*)0x80302784 == 0x93EDB77C)
-		return;
+	return true;
+}
 
-	use_crop = true;
+static bool check_crop()
+{
+	if (*(u32*)0x80302784 == 0x93EDB77C)
+		return false;
 
 	// Optional: 16:9 -> 73:60 [Dan Salvato, mirrorbender, Achilles1515, UnclePunch, Fizzi]
 	u32_patch_list {
 		std::pair { 0x80302784, 0x93EDB77Cu }, // External/WidescreenShutters/Add Shutters.asm
 	};
+
+	return true;
 }
 
-static void check_pdf()
+static bool check_pdf()
 {
 	if (is_faster_melee() || *(u32*)0x80019860 != 0x4BFFFD9D)
-		return;
-
-	use_crt = true;
+		return false;
 
 	// Polling Drift Fix [Dan Salvato]
 	u32_patch_list {
@@ -76,16 +81,16 @@ static void check_pdf()
 		std::pair { 0x801A4DA0, 0x901C0000 }, // External/Lag Reduction/Polling Drift/Injection.asm
 		std::pair { 0x801A4DB4, 0x4182FFF4 }, // External/Lag Reduction/Polling Drift/Nop.asm
 	};
+
+	return true;
 }
 
 #endif // DOL
 
-static void check_pdf_half_vb()
+static bool check_pdf_half_vb()
 {
 	if (is_faster_melee() || *(u32*)0x801A4D98 == 0x481EE0E9)
-		return;
-
-	use_lcd = true;
+		return false;
 
 	// Polling Drift + Half Visual Buffer Fixes [tauKhan]
 	u32_patch_list {
@@ -99,16 +104,15 @@ static void check_pdf_half_vb()
 	};
 
 	PADSetSamplingCallback(nullptr);
+	return true;
 }
 
 #ifdef DOL
 
-static void check_pdf_vb()
+static bool check_pdf_vb()
 {
 	if (is_faster_melee() || *(u32*)0x80019860 != 0x91231F5C)
-		return;
-
-	use_low = true;
+		return false;
 
 	// Polling Drift Fix + Visual Buffer Fixes [tauKhan]
 	u32_patch_list {
@@ -120,6 +124,8 @@ static void check_pdf_vb()
 		// Keep this, this patches a reference to a constant that gets clobbered
 		// std::pair { 0x80218D68, 0xC822C150 },
 	};
+
+	return true;
 }
 
 extern "C" void orig_HSD_InitComponent();
@@ -127,10 +133,11 @@ extern "C" void hook_HSD_InitComponent()
 {
 	orig_HSD_InitComponent();
 
-	check_widescreen();
-	check_pdf();
-	check_pdf_half_vb();
-	check_pdf_vb();
+	use_wide = check_widescreen();
+	use_crop = use_wide && check_crop();
+	use_crt = check_pdf();
+	use_lcd = check_pdf_half_vb();
+	use_low = check_pdf_vb();
 
 	// Don't run the codehandler every frame on console
 	u32_patch_list {
@@ -157,14 +164,29 @@ extern "C" void hook_HSD_InitComponent()
 
 #else // DOL
 
-[[gnu::constructor]] static void check_20XX_pdf_half_vb()
+static bool check_unclepunch_hdmi()
 {
-	check_pdf_half_vb();
+	if (is_faster_melee() || *(u32*)0x80019860 != 0x4BFFFD9D || *(u32*)0x801A4C24 != 0xC0429A7C)
+		return false;
 
-	if (use_lcd) {
+	// I've never seen this before and it doesn't actually reduce latency
+	u32_patch_list {
+		std::pair { 0x80019860, 0x4832A1D1 },
+		std::pair { 0x801A4C24, 0xC042B008 }
+	};
+
+	return true;
+}
+
+void check_hdmi_prompts()
+{
+	// Check for 20XX/UP HDMI lag reduction
+	const auto *LagReductionFlag = (u32*)0x80228914;
+	if (is_20XX() && check_pdf_half_vb() && *LagReductionFlag == 1)
 		GetGameRules()->latency = latency_mode::lcd;
-		init_latency();
-	}
+
+	if (is_unclepunch() && check_unclepunch_hdmi())
+		GetGameRules()->latency = latency_mode::lcd;
 }
 
 #endif // DOL

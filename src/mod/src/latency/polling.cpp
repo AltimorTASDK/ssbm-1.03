@@ -1,3 +1,4 @@
+#include "compat/gecko.h"
 #include "dolphin/alarm.h"
 #include "dolphin/os.h"
 #include "dolphin/serial.h"
@@ -413,6 +414,7 @@ extern "C" void hook_Scene_RunLoop(void(*think_callback)())
 	if (is_faster_melee())
 		return;
 
+	check_hdmi_prompts();
 	SI_EnablePollingInterrupt(true);
 	HSD_VISetUserPostRetraceCallback(post_retrace_callback);
 }
