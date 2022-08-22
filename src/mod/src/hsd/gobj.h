@@ -119,6 +119,7 @@ struct HSD_GObj {
 extern "C" {
 
 extern HSD_GObj **plinkhigh_gobjs;
+extern HSD_GObjProc *curr_gobjproc;
 
 HSD_GObj *GObj_Create(u8 obj_class, u8 p_link, u8 prio);
 void GObj_Free(HSD_GObj *gobj);
