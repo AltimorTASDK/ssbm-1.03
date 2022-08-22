@@ -6,6 +6,26 @@
 
 constexpr auto NO_LINE = -1;
 
+// GObj proc slinks
+enum SLink {
+	SLink_Hitlag          = 0,
+	SLink_Animation       = 1,
+	SLink_CPU             = 2,
+	SLink_Input           = 3,
+	SLink_Physics         = 4,
+	SLink_ItemCollision   = 5,
+	SLink_PlayerCollision = 6,
+	SLink_IK              = 7,
+	SLink_ForcePosition   = 8,
+	SLink_GFX             = 9,
+	SLink_GrabCollision   = 12,
+	SLink_AttackCollision = 13,
+	SLink_Damage          = 14,
+	SLink_JointPhysics    = 16,
+	SLink_Camera          = 18,
+	SLink_NameTag         = 22
+};
+
 enum Collide {
 	Collide_LeftWallHug  = 0x20,
 	Collide_RightWallHug = 0x800
