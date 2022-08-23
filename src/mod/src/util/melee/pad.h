@@ -107,3 +107,8 @@ constexpr float get_stick_angle(const vec2 &coords)
 {
 	return std::atan2(std::abs(coords.y), std::abs(coords.x));
 }
+
+constexpr float get_stick_angle_abs_x(const vec2 &coords)
+{
+	return std::atan2(coords.y, std::abs(coords.x));
+}
