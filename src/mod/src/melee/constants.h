@@ -63,6 +63,8 @@ struct PlayerConstants {
 	s32 idle_timer;
 	char pad5F4[0x76C - 0x5F4];
 	f32 walljump_stick_threshold;
+	char pad770[0x7F8 - 0x770];
+	f32 ledge_attack_cstick_threshold;
 };
 
 extern "C" PlayerConstants *plco;
