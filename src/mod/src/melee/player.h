@@ -365,7 +365,27 @@ struct Player {
 	};
 	u8 flags4;
 	u8 flags5;
-	u8 flags6;
+	struct {
+#ifdef PAL
+		u8 flags6_80 : 1;
+		u8 flags6_40 : 1;
+		u8 flags6_20 : 1;
+		u8 flags6_10 : 1;
+		u8 update_inputs : 1;
+		u8 flags6_04 : 1;
+		u8 flags6_02 : 1;
+		u8 flags6_01 : 1;
+#else
+		u8 flags6_80 : 1;
+		u8 flags6_40 : 1;
+		u8 flags6_20 : 1;
+		u8 update_inputs : 1;
+		u8 flags6_08 : 1;
+		u8 flags6_04 : 1;
+		u8 flags6_02 : 1;
+		u8 flags6_01 : 1;
+#endif
+	};
 	struct {
 #ifdef PAL
 		u8 flags7_80 : 1;
