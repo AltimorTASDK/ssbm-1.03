@@ -65,6 +65,7 @@ struct PlayerConstants {
 	f32 walljump_stick_threshold;
 	char pad770[0x7F8 - 0x770];
 	f32 ledge_attack_cstick_threshold;
+	f32 ledge_roll_cstick_threshold;
 };
 
 extern "C" PlayerConstants *plco;
