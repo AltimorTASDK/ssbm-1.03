@@ -28,14 +28,11 @@ extern char __MAX_ADDR__;
 
 extern u8 CSSPendingSceneChange;
 
-void OSEnableScheduler();
-
+s32 OSDisableScheduler();
 s32 OSSaveContext(OSContext *context);
-void OSDefaultErrorHandler(OSContext *context);
 s32 DisplayCrashScreen(OSContext *context);
 
 void InitCardBuffers();
-
 u32 MemoryCard_DoLoadData();
 
 } // extern "C"
@@ -53,15 +50,15 @@ extern "C" char __BSS_SIZE__;
 {
 	OSReport(fmt, args...);
 
+	// Don't run other threads
+	OSDisableScheduler();
+
 	// Enable interrupts so VI interrupts happen
 	OSRestoreInterrupts(1);
 
-	// Enable scheduler so crash screen thread runs
-	OSEnableScheduler();
-
 	OSContext context;
 	OSSaveContext(&context);
-	OSDefaultErrorHandler(&context);
+	DisplayCrashScreen(&context);
 
 	while (true);
 }
