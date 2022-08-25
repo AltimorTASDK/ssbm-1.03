@@ -1,5 +1,6 @@
 #ifdef DOL
 
+#include "dolphin/thread.h"
 #include "hsd/heap.h"
 #include "melee/scene.h"
 #include "util/patch_list.h"
@@ -7,6 +8,7 @@
 
 extern "C" char SaveFileName[25];
 extern "C" void BootScene_Exit(SceneMinorData *data);
+extern "C" s32 DisplayCrashScreen(OSContext *context);
 
 extern "C" char __NEW_BASE__;
 
@@ -18,7 +20,10 @@ PATCH_LIST(
 	std::pair { &SaveFileName[20],   '_103' },
 	// Boot to CSS
 	// li r3, Scene_VsMode
-	std::pair { BootScene_Exit+0x78, 0x38600002u }
+	std::pair { BootScene_Exit+0x78, 0x38600002u },
+	// Skip crash screen input checks
+	// b +0x220
+	std::pair { DisplayCrashScreen+0x4C, 0x48000220u }
 );
 
 extern "C" void orig___init_data();
