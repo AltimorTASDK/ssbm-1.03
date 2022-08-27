@@ -202,10 +202,8 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 
 	InitCardBuffers();
 
-#if defined(PAL) || defined(NTSC102)
 	// Use GALE01 saves for PAL/UP/JPN
 	__CARDSetDiskID("GALE01");
-#endif
 
 #ifndef NTSC102
 	const auto *data = alloc_and_read("103Code");
@@ -243,10 +241,8 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 #endif
 #endif
 
-#if defined(PAL) || defined(NTSC102)
 	// Restore gamecode
 	__CARDSetDiskID(__GameCode);
-#endif
 
 	DCStoreRange(&__MOD_BASE__, code_size);
 	ICInvalidateRange(&__MOD_BASE__, code_size);
