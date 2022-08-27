@@ -36,6 +36,12 @@ OBJFILES := \
 
 DEPFILES := $(patsubst $(OBJDIR)/%.o, $(DEPDIR)/%.d, $(OBJFILES))
 
+ifdef NOPAL
+MGCDIR := $(GCIDIR)/a
+else
+MGCDIR := $(GCIDIR)/b
+endif
+
 ifeq ($(VERSION), PAL)
 GCIFILE    := $(BINDIR)/$(MODNAME)-loader-PAL.gci
 GCISRC     := $(GCIDIR)/ssbm-PAL.gci
@@ -45,7 +51,10 @@ COMMONLD   := ../common-b.ld loader-b.ld
 else
 GCIFILE    := $(BINDIR)/$(MODNAME)-loader-USA.gci
 GCISRC     := $(GCIDIR)/ssbm-USA.gci
-MGCMAIN    := $(MGCDIR)/1.03-NTSC.mgc
+MGCMAIN    := $(MGCDIR)/1.03-USA.mgc
+GCIFILEJPN := $(BINDIR)/$(MODNAME)-loader-JPN.gci
+GCISRCJPN  := $(GCIDIR)/ssbm-JPN.gci
+MGCMAINJPN := $(MGCDIR)/1.03-JPN.mgc
 ifdef NOPAL
 LINKSCRIPT := loader-a-NTSC.ld
 COMMONLD   := ../common-a.ld
@@ -63,27 +72,37 @@ MGCMAIN20XX := $(MGCDIR)/1.03-20XX.mgc
 GCIFILEUP := $(BINDIR)/$(MODNAME)-loader-UP.gci
 GCISRCUP  := $(GCIDIR)/ssbm-UP.gci
 MGCMAINUP := $(MGCDIR)/1.03-UP.mgc
-GCIFILEJPN := $(BINDIR)/$(MODNAME)-loader-JPN.gci
-GCISRCJPN  := $(GCIDIR)/ssbm-JPN.gci
-MGCMAINJPN := $(MGCDIR)/1.03-NTSC.mgc
 
 .PHONY: all
-all: ssbm 20XX UP JPN
+all: loader JPN 20XX UP
 else
 .PHONY: all
-all: ssbm
+all: loader JPN
 endif
 else
 .PHONY: all
-all: ssbm
+ifeq ($(VERSION), PAL)
+all: loader
+else
+all: loader JPN
+endif
 endif
 
-.PHONY: ssbm
-ssbm: $(GCIFILE)
+.PHONY: loader
+loader: $(GCIFILE)
 
 $(GCIFILE): $(BINFILE) $(ZLIBBIN) $(MGCMAIN) $(GCISRC)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -i $(GCISRC) -o $@ $(MGCMAIN)
+
+ifneq ($(VERSION), PAL)
+.PHONY: JPN
+JPN: $(GCIFILEJPN)
+
+$(GCIFILEJPN): $(BINFILE) $(MGCMAINJPN) $(GCISRCJPN)
+	@[ -d $(@D) ] || mkdir -p $(@D)
+	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -i $(GCISRCJPN) -o $@ $(MGCMAINJPN)
+endif
 
 ifeq ($(VERSION), 102)
 ifndef NOPAL
@@ -100,13 +119,6 @@ UP: $(GCIFILEUP)
 $(GCIFILEUP): $(BINFILE) $(MGCMAINUP) $(GCISRCUP)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -i $(GCISRCUP) -o $@ $(MGCMAINUP)
-
-.PHONY: JPN
-JPN: $(GCIFILEJPN)
-
-$(GCIFILEJPN): $(BINFILE) $(MGCMAINJPN) $(GCISRCJPN)
-	@[ -d $(@D) ] || mkdir -p $(@D)
-	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -i $(GCISRCJPN) -o $@ $(MGCMAINJPN)
 endif
 endif
 

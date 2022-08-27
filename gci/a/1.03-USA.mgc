@@ -1,9 +1,9 @@
 !begin
 
 !gci 40
-!string "Super Smash Bros. Melee         1.03 Loader (NTSC)"
+!string "Super Smash Bros. Melee         1.03 Loader (USA)"
 # Pad to 0x40 length
-00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 
 # Make the first nametag so long that it overflows into the stack's return pointer
 !loc 8045d850
@@ -43,3 +43,10 @@ DDDDDDDD 804ee8f8 8045d930 00000000
 # 1.00 loader
 !loc 8045f8f8
 !file "bin/loader-ntsc100.bin"
+
+# zlib
+# v1.02: 80461000
+# v1.01: 80460320
+# v1.00: 8045F038
+!loc 80461000
+!file "bin/zlib.bin"

@@ -90,7 +90,6 @@ export LOCALBIN := build/bin/$(SUBDIR)
 export BINDIR   := $(abspath bin/$(SUBDIR))
 export OBJDIR   := build/obj/$(SUBDIR)/$(VERSION)
 export DEPDIR   := build/dep/$(SUBDIR)/$(VERSION)
-export MGCDIR   := $(GCIDIR)/$(SUBDIR)
 export GCIBIN   := $(GCIDIR)/$(SUBDIR)/bin
 
 export OUTPUTMAP = $(OBJDIR)/output.map
