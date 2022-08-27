@@ -37,23 +37,25 @@ concept TupleLike = requires(T t) {
 template<typename T, size_t N>
 concept FixedTuple = sizeof_tuple<T> == N;
 
-template<auto min, auto max, typename head, typename ...tail>
-constexpr auto smallest_int_impl()
-{
-	using ulimits = std::numeric_limits<std::make_unsigned_t<head>>;
-	using slimits = std::numeric_limits<std::make_signed_t<head>>;
+namespace detail {
 
-	if constexpr (min >= ulimits::lowest() && max <= ulimits::max())
-		return std::make_unsigned_t<head>{};
-	else if constexpr (min >= slimits::lowest() && max <= slimits::max())
-		return std::make_signed_t<head>{};
-	else
-		return smallest_int_impl<min, max, tail...>();
-}
+template<auto ...values>
+struct smallest_int_impl {
+	template<typename head, typename ...tail>
+	static auto get_impl() { return get_impl<tail...>(); }
+	template<typename head, typename ...tail> requires (std::in_range<head>(values) && ...)
+	static auto get_impl() -> head;
 
-// Find the smallest int type capable of holding the given range
-template<auto min, auto max>
-using smallest_int_t = decltype(smallest_int_impl<min, max, int8_t, int16_t, int32_t, int64_t>());
+	template<typename ...T>
+	static auto get() { return get_impl<std::make_unsigned_t<T>..., T...>(); }
+	static auto get() { return get<int8_t, int16_t, int32_t, int64_t>(); }
+};
+
+} // namespace detail
+
+// Find the smallest int type capable of holding the given values
+template<auto ...values>
+using smallest_int_t = decltype(detail::smallest_int_impl<values...>::get());
 
 constexpr auto sum_tuple(TupleLike auto &&tuple)
 {
