@@ -1,79 +1,44 @@
 #pragma once
 
+#include <functional>
 #include <type_traits>
 
-template<typename T, typename U = std::underlying_type_t<T>> requires std::is_scoped_enum_v<T>
-constexpr T operator+(const T &a, const U &b)
+template<typename T>
+concept ScopedEnum = std::is_scoped_enum_v<T>;
+
+template<typename T, typename U>
+constexpr auto enum_operator_impl(auto &&callable, T a, U b)
 {
-	return static_cast<T>(static_cast<U>(a) + b);
+	using enum_t = std::conditional_t<ScopedEnum<T>, T, U>;
+	return enum_t(callable(std::to_underlying(enum_t{a}), std::to_underlying(enum_t{b})));
 }
 
-template<typename T, typename U = std::underlying_type_t<T>> requires std::is_scoped_enum_v<T>
-constexpr T operator+(const U &a, const T &b)
-{
-	return b + a;
-}
+constexpr auto operator+(auto a, auto b)
+	requires (ScopedEnum<decltype(a)> || ScopedEnum<decltype(b)>)
+	{ return enum_operator_impl(std::plus(), a, b); }
+constexpr auto operator-(auto a, auto b)
+	requires (ScopedEnum<decltype(a)> || ScopedEnum<decltype(b)>)
+	{ return enum_operator_impl(std::minus(), a, b); }
+constexpr auto operator&(auto a, auto b)
+	requires (ScopedEnum<decltype(a)> || ScopedEnum<decltype(b)>)
+	{ return enum_operator_impl(std::bit_and(), a, b); }
+constexpr auto operator|(auto a, auto b)
+	requires (ScopedEnum<decltype(a)> || ScopedEnum<decltype(b)>)
+	{ return enum_operator_impl(std::bit_or(), a, b); }
+constexpr auto operator^(auto a, auto b)
+	requires (ScopedEnum<decltype(a)> || ScopedEnum<decltype(b)>)
+	{ return enum_operator_impl(std::bit_xor(), a, b); }
 
-template<typename T, typename U = std::underlying_type_t<T>> requires std::is_scoped_enum_v<T>
-constexpr T operator+(const T &a, const T &b)
-{
-	return static_cast<T>(static_cast<U>(a) + static_cast<U>(a));
-}
+constexpr auto &operator+=(ScopedEnum auto &a, auto b) { return a = a + b; }
+constexpr auto &operator-=(ScopedEnum auto &a, auto b) { return a = a - b; }
+constexpr auto &operator&=(ScopedEnum auto &a, auto b) { return a = a & b; }
+constexpr auto &operator|=(ScopedEnum auto &a, auto b) { return a = a | b; }
+constexpr auto &operator^=(ScopedEnum auto &a, auto b) { return a = a ^ b; }
 
-template<typename T, typename U = std::underlying_type_t<T>> requires std::is_scoped_enum_v<T>
-constexpr T operator-(const T &a, const U &b)
-{
-	return static_cast<T>(static_cast<U>(a) - b);
-}
+constexpr auto operator<=>(ScopedEnum auto a, auto b) { return std::to_underlying(a) <=> b; }
+constexpr auto operator== (ScopedEnum auto a, auto b) { return a <=> b == 0; }
 
-template<typename T, typename U = std::underlying_type_t<T>> requires std::is_scoped_enum_v<T>
-constexpr T operator-(const U &a, const T &b)
-{
-	return b - a;
-}
-
-template<typename T, typename U = std::underlying_type_t<T>> requires std::is_scoped_enum_v<T>
-constexpr T operator-(const T &a, const T &b)
-{
-	return static_cast<T>(static_cast<U>(a) - static_cast<U>(a));
-}
-
-template<typename T, typename U = std::underlying_type_t<T>> requires std::is_scoped_enum_v<T>
-constexpr T &operator++(T &value)
-{
-	return value = value + 1;
-}
-
-template<typename T, typename U = std::underlying_type_t<T>> requires std::is_scoped_enum_v<T>
-constexpr T operator++(T &value, int)
-{
-	const auto result = value;
-	++value;
-	return result;
-}
-
-template<typename T, typename U = std::underlying_type_t<T>> requires std::is_scoped_enum_v<T>
-constexpr T &operator--(T &value)
-{
-	return value = value - 1;
-}
-
-template<typename T, typename U = std::underlying_type_t<T>> requires std::is_scoped_enum_v<T>
-constexpr T operator--(T &value, int)
-{
-	const auto result = value;
-	--value;
-	return result;
-}
-
-template<typename T, typename U = std::underlying_type_t<T>> requires std::is_scoped_enum_v<T>
-constexpr auto operator<=>(const T &a, const U &b)
-{
-    return static_cast<U>(a) <=> b;
-}
-
-template<typename T, typename U = std::underlying_type_t<T>> requires std::is_scoped_enum_v<T>
-constexpr auto operator==(const T &a, const U &b)
-{
-    return a <=> b == 0;
-}
+constexpr auto operator++(ScopedEnum auto &v)      { return v = v + decltype(auto(v)){1}; }
+constexpr auto operator--(ScopedEnum auto &v)      { return v = v - decltype(auto(v)){1}; }
+constexpr auto operator++(ScopedEnum auto &v, int) { const auto tmp = v; ++v; return tmp; }
+constexpr auto operator--(ScopedEnum auto &v, int) { const auto tmp = v; --v; return tmp; }
