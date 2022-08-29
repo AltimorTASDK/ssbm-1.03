@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <bit>
 #include <climits>
+#include <concepts>
 #include <cmath>
 #include <type_traits>
 
@@ -13,17 +14,30 @@ constexpr auto tau = pi * 2;
 
 } // namespace math
 
-constexpr auto align_down(auto value, auto alignment)
+template<std::signed_integral T>
+constexpr T mod(T value, T modulus)
 {
-	return value - (value % alignment + alignment) % alignment;
+	// True modulo for negatives
+	return ((value % modulus) + modulus) % modulus;
 }
 
-constexpr auto align_up(auto value, auto alignment)
+template<std::unsigned_integral T>
+constexpr T mod(T value, T modulus)
+{
+	return value % modulus;
+}
+
+constexpr auto align_down(std::integral auto value, std::integral auto alignment)
+{
+	return value - mod(value, alignment);
+}
+
+constexpr auto align_up(std::integral auto value, std::integral auto alignment)
 {
 	return align_down(value + alignment - 1, alignment);
 }
 
-constexpr auto bit_swap(auto value, auto i, auto j, int count = 1)
+constexpr auto bit_swap(std::integral auto value, int i, int j, int count = 1)
 {
 	const auto x = ((value >> i) ^ (value >> j)) & ((1 << count) - 1);
 	return value ^ ((x << i) | (x << j));
@@ -35,7 +49,7 @@ constexpr T clamp(T value, T min, T max)
 	return std::max(min, std::min(value, max));
 }
 
-template<typename T>
+template<typename T> requires (!std::integral<T>)
 constexpr T lerp(T a, T b, auto c)
 {
 	return a + (b - a) * c;
@@ -52,18 +66,8 @@ constexpr T inv_lerp(T value, T a, T b)
 		return (value - a) / (b - a);
 }
 
-template<typename T>
-constexpr T mod(T value, T modulus)
-{
-	if (value >= 0)
-		return value % modulus;
-
-	// True modulo for negatives
-	return ((value % modulus) + modulus) % modulus;
-}
-
 // Returns mod(value - 1, modulus) given value is in range [0, modulus)
-template<typename T>
+template<std::integral T>
 constexpr T decrement_mod(T value, T modulus)
 {
 	constexpr auto shift = sizeof(T) * CHAR_BIT - 1;
@@ -73,7 +77,7 @@ constexpr T decrement_mod(T value, T modulus)
 }
 
 // Returns mod(value + 1, modulus) given value is in range [0, modulus)
-template<typename T>
+template<std::integral T>
 constexpr T increment_mod(T value, T modulus)
 {
 	constexpr auto shift = sizeof(T) * CHAR_BIT - 1;
@@ -82,7 +86,7 @@ constexpr T increment_mod(T value, T modulus)
 	return modulus + (inc ^ (-modulus & ~mask));
 }
 
-template<typename T>
+template<std::integral T>
 constexpr T copysign_int(T value, T sign)
 {
 	const auto mask = sign >> (sizeof(T) * CHAR_BIT - 1);
@@ -99,7 +103,7 @@ constexpr float rad_to_deg(float x)
 	return x * 180.f / math::pi;
 }
 
-constexpr auto angle_difference(auto a, auto b)
+constexpr float angle_difference(float a, float b)
 {
 	return std::fmod(deg_to_rad(a) - deg_to_rad(b) + math::pi, math::tau) - math::pi;
 }
