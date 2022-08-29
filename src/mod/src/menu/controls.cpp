@@ -116,6 +116,7 @@ constexpr auto description_text_data = multi_array {
 };
 
 constexpr auto value_text_data = multi_array {
+	nullptr,
 	multi_array {
 		make_value_text<"Off">(),
 		make_value_text<"Swap X/Z">(),
@@ -142,14 +143,11 @@ constexpr auto value_text_data = multi_array {
 		make_value_text<"On">(),
 		make_value_text<"Off">()
 	}
-#else
-	// Don't use copy ctor
-	multi_array { std::array<char, 0> { } }
 #endif
 };
 
 constexpr auto value_counts = for_range<value_text_data.size()>([]<size_t ...I> {
-	return std::array { (int)value_text_data.size(I)... };
+	return std::array { (int)value_text_data.size<I>()... };
 });
 
 static HSD_Archive *GmTou1p;

@@ -1,8 +1,10 @@
 #pragma once
 
 #include <algorithm>
+#include <array>
 #include <climits>
 #include <cmath>
+#include <concepts>
 #include <cstdint>
 #include <functional>
 #include <limits>
@@ -29,7 +31,7 @@ constexpr auto tuple_constant = std::tuple_element_t<N, T>::value;
 template<typename T>
 concept TupleLike = requires(T t) {
 	[]<size_t ...I>(std::index_sequence<I...>, T t) {
-		(std::get<I>(t), ...);
+		((void)std::get<I>(t), ...);
 	}(std::make_index_sequence<sizeof_tuple<T>>(), t);
 };
 
@@ -182,7 +184,8 @@ constexpr auto slice_tuple(TupleLike auto &&tuple)
 template<size_t start, size_t end>
 constexpr auto slice(auto &&...args)
 {
-	return slice_tuple<start, end>(std::forward_as_tuple(args...));
+	return slice_tuple<start, end>(
+		std::forward_as_tuple(std::forward<decltype(args)>(args)...));
 }
 
 // Create a tuple of the Nth elements of the given tuples. If a tuple has no Nth
@@ -289,7 +292,7 @@ struct string_literal {
 					return std::array { str[I]... };
 				else
 					return std::array<T, 0>();
-			}, strings)..., std::array { T { 0 } }).begin(), size + 1, value);
+			}, strings)..., std::array { T{0} }).begin(), size + 1, value);
 		}
 	}
 
@@ -297,43 +300,46 @@ struct string_literal {
 };
 
 // Wrap a list of arbitrarily sized std::arrays as an array of raw pointers
-template<typename ...component_types>
+template<typename ...T>
 class multi_array {
-	using tuple_type = std::add_const_t<std::tuple<component_types...>>;
-	using data_type = decltype(std::get<0>(std::declval<tuple_type>()).data());
-	using array_type = std::array<data_type, sizeof_tuple<tuple_type>>;
+	static_assert(sizeof...(T) > 0);
+	using tuple_type = std::tuple<std::remove_cvref_t<T>...>;
+	using  data_type = decltype(std::get<0>(std::declval<const tuple_type>()).data());
+	using array_type = std::array<data_type, sizeof...(T)>;
 
-	const std::array<size_t, sizeof...(component_types)> sizes;
 	const tuple_type tuple;
 	const array_type array;
 
 public:
-	constexpr multi_array(multi_array<component_types...> &&other) :
-		sizes(std::move(other.sizes)),
-		tuple(std::move(other.tuple)),
-		array(for_range<sizeof...(component_types)>([&]<size_t ...I> {
+	constexpr multi_array(std::convertible_to<tuple_type> auto &&in) :
+		tuple(std::forward<decltype(in)>(in)),
+		array(for_range<sizeof...(T)>([&]<size_t ...I> {
 			return std::array { std::get<I>(tuple).data()... };
 		}))
 	{
 	}
 
-	constexpr multi_array(component_types &&...components) :
-		sizes { components.size()... },
-		tuple(std::forward_as_tuple(std::move(components)...)),
-		array(for_range<sizeof...(components)>([&]<size_t ...I> {
-			return std::array { std::get<I>(tuple).data()... };
-		}))
-	{
-	}
+	constexpr multi_array(const multi_array &other)
+		: multi_array(other.tuple) {}
+
+	constexpr multi_array(multi_array &&other)
+		: multi_array(std::move(other.tuple)) {}
+
+	constexpr multi_array(T &&...components)
+		: multi_array(std::forward_as_tuple(std::forward<T>(components)...)) {}
+
+	constexpr multi_array(std::nullptr_t, T &&...components)
+		: multi_array(std::forward_as_tuple(std::forward<T>(components)...)) {}
 
 	constexpr size_t size() const
 	{
-		return sizeof...(component_types);
+		return sizeof...(T);
 	}
 
-	constexpr size_t size(size_t index) const
+	template<size_t N>
+	constexpr size_t size() const
 	{
-		return sizes[index];
+		return std::get<N>(tuple).size();
 	}
 
 	constexpr const data_type *data() const
@@ -346,3 +352,9 @@ public:
 		return array[index];
 	}
 };
+
+template<typename ...T>
+multi_array(T&&...) -> multi_array<T...>;
+
+template<typename ...T>
+multi_array(std::nullptr_t, T&&...) -> multi_array<T...>;
