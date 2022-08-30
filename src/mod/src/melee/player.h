@@ -370,7 +370,7 @@ struct Player {
 		u8 flags6_80 : 1;
 		u8 flags6_40 : 1;
 		u8 flags6_20 : 1;
-		u8 stamina_death : 1;
+		u8 stamina_dead : 1;
 		u8 update_last_input : 1;
 		u8 ignore_input : 1;
 		u8 flags6_02 : 1;
