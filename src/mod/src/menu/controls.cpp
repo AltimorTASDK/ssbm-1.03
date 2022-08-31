@@ -116,7 +116,6 @@ constexpr auto description_text_data = multi_array {
 };
 
 constexpr auto value_text_data = multi_array {
-	nullptr,
 	multi_array {
 		make_value_text<"Off">(),
 		make_value_text<"Swap X/Z">(),

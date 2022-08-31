@@ -28,6 +28,10 @@ constexpr auto sizeof_tuple = std::tuple_size_v<std::remove_reference_t<T>>;
 template<size_t N, typename T>
 constexpr auto tuple_constant = std::tuple_element_t<N, T>::value;
 
+// Make a std::integral_constant with deduced type
+template<std::integral auto V>
+using make_integral = std::integral_constant<decltype(V), V>;
+
 template<typename T>
 concept TupleLike = requires(T t) {
 	[]<size_t ...I>(std::index_sequence<I...>, T t) {
@@ -89,7 +93,7 @@ template<size_t N>
 constexpr auto constant_range()
 {
 	return [&]<size_t ...I>(std::index_sequence<I...>) {
-		return std::make_tuple(std::integral_constant<size_t, I>()...);
+		return std::make_tuple(make_integral<I>()...);
 	}(std::make_index_sequence<N>());
 }
 
@@ -98,7 +102,7 @@ template<size_t start, size_t end>
 constexpr auto constant_range()
 {
 	return [&]<size_t ...I>(std::index_sequence<I...>) {
-		return std::make_tuple(std::integral_constant<size_t, I + start>()...);
+		return std::make_tuple(make_integral<I + start>()...);
 	}(std::make_index_sequence<end - start>());
 }
 
@@ -299,62 +303,110 @@ struct string_literal {
 	T value[size + 1];
 };
 
-// Wrap a list of arbitrarily sized std::arrays as an array of raw pointers
-template<typename ...T>
-class multi_array {
-	static_assert(sizeof...(T) > 0);
-	using tuple_type = std::tuple<std::remove_cvref_t<T>...>;
-	using  data_type = decltype(std::get<0>(std::declval<const tuple_type>()).data());
-	using array_type = std::array<data_type, sizeof...(T)>;
+namespace detail {
 
-	const tuple_type tuple;
-	const array_type array;
+template<size_t N, typename Head, typename ...Tail>
+struct aggregator_impl : aggregator_impl<N, Head>, aggregator_impl<N + 1, Tail...> {
+protected:
+	using aggregator_impl<N,     Head   >::get_impl;
+	using aggregator_impl<N + 1, Tail...>::get_impl;
+};
+
+template<size_t N, typename Head>
+struct aggregator_impl<N, Head> {
+	Head value;
+	constexpr auto &get_impl(make_integral<N>)       { return value; }
+	constexpr auto &get_impl(make_integral<N>) const { return value; }
+};
+
+} // namespace detail
+
+// Aggregate initializable tuple
+template<typename ...T>
+struct aggregator : detail::aggregator_impl<0, T...> {
+	template<size_t N>
+	constexpr auto &get()       { return this->get_impl(make_integral<N>()); }
+	template<size_t N>
+	constexpr auto &get() const { return this->get_impl(make_integral<N>()); }
+};
+
+template<>
+struct aggregator<> {
+};
+
+template<typename ...T>
+aggregator(T...) -> aggregator<T...>;
+
+template<size_t N, typename ...T>
+constexpr auto &get(      aggregator<T...> &a) { return a.template get<N>(); }
+template<size_t N, typename ...T>
+constexpr auto &get(const aggregator<T...> &a) { return a.template get<N>(); }
+
+template<typename ...T>
+struct std::tuple_size<aggregator<T...>> :
+       make_integral<sizeof...(T)> {};
+
+template<size_t N, typename ...T>
+struct std::tuple_element<N, aggregator<T...>> :
+       std::tuple_element<N, std::tuple<T...>> {};
+
+namespace detail {
+
+template<typename Outer, typename ...T>
+struct multi_array_impl {
+	using value_type = decltype((std::declval<      T>(), ...).data());
+	using const_type = decltype((std::declval<const T>(), ...).data());
+	using array_type = std::array<value_type, sizeof...(T)>;
+
+	const array_type array = for_range<sizeof...(T)>([&]<size_t ...I> {
+		auto &outer = static_cast<Outer&>(*this);
+		return array_type { [&] { return get<I>(outer).data(); }()... };
+	});
 
 public:
-	constexpr multi_array(std::convertible_to<tuple_type> auto &&in) :
-		tuple(std::forward<decltype(in)>(in)),
-		array(for_range<sizeof...(T)>([&]<size_t ...I> {
-			return std::array { std::get<I>(tuple).data()... };
-		}))
+	constexpr multi_array_impl() = default;
+	constexpr multi_array_impl(const multi_array_impl&) : multi_array_impl() {}
+
+	constexpr const auto *data()
 	{
+		return array.data();
 	}
 
-	constexpr multi_array(const multi_array &other)
-		: multi_array(other.tuple) {}
+	constexpr const auto *data() const
+	{
+		return (const_type*)array.data();
+	}
 
-	constexpr multi_array(multi_array &&other)
-		: multi_array(std::move(other.tuple)) {}
+	constexpr const auto &operator[](size_t index)
+	{
+		return array[index];
+	}
 
-	constexpr multi_array(T &&...components)
-		: multi_array(std::forward_as_tuple(std::forward<T>(components)...)) {}
+	constexpr const auto &operator[](size_t index) const
+	{
+		return (const_type&)array[index];
+	}
+};
 
-	constexpr multi_array(std::nullptr_t, T &&...components)
-		: multi_array(std::forward_as_tuple(std::forward<T>(components)...)) {}
+} // namespace detail
 
-	constexpr size_t size() const
+// Wrap a list of arbitrarily sized std::arrays as an array of raw pointers
+template<typename ...T>
+struct multi_array : aggregator<T...>, detail::multi_array_impl<multi_array<T...>, T...> {
+	constexpr auto size() const
 	{
 		return sizeof...(T);
 	}
 
 	template<size_t N>
-	constexpr size_t size() const
+	constexpr auto size() const
 	{
-		return std::get<N>(tuple).size();
-	}
-
-	constexpr const data_type *data() const
-	{
-		return array.data();
-	}
-
-	constexpr data_type operator[](size_t index) const
-	{
-		return array[index];
+		return get<N>(*this).size();
 	}
 };
 
 template<typename ...T>
-multi_array(T&&...) -> multi_array<T...>;
+multi_array(T...) -> multi_array<T...>;
 
 template<typename ...T>
-multi_array(std::nullptr_t, T&&...) -> multi_array<T...>;
+multi_array(multi_array<T...>) -> multi_array<multi_array<T...>>;
