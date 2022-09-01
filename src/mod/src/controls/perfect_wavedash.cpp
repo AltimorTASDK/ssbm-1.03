@@ -30,10 +30,10 @@ extern "C" float hook_Player_GetAirdodgeAngle(Player *player)
 	constexpr auto nana_angle_pos = std::atan2(nana_y, nana_x_pos);
 	constexpr auto nana_angle_neg = std::atan2(nana_y, nana_x_neg);
 
-	if (!player->is_backup_climber)
-		return pad.stick.x > 0 ? angle_pos : angle_neg;
-	else
+	if (player->character_id == CID_Nana)
 		return pad.stick.x > 0 ? nana_angle_pos : nana_angle_neg;
+	else
+		return pad.stick.x > 0 ? angle_pos : angle_neg;
 }
 
 #endif

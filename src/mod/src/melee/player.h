@@ -415,14 +415,14 @@ struct Player {
 		u8 flags8_10 : 1;
 		u8 flags8_08 : 1;
 		u8 no_update : 1;
-		u8 is_backup_climber : 1;
+		u8 is_secondary_char : 1;
 		u8 flags8_01 : 1;
 #else
 		u8 flags8_80 : 1;
 		u8 flags8_40 : 1;
 		u8 flags8_20 : 1;
 		u8 no_update : 1;
-		u8 is_backup_climber : 1;
+		u8 is_secondary_char : 1;
 		u8 flags8_04 : 1;
 		u8 flags8_02 : 1;
 		u8 flags8_01 : 1;
@@ -568,7 +568,7 @@ void SetPortRumbleFlag(u32 port, bool flag);
 // Returns Popo's port if given a Nana pointer
 inline u8 Player_GetPort(const Player *player)
 {
-	if (!player->is_backup_climber)
+	if (player->character_id != CID_Nana)
 		return player->port;
 
 	const auto *gobj = PlayerBlock_GetSubCharGObj(player->slot, 0);
@@ -581,5 +581,5 @@ inline bool Player_IsCPUControlled(const Player *player)
 	if (PlayerBlock_GetSlotType(player->slot) != SlotType_Human)
 		return true;
 
-	return player->is_backup_climber && !player->is_nana_synced;
+	return player->character_id == CID_Nana && !player->is_nana_synced;
 }

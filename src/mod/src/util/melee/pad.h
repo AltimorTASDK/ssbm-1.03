@@ -46,10 +46,10 @@ inline const PADStatus &get_nana_input(const Player *nana)
 template<int offset>
 inline const PADStatus &get_character_input(const Player *player)
 {
-	if (!player->is_backup_climber)
-		return get_input<offset>(player->port);
-	else
+	if (player->character_id == CID_Nana)
 		return get_nana_input<offset>(player);
+	else
+		return get_input<offset>(player->port);
 }
 
 inline bool check_ucf_xsmash(const Player *player)
