@@ -35,7 +35,7 @@ using make_integral = std::integral_constant<decltype(V), V>;
 template<typename T>
 concept TupleLike = requires(T t) {
 	[]<size_t ...I>(std::index_sequence<I...>, T t) {
-		((void)std::get<I>(t), ...);
+		((void)get<I>(t), ...);
 	}(std::make_index_sequence<sizeof_tuple<T>>(), t);
 };
 
@@ -66,7 +66,7 @@ using smallest_int_t = decltype(detail::smallest_int_impl<values...>::get());
 constexpr auto sum_tuple(TupleLike auto &&tuple)
 {
 	return [&]<size_t ...I>(std::index_sequence<I...>) {
-		return (std::get<I>(tuple) + ...);
+		return (get<I>(tuple) + ...);
 	}(std::make_index_sequence<sizeof_tuple<decltype(tuple)>>());
 }
 
@@ -130,8 +130,8 @@ constexpr auto tuple_product(TupleLike auto &&a, TupleLike auto &&b)
 	return for_range<sizeof_tuple<decltype(a)>>([&]<size_t ...I> {
 		return std::tuple_cat([&]<size_t i> {
 			return for_range<sizeof_tuple<decltype(b)>>([&]<size_t ...J> {
-				return std::make_tuple(std::make_tuple(std::get<i>(a),
-				                                       std::get<J>(b))...);
+				return std::make_tuple(std::make_tuple(get<i>(a),
+				                                       get<J>(b))...);
 			});
 		}.template operator()<I>()...);
 	});
@@ -181,7 +181,7 @@ constexpr auto slice_tuple(TupleLike auto &&tuple)
 		: std::max(0z, size + end);
 
 	return for_range<real_start, real_end>([&]<size_t ...I> {
-		return std::forward_as_tuple(std::get<I>(tuple)...);
+		return std::forward_as_tuple(get<I>(tuple)...);
 	});
 }
 
@@ -199,7 +199,7 @@ constexpr auto zip_at_index(TupleLike auto &&...tuples)
 {
 	return std::tuple_cat([&] {
 		if constexpr (N < sizeof_tuple<decltype(tuples)>)
-			return std::forward_as_tuple(std::get<N>(tuples));
+			return std::forward_as_tuple(get<N>(tuples));
 		else
 			return std::make_tuple();
 	}()...);
@@ -219,7 +219,7 @@ constexpr auto zip(TupleLike auto &&...tuples)
 		constexpr auto size = sizeof_tuple<decltype(tuples)...>;
 
 		return for_range<size>([&]<size_t ...I> {
-			return std::make_tuple(std::forward_as_tuple(std::get<I>(tuples...))...);
+			return std::make_tuple(std::forward_as_tuple(get<I>(tuples...))...);
 		});
 	}
 }
@@ -249,10 +249,10 @@ constexpr auto apply_multi(auto &&callable, TupleLike auto &&...tuples)
 // Given tuple A of length 3, tuple B of length 2, and tuple C of length 4,
 // zip_apply is equivalent to the following:
 //
-// callable(std::get<0>(A), std::get<0>(B), std::get<0>(C))
-// callable(std::get<1>(A), std::get<1>(B), std::get<1>(C))
-// callable(std::get<2>(A), std::get<2>(C))
-// callable(std::get<3>(C))
+// callable(get<0>(A), get<0>(B), get<0>(C))
+// callable(get<1>(A), get<1>(B), get<1>(C))
+// callable(get<2>(A), get<2>(C))
+// callable(get<3>(C))
 //
 // The results of callable are returned as a tuple. void results are omitted
 // from the tuple. If no results are returned, this function returns void.
