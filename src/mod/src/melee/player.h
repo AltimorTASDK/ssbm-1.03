@@ -324,7 +324,7 @@ struct Player {
 		u8 is_nana_synced : 1;
 	};
 	u8 cpu_flags4;
-	PopoData popo_data_buffer[30];
+	PopoData popo_data_buffer[NANA_BUFFER];
 	PopoData *popo_data_write;
 	PopoData *popo_data_read;
 	char pad1ED4[0x210C - 0x1ED4];
