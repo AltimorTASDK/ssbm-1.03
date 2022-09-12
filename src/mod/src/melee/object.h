@@ -119,7 +119,7 @@ struct Hurtbox {
 
 extern "C" {
 
-bool Physics_IsOnPlatform(const Physics *phys);
+u32 Physics_IsOnPlatform(const Physics *phys);
 
 bool Physics_Collision_Grounded(Physics *phys);
 bool Physics_Collision_Air_StayAirborne(Physics *phys);
