@@ -13,9 +13,6 @@ struct doraki_data {
 	bool ledgefall;
 	// Whether the player was eligible to doraki on f1 of Fall
 	bool can_doraki;
-	// Position/ECB flags when player was originally eligible to doraki
-	vec3 doraki_position;
-	u32 doraki_ecb_flags;
 };
 
 extern "C" bool orig_Interrupt_Walljump(HSD_GObj *gobj);
@@ -55,12 +52,10 @@ static bool attempt_doraki(Player *player)
 	const auto position = player->position;
 	const auto collide = player->phys.collide;
 	const auto ecb = player->phys.ecb;
-	const auto ecb_flags = player->phys.ecb_flags;
-	player->position = as_data->doraki_position;
+	player->position = player->last_position;
 	player->phys.position = player->position;
 	player->phys.collide = player->phys.last_collide;
 	player->phys.ecb = player->phys.last_ecb;
-	player->phys.ecb_flags = as_data->doraki_ecb_flags;
 
 	if (orig_Interrupt_Walljump(player->gobj))
 		return true;
@@ -70,7 +65,6 @@ static bool attempt_doraki(Player *player)
 	player->phys.position = position;
 	player->phys.collide = collide;
 	player->phys.ecb = ecb;
-	player->phys.ecb_flags = ecb_flags;
 	return false;
 }
 
@@ -97,10 +91,6 @@ extern "C" bool hook_Interrupt_Walljump(HSD_GObj *gobj)
 		// Store doraki eligibility for f2
 		as_data->ledgefall = false;
 		as_data->can_doraki = player->walljump_eligible_frames < 0xFE;
-		if (as_data->can_doraki) {
-			as_data->doraki_position = player->position;
-			as_data->doraki_ecb_flags = player->phys.ecb_flags;
-		}
 	}
 
 	return false;
