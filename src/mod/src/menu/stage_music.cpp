@@ -436,6 +436,7 @@ extern "C" void hook_Menu_ItemMenuInput(HSD_GObj *gobj)
 		return;
 
 	change_stage(data, data->selected_stage);
+	Menu_PlaySFX(MenuSFX_Scroll);
 
 	if (MenuSelectedIndex >= toggle_count) {
 		MenuSelectedValue = data->selected_stage;
