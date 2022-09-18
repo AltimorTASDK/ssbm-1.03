@@ -46,8 +46,6 @@ static bool check_doraki_input(const Player *player)
 
 static bool attempt_doraki(Player *player)
 {
-	const auto *as_data = player->custom_as_data<doraki_data>();
-
 	// The player missed the f1 smash input and drifted away, allow an f2 doraki
 	const auto position = player->position;
 	const auto collide = player->phys.collide;
