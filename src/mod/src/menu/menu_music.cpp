@@ -220,6 +220,12 @@ PATCH_LIST(
 	// cmpwi r25, 0x1E
 	std::pair { Menu_SetupRandomStageToggles+0x258, 0x2C19001Eu },
 
+#ifndef PAL
+	// Fix the vanilla scroll SFX behavior on NTSC
+	// nop
+	std::pair { Menu_RandomStageMenuInput+0x1D4,    0x60000000u },
+#endif
+
 	// Allow having all toggles disabled
 	// nop
 #ifdef PAL
@@ -410,11 +416,11 @@ extern "C" void hook_Menu_RandomStageMenuInput(HSD_GObj *gobj)
 
 	auto *data = RandomStageMenuGObj->get<RandomStageMenuData>();
 
-	if (buttons & MenuButton_L) {
-		set_page(data, clamp(data->page - 1, 0, (int)page_count - 1));
+	if ((buttons & MenuButton_L) && data->page > 0) {
+		set_page(data, data->page - 1);
 		Menu_PlaySFX(MenuSFX_Scroll);
-	} else if (buttons & MenuButton_R) {
-		set_page(data, clamp(data->page + 1, 0, (int)page_count - 1));
+	} else if ((buttons & MenuButton_R) && data->page < page_count - 1) {
+		set_page(data, data->page + 1);
 		Menu_PlaySFX(MenuSFX_Scroll);
 	}
 
@@ -449,10 +455,17 @@ extern "C" void hook_Menu_RandomStageMenuScroll(RandomStageMenuData *data, u32 b
 		row = decrement_mod(row, row_count);
 	else if (buttons & MenuButton_Down)
 		row = increment_mod(row, row_count);
-	else if (buttons & MenuButton_Left)
-		col = std::max(col - 1, 0);
-	else if (buttons & MenuButton_Right)
-		col = std::min(col + 1, col_count - 1);
+	else if ((buttons & MenuButton_Left) && col > 0)
+		col--;
+	else if ((buttons & MenuButton_Right) && col < col_count - 1)
+		col++;
+	else
+		return;
+
+#ifndef PAL
+	// Only play scroll SFX when the index actually changes (already fixed on PAL)
+	Menu_PlaySFX(MenuSFX_Scroll);
+#endif
 
 	MenuSelectedIndex = (u16)std::min(col * max_row_count + row, get_page_size(data->page) - 1);
 	MenuSelectedValue = data->toggles[MenuSelectedIndex];
