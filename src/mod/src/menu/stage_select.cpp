@@ -18,13 +18,21 @@
 #include <ogc/cache.h>
 #include <ogc/gx.h>
 
+#include "resources/sss/random.tex.h"
 #include "resources/sss/bf.tex.h"
+#ifdef FULL_SSS_ROTATOR
+#include "resources/sss/old/dl.tex.h"
+#include "resources/sss/old/fd.tex.h"
+#include "resources/sss/old/fod.tex.h"
+#include "resources/sss/old/ps.tex.h"
+#include "resources/sss/old/ys.tex.h"
+#else
 #include "resources/sss/dl.tex.h"
 #include "resources/sss/fd.tex.h"
 #include "resources/sss/fod.tex.h"
 #include "resources/sss/ps.tex.h"
 #include "resources/sss/ys.tex.h"
-#include "resources/sss/random.tex.h"
+#endif
 
 extern "C" u8 SelectedStageIcon;
 extern "C" u8 StageLoadingState;
@@ -293,6 +301,7 @@ extern "C" void hook_SSS_Think()
 	}
 }
 
+#ifdef FULL_SSS_ROTATOR
 static void mask_unfrozen_texture(HSD_ImageDesc *image)
 {
 	if (image->format != GX_TF_I4)
@@ -322,6 +331,7 @@ static void mask_unfrozen_texture(HSD_ImageDesc *image)
 
 	DCStoreRange(texture, size);
 }
+#endif
 
 static void setup_stage_names()
 {
@@ -346,9 +356,10 @@ static void setup_stage_names()
 
 	for (const auto &swap : tex_swaps) {
 		unmanaged_texture_swap(swap.texture, texanim->imagetbl[swap.tex_id]);
-
+#ifdef FULL_SSS_ROTATOR
 		if (swap.stage_id != -1 && !is_stage_frozen(swap.stage_id))
 			mask_unfrozen_texture(texanim->imagetbl[swap.tex_id]);
+#endif
 	}
 }
 
