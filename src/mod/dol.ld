@@ -13,7 +13,7 @@ INPUT(build/dol_data.bin);
 TARGET(elf32-powerpc);
 
 __LOAD_BASE__  = 0x80003000;
-__NEW_BASE__   = 0x817B0200; /* starting VMA of new code */
+__NEW_BASE__   = 0x817B0000; /* starting VMA of new code */
 __MAX_ADDR__   = 0x817F8AC0; /* start of FileStringTable */
 __OLD_SIZE__   = __NEW_BASE__ - __LOAD_BASE__;
 __NEW_SIZE__   = __MAX_ADDR__ - __NEW_BASE__;
