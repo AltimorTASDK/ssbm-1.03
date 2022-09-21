@@ -71,6 +71,7 @@ and latency
 * `LGL_ROTATOR` - Reinstate the LGL rotator in the rules menu
 * `ATL_ROTATOR` - Reinstate the AGL rotator in the rules menu
 * `FULL_SSS_ROTATOR` - Reinstate the FD/PS and None options for Stage Mods
+* `LGL_LEGACY` - Use the old 40/45/50 LGL for 6/7/8 minutes behavior.
 
 **Example `make` command:**
 
