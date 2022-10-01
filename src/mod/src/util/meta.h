@@ -286,6 +286,8 @@ template<typename T, size_t ...N>
 struct string_literal {
 	static constexpr auto size = ((N - 1) + ...);
 
+	T value[size + 1];
+
 	constexpr string_literal(const c_array_t<T, N> &...strings)
 	{
 		if constexpr(sizeof...(N) == 1) {
@@ -299,8 +301,6 @@ struct string_literal {
 			}, strings)..., std::array { T{0} }).begin(), size + 1, value);
 		}
 	}
-
-	T value[size + 1];
 };
 
 namespace detail {
