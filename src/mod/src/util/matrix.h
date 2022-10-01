@@ -120,20 +120,17 @@ public:
 		});
 	}
 
-	template<size_t otherM>
-	constexpr auto operator*(const matrix<T, M, otherM> &other) const
+	template<size_t OtherM>
+	constexpr auto operator*(const matrix<T, M, OtherM> &other) const
 	{
-		using result_type = matrix<T, N, otherM>;
-
-		return std::make_from_tuple<result_type>(
-			for_range_product<N, otherM>([&]<typename... pairs> {
-				return std::make_tuple(([&] {
-					constexpr auto i = tuple_constant<0, pairs>;
-					constexpr auto j = tuple_constant<1, pairs>;
-					return sum_tuple(zip_apply(
-						operators::mul, row<i>(), other.template col<j>()));
-				}())...);
-			}));
+		return for_range_product<N, OtherM>([&]<typename... pairs> {
+			return matrix<T, N, OtherM> { [&] {
+				constexpr auto i = tuple_constant<0, pairs>;
+				constexpr auto j = tuple_constant<1, pairs>;
+				return sum_tuple(zip_apply(
+					operators::mul, row<i>(), other.template col<j>()));
+			}()... };
+		});
 	}
 
 	constexpr auto operator*=(const auto &other)
