@@ -29,9 +29,9 @@ public:
 
 	T elems[N * M];
 
-	constexpr matrix() : elems({ 0 }) {}
+	constexpr matrix() : elems { 0 } {}
 
-	constexpr matrix(auto ...values) : elems(values...)
+	constexpr matrix(auto ...values) : elems { values... }
 	{
 		static_assert(sizeof...(values) == N * M);
 	}
@@ -50,7 +50,7 @@ public:
 	constexpr auto row()
 	{
 		return for_range<M>([&]<size_t ...J> {
-			return std::tie(*this[i, J]...);
+			return std::tie((*this)[i, J]...);
 		});
 	}
 
@@ -58,7 +58,7 @@ public:
 	constexpr auto row() const
 	{
 		return for_range<M>([&]<size_t ...J> {
-			return std::make_tuple(*this[i, J]...);
+			return std::make_tuple((*this)[i, J]...);
 		});
 	}
 
@@ -80,7 +80,7 @@ public:
 	constexpr auto col()
 	{
 		return for_range<N>([&]<size_t ...I> {
-			return std::tie(*this[I, j]...);
+			return std::tie((*this)[I, j]...);
 		});
 	}
 
@@ -88,7 +88,7 @@ public:
 	constexpr auto col() const
 	{
 		return for_range<N>([&]<size_t ...I> {
-			return std::make_tuple(*this[I, j]...);
+			return std::make_tuple((*this)[I, j]...);
 		});
 	}
 
