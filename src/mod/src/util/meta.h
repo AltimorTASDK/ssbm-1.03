@@ -314,7 +314,7 @@ protected:
 
 template<size_t N, typename Head>
 struct aggregator_impl<N, Head> {
-	Head value;
+	[[no_unique_address]] Head value;
 	constexpr auto &get_impl(make_integral<N>)       { return value; }
 	constexpr auto &get_impl(make_integral<N>) const { return value; }
 };
