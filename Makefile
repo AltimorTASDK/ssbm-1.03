@@ -103,7 +103,7 @@ export CFLAGS    = $(DEFINES) -mogc -mcpu=750 -meabi -mhard-float -Os \
 				   -ffunction-sections -fdata-sections -mno-sdata \
 				   -fno-builtin-sqrt -fno-builtin-sqrtf
 export ASFLAGS   = $(DEFINES) -Wa,-mregnames -Wa,-mgekko
-export CXXFLAGS  = $(CFLAGS) -std=c++2b -fconcepts -fno-rtti -fno-exceptions
+export CXXFLAGS  = $(CFLAGS) -std=c++23 -fconcepts -fno-rtti -fno-exceptions
 export INCLUDE  := $(foreach dir, $(SRCDIR), -I$(dir)) -I$(abspath src/mod/src) -I$(DEVKITPATH)/libogc/include
 
 .PHONY: all
