@@ -105,6 +105,11 @@ constexpr vec2c popo_to_nana(const vec2 &coords)
 
 constexpr float get_stick_angle(const vec2 &coords)
 {
+	return std::atan2(coords.y, coords.x);
+}
+
+constexpr float get_stick_angle_abs(const vec2 &coords)
+{
 	return std::atan2(std::abs(coords.y), std::abs(coords.x));
 }
 
