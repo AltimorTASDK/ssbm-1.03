@@ -3845,7 +3845,7 @@
 800df30c 0000009c 800df30c 0 zz_00df30c_
 800df3a8 00000034 800df3a8 0 Player_CheckCStickDSmashInput
 800df3dc 0000009c 800df3dc 0 zz_00df3dc_
-800df478 00000094 800df478 0 Controls_CStick_CheckForRecentPress
+800df478 00000094 800df478 0 Player_CheckCStickAerial
 800df50c 000000fc 800df50c 0 zz_00df50c_
 800df608 0000003c 800df608 0 zz_00df608_
 800df644 00000034 800df644 0 Controls_CStick_CheckForInstant>0.6625

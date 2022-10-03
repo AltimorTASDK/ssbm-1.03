@@ -971,7 +971,7 @@
 800ded7c 00000054 800ded7c 0 Player_CheckCStickFSmashInput
 800dee8c 00000034 800dee8c 0 Player_CheckCStickUSmashInput
 800def5c 00000034 800def5c 0 Player_CheckCStickDSmashInput
-800df02c 00000094 800df02c 0 Controls_CStick_CheckForRecentPress
+800df02c 00000094 800df02c 0 Player_CheckCStickAerial
 800df1f8 00000034 800df1f8 0 Controls_CStick_CheckForInstant>0.6625
 800df2e0 00000070 800df2e0 0 Interrupt_CStick_Forward_LastFrameToo
 800df4c4 00000028 800df4c4 0 Controls_CStick_Y_CheckGreaterThan0.6625
