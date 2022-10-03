@@ -131,9 +131,9 @@ public:
 
 	// Create a new vector by applying a function to each component
 	template<Vector T = vec_impl>
-	constexpr T map(auto &&callable) const
+	constexpr T map(auto &&callable, FixedTuple<elem_count> auto &&...tuples) const
 	{
-		return T(foreach(callable));
+		return T(foreach(callable, tuples...));
 	}
 
 	// Component-wise absolute value
