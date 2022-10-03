@@ -139,7 +139,7 @@ public:
 	// Component-wise absolute value
 	constexpr vec_impl abs() const
 	{
-		return map(std::abs);
+		return map(operators::abs);
 	}
 
 	constexpr vec_impl &operator=(const vec_impl &other)
