@@ -136,18 +136,15 @@ extern "C" bool hook_Player_CheckCStickAerial(Player *player)
 
 	const auto cstick      = player->input.cstick.abs();
 	const auto last_cstick = player->input.last_cstick.abs();
-	const auto angle       = get_stick_angle(cstick);
-	const auto last_angle  = get_stick_angle(last_cstick);
 
-	if (last_cstick.x < plco->aerial_threshold_x || last_angle >= plco->angle_50d) {
-		if (cstick.x >= plco->aerial_threshold_x && angle < plco->angle_50d)
-			return true;
-	}
+	if (cstick.x < plco->aerial_threshold_x && cstick.y < plco->aerial_threshold_y)
+		return false;
 
-	if (last_cstick.y < plco->aerial_threshold_y || last_angle < plco->angle_50d) {
-		if (cstick.y >= plco->aerial_threshold_y && angle >= plco->angle_50d)
-			return true;
-	}
+	if (last_cstick.x < plco->aerial_threshold_x && last_cstick.y < plco->aerial_threshold_y)
+		return true;
 
-	return false;
+	const auto angle      = get_stick_angle(cstick);
+	const auto last_angle = get_stick_angle(last_cstick);
+
+	return (angle < plco->angle_50d) != (last_angle < plco->angle_50d);
 }
