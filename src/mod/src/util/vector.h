@@ -38,25 +38,25 @@ public:
 	// Component-wise min of two vectors
 	static constexpr vec_impl min(const vec_impl &a, const vec_impl &b)
 	{
-		return vec_impl(a.foreach(operators::min, b.elems()));
+		return a.map(operators::min, b.elems());
 	}
 
 	// Component-wise max of two vectors
 	static constexpr vec_impl max(const vec_impl &a, const vec_impl &b)
 	{
-		return vec_impl(a.foreach(operators::max, b.elems()));
+		return a.map(operators::max, b.elems());
 	}
 
 	// Component-wise min and max of two vectors
 	static constexpr auto min_max(const vec_impl &a, const vec_impl &b)
 	{
-		return std::make_tuple(min(a, b), max(a, b));
+		return std::make_pair(min(a, b), max(a, b));
 	}
 
 	// Component-wise lerp of two vectors
 	static constexpr vec_impl lerp(const vec_impl &a, const vec_impl &b, auto t)
 	{
-		return vec_impl(a.foreach(bind_back(std::lerp, t), b.elems()));
+		return a.map(bind_back(std::lerp, t), b.elems());
 	}
 
 	constexpr vec_impl()
@@ -136,6 +136,12 @@ public:
 		return T(foreach(callable));
 	}
 
+	// Component-wise absolute value
+	constexpr vec_impl abs() const
+	{
+		return map(std::abs);
+	}
+
 	constexpr vec_impl &operator=(const vec_impl &other)
 	{
 		elems() = other.elems();
@@ -150,7 +156,7 @@ public:
 
 	constexpr vec_impl operator+(const vec_impl &other) const
 	{
-		return vec_impl(foreach(operators::add, other.elems()));
+		return map(operators::add, other.elems());
 	}
 
 	constexpr vec_impl &operator-=(const vec_impl &other)
@@ -161,7 +167,7 @@ public:
 
 	constexpr vec_impl operator-(const vec_impl &other) const
 	{
-		return vec_impl(foreach(operators::sub, other.elems()));
+		return map(operators::sub, other.elems());
 	}
 
 	constexpr vec_impl &operator*=(const vec_impl &other)
@@ -170,7 +176,7 @@ public:
 		return *this;
 	}
 
-	constexpr vec_impl &operator*=(auto value)
+	constexpr vec_impl &operator*=(elem_type value)
 	{
 		foreach(bind_back(operators::mul_eq, value));
 		return *this;
@@ -178,12 +184,12 @@ public:
 
 	constexpr vec_impl operator*(const vec_impl &other) const
 	{
-		return vec_impl(foreach(operators::mul, other.elems()));
+		return map(operators::mul, other.elems());
 	}
 
-	constexpr vec_impl operator*(auto value) const
+	constexpr vec_impl operator*(elem_type value) const
 	{
-		return vec_impl(foreach(bind_back(operators::mul, value)));
+		return map(bind_back(operators::mul, value));
 	}
 
 	constexpr vec_impl &operator/=(const vec_impl &other)
@@ -192,7 +198,7 @@ public:
 		return *this;
 	}
 
-	constexpr vec_impl &operator/=(auto value)
+	constexpr vec_impl &operator/=(elem_type value)
 	{
 		foreach(bind_back(operators::div_eq, value));
 		return *this;
@@ -200,12 +206,12 @@ public:
 
 	constexpr vec_impl operator/(const vec_impl &other) const
 	{
-		return vec_impl(foreach(operators::div, other.elems()));
+		return map(operators::div, other.elems());
 	}
 
-	constexpr vec_impl operator/(auto value) const
+	constexpr vec_impl operator/(elem_type value) const
 	{
-		return vec_impl(foreach(bind_back(operators::div, value)));
+		return map(bind_back(operators::div, value));
 	}
 
 	constexpr bool operator==(const vec_impl &other) const
@@ -215,7 +221,7 @@ public:
 
 	constexpr vec_impl operator-() const
 	{
-		return vec_impl(foreach(operators::neg));
+		return map(operators::neg);
 	}
 };
 
