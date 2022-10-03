@@ -207,6 +207,8 @@ add_hook Player_SDICallback
 add_hook Player_ShieldSDICallback
 add_hook AS_029_Fall
 add_hook Interrupt_Walljump
+add_hook Interrupt_JumpAerial
+add_hook Player_CheckCStickAerial
 # Z jump
 add_hook PADRead
 #ifndef TOURNAMENT
