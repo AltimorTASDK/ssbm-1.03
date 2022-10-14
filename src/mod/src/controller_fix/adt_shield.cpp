@@ -11,18 +11,18 @@ struct ps_data {
 	float adt_scale;
 };
 
+static bool is_in_guardreflect(const Player  *player)
+{
+	if (player->character_id == CID_Yoshi)
+		return player->action_state == AS_Yoshi_GuardReflect;
+	else
+		return player->action_state == AS_GuardReflect;
+}
+
 static bool update_adt_shield(Player *player)
 {
-	if (get_ucf_type() == ucf_type::ucf)
+	if (get_ucf_type() == ucf_type::ucf || !is_in_guardreflect(player))
 		return false;
-
-	if (player->character_id == CID_Yoshi) {
-		if (player->action_state != AS_GuardReflect)
-			return false;
-	} else {
-		if (player->action_state != AS_Yoshi_GuardReflect)
-			return false;
-	}
 
 	const auto *as_data = player->custom_as_data<ps_data>();
 
