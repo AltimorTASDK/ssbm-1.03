@@ -165,6 +165,14 @@ struct JostleBox {
 	f32 size_front;
 };
 
+struct ShieldBubble {
+	HSD_JObj *jobj;
+	u8 position_updated : 1;
+	vec3 position;
+	vec3 offset;
+	f32 radius;
+};
+
 struct MultiJumpStats {
 	s32 turn_frames;
 	f32 turn_threshold;
@@ -307,7 +315,11 @@ struct Player {
 	f32 shield_size;
 	f32 lightshield_amount;
 	s32 shield_damage_received;
-	char pad19A4[0x1A68 - 0x19A4];
+	char pad19A4[0x19C0 - 0x19A4];
+	ShieldBubble shield_bubble;
+	ShieldBubble reflect_bubble;
+	ShieldBubble absorb_bubble;
+	char pad1A2C[0x1A68 - 0x1A2C];
 	u16 grab_type_mask;
 	u16 grab_invuln_mask;
 	char pad1A6C[0x1B80 - 0x1A6C];
@@ -335,7 +347,7 @@ struct Player {
 		u8 iasa : 1;
 		u8 flags1_40 : 1;
 		u8 flags1_20 : 1;
-		u8 flags1_10 : 1;
+		u8 reflect_active : 1;
 		u8 flags1_08 : 1;
 		u8 flags1_04 : 1;
 		u8 flags1_02 : 1;
@@ -559,6 +571,9 @@ u8 PlayerBlock_GetTeam(s32 slot);
 u32 PlayerBlock_GetSlotType(s32 slot);
 bool PlayerBlock_ShouldDisplayPortTag(s32 slot);
 void PlayerBlock_AddTotalSDIDistance(s32 slot, f32 x, f32 y);
+
+void Player_EnterShield(HSD_GObj *gobj);
+void Player_UpdateShieldScale(Player *player);
 
 SubactionInfo *Player_GetSubactionInfo(const Player *player, s32 subaction);
 HSD_FigaTree *Player_GetFigaTree(const Player *player, s32 subaction);
