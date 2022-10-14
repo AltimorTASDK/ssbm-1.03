@@ -209,6 +209,9 @@ add_hook AS_029_Fall
 add_hook Interrupt_Walljump
 add_hook Interrupt_JumpAerial
 add_hook Player_CheckCStickAerial
+add_hook AS_182_GuardReflect_YoshiCheck
+add_hook AS_182_GuardReflect_ADT_YoshiCheck
+add_hook Player_UpdateShieldHealth
 # Z jump
 add_hook PADRead
 #ifndef TOURNAMENT
