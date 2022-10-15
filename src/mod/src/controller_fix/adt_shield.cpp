@@ -13,6 +13,8 @@ struct ps_data {
 
 static bool is_in_adt_shield(const Player *player)
 {
+	// Intentionally doesn't detect Yoshi GuardReflect.
+	// His ADT shield is normally bugged and useless, so he doesn't get ADT PS.
 	return get_ucf_type() != ucf_type::ucf && player->action_state == AS_GuardReflect &&
 	       player->custom_as_data<ps_data>()->adt && player->reflect_active;
 }
@@ -42,26 +44,17 @@ static bool update_adt_shield(Player *player)
 	return true;
 }
 
-extern "C" bool orig_Interrupt_GuardReflect_ADT(HSD_GObj *gobj);
-extern "C" bool hook_Interrupt_GuardReflect_ADT(HSD_GObj *gobj)
+extern "C" void orig_AS_182_GuardReflect_YoshiCheck(HSD_GObj *gobj);
+extern "C" void hook_AS_182_GuardReflect_YoshiCheck(HSD_GObj *gobj)
 {
-	if (get_ucf_type() != ucf_type::ucf && gobj->get<Player>()->character_id == CID_Yoshi)
-		return false;
-
-	return orig_Interrupt_GuardReflect_ADT(gobj);
-}
-
-extern "C" void orig_AS_182_GuardReflect(HSD_GObj *gobj);
-extern "C" void hook_AS_182_GuardReflect(HSD_GObj *gobj)
-{
-	orig_AS_182_GuardReflect(gobj);
+	orig_AS_182_GuardReflect_YoshiCheck(gobj);
 	gobj->get<Player>()->custom_as_data<ps_data>()->adt = false;
 }
 
-extern "C" void orig_AS_182_GuardReflect_ADT(HSD_GObj *gobj);
-extern "C" void hook_AS_182_GuardReflect_ADT(HSD_GObj *gobj)
+extern "C" void orig_AS_182_GuardReflect_ADT_YoshiCheck(HSD_GObj *gobj);
+extern "C" void hook_AS_182_GuardReflect_ADT_YoshiCheck(HSD_GObj *gobj)
 {
-	orig_AS_182_GuardReflect_ADT(gobj);
+	orig_AS_182_GuardReflect_ADT_YoshiCheck(gobj);
 
 	if (get_ucf_type() == ucf_type::ucf)
 		return;
@@ -69,8 +62,16 @@ extern "C" void hook_AS_182_GuardReflect_ADT(HSD_GObj *gobj)
 	// Enable physical shield
 	Player_EnterShield(gobj);
 
-	// Initialize ADT shield data
 	auto *player = gobj->get<Player>();
+
+	if (player->character_id == CID_Yoshi) {
+		// Fix the shield scale and invincibility after they get owned by the AS change
+		Player_UpdateShieldScale(player);
+		Player_SetHurtboxBodyState(gobj, BodyState_Invincible);
+		return;
+	}
+
+	// Initialize ADT shield data
 	auto *as_data = player->custom_as_data<ps_data>();
 	as_data->adt = true;
 	as_data->adt_scale = player->reflect_bubble.jobj->scale.x;

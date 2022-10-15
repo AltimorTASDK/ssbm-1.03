@@ -210,9 +210,8 @@ add_hook AS_029_Fall
 add_hook Interrupt_Walljump
 add_hook Interrupt_JumpAerial
 add_hook Player_CheckCStickAerial
-add_hook Interrupt_GuardReflect_ADT
-add_hook AS_182_GuardReflect
-add_hook AS_182_GuardReflect_ADT
+add_hook AS_182_GuardReflect_YoshiCheck
+add_hook AS_182_GuardReflect_ADT_YoshiCheck
 add_hook Player_UpdateShieldHealth
 add_hook CheckItemHitShield
 # Z jump

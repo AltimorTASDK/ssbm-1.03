@@ -47,17 +47,23 @@ enum CID {
 	CID_Max
 };
 
+enum BodyState {
+	BodyState_Normal,
+	BodyState_Invincible,
+	BodyState_Intangible
+};
+
 enum ActionStat {
 	ActionStat_LedgeGrabs   = 0x70,
 	ActionStat_Taunts       = 0x71
 };
 
 enum SlotType {
-	SlotType_Human = 0,
-	SlotType_CPU   = 1,
-	SlotType_Demo  = 2,
-	SlotType_None  = 3,
-	SlotType_Boss  = 4
+	SlotType_Human,
+	SlotType_CPU,
+	SlotType_Demo,
+	SlotType_None,
+	SlotType_Boss
 };
 
 struct PlayerInput {
@@ -574,6 +580,8 @@ void PlayerBlock_AddTotalSDIDistance(s32 slot, f32 x, f32 y);
 
 void Player_EnterShield(HSD_GObj *gobj);
 void Player_UpdateShieldScale(Player *player);
+
+void Player_SetHurtboxBodyState(HSD_GObj *gobj, u32 body_state);
 
 SubactionInfo *Player_GetSubactionInfo(const Player *player, s32 subaction);
 HSD_FigaTree *Player_GetFigaTree(const Player *player, s32 subaction);

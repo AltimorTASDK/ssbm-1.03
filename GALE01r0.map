@@ -333,7 +333,7 @@
 8007a9b8 0000007c 8007a9b8 0 Hitbox_MeteorAttackCheck_SetFlag
 8007ace4 00000030 8007ace4 0 Hitbox_Deactivate_R4input
 8007ad14 0000006c 8007ad14 0 Hitbox_Deactivate_All
-8007addc 00000068 8007addc 0 Hurtbox_ApplyBodyState_0x24flagAsWell
+8007addc 00000068 8007addc 0 Player_SetHurtboxBodyState
 8007b348 00000074 8007b348 0 BodyState_Apply&ColorGFXOverlay
 8007b4c0 00000058 8007b4c0 0 BodyState_ApplyInvincIntang
 8007b518 0000006c 8007b518 0 Item_Starman_Apply
