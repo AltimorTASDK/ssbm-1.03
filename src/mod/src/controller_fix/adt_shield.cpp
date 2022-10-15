@@ -11,17 +11,9 @@ struct ps_data {
 	float adt_scale;
 };
 
-static bool is_in_guardreflect(const Player *player)
-{
-	if (player->character_id == CID_Yoshi)
-		return player->action_state == AS_Yoshi_GuardReflect;
-	else
-		return player->action_state == AS_GuardReflect;
-}
-
 static bool is_in_adt_shield(const Player *player)
 {
-	return get_ucf_type() != ucf_type::ucf && is_in_guardreflect(player) &&
+	return get_ucf_type() != ucf_type::ucf && player->action_state == AS_GuardReflect &&
 	       player->custom_as_data<ps_data>()->adt && player->reflect_active;
 }
 
@@ -50,17 +42,26 @@ static bool update_adt_shield(Player *player)
 	return true;
 }
 
-extern "C" void orig_AS_182_GuardReflect_YoshiCheck(HSD_GObj *gobj);
-extern "C" void hook_AS_182_GuardReflect_YoshiCheck(HSD_GObj *gobj)
+extern "C" bool orig_Interrupt_GuardReflect_ADT(HSD_GObj *gobj);
+extern "C" bool hook_Interrupt_GuardReflect_ADT(HSD_GObj *gobj)
 {
-	orig_AS_182_GuardReflect_YoshiCheck(gobj);
+	if (get_ucf_type() != ucf_type::ucf && gobj->get<Player>()->character_id == CID_Yoshi)
+		return false;
+
+	return orig_Interrupt_GuardReflect_ADT(gobj);
+}
+
+extern "C" void orig_AS_182_GuardReflect(HSD_GObj *gobj);
+extern "C" void hook_AS_182_GuardReflect(HSD_GObj *gobj)
+{
+	orig_AS_182_GuardReflect(gobj);
 	gobj->get<Player>()->custom_as_data<ps_data>()->adt = false;
 }
 
-extern "C" void orig_AS_182_GuardReflect_ADT_YoshiCheck(HSD_GObj *gobj);
-extern "C" void hook_AS_182_GuardReflect_ADT_YoshiCheck(HSD_GObj *gobj)
+extern "C" void orig_AS_182_GuardReflect_ADT(HSD_GObj *gobj);
+extern "C" void hook_AS_182_GuardReflect_ADT(HSD_GObj *gobj)
 {
-	orig_AS_182_GuardReflect_ADT_YoshiCheck(gobj);
+	orig_AS_182_GuardReflect_ADT(gobj);
 
 	if (get_ucf_type() == ucf_type::ucf)
 		return;
