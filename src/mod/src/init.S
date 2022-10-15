@@ -190,8 +190,9 @@ add_hook Stage_PokemonStadium_TransformationDecide
 add_hook Stage_Setup
 add_hook Stage_YoshisStory_ShyGuyUpdate
 # Controller fix
-.set TumbleWiggleCheck, Interrupt_AS_DamageFall+0x9C
-.set UpdatePlayerStick, PlayerThink_Input+0x1D0
+.set TumbleWiggleCheck,  Interrupt_AS_DamageFall+0x9C
+.set UpdatePlayerStick,  PlayerThink_Input+0x1D0
+.set CheckItemHitShield, Player_ItemHitDetection+0x5B4
 add_hook TumbleWiggleCheck
 add_hook UpdatePlayerStick
 add_hook Interrupt_AS_Turn
@@ -212,6 +213,7 @@ add_hook Player_CheckCStickAerial
 add_hook AS_182_GuardReflect_YoshiCheck
 add_hook AS_182_GuardReflect_ADT_YoshiCheck
 add_hook Player_UpdateShieldHealth
+add_hook CheckItemHitShield
 # Z jump
 add_hook PADRead
 #ifndef TOURNAMENT
@@ -227,16 +229,16 @@ add_hook AS_353_Zelda_UpBAirMiddle
 add_hook Player_Yoshi_GetEggVelocity
 #endif
 # Tilt stick
-.set CheckUTiltInput,         Interrupt_UTilt+0x24
-.set CheckFTiltInput,         Interrupt_FTilt+0x24
-.set CheckDTiltInput,         Interrupt_DTilt+0x24
-.set CheckDTiltInputRapid,    Interrupt_AS_DTilt+0x80
-.set CheckDTiltInputIASA,     Interrupt_AS_DTilt+0xE8
-.set CheckJabInput,           Interrupt_Jab+0x20
-.set CheckJab2Input,          Interrupt_Jab2+0x40
-.set CheckJab3Input,          Interrupt_Jab3+0x3C
-.set CheckRapidJabInput,      Interrupt_RapidJab+0x18
-.set CheckFTiltAngle,         AS_053_056_FTilt+0x34
+.set CheckUTiltInput,      Interrupt_UTilt+0x24
+.set CheckFTiltInput,      Interrupt_FTilt+0x24
+.set CheckDTiltInput,      Interrupt_DTilt+0x24
+.set CheckDTiltInputRapid, Interrupt_AS_DTilt+0x80
+.set CheckDTiltInputIASA,  Interrupt_AS_DTilt+0xE8
+.set CheckJabInput,        Interrupt_Jab+0x20
+.set CheckJab2Input,       Interrupt_Jab2+0x40
+.set CheckJab3Input,       Interrupt_Jab3+0x3C
+.set CheckRapidJabInput,   Interrupt_RapidJab+0x18
+.set CheckFTiltAngle,      AS_053_056_FTilt+0x34
 add_hook CheckUTiltInput
 add_hook CheckFTiltInput
 add_hook CheckDTiltInput

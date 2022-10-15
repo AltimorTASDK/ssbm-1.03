@@ -11,7 +11,7 @@ struct ps_data {
 	float adt_scale;
 };
 
-static bool is_in_guardreflect(const Player  *player)
+static bool is_in_guardreflect(const Player *player)
 {
 	if (player->character_id == CID_Yoshi)
 		return player->action_state == AS_Yoshi_GuardReflect;
@@ -19,14 +19,15 @@ static bool is_in_guardreflect(const Player  *player)
 		return player->action_state == AS_GuardReflect;
 }
 
+static bool is_in_adt_shield(const Player *player)
+{
+	return get_ucf_type() != ucf_type::ucf && is_in_guardreflect(player) &&
+	       player->custom_as_data<ps_data>()->adt && player->reflect_active;
+}
+
 static bool update_adt_shield(Player *player)
 {
-	if (get_ucf_type() == ucf_type::ucf || !is_in_guardreflect(player))
-		return false;
-
-	const auto *as_data = player->custom_as_data<ps_data>();
-
-	if (!as_data->adt || !player->reflect_active)
+	if (!is_in_adt_shield(player))
 		return false;
 
 	const auto analog_lr = player->input.analog_lr;
@@ -42,6 +43,7 @@ static bool update_adt_shield(Player *player)
 	Player_UpdateShieldScale(player);
 
 	// Adjust the PS bubble to maintain its size
+	const auto *as_data = player->custom_as_data<ps_data>();
 	const auto ratio = as_data->adt_scale / player->reflect_bubble.jobj->scale.x;
 	player->reflect_bubble.radius = plco->ps_bubble_radius * ratio;
 
@@ -80,4 +82,22 @@ extern "C" bool hook_Player_UpdateShieldHealth(HSD_GObj *gobj)
 {
 	// Return false to not update shield if in ADT frames
 	return !update_adt_shield(gobj->get<Player>()) && orig_Player_UpdateShieldHealth(gobj);
+}
+
+extern "C" bool Hitbox_CheckShieldBubbleCollision(Hitbox *hitbox, float hitbox_scale,
+                                                  ShieldBubble *shield, float shield_scale,
+                                                  matrix3x4 *z_scale_matrix, float z_pos,
+                                                  bool force_hit);
+
+extern "C" bool check_item_hit_shield(Hitbox *hitbox, float hitbox_scale,
+                                      ShieldBubble *shield, float shield_scale,
+                                      matrix3x4 *z_scale_matrix, float z_pos,
+                                      bool force_hit, const Player *player)
+{
+	// Don't collide with the shield bubble if the player wants to ADT PS
+	if (is_in_adt_shield(player))
+		return false;
+
+	return Hitbox_CheckShieldBubbleCollision(hitbox, hitbox_scale, shield, shield_scale,
+	                                         z_scale_matrix, z_pos, force_hit);
 }
