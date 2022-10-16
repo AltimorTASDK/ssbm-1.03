@@ -578,7 +578,7 @@ u32 PlayerBlock_GetSlotType(s32 slot);
 bool PlayerBlock_ShouldDisplayPortTag(s32 slot);
 void PlayerBlock_AddTotalSDIDistance(s32 slot, f32 x, f32 y);
 
-void Player_EnterShield(HSD_GObj *gobj);
+void Player_InitShield(HSD_GObj *gobj);
 void Player_UpdateShieldScale(Player *player);
 
 void Player_SetHurtboxBodyState(HSD_GObj *gobj, u32 body_state);

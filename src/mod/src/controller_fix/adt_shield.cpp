@@ -60,7 +60,7 @@ extern "C" void hook_AS_182_GuardReflect_ADT_YoshiCheck(HSD_GObj *gobj)
 		return;
 
 	// Enable physical shield
-	Player_EnterShield(gobj);
+	Player_InitShield(gobj);
 
 	auto *player = gobj->get<Player>();
 
