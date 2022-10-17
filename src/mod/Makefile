@@ -12,18 +12,15 @@ ELFFILE := $(LOCALBIN)/mod-pal.elf
 BINFILE := $(LOCALBIN)/mod-pal.bin
 endif
 
-ifdef NOPAL
-ALLBINS  := --compress \
-            $(LOCALBIN)/mod.bin $(LOCALBIN)/mod-ntsc100.bin.diff $(LOCALBIN)/mod-ntsc101.bin.diff
-else
-ALLBINS  := $(LOCALBIN)/mod.bin $(LOCALBIN)/mod-ntsc100.bin.diff $(LOCALBIN)/mod-ntsc101.bin.diff \
-            $(LOCALBIN)/mod-pal.bin.diff
+ALLBINS  := $(LOCALBIN)/mod.bin $(LOCALBIN)/mod-ntsc100.bin.diff $(LOCALBIN)/mod-ntsc101.bin.diff
+ifndef NOPAL
+ALLBINS  += $(LOCALBIN)/mod-pal.bin.diff
 endif
 
 GCINAME   := 103Code
 GCIFILE   := $(BINDIR)/$(MODNAME).gci
 BANNERSRC := banner.rgb5a3.png
-BANNER    := banner.tex
+BANNER    := build/banner.tex
 ICON      := icon.tex
 TITLE     := "Super Smash Bros. Melee         1.03 Data"
 DIFFSRC   := $(LOCALBIN)/mod.bin
@@ -57,19 +54,50 @@ CFLAGS    += -flto -fuse-linker-plugin
 CXXFLAGS  += -flto -fuse-linker-plugin
 LDFLAGS   += -flto
 
+.PHONY: gci
+gci: $(GCIFILE)
+
 ifeq ($(VERSION), 102)
-$(GCIFILE): $(BINFILE) $(BANNER) $(ICON) $(TOOLS)/bin_to_gci.py
-	@[ -d $(@D) ] || mkdir -p $(@D)
-	python $(TOOLS)/bin_to_gci.py $@ $(GCINAME) $(TITLE) $(BANNER) $(ICON) $(ALLBINS)
+$(GCIFILE): $(BINFILE)
 else
-$(GCIFILE): $(BINFILE).diff $(BANNER) $(ICON) $(TOOLS)/bin_to_gci.py
+$(GCIFILE): $(BINFILE).diff
+endif
+$(GCIFILE): $(wildcard $(ALLBINS)) $(BANNER) $(ICON) $(TOOLS)/bin_to_gci.py
 	@[ -d $(@D) ] || mkdir -p $(@D)
+ifdef NOPAL
+	python $(TOOLS)/bin_to_gci.py $@ $(GCINAME) $(TITLE) $(BANNER) $(ICON) --compress $(ALLBINS)
+else
 	python $(TOOLS)/bin_to_gci.py $@ $(GCINAME) $(TITLE) $(BANNER) $(ICON) $(ALLBINS)
+endif
+
+$(BANNER): $(BANNERSRC) $(TOOLS)/encode_texture.py
+	python $(TOOLS)/encode_texture.py $< $@
+
+ifneq ($(VERSION), 102)
+.PHONY: diff
+diff: $(BINFILE).diff
 
 $(BINFILE).diff: $(BINFILE) $(TOOLS)/diff.py
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	python $(TOOLS)/diff.py $(DIFFSRC) $< $@
 endif
+
+.PHONY: bin
+bin: $(BINFILE)
+
+$(BINFILE): $(ELFFILE)
+	@[ -d $(@D) ] || mkdir -p $(@D)
+	$(OBJCOPY) -O binary $< $@
+ifeq ($(VERSION), 102)
+# diffs are no longer valid
+	rm -f $(LOCALBIN)/mod-ntsc100.bin.diff
+	rm -f $(LOCALBIN)/mod-ntsc101.bin.diff
+	rm -f $(LOCALBIN)/mod-pal.bin.diff
+endif
+
+$(ELFFILE): $(OBJFILES) $(LINKSCRIPT) $(MELEELD) $(COMMONLD) | clean-unused
+	@[ -d $(@D) ] || mkdir -p $(@D)
+	$(CC) $(LDFLAGS) -T$(LINKSCRIPT) -T$(MELEELD) $(OBJFILES) -o $@
 
 .PHONY: dol
 dol: $(DOLFILE)
@@ -92,23 +120,6 @@ $(DOLDATA): $(DOLSRC)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 # skip dol header
 	dd if=$(DOLSRC) of=$(DOLDATA) bs=256 skip=1
-
-$(BANNER): $(BANNERSRC) $(TOOLS)/encode_texture.py
-	python $(TOOLS)/encode_texture.py $< $@
-
-$(BINFILE): $(ELFFILE)
-	@[ -d $(@D) ] || mkdir -p $(@D)
-	$(OBJCOPY) -O binary $< $@
-ifeq ($(VERSION), 102)
-# diffs are no longer valid
-	rm -f $(LOCALBIN)/mod-ntsc100.bin.diff
-	rm -f $(LOCALBIN)/mod-ntsc101.bin.diff
-	rm -f $(LOCALBIN)/mod-pal.bin.diff
-endif
-
-$(ELFFILE): $(OBJFILES) $(LINKSCRIPT) $(MELEELD) $(COMMONLD) | clean-unused
-	@[ -d $(@D) ] || mkdir -p $(@D)
-	$(CC) $(LDFLAGS) -T$(LINKSCRIPT) -T$(MELEELD) $(OBJFILES) -o $@
 
 $(OBJDIR)/%.c.o: %.c | resources
 	@[ -d $(@D) ] || mkdir -p $(@D)
