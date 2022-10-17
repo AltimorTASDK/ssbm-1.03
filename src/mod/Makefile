@@ -69,6 +69,7 @@ ifdef NOPAL
 else
 	python $(TOOLS)/bin_to_gci.py $@ $(GCINAME) $(TITLE) $(BANNER) $(ICON) $(ALLBINS)
 endif
+	@rm -rf $(GCIDIR)/tmp_*
 
 $(BANNER): $(BANNERSRC) $(TOOLS)/encode_texture.py
 	python $(TOOLS)/encode_texture.py $< $@
@@ -89,7 +90,7 @@ $(BINFILE): $(ELFFILE)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(OBJCOPY) -O binary $< $@
 ifeq ($(VERSION), 102)
-# diffs are no longer valid
+	@echo "diffs are no longer valid"
 	rm -f $(LOCALBIN)/mod-ntsc100.bin.diff
 	rm -f $(LOCALBIN)/mod-ntsc101.bin.diff
 	rm -f $(LOCALBIN)/mod-pal.bin.diff

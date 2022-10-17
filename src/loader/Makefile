@@ -12,6 +12,12 @@ ELFFILE := $(GCIBIN)/loader-pal.elf
 BINFILE := $(GCIBIN)/loader-pal.bin
 endif
 
+ifneq ($(VERSION), PAL)
+ALLBINS := $(GCIBIN)/loader-ntsc100.bin $(GCIBIN)/loader-ntsc101.bin $(GCIBIN)/loader-ntsc102.bin
+else
+ALLBINS := $(GCIBIN)/loader-pal.bin
+endif
+
 ifdef NOPAL
 ZLIBBIN := $(GCIBIN)/zlib.bin
 endif
@@ -42,90 +48,45 @@ else
 MGCDIR := $(GCIDIR)/b
 endif
 
-ifeq ($(VERSION), PAL)
-GCIFILE    := $(BINDIR)/$(MODNAME)-loader-PAL.gci
-GCISRC     := $(GCIDIR)/ssbm-PAL.gci
-MGCMAIN    := $(MGCDIR)/1.03-PAL.mgc
-LINKSCRIPT := loader-PAL.ld
-COMMONLD   := ../common-b.ld loader-b.ld
-else
-GCIFILE    := $(BINDIR)/$(MODNAME)-loader-USA.gci
-GCISRC     := $(GCIDIR)/ssbm-USA.gci
-MGCMAIN    := $(MGCDIR)/1.03-USA.mgc
-GCIFILEJPN := $(BINDIR)/$(MODNAME)-loader-JPN.gci
-GCISRCJPN  := $(GCIDIR)/ssbm-JPN.gci
-MGCMAINJPN := $(MGCDIR)/1.03-JPN.mgc
 ifdef NOPAL
 LINKSCRIPT := loader-a-NTSC.ld
 COMMONLD   := ../common-a.ld
 else
+ifeq ($(VERSION), PAL)
+LINKSCRIPT := loader-PAL.ld
+else
 LINKSCRIPT := loader-b-NTSC.ld
+endif
 COMMONLD   := ../common-b.ld loader-b.ld
 endif
-endif
 
-ifeq ($(VERSION), 102)
-ifndef NOPAL
-GCIFILE20XX := $(BINDIR)/$(MODNAME)-loader-20XX.gci
-GCISRC20XX  := $(GCIDIR)/ssbm-20XX.gci
-MGCMAIN20XX := $(MGCDIR)/1.03-20XX.mgc
-GCIFILEUP := $(BINDIR)/$(MODNAME)-loader-UP.gci
-GCISRCUP  := $(GCIDIR)/ssbm-UP.gci
-MGCMAINUP := $(MGCDIR)/1.03-UP.mgc
+GCIPREFIX := $(BINDIR)/$(MODNAME)-loader
 
-.PHONY: all
-all: loader JPN 20XX UP
-else
-.PHONY: all
-all: loader JPN
-endif
-else
-.PHONY: all
-ifeq ($(VERSION), PAL)
-all: loader
-else
-all: loader JPN
-endif
-endif
-
-.PHONY: loader
-loader: $(GCIFILE)
-
-$(GCIFILE): $(BINFILE) $(ZLIBBIN) $(MGCMAIN) $(GCISRC)
-	@[ -d $(@D) ] || mkdir -p $(@D)
-	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -i $(GCISRC) -o $@ $(MGCMAIN)
-
+.PHONY: gci
 ifneq ($(VERSION), PAL)
-.PHONY: JPN
-JPN: $(GCIFILEJPN)
-
-$(GCIFILEJPN): $(BINFILE) $(MGCMAINJPN) $(GCISRCJPN)
-	@[ -d $(@D) ] || mkdir -p $(@D)
-	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -i $(GCISRCJPN) -o $@ $(MGCMAINJPN)
+gci: $(GCIPREFIX)-USA.gci
+gci: $(GCIPREFIX)-JPN.gci
+else
+gci: $(GCIPREFIX)-PAL.gci
 endif
 
 ifeq ($(VERSION), 102)
 ifndef NOPAL
-.PHONY: 20XX
-20XX: $(GCIFILE20XX)
-
-$(GCIFILE20XX): $(BINFILE) $(MGCMAIN20XX) $(GCISRC20XX)
-	@[ -d $(@D) ] || mkdir -p $(@D)
-	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -i $(GCISRC20XX) -o $@ $(MGCMAIN20XX)
-
-.PHONY: UP
-UP: $(GCIFILEUP)
-
-$(GCIFILEUP): $(BINFILE) $(MGCMAINUP) $(GCISRCUP)
-	@[ -d $(@D) ] || mkdir -p $(@D)
-	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -i $(GCISRCUP) -o $@ $(MGCMAINUP)
+gci: $(GCIPREFIX)-20XX.gci
+gci: $(GCIPREFIX)-UP.gci
 endif
 endif
+
+$(GCIPREFIX)-%.gci: $(MGCDIR)/1.03-%.mgc $(GCIDIR)/ssbm-%.gci $(wildcard $(ALLBINS))
+	@[ -d $(@D) ] || mkdir -p $(@D)
+	$(TOOLS)/melee-gci-compiler/melee-gci-compiler.py -i $(GCIDIR)/ssbm-$*.gci -o $@ $<
 
 .PHONY: bin
-bin: $(BINFILE)
+$(GCIPREFIX)-%.gci: $(BINFILE)
+bin:                $(BINFILE)
 ifdef NOPAL
-bin: $(ZLIBBIN)
+$(GCIPREFIX)-%.gci: $(ZLIBBIN)
+bin:                $(ZLIBBIN)
 endif
 
 $(BINFILE): $(ELFFILE)

@@ -1,5 +1,19 @@
+MAKEFLAGS += --no-builtin-rules
+
 ifndef DEVKITPRO
 $(error Specify devkitPro install path with $$DEVKITPRO)
+endif
+
+ifndef VERSION
+else ifeq ($(VERSION), 100)
+else ifeq ($(VERSION), 101)
+else ifeq ($(VERSION), 102)
+else ifeq ($(VERSION), PAL)
+ifdef NOPAL
+$(error $$VERSION set to PAL, but $$NOPAL specified.)
+endif
+else
+$(error Unsupported Melee version "$(VERSION)")
 endif
 
 DEVKITPATH=$(shell echo "$(DEVKITPRO)" | sed -e 's/^\([a-zA-Z]\):/\/\1/')
@@ -8,9 +22,6 @@ PATH := $(DEVKITPATH)/devkitPPC/bin:$(PATH)
 export CC      := powerpc-eabi-gcc
 export CXX     := powerpc-eabi-g++
 export OBJCOPY := powerpc-eabi-objcopy
-
-export DEFINES := $(foreach def, $(USERDEFS), -D$(def))
-export DEFINES += -DGEKKO
 
 ifdef MODVERSION
 ifneq ($(shell echo "$(MODVERSION)" | grep -P '(^|-)a($$|[\d-])'),)
@@ -27,6 +38,9 @@ else
 export MODNAME := ssbm-1.03
 endif
 
+export DEFINES  = $(foreach def, $(USERDEFS), -D$(def))
+export DEFINES += -DGEKKO
+
 ifdef NOPAL
 export DEFINES += -DNOPAL
 endif
@@ -39,54 +53,39 @@ endif
 
 export DEFINES += -DMODNAME=\"$(MODNAME)\"
 
-ifdef VERSION
-ifeq ($(VERSION), 100)
-export MELEELD := $(abspath GALE01r0.ld)
-export DEFINES += -DNTSC100
-else ifeq ($(VERSION), 101)
-export MELEELD := $(abspath GALE01r1.ld)
-export DEFINES += -DNTSC101
-else ifeq ($(VERSION), 102)
-export MELEELD := $(abspath GALE01r2.ld)
-export DEFINES += -DNTSC102
-else ifeq ($(VERSION), PAL)
-ifdef NOPAL
-$(error $$VERSION set to PAL, but $$NOPAL specified.)
-endif
-export MELEELD := $(abspath GALP01.ld)
-export DEFINES += -DPAL
+MELEELD_100 := $(abspath GALE01r0.ld)
+DEFINES_100 := -DNTSC100
+MELEELD_101 := $(abspath GALE01r1.ld)
+DEFINES_101 := -DNTSC101
+MELEELD_102 := $(abspath GALE01r2.ld)
+DEFINES_102 := -DNTSC102
+MELEELD_PAL := $(abspath GALP01.ld)
+DEFINES_PAL := -DPAL
+
+export MELEELD  = $(MELEELD_$(VERSION))
+export DEFINES += $(DEFINES_$(VERSION))
+
+ifdef TOURNAMENT
+export EDITION := TE
 else
-$(error Unsupported Melee version "$(VERSION)")
-endif
+export EDITION := LE
 endif
 
 ifdef NOPAL
-export SUBDIR := a
+export SUBDIR := a/$(EDITION)
 else
-export SUBDIR := b
+export SUBDIR := b/$(EDITION)
 endif
 
-ifdef TOURNAMENT
-export SUBDIR := $(SUBDIR)/TE
-else
-export SUBDIR := $(SUBDIR)/LE
-endif
-
-ifdef TOURNAMENT
-export ISODIR   := $(abspath iso/TE)
-else
-export ISODIR   := $(abspath iso/LE)
-endif
 export TOOLS    := $(abspath tools)
 export GCIDIR   := $(abspath gci)
-
 export GENDIR   := build/gen
 export LIBDIR   := lib
 export SRCDIR   := src $(GENDIR)
 export LOCALBIN := build/bin/$(SUBDIR)
 export BINDIR   := $(abspath bin/$(SUBDIR))
-export OBJDIR   := build/obj/$(SUBDIR)/$(VERSION)
-export DEPDIR   := build/dep/$(SUBDIR)/$(VERSION)
+export OBJDIR    = build/obj/$(SUBDIR)/$(VERSION)
+export DEPDIR    = build/dep/$(SUBDIR)/$(VERSION)
 export GCIBIN   := $(GCIDIR)/$(SUBDIR)/bin
 
 export OUTPUTMAP = $(OBJDIR)/output.map
@@ -103,26 +102,62 @@ export ASFLAGS   = $(DEFINES) -Wa,-mregnames -Wa,-mgekko
 export CXXFLAGS  = $(CFLAGS) -std=c++23 -fconcepts -fno-rtti -fno-exceptions
 export INCLUDE  := $(foreach dir, $(SRCDIR), -I$(dir)) -I$(abspath src/mod/src) -I$(DEVKITPATH)/libogc/include
 
+.PHONY: gci
+gci: loader mod
+
 ifndef VERSION
 
-# Make gcis for all versions
-.PHONY: all
-all:
-	+$(MAKE) VERSION=102
-	+$(MAKE) VERSION=101
-	+$(MAKE) VERSION=100
+ALLVERSIONS := 100 101 102
 ifndef NOPAL
-	+$(MAKE) VERSION=PAL
+ALLVERSIONS += PAL
 endif
+
+$(foreach version,$(ALLVERSIONS),$(eval %-$(version): export VERSION := $(version)))
+
+# Make gcis for all versions
+.PHONY: mod
+mod: export VERSION := 102
+mod: mod-bin-102 mod-diff-101 mod-diff-100
+ifndef NOPAL
+mod: mod-diff-PAL
+endif
+#	+@cd src/mod && $(MAKE) gci
+
+.PHONY: $(foreach version,$(ALLVERSIONS),mod-diff-$(version))
+$(foreach version,$(ALLVERSIONS),mod-diff-$(version)): mod-bin-102
+	+@cd src/mod && $(MAKE) diff
+
+.PHONY: $(foreach version,$(ALLVERSIONS),mod-bin-$(version))
+$(foreach version,$(ALLVERSIONS),mod-bin-$(version)):
+	+@cd src/mod && $(MAKE) bin
+
+.PHONY: loader
+loader: loader-NTSC
+ifndef NOPAL
+loader: loader-PAL
+endif
+
+.PHONY: loader-NTSC
+loader-NTSC: export VERSION := 102
+loader-NTSC: loader-bin-100 loader-bin-101 loader-bin-102
+	+@cd src/loader && $(MAKE) gci
+
+ifndef NOPAL
+.PHONY: loader-PAL
+loader-PAL: export VERSION := PAL
+loader-PAL:
+	+@cd src/loader && $(MAKE) gci
+endif
+
+.PHONY: $(foreach version,$(ALLVERSIONS),loader-bin-$(version))
+$(foreach version,$(ALLVERSIONS),loader-bin-$(version)):
+	+@cd src/loader && $(MAKE) bin
 
 else
 
 # Make gcis for specific version
-.PHONY: all
-all: loader mod
-
 .PHONY: loader
-loader: $(MELEELD) | clean-tmp
+loader: $(MELEELD)
 	+@cd src/loader && $(MAKE)
 
 .PHONY: mod
@@ -132,13 +167,9 @@ mod: $(MELEELD)
 endif
 
 .PHONY: dol
-ifdef TOURNAMENT
-dol: export OBJDIR  := build/obj/dol/TE
-dol: export DEPDIR  := build/dep/dol/TE
-else
-dol: export OBJDIR  := build/obj/dol/LE
-dol: export DEPDIR  := build/dep/dol/LE
-endif
+dol: export OBJDIR  := build/obj/dol/$(EDITION)
+dol: export DEPDIR  := build/dep/dol/$(EDITION)
+dol: export ISODIR  := $(abspath iso/$(EDITION))
 dol: export DEFINES += -DDOL -DNTSC102 -DNOPAL
 dol: export MELEELD := $(abspath GALE01r2.ld)
 dol: $(MELEELD)
@@ -150,10 +181,6 @@ resources:
 
 $(MELEELD): $(MELEEMAP) $(TOOLS)/map_to_linker_script.py
 	python $(TOOLS)/map_to_linker_script.py $(MELEEMAP) $(MELEELD)
-
-.PHONY: clean-tmp
-clean-tmp:
-	@rm -rf $(GCIDIR)/tmp_*
 
 .PHONY: clean
 clean:
