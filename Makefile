@@ -39,11 +39,7 @@ endif
 
 export DEFINES += -DMODNAME=\"$(MODNAME)\"
 
-ifndef VERSION
-$(warning Melee $$VERSION not specified. Defaulting to 102.)
-export VERSION := 102
-endif
-
+ifdef VERSION
 ifeq ($(VERSION), 100)
 export MELEELD := $(abspath GALE01r0.ld)
 export DEFINES += -DNTSC100
@@ -61,6 +57,7 @@ export MELEELD := $(abspath GALP01.ld)
 export DEFINES += -DPAL
 else
 $(error Unsupported Melee version "$(VERSION)")
+endif
 endif
 
 ifdef NOPAL
@@ -106,6 +103,21 @@ export ASFLAGS   = $(DEFINES) -Wa,-mregnames -Wa,-mgekko
 export CXXFLAGS  = $(CFLAGS) -std=c++23 -fconcepts -fno-rtti -fno-exceptions
 export INCLUDE  := $(foreach dir, $(SRCDIR), -I$(dir)) -I$(abspath src/mod/src) -I$(DEVKITPATH)/libogc/include
 
+ifndef VERSION
+
+# Make gcis for all versions
+.PHONY: all
+all:
+	+$(MAKE) VERSION=102
+	+$(MAKE) VERSION=101
+	+$(MAKE) VERSION=100
+ifndef NOPAL
+	+$(MAKE) VERSION=PAL
+endif
+
+else
+
+# Make gcis for specific version
 .PHONY: all
 all: loader mod
 
@@ -117,6 +129,8 @@ loader: $(MELEELD) | clean-tmp
 mod: $(MELEELD)
 	+@cd src/mod && $(MAKE)
 
+endif
+
 .PHONY: dol
 ifdef TOURNAMENT
 dol: export OBJDIR  := build/obj/dol/TE
@@ -125,9 +139,9 @@ else
 dol: export OBJDIR  := build/obj/dol/LE
 dol: export DEPDIR  := build/dep/dol/LE
 endif
-dol: export DEFINES += -DDOL -DNOPAL
+dol: export DEFINES += -DDOL -DNTSC102 -DNOPAL
+dol: export MELEELD := $(abspath GALE01r2.ld)
 dol: $(MELEELD)
-	@[[ $(VERSION) == 102 ]] || ( echo "DOL builds are supported only for NTSC 1.02." >& 2; exit 1 )
 	+@cd src/mod && $(MAKE) dol
 
 .PHONY: resources
