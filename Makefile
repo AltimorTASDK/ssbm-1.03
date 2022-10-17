@@ -121,9 +121,10 @@ mod: mod-bin-102 mod-diff-101 mod-diff-100
 ifndef NOPAL
 mod: mod-diff-PAL
 endif
-#	+@cd src/mod && $(MAKE) gci
+	+@cd src/mod && $(MAKE) gci
 
 .PHONY: $(foreach version,$(ALLVERSIONS),mod-diff-$(version))
+$(foreach version,$(ALLVERSIONS),$(eval mod-diff-$(version): mod-bin-$(version)))
 $(foreach version,$(ALLVERSIONS),mod-diff-$(version)): mod-bin-102
 	+@cd src/mod && $(MAKE) diff
 
