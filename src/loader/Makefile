@@ -123,15 +123,20 @@ endif
 endif
 
 .PHONY: bin
-bin: $(BINFILE) $(ZLIBBIN)
+bin: $(BINFILE)
+ifdef NOPAL
+bin: $(ZLIBBIN)
+endif
 
 $(BINFILE): $(ELFFILE)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(OBJCOPY) -O binary -R .zlib $< $@
 
+ifdef NOPAL
 $(ZLIBBIN): $(ELFFILE)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(OBJCOPY) -O binary -j .zlib $< $@
+endif
 
 $(ELFFILE): $(OBJFILES) $(LINKSCRIPT) $(MELEELD) $(COMMONLD) | clean-unused
 	@[ -d $(@D) ] || mkdir -p $(@D)
