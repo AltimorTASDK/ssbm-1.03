@@ -5,66 +5,42 @@
 #include "melee/characters/dk.h"
 #include "rules/values.h"
 #include "util/melee/pad.h"
-#include <cmath>
 
-static bool check_fthrow(const vec2 &stick, float angle)
+struct checker {
+	const vec2 stick;
+	const float direction;
+	const bool vanilla;
+	const bool vert = vanilla || get_stick_angle_abs(stick) >= plco->angle_50d;
+	const bool horz = vanilla || !vert;
+
+	bool fthrow() const { return stick.x * direction >=  plco->ftilt_threshold && horz; }
+	bool bthrow() const { return stick.x * direction <= -plco->ftilt_threshold && horz; }
+	bool uthrow() const { return stick.y             >=  plco->utilt_threshold && vert; }
+	bool dthrow() const { return stick.y             <=  plco->dtilt_threshold && vert; }
+};
+
+static int get_throw_state(const Player *player, bool vanilla = false, bool check_cstick = true)
 {
-	return stick.x >= plco->ftilt_threshold && angle < plco->angle_50d;
-}
-
-static bool check_bthrow(const vec2 &stick, float angle)
-{
-	return stick.x <= -plco->ftilt_threshold && angle < plco->angle_50d;
-}
-
-static bool check_uthrow(const vec2 &stick, float angle)
-{
-	return stick.y >= plco->utilt_threshold && angle >= plco->angle_50d;
-}
-
-static bool check_dthrow(const vec2 &stick, float angle)
-{
-	return stick.y <= plco->dtilt_threshold && angle >= plco->angle_50d;
-}
-
-static int get_throw_state(const Player *player)
-{
-	const auto stick        = player->input.stick       * vec2(player->direction, 1);
-	const auto last_stick   = player->input.last_stick  * vec2(player->direction, 1);
-	const auto cstick       = player->input.cstick      * vec2(player->direction, 1);
-	const auto last_cstick  = player->input.last_cstick * vec2(player->direction, 1);
-
-	const auto angle        = get_stick_angle_abs(stick);
-	const auto last_angle   = get_stick_angle_abs(last_stick);
-	const auto c_angle      = get_stick_angle_abs(cstick);
-	const auto last_c_angle = get_stick_angle_abs(last_cstick);
-
 	// fthrow > bthrow > c-fthrow > c-bthrow > uthrow > c-uthrow > dthrow > c-dthrow
 
-	if (check_fthrow(stick, angle) && !check_fthrow(last_stick, last_angle))
-		return AS_ThrowF;
+	const auto curr   = checker { player->input.stick,       player->direction, vanilla };
+	const auto prev   = checker { player->input.last_stick,  player->direction, vanilla };
+	const auto curr_c = checker { player->input.cstick,      player->direction, vanilla };
+	const auto prev_c = checker { player->input.last_cstick, player->direction, vanilla };
 
-	if (check_bthrow(stick, angle) && !check_bthrow(last_stick, last_angle))
-		return AS_ThrowB;
+	if (curr.fthrow()   && !prev.fthrow())                   return AS_ThrowF;
+	if (curr.bthrow()   && !prev.bthrow())                   return AS_ThrowB;
+	if (curr_c.fthrow() && !prev_c.fthrow() && check_cstick) return AS_ThrowF;
+	if (curr_c.bthrow() && !prev_c.bthrow() && check_cstick) return AS_ThrowB;
+	if (curr.uthrow()   && !prev.uthrow())                   return AS_ThrowHi;
+	if (curr_c.uthrow() && !prev_c.uthrow() && check_cstick) return AS_ThrowHi;
+	if (curr.dthrow()   && !prev.dthrow())                   return AS_ThrowLw;
+	if (curr_c.dthrow() &&  prev_c.dthrow() && check_cstick) return AS_ThrowLw; // buffer bug
 
-	if (check_fthrow(cstick, c_angle) && !check_fthrow(last_cstick, last_c_angle))
-		return AS_ThrowF;
-
-	if (check_bthrow(cstick, c_angle) && !check_bthrow(last_cstick, last_c_angle))
-		return AS_ThrowB;
-
-	if (check_uthrow(stick, angle) && !check_uthrow(last_stick, last_angle))
-		return AS_ThrowHi;
-
-	if (check_uthrow(cstick, c_angle) && !check_uthrow(last_cstick, last_c_angle))
-		return AS_ThrowHi;
-
-	if (check_dthrow(stick, angle) && !check_dthrow(last_stick, last_angle))
-		return AS_ThrowLw;
-
-	// dthrow buffering bug
-	if (check_dthrow(cstick, c_angle) && check_dthrow(last_cstick, last_c_angle))
-		return AS_ThrowLw;
+	// Fall back to vanilla logic
+	// Don't check cstick fallback on the c-down delay frame
+	if (!vanilla)
+		return get_throw_state(player, true, !curr_c.dthrow());
 
 	return AS_None;
 }
@@ -81,31 +57,23 @@ extern "C" bool hook_Interrupt_Throw(HSD_GObj *gobj)
 	if (player->character_id == CID_Popo || player->character_id == CID_Nana)
 		return orig_Interrupt_Throw(gobj);
 
-	// Check for throws with 50d line, try old logic if no throw with 50d
+	// Check for throws with 50d line
 	if (const auto state = get_throw_state(player); state != AS_None) {
 		Player_DoThrow(gobj, state);
 		return true;
 	}
 
-	return orig_Interrupt_Throw(gobj);
+	return false;
 }
 
 static int get_cargo_throw_state(const Player *player)
 {
-	const auto stick = player->input.stick * vec2(player->direction, 1);
-	const auto angle = get_stick_angle_abs(stick);
+	const auto check = checker { player->input.stick, player->direction, false };
 
-	if (check_fthrow(stick, angle))
-		return AS_DK_ThrowFF;
-
-	if (check_bthrow(stick, angle))
-		return AS_DK_ThrowFB;
-
-	if (check_uthrow(stick, angle))
-		return AS_DK_ThrowFHi;
-
-	if (check_dthrow(stick, angle))
-		return AS_DK_ThrowFLw;
+	if (check.fthrow()) return AS_DK_ThrowFF;
+	if (check.bthrow()) return AS_DK_ThrowFB;
+	if (check.uthrow()) return AS_DK_ThrowFHi;
+	if (check.dthrow()) return AS_DK_ThrowFLw;
 
 	return AS_None;
 }
