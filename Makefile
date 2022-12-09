@@ -33,6 +33,9 @@ endif
 ifneq ($(shell echo "$(MODVERSION)" | grep -P '(^|-)TE($$|[\d-])'),)
 export TOURNAMENT := 1
 endif
+ifneq ($(shell echo "$(MODVERSION)" | grep -P '(^|-)SE($$|[\d-])'),)
+export STEALTH := 1
+endif
 export MODNAME := ssbm-1.03-$(MODVERSION)
 else
 export MODNAME := ssbm-1.03
@@ -50,6 +53,9 @@ endif
 ifdef TOURNAMENT
 export DEFINES += -DTOURNAMENT
 endif
+ifdef STEALTH
+export DEFINES += -DSTEALTH
+endif
 
 export DEFINES += -DMODNAME=\"$(MODNAME)\"
 
@@ -65,7 +71,9 @@ DEFINES_PAL := -DPAL
 export MELEELD  = $(MELEELD_$(VERSION))
 export DEFINES += $(DEFINES_$(VERSION))
 
-ifdef TOURNAMENT
+ifdef STEALTH
+export EDITION := SE
+else ifdef TOURNAMENT
 export EDITION := TE
 else
 export EDITION := LE

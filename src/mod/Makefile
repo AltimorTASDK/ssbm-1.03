@@ -40,6 +40,12 @@ OBJFILES := \
     $(patsubst %, $(OBJDIR)/%.o, $(CXXFILES)) \
     $(patsubst %, $(OBJDIR)/%.o, $(SFILES))
 
+ifdef STEALTH
+STEALTHOBJ := $(filter $(OBJDIR)/src/controller_fix/%.obj, $(OBJFILES))
+STEALTHOBJ += $(filter $(OBJDIR)/src/latency/%.obj,        $(OBJFILES))
+OBJFILES   := STEALTHOBJ
+endif
+
 DEPFILES := $(patsubst $(OBJDIR)/%.o, $(DEPDIR)/%.d, $(OBJFILES))
 
 ifdef NOPAL
