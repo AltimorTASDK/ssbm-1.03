@@ -41,9 +41,9 @@ OBJFILES := \
     $(patsubst %, $(OBJDIR)/%.o, $(SFILES))
 
 ifdef STEALTH
-STEALTHOBJ := $(filter $(OBJDIR)/src/controller_fix/%.obj, $(OBJFILES))
-STEALTHOBJ += $(filter $(OBJDIR)/src/latency/%.obj,        $(OBJFILES))
-OBJFILES   := STEALTHOBJ
+STEALTHOBJ := $(filter $(OBJDIR)/src/controller_fix/%.o, $(OBJFILES))
+STEALTHOBJ += $(filter $(OBJDIR)/src/latency/%.o,        $(OBJFILES))
+OBJFILES   := $(STEALTHOBJ)
 endif
 
 DEPFILES := $(patsubst $(OBJDIR)/%.o, $(DEPDIR)/%.d, $(OBJFILES))
