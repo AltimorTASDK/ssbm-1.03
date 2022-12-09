@@ -204,6 +204,50 @@ add_hook IsFeatureUnlocked
 add_hook IsTrophyUnlocked
 add_hook GetUnlockedEventMatchCount
 add_hook ShouldShowUnlockMessage
+#if defined(NTSC100) || defined(NTSC101)
+# v1.02 hitlag
+.set RoundDealtDamage, Player_MeleeDamage+0x36C
+.set RoundReceivedDamage, Player_MeleeDamage+0x454
+add_hook RoundDealtDamage
+add_hook RoundReceivedDamage
+# Flame cancel
+add_hook Collision_AS_Bowser_FlameStartAir
+# Remove PK Thunder when Ness is hit
+.set OnPKThunderOwnerChange, Item_PKThunder_Update+0xFC
+.set CheckToUpdatePKFlashHitbox, Item_PKFlash_Update+0xE4
+add_hook OnPKThunderOwnerChange
+add_hook CheckToUpdatePKFlashHitbox
+#endif
+#if defined(NTSC100)
+# Fix Marth Whispy blink bug
+add_hook Player_UpdatePhysicsJointAnimFrameAndRate
+# Fix frozen turnip glitch
+add_hook Item_SetVisible
+# Fix Mewtwo fthrow projectiles being grabbable
+add_hook Player_Mewtwo_CreateFThrowBall
+# Fix item/projectile bounce math
+.set NormalizeItemBounceVelocity, Item_ElasticCollision+0x300
+add_hook NormalizeItemBounceVelocity
+#endif
+#if defined(NTSC100) || defined(PAL)
+# File patching
+.set ParsePreloadedArchive, Archive_GetPreloaded+0x238
+add_hook ParsePreloadedArchive
+#endif
+#if defined(PAL)
+# DK loses charge when hit out of up B
+add_hook Player_DK_NeutralBHitCallback
+add_hook Player_DK_UpBHitCallback
+# Enable Samus extender
+add_hook Item_GrappleBeam_Startup
+add_hook Item_GrappleBeam_Active
+# Restore freeze glitch
+.set ThrowSyncSideB, Player_ICs_SyncSideB+0x50
+add_hook ThrowSyncSideB
+# Disable item hitboxes when colliding with a triggerbox
+.set OnTriggerboxHitItem, Player_ItemHitDetection+0x484
+add_hook OnTriggerboxHitItem
+#endif
 
 #ifndef STEALTH
 
@@ -453,50 +497,6 @@ add_hook MainMenu_Init
 add_hook Menu_SetupMainMenu
 add_hook Menu_UpdateMainMenuPreview
 add_hook Menu_CreatePortalDescriptionText
-#if defined(NTSC100) || defined(NTSC101)
-# v1.02 hitlag
-.set RoundDealtDamage, Player_MeleeDamage+0x36C
-.set RoundReceivedDamage, Player_MeleeDamage+0x454
-add_hook RoundDealtDamage
-add_hook RoundReceivedDamage
-# Flame cancel
-add_hook Collision_AS_Bowser_FlameStartAir
-# Remove PK Thunder when Ness is hit
-.set OnPKThunderOwnerChange, Item_PKThunder_Update+0xFC
-.set CheckToUpdatePKFlashHitbox, Item_PKFlash_Update+0xE4
-add_hook OnPKThunderOwnerChange
-add_hook CheckToUpdatePKFlashHitbox
-#endif
-#if defined(NTSC100)
-# Fix Marth Whispy blink bug
-add_hook Player_UpdatePhysicsJointAnimFrameAndRate
-# Fix frozen turnip glitch
-add_hook Item_SetVisible
-# Fix Mewtwo fthrow projectiles being grabbable
-add_hook Player_Mewtwo_CreateFThrowBall
-# Fix item/projectile bounce math
-.set NormalizeItemBounceVelocity, Item_ElasticCollision+0x300
-add_hook NormalizeItemBounceVelocity
-#endif
-#if defined(NTSC100) || defined(PAL)
-# File patching
-.set ParsePreloadedArchive, Archive_GetPreloaded+0x238
-add_hook ParsePreloadedArchive
-#endif
-#if defined(PAL)
-# DK loses charge when hit out of up B
-add_hook Player_DK_NeutralBHitCallback
-add_hook Player_DK_UpBHitCallback
-# Enable Samus extender
-add_hook Item_GrappleBeam_Startup
-add_hook Item_GrappleBeam_Active
-# Restore freeze glitch
-.set ThrowSyncSideB, Player_ICs_SyncSideB+0x50
-add_hook ThrowSyncSideB
-# Disable item hitboxes when colliding with a triggerbox
-.set OnTriggerboxHitItem, Player_ItemHitDetection+0x484
-add_hook OnTriggerboxHitItem
-#endif
 #if defined(NTSC102) && !defined(NOPAL)
 # UnclePunch compatibility
 .set InitRandomStageToggle, Menu_SetupRandomStageMenu+0x144
