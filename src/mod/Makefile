@@ -41,9 +41,14 @@ OBJFILES := \
     $(patsubst %, $(OBJDIR)/%.o, $(SFILES))
 
 ifdef STEALTH
-STEALTHOBJ := $(filter $(OBJDIR)/src/controller_fix/%.o, $(OBJFILES))
-STEALTHOBJ += $(filter $(OBJDIR)/src/latency/%.o,        $(OBJFILES))
-OBJFILES   := $(STEALTHOBJ)
+OBJFILES := $(filter $(OBJDIR)/src/controller_fix/%.o, $(OBJFILES)) \
+            $(filter $(OBJDIR)/src/latency/%.o,        $(OBJFILES)) \
+            $(OBJDIR)/src/init.S.o \
+            $(OBJDIR)/src/dol_init.cpp.o \
+            $(OBJDIR)/src/libcxx/alloc.cpp.o \
+            $(OBJDIR)/src/util/melee/pad.cpp.o \
+            $(OBJDIR)/src/util/gc/memcard.cpp.o \
+            $(OBJDIR)/src/qol/save_data.cpp.o
 endif
 
 DEPFILES := $(patsubst $(OBJDIR)/%.o, $(DEPDIR)/%.d, $(OBJFILES))

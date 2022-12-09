@@ -1,7 +1,7 @@
 #pragma once
 
-#if defined(NTSC102) && !defined(DOL) && !defined(NOPAL)
+#if defined(NTSC102) && !defined(DOL) && !defined(NOPAL) && !defined(STEALTH)
 void check_hdmi_prompts();
 #else
-inline consteval void check_hdmi_prompts() {}
+consteval void check_hdmi_prompts() {}
 #endif

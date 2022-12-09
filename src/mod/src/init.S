@@ -147,6 +147,66 @@ hooks_start:
         .int hook_\name
 .endm
 
+# Controller fix
+.set TumbleWiggleCheck,  Interrupt_AS_DamageFall+0x9C
+.set UpdatePlayerStick,  PlayerThink_Input+0x1D0
+.set CheckItemHitShield, Player_ItemHitDetection+0x5B4
+add_hook TumbleWiggleCheck
+add_hook UpdatePlayerStick
+add_hook Interrupt_AS_Turn
+add_hook Interrupt_SpotDodge
+add_hook Interrupt_SpotDodge_OoS
+add_hook Interrupt_SquatRv
+add_hook Interrupt_Throw
+add_hook Interrupt_DK_ThrowFDecide
+add_hook Interrupt_TurnOrDash
+add_hook Player_EnterDamageState
+add_hook Player_ShieldHitCallback
+add_hook Player_SDICallback
+add_hook Player_ShieldSDICallback
+add_hook AS_029_Fall
+add_hook Interrupt_Walljump
+add_hook Interrupt_JumpAerial
+add_hook Player_CheckCStickAerial
+add_hook AS_182_GuardReflect_YoshiCheck
+add_hook AS_182_GuardReflect_ADT_YoshiCheck
+add_hook Player_UpdateShieldHealth
+add_hook CheckItemHitShield
+# PDF+Latency
+.set SceneLoopStart,   Scene_RunLoop+0x68
+.set FirstEngineFrame, Scene_RunLoop+0xA8
+add_hook SceneLoopStart
+add_hook FirstEngineFrame
+add_hook HSD_VICopyXFBASync
+add_hook HSD_CObjEraseScreen
+add_hook Scene_RunLoop
+add_hook SI_GetResponseRaw
+add_hook SI_SetSamplingRate
+add_hook UpdatePadFetchRate
+#ifdef POLL_DEBUG
+add_hook PadFetchCallback
+add_hook HSD_PerfSetStartTime
+add_hook HSD_VIGetXFBDrawEnable
+add_hook HSD_VIPreRetraceCB
+#endif
+# Nana hardware input buffer
+add_hook Player_Nana_RecordPopoData
+# Memcard
+add_hook MemoryCard_RequestSave
+add_hook MemoryCard_DoLoadData
+#ifndef STEALTH
+add_hook MemoryCard_CheckToSaveData
+#endif
+add_hook UpdateMemCardState
+add_hook GetNextSceneMajorCallback
+# Unlocks
+add_hook IsFeatureUnlocked
+add_hook IsTrophyUnlocked
+add_hook GetUnlockedEventMatchCount
+add_hook ShouldShowUnlockMessage
+
+#ifndef STEALTH
+
 #ifdef DOL
 add_hook __init_data
 add_hook HSD_InitComponent
@@ -189,31 +249,6 @@ add_hook Stage_Fountain_UpdateReflection
 add_hook Stage_PokemonStadium_TransformationDecide
 add_hook Stage_Setup
 add_hook Stage_YoshisStory_ShyGuyUpdate
-# Controller fix
-.set TumbleWiggleCheck,  Interrupt_AS_DamageFall+0x9C
-.set UpdatePlayerStick,  PlayerThink_Input+0x1D0
-.set CheckItemHitShield, Player_ItemHitDetection+0x5B4
-add_hook TumbleWiggleCheck
-add_hook UpdatePlayerStick
-add_hook Interrupt_AS_Turn
-add_hook Interrupt_SpotDodge
-add_hook Interrupt_SpotDodge_OoS
-add_hook Interrupt_SquatRv
-add_hook Interrupt_Throw
-add_hook Interrupt_DK_ThrowFDecide
-add_hook Interrupt_TurnOrDash
-add_hook Player_EnterDamageState
-add_hook Player_ShieldHitCallback
-add_hook Player_SDICallback
-add_hook Player_ShieldSDICallback
-add_hook AS_029_Fall
-add_hook Interrupt_Walljump
-add_hook Interrupt_JumpAerial
-add_hook Player_CheckCStickAerial
-add_hook AS_182_GuardReflect_YoshiCheck
-add_hook AS_182_GuardReflect_ADT_YoshiCheck
-add_hook Player_UpdateShieldHealth
-add_hook CheckItemHitShield
 # Z jump
 add_hook PADRead
 #ifndef TOURNAMENT
@@ -363,31 +398,6 @@ add_hook TrainingMenu_Create
 add_hook TrainingMenu_Think
 # Widescreen crop
 add_hook HSD_VICopyEFB2XFBPtr
-# PDF+Latency
-.set SceneLoopStart,   Scene_RunLoop+0x68
-.set FirstEngineFrame, Scene_RunLoop+0xA8
-add_hook SceneLoopStart
-add_hook FirstEngineFrame
-add_hook HSD_VICopyXFBASync
-add_hook HSD_CObjEraseScreen
-add_hook Scene_RunLoop
-add_hook SI_GetResponseRaw
-add_hook SI_SetSamplingRate
-add_hook UpdatePadFetchRate
-#ifdef POLL_DEBUG
-add_hook PadFetchCallback
-add_hook HSD_PerfSetStartTime
-add_hook HSD_VIGetXFBDrawEnable
-add_hook HSD_VIPreRetraceCB
-#endif
-# Nana hardware input buffer
-add_hook Player_Nana_RecordPopoData
-# Memcard
-add_hook MemoryCard_RequestSave
-add_hook MemoryCard_DoLoadData
-add_hook MemoryCard_CheckToSaveData
-add_hook UpdateMemCardState
-add_hook GetNextSceneMajorCallback
 # 1P mode
 #ifdef USE_CUSTOM_1P_CAMERA
 add_hook Camera_GetBounds
@@ -443,11 +453,6 @@ add_hook MainMenu_Init
 add_hook Menu_SetupMainMenu
 add_hook Menu_UpdateMainMenuPreview
 add_hook Menu_CreatePortalDescriptionText
-# Unlocks
-add_hook IsFeatureUnlocked
-add_hook IsTrophyUnlocked
-add_hook GetUnlockedEventMatchCount
-add_hook ShouldShowUnlockMessage
 #if defined(NTSC100) || defined(NTSC101)
 # v1.02 hitlag
 .set RoundDealtDamage, Player_MeleeDamage+0x36C
@@ -498,6 +503,8 @@ add_hook OnTriggerboxHitItem
 add_hook InitRandomStageToggle
 # 20XX compatibility
 add_hook SSS_CursorThink
+#endif
+
 #endif
 
 hooks_end:
