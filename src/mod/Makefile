@@ -12,9 +12,9 @@ ELFFILE := $(LOCALBIN)/mod-pal.elf
 BINFILE := $(LOCALBIN)/mod-pal.bin
 endif
 
-ALLBINS  := $(LOCALBIN)/mod.bin $(LOCALBIN)/mod-ntsc100.bin.diff $(LOCALBIN)/mod-ntsc101.bin.diff
+ALLBINS := $(LOCALBIN)/mod.bin $(LOCALBIN)/mod-ntsc100.bin.diff $(LOCALBIN)/mod-ntsc101.bin.diff
 ifndef NOPAL
-ALLBINS  += $(LOCALBIN)/mod-pal.bin.diff
+ALLBINS += $(LOCALBIN)/mod-pal.bin.diff
 endif
 
 GCINAME   := 103Code
@@ -25,11 +25,11 @@ ICON      := icon.tex
 TITLE     := "Super Smash Bros. Melee         1.03 Data"
 DIFFSRC   := $(LOCALBIN)/mod.bin
 
-DOLFILE    := $(ISODIR)/sys/main.dol
-PATCHES    := $(LOCALBIN)/patches.bin
-DOLELF     := $(LOCALBIN)/dol.elf
-DOLDATA    := build/dol_data.bin
-DOLLD      := dol.ld
+DOLFILE   := $(ISODIR)/sys/main.dol
+PATCHES   := $(LOCALBIN)/patches.bin
+DOLELF    := $(LOCALBIN)/dol.elf
+DOLDATA   := build/dol_data.bin
+DOLLD     := dol.ld
 
 CFILES   := $(foreach dir, $(SRCDIR), $(shell find $(dir) -type f -name '*.c'   2> /dev/null))
 CXXFILES := $(foreach dir, $(SRCDIR), $(shell find $(dir) -type f -name '*.cpp' 2> /dev/null))
