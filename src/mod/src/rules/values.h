@@ -6,8 +6,6 @@
 #include "melee/stage.h"
 #include <array>
 
-#if !defined(STEALTH)
-
 constexpr auto ledge_grab_limit_values = std::array {
 	0, 30, 35, 40, 45, 50, 55, 60
 };
@@ -121,10 +119,3 @@ inline bool is_stage_frozen(int id)
 		return false;
 	}
 }
-
-#else
-
-constexpr auto get_ucf_type() { return ucf_type::hax; }
-constexpr auto get_latency()  { return latency_mode::crt; }
-
-#endif

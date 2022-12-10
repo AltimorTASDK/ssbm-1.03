@@ -23,6 +23,7 @@ extern "C" bool is_20XX()
 	return *(u16*)&SaveFileName == 'XX';
 }
 
+#ifndef STEALTH
 [[gnu::constructor]] static void check_20XX()
 {
 	if (!is_20XX())
@@ -42,6 +43,7 @@ extern "C" bool is_20XX()
 		std::pair { CObjLoad+0x1BC,          0xC03F0034u }
 	};
 }
+#endif
 
 extern "C" bool is_20XX_stage_select()
 {
@@ -49,6 +51,7 @@ extern "C" bool is_20XX_stage_select()
 	return is_20XX() && MnSlMapPath[8] != '1' && MnSlMapPath[8] != 'u';
 }
 
+#ifndef STEALTH
 extern "C" void orig_SSS_CursorThink(HSD_GObj *gobj);
 extern "C" void hook_SSS_CursorThink(HSD_GObj *gobj)
 {
@@ -69,6 +72,7 @@ extern "C" void hook_SSS_CursorThink(HSD_GObj *gobj)
 	for (auto port = 0; port < 4; port++)
 		queue[0].stat[port].buttons = old_buttons[port];
 }
+#endif
 
 #else // defined(NTSC102) && !defined(NOPAL)
 

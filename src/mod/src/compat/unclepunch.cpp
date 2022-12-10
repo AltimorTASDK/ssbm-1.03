@@ -41,6 +41,7 @@ extern "C" bool is_unclepunch()
 		// cmpw r3, r0
 		std::pair { Interrupt_AS_DamageFall+0xCC,     0x7C030000u },
 
+#ifndef STEALTH
 		// Get rid of UP's 1p start code because it conflicts with 1.03's
 		// cmpwi r4, 2
 		std::pair { CSS_ReadyThink+0x120,             0x2C040002u },
@@ -65,6 +66,7 @@ extern "C" bool is_unclepunch()
 
 		// Disable UP's results screen check hook
 		std::pair { Scene_Match_Exit+0x24,            0x3BA00000u }
+#endif
 	};
 }
 

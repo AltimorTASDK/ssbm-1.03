@@ -1,4 +1,4 @@
-#if defined(NTSC102) && !defined(NOPAL)
+#if defined(NTSC102) && !defined(NOPAL) && !defined(STEALTH)
 .section .text
 
 .set OSD_UCF, 28
