@@ -147,6 +147,12 @@ hooks_start:
         .int hook_\name
 .endm
 
+#ifdef DOL
+add_hook __init_data
+add_hook HSD_InitComponent
+add_hook OSSetArenaHi
+add_hook Scene_Main
+#endif
 # Controller fix
 .set TumbleWiggleCheck,  Interrupt_AS_DamageFall+0x9C
 .set UpdatePlayerStick,  PlayerThink_Input+0x1D0
@@ -251,12 +257,6 @@ add_hook OnTriggerboxHitItem
 
 #ifndef STEALTH
 
-#ifdef DOL
-add_hook __init_data
-add_hook HSD_InitComponent
-add_hook OSSetArenaHi
-add_hook Scene_Main
-#endif
 # Allow stealing stocks with A
 .set CheckStockStealInput,    Match_CheckStockSteal+0xF8
 add_hook CheckStockStealInput
