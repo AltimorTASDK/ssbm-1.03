@@ -123,10 +123,10 @@ public:
 	template<size_t OtherM>
 	constexpr auto operator*(const matrix<T, M, OtherM> &other) const
 	{
-		return for_range_product<N, OtherM>([&]<typename... pairs> {
+		return for_range_product<N, OtherM>([&]<typename... Pairs> {
 			return matrix<T, N, OtherM> { [&] {
-				constexpr auto i = tuple_constant<0, pairs>;
-				constexpr auto j = tuple_constant<1, pairs>;
+				constexpr auto i = tuple_constant<0, Pairs>;
+				constexpr auto j = tuple_constant<1, Pairs>;
 				return sum_tuple(zip_apply(
 					operators::mul, row<i>(), other.template col<j>()));
 			}()... };
