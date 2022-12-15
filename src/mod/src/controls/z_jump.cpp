@@ -17,12 +17,10 @@ extern "C" void hook_PADRead(PADStatus *status)
 			// Reset config if unplugged and not in-game
 			if (GetMatchInfo()->match_over)
 				controller_configs[i].reset(i);
-			continue;
-		}
-
-		// Swap X/Y bit with Z bit
-		if (const auto xy_bit = controller_configs[i].z_jump_bit; xy_bit != 0)
+		} else if (const auto xy_bit = controller_configs[i].z_jump_bit; xy_bit != 0) {
+			// Swap X/Y bit with Z bit
 			status[i].buttons = bit_swap(status[i].buttons, xy_bit, ButtonBit_Z);
+		}
 	}
 }
 
