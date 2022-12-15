@@ -40,7 +40,7 @@ constexpr auto align_up(std::integral auto value, std::integral auto alignment)
 constexpr auto bit_swap(std::integral auto value, int i, int j, int count = 1)
 {
 	const auto x = ((value >> i) ^ (value >> j)) & ((1 << count) - 1);
-	return value ^ ((x << i) | (x << j));
+	return (decltype(value))(value ^ ((x << i) | (x << j)));
 }
 
 template<typename T>
