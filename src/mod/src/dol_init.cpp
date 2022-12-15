@@ -17,10 +17,10 @@ extern "C" char __BSS_SIZE__;
 
 PATCH_LIST(
 	// Patch end of save file name to match the name normally set by the memcard loader
-	std::pair { &SaveFileName[20],   '_103' },
+	std::pair { &SaveFileName[20],       '_103' },
 	// Boot to CSS
 	// li r3, Scene_VsMode
-	std::pair { BootScene_Exit+0x78, 0x38600002u },
+	std::pair { BootScene_Exit+0x78,     0x38600002u },
 	// Skip crash screen input checks
 	// b +0x220
 	std::pair { DisplayCrashScreen+0x4C, 0x48000220u }
