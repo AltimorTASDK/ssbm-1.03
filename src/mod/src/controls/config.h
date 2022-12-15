@@ -14,7 +14,7 @@ struct controller_config {
 	static const controller_config defaults;
 
 	u8 z_jump_bit            = 0;
-#ifndef TOURNAMENT
+#if !defined(TOURNAMENT) && !defined(STEALTH)
 	bool perfect_angles      = false;
 	cstick_type c_up         = cstick_type::smash;
 	cstick_type c_horizontal = cstick_type::smash;
@@ -31,7 +31,7 @@ struct controller_config {
 
 	void make_legal()
 	{
-#ifndef TOURNAMENT
+#if !defined(TOURNAMENT) && !defined(STEALTH)
 		switch (get_controls()) {
 		case controls_type::no_angles:
 			perfect_angles   = defaults.perfect_angles;
@@ -50,7 +50,7 @@ struct controller_config {
 #ifdef OLD_CSS_TOGGLES
 	bool is_illegal() const
 	{
-#ifndef TOURNAMENT
+#if !defined(TOURNAMENT) && !defined(STEALTH)
 		return perfect_angles
 		    || c_up         != cstick_type::smash
 		    || c_horizontal != cstick_type::smash

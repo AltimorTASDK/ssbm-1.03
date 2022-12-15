@@ -45,9 +45,11 @@ OBJFILES := $(filter $(OBJDIR)/src/controller_fix/%.o, $(OBJFILES)) \
             $(filter $(OBJDIR)/src/latency/%.o,        $(OBJFILES)) \
 		    $(filter $(OBJDIR)/src/compat/%.o,         $(OBJFILES)) \
             $(filter $(OBJDIR)/src/version/%.o,        $(OBJFILES)) \
-            $(OBJDIR)/src/init.S.o \
             $(OBJDIR)/src/dol_init.cpp.o \
+            $(OBJDIR)/src/init.S.o \
+            $(OBJDIR)/src/controls/z_jump.cpp.o \
             $(OBJDIR)/src/libcxx/alloc.cpp.o \
+            $(OBJDIR)/src/menu/character_select.cpp.o \
             $(OBJDIR)/src/util/melee/pad.cpp.o \
             $(OBJDIR)/src/util/gc/memcard.cpp.o \
             $(OBJDIR)/src/qol/save_data.cpp.o

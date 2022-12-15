@@ -178,6 +178,10 @@ add_hook AS_182_GuardReflect_YoshiCheck
 add_hook AS_182_GuardReflect_ADT_YoshiCheck
 add_hook Player_UpdateShieldHealth
 add_hook CheckItemHitShield
+# Z jump
+add_hook PADRead
+# Z jump + rumble CSS toggles
+add_hook CSS_PlayerThink
 # PDF+Latency
 .set SceneLoopStart,   Scene_RunLoop+0x68
 .set FirstEngineFrame, Scene_RunLoop+0xA8
@@ -293,8 +297,6 @@ add_hook Stage_Fountain_UpdateReflection
 add_hook Stage_PokemonStadium_TransformationDecide
 add_hook Stage_Setup
 add_hook Stage_YoshisStory_ShyGuyUpdate
-# Z jump
-add_hook PADRead
 #ifndef TOURNAMENT
 # Perfect angles
 add_hook Player_GetAirdodgeAngle
@@ -475,7 +477,6 @@ add_hook CheckCSSModeSwap
 add_hook CheckIsCPUPuck
 add_hook CSS_ChooseTopString
 add_hook CSS_Init
-add_hook CSS_PlayerThink
 add_hook CSS_Setup
 #ifdef OLD_CSS_TOGGLES
 add_hook CSS_UpdatePortrait

@@ -132,6 +132,8 @@ constexpr auto TOGGLE_HOLD_TIME = 60;
 constexpr auto crew_text = text_builder::build(
 	text_builder::text<"An epic crew battle!">());
 
+#ifndef STEALTH
+
 PATCH_LIST(
 	// Use "Survival!" voice clip for crew
 	// li r3, 0x7538
@@ -143,6 +145,8 @@ static mempool pool;
 static u8 player_states[4];
 static bool is_unplugged[4];
 static bool saved_is_unplugged[4];
+
+#endif // !STEALTH
 
 static struct {
 	u32 z_jump;
@@ -174,6 +178,8 @@ constexpr auto track_r = make_color_track<color1.r, color2.r>();
 constexpr auto track_g = make_color_track<color1.g, color2.g>();
 constexpr auto track_b = make_color_track<color1.b, color2.b>();
 #endif
+
+#ifndef STEALTH
 
 extern "C" bool check_is_cpu_puck(u8 port)
 {
@@ -225,6 +231,8 @@ extern "C" bool check_if_any_players()
 	return false;
 }
 
+#endif // !STEALTH
+
 static controller_config *get_css_config(u8 port)
 {
 	if (CSSPortCount == 1)
@@ -241,6 +249,7 @@ static const HSD_PadStatus &get_css_input(u8 port)
 		return HSD_PadCopyStatus[port];
 }
 
+#ifndef STEALTH
 static void rumble_toggle(u8 port)
 {
 	// 20XX uses dpad up for metal characters
@@ -267,6 +276,7 @@ static void rumble_toggle(u8 port)
 			HSD_PadRumble(port, 0, 0, 60);
 	}
 }
+#endif
 
 static void check_css_toggle(u8 port, u32 *timer, auto &&check_callback, auto &&apply_callback)
 {
@@ -455,6 +465,7 @@ static void reset_toggle_timers(u8 port)
 #endif
 }
 
+#ifndef STEALTH
 static void check_to_drop_puck(CSSPlayerData *data)
 {
 	if (data->state != CSSPlayerState_HoldingPuck)
@@ -476,6 +487,7 @@ static void check_to_drop_puck(CSSPlayerData *data)
 	CSS_UpdatePortrait(puck);
 	data->state = CSSPlayerState_Idle;
 }
+#endif
 
 extern "C" void orig_CSS_PlayerThink(HSD_GObj *gobj);
 extern "C" void hook_CSS_PlayerThink(HSD_GObj *gobj)
@@ -486,7 +498,9 @@ extern "C" void hook_CSS_PlayerThink(HSD_GObj *gobj)
 
 	// CSS toggles
 	if (get_css_input(data->port).err == 0) {
+#ifndef STEALTH
 		rumble_toggle(data->port);
+#endif
 		z_jump_toggle(data->port);
 #ifdef OLD_CSS_TOGGLES
 		perfect_angles_toggle(data->port);
@@ -499,6 +513,7 @@ extern "C" void hook_CSS_PlayerThink(HSD_GObj *gobj)
 		reset_toggle_timers(data->port);
 	}
 
+#ifndef STEALTH
 	if (SceneMajor != Scene_VsMode)
 		return;
 
@@ -514,7 +529,10 @@ extern "C" void hook_CSS_PlayerThink(HSD_GObj *gobj)
 	is_unplugged[data->port] = data->state == CSSPlayerState_Unplugged;
 
 	check_to_drop_puck(data);
+#endif
 }
+
+#ifndef STEALTH
 
 #ifdef OLD_CSS_TOGGLES
 extern "C" void orig_CSS_UpdatePortrait(u8 port);
@@ -687,3 +705,5 @@ extern "C" void hook_CSS_Setup()
 	create_watermark();
 #endif
 }
+
+#endif // !STEALTH
