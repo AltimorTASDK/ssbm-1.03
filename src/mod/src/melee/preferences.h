@@ -5,7 +5,8 @@
 struct SavedPreferences {
 	char pad000[0x16];
 	u8 language;
-	char pad017[0x20 - 0x17];
+	u32 random_stage_mask;
+	char pad01C[0x20 - 0x1C];
 };
 
 extern "C" {

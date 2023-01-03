@@ -209,6 +209,12 @@ add_hook MemoryCard_CheckToSaveData
 #endif
 add_hook UpdateMemCardState
 add_hook GetNextSceneMajorCallback
+# Settings lock
+#ifdef PAL
+add_hook Scene_Reset
+#endif
+add_hook InitializeGlobalData
+add_hook InitializeSaveData
 # Unlocks
 add_hook IsFeatureUnlocked
 add_hook IsTrophyUnlocked
@@ -481,12 +487,6 @@ add_hook CSS_Setup
 #ifdef OLD_CSS_TOGGLES
 add_hook CSS_UpdatePortrait
 #endif
-# Settings lock
-#ifdef PAL
-add_hook Scene_Reset
-#endif
-add_hook InitializeGlobalData
-add_hook InitializeSaveData
 # Manual
 .set SetMenuRotation, Menu_UpdateCStickRotation+0xF8
 add_hook SetMenuRotation

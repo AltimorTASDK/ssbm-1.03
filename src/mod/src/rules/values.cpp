@@ -1,5 +1,6 @@
 #include "melee/match.h"
 #include "melee/player.h"
+#include "melee/preferences.h"
 #include "melee/rules.h"
 #include "melee/scene.h"
 #include "rules/values.h"
@@ -7,6 +8,7 @@
 
 [[gnu::constructor]] static void init_rules()
 {
+#ifndef STEALTH
 	// Set new rule value bounds
 	RuleValueBounds[Rule_LedgeGrabLimit] = { 0, ledge_grab_limit_values.size() - 1 };
 	RuleValueBounds[Rule_AirTimeLimit]   = { 0, air_time_limit_values.size()   - 1 };
@@ -16,6 +18,10 @@
 	ExtraRuleValueBounds[ExtraRule_ControllerFix] = { 0, (u8)ucf_type::max        - 1 };
 	ExtraRuleValueBounds[ExtraRule_Latency]       = { 0, (u8)latency_mode::max    - 1 };
 	ExtraRuleValueBounds[ExtraRule_Widescreen]    = { 0, (u8)widescreen_mode::max - 1 };
+#else
+	// Stealth needs the vanilla random stage select set up
+	GetSavedPreferences()->random_stage_mask = 0xE70000B0;
+#endif
 
 	auto *rules = GetGameRules();
 
@@ -27,6 +33,7 @@
 	rules->pause                = false;
 }
 
+#ifndef STEALTH
 static bool is_singleplayer(const StartMeleeData *data)
 {
 	auto count = 0;
@@ -101,3 +108,4 @@ extern "C" void hook_StartMelee(StartMeleeData *data)
 
 	orig_StartMelee(data);
 }
+#endif

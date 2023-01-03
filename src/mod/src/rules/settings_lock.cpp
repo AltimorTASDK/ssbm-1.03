@@ -53,6 +53,7 @@ extern "C" void hook_InitializeGlobalData()
 		return orig_InitializeGlobalData();
 	}
 #endif
+#ifndef STEALTH
 	// Prevent global data reset and check settings lock
 	if (settings_lock || CARD_Probe(CARD_SLOTA))
 		return;
@@ -74,4 +75,5 @@ extern "C" void hook_InitializeGlobalData()
 		*DebugMenuEntries[DebugEntry_DbLevel].value     = DbLKind_Master;
 		*DebugMenuEntries[DebugEntry_IKDebugFlag].value = true;
 	}
+#endif
 }

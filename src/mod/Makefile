@@ -50,6 +50,8 @@ OBJFILES := $(filter $(OBJDIR)/src/controller_fix/%.o, $(OBJFILES)) \
             $(OBJDIR)/src/controls/z_jump.cpp.o \
             $(OBJDIR)/src/libcxx/alloc.cpp.o \
             $(OBJDIR)/src/menu/character_select.cpp.o \
+            $(OBJDIR)/src/rules/settings_lock.cpp.o \
+            $(OBJDIR)/src/rules/values.cpp.o \
             $(OBJDIR)/src/util/melee/pad.cpp.o \
             $(OBJDIR)/src/util/gc/memcard.cpp.o \
             $(OBJDIR)/src/qol/save_data.cpp.o
