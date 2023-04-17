@@ -228,14 +228,14 @@ add_hook GetUnlockedEventMatchCount
 add_hook ShouldShowUnlockMessage
 #if defined(NTSC100) || defined(NTSC101)
 # v1.02 hitlag
-.set RoundDealtDamage, Player_MeleeDamage+0x36C
+.set RoundDealtDamage,    Player_MeleeDamage+0x36C
 .set RoundReceivedDamage, Player_MeleeDamage+0x454
 add_hook RoundDealtDamage
 add_hook RoundReceivedDamage
 # Flame cancel
 add_hook Collision_AS_Bowser_FlameStartAir
 # Remove PK Thunder when Ness is hit
-.set OnPKThunderOwnerChange, Item_PKThunder_Update+0xFC
+.set OnPKThunderOwnerChange,     Item_PKThunder_Update+0xFC
 .set CheckToUpdatePKFlashHitbox, Item_PKFlash_Update+0xE4
 add_hook OnPKThunderOwnerChange
 add_hook CheckToUpdatePKFlashHitbox
@@ -274,14 +274,14 @@ add_hook OnTriggerboxHitItem
 #ifndef STEALTH
 
 # Allow stealing stocks with A
-.set CheckStockStealInput,    Match_CheckStockSteal+0xF8
+.set CheckStockStealInput, Match_CheckStockSteal+0xF8
 add_hook CheckStockStealInput
 # Centered player HUDs
 add_hook HUD_GetPlayerHUDPosition
 # Skip results on non-timeout and add salty runback
 add_hook Scene_Match_Exit
 # Hide nametags for invisible players
-.set ShowNameTagCheck,        NameTag_Think+0x28
+.set ShowNameTagCheck, NameTag_Think+0x28
 add_hook ShowNameTagCheck
 # Panel at top of menu for menu music screen
 add_hook Menu_MenuPanelThink
