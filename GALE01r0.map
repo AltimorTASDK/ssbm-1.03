@@ -327,7 +327,7 @@
 8007799c 00000724 8007799c 0 Items_GetTouchableItem
 80078758 00000244 80078758 0 Hitbox_GrabAttackLogic
 8007899c 000005ec 8007899c 0 Hitbox_MeleeAttackLogic
-80003268 00000854 80003268 0 Player_ItemHitDetection
+80078f88 00000854 80078f88 0 Player_ItemHitDetection
 800797cc 000001c0 800797cc 0 Damage_KnockbackCalculate
 8007a8ec 00000098 8007a8ec 0 Hitbox_ApplyDamageStalingAndMore
 8007a984 00000034 8007a984 0 Hitbox_MeteorAttackCheck
