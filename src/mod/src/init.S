@@ -156,7 +156,13 @@ add_hook Scene_Main
 # Controller fix
 .set TumbleWiggleCheck,  Interrupt_AS_DamageFall+0x9C
 .set UpdatePlayerStick,  PlayerThink_Input+0x1D0
+#if defined(PAL)
+.set CheckItemHitShield, Player_ItemHitDetection+0x5B0
+#elif defined(NTSC100) || defined(NTSC101)
+.set CheckItemHitShield, Player_ItemHitDetection+0x5A4
+#else
 .set CheckItemHitShield, Player_ItemHitDetection+0x5B4
+#endif
 add_hook TumbleWiggleCheck
 add_hook UpdatePlayerStick
 add_hook Interrupt_AS_Turn
