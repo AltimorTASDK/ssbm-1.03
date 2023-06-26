@@ -53,6 +53,7 @@ OBJFILES := $(filter $(OBJDIR)/src/controller_fix/%.o, $(OBJFILES)) \
             $(OBJDIR)/src/rules/settings_lock.cpp.o \
             $(OBJDIR)/src/rules/values.cpp.o \
             $(OBJDIR)/src/util/melee/pad.cpp.o \
+            $(OBJDIR)/src/util/melee/pad.S.o \
             $(OBJDIR)/src/util/gc/memcard.cpp.o \
             $(OBJDIR)/src/qol/save_data.cpp.o
 endif

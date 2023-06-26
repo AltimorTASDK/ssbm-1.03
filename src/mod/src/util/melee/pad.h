@@ -24,7 +24,18 @@ constexpr auto YSMASH_THRESHOLD = .6625f;
 
 namespace detail {
 
+constexpr auto PAD_BUFFER_SIZE = 4;
+constexpr auto PAD_BUFFER_MASK = PAD_BUFFER_SIZE - 1;
+
+struct alignas(4) port_pad_buffer {
+	PADStatus entries[PAD_BUFFER_SIZE];
+	u8 index;
+};
+
+inline port_pad_buffer pad_buffer[6];
+
 const PADStatus &get_input_impl(int port, int offset);
+const PADStatus &get_buffer_input_impl(const Player *player, int offset);
 const PADStatus &get_nana_input_impl(const Player *nana, int offset);
 
 } // namespace detail
@@ -44,12 +55,22 @@ inline const PADStatus &get_nana_input(const Player *nana)
 }
 
 template<int offset>
+inline const PADStatus &get_pad_buffer(const Player *player)
+{
+	const auto &buffer = detail::pad_buffer[player->slot];
+	if constexpr (offset == 0)
+		return buffer.entries[buffer.index];
+	else
+		return buffer.entries[(buffer.index + offset) & detail::PAD_BUFFER_MASK];
+}
+
+template<int offset>
 inline const PADStatus &get_character_input(const Player *player)
 {
 	if (player->character_id == CID_Nana)
 		return get_nana_input<offset>(player);
 	else
-		return get_input<offset>(player->port);
+		return get_pad_buffer<offset>(player);
 }
 
 inline bool check_ucf_xsmash(const Player *player)

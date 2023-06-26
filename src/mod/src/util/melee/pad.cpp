@@ -5,7 +5,7 @@
 #include <cstddef>
 #include <gctypes.h>
 
-// Manually maintain a buffer of hardware values for Nana
+// Manually maintain a buffer of hardware values
 static PADStatus nana_hw_buffer[6][NANA_BUFFER];
 
 // Remember whether the last frame was develop paused
@@ -58,4 +58,11 @@ extern "C" void hook_Player_Nana_RecordPopoData(Player *popo, Player *nana)
 		nana->popo_data_write->buttons &= ~Button_Z;
 
 	develop_pause[nana->slot] = Scene_CheckPauseFlag(PauseBit_DevelopPause);
+}
+
+extern "C" void update_pad_buffer(Player *player)
+{
+	auto *buffer = &detail::pad_buffer[player->slot];
+	buffer->index = (buffer->index + 1) & detail::PAD_BUFFER_MASK;
+	buffer->entries[buffer->index] = get_input<0>(player->port);
 }
