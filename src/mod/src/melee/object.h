@@ -88,7 +88,16 @@ struct Hitbox {
 	u32 sfx;
 	u8 flags1;
 	u8 flags2;
-	u8 flags3;
+	struct {
+		u8 flags3_80 : 1;
+		u8 flags3_40 : 1;
+		u8 flags3_20 : 1;
+		u8 flags3_10 : 1;
+		u8 is_projectile : 1;
+		u8 flags3_04 : 1;
+		u8 flags3_02 : 1;
+		u8 flags3_01 : 1;
+	};
 	u8 flags4;
 	char pad0044[0x4C - 0x44];
 	vec3 position;

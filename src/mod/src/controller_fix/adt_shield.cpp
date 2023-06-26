@@ -97,7 +97,7 @@ extern "C" bool check_item_hit_shield(Hitbox *hitbox, float hitbox_scale,
                                       bool force_hit, const Player *player)
 {
 	// Don't collide with the shield bubble if the player wants to ADT PS
-	if (is_in_adt_shield(player))
+	if (hitbox->is_projectile && is_in_adt_shield(player))
 		return false;
 
 	return Hitbox_CheckShieldBubbleCollision(hitbox, hitbox_scale, shield, shield_scale,
