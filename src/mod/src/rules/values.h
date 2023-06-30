@@ -113,7 +113,9 @@ inline bool is_stage_frozen(int id)
 	case Stage_FoD:
 	case Stage_YS:
 	case Stage_DL:
+#ifdef FULL_SSS_ROTATOR
 		if (rules->stage_mods == sss_type::all)
+#endif
 			return true;
 	default:
 		return false;
