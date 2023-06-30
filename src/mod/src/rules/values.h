@@ -101,7 +101,9 @@ inline bool is_stage_frozen(int id)
 	if (is_20XX_stage_select())
 		return false;
 
+#ifdef FULL_SSS_ROTATOR
 	const auto *rules = GetGameRules();
+#endif
 
 	switch (id) {
 	case Stage_FD:
