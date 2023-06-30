@@ -185,6 +185,7 @@ add_hook AS_182_GuardReflect_ADT_YoshiCheck
 add_hook Player_UpdateShieldHealth
 add_hook CheckItemHitShield
 add_hook Player_CheckStickDirectionChanged
+add_hook Player_CheckDownBInput
 # Z jump
 add_hook PADRead
 # Z jump + rumble CSS toggles
