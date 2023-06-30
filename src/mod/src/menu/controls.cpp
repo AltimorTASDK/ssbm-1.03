@@ -402,7 +402,7 @@ static void create_camera()
 {
 	auto *gobj = GObj_Create(GOBJ_CLASS_CAMERA, GOBJ_PLINK_MENU_CAMERA, 0);
 	auto *cobj = HSD_CObjLoadDesc(scene->cameras[0]);
-	GObj_InitKindObj(gobj, GOBJ_KIND_JOBJ, cobj);
+	GObj_InitKindObj(gobj, GOBJ_KIND_CAMERA, cobj);
 	GObj_SetupCameraGXLink(gobj, GObj_GXProcCamera, 0);
 
 	// Render mask
