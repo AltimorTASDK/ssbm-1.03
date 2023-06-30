@@ -26,15 +26,15 @@ static bool should_suppress_spotdodge(HSD_GObj *gobj)
 		// Must be above Y -8000 (UCF)
 		if (player->input.stick.y <= -.8000f)
 			return false;
+
+		// Must be a rim coord
+		if (!is_rim_coord(player->input.stick))
+			return false;
 	} else {
 		// Must be outside of X deadzone (1.03)
 		if (player->input.stick.x == 0.f)
 			return false;
 	}
-
-	// Must be a rim coord
-	if (!is_rim_coord(player->input.stick))
-		return false;
 
 	return true;
 }
