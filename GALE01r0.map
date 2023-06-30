@@ -927,7 +927,7 @@
 800d6248 000000f0 800d6248 0 Interrupt_AS_SquatRv
 800d6378 00000060 800d6378 0 Buttons_BButtonCheck
 800d63d8 00000068 800d63d8 0 Interrupt_NeutralB_Grounded
-800d6440 00000034 800d6440 0 Interrupt_DownB_CheckInputOnly
+800d6440 00000034 800d6440 0 Player_CheckDownBInput
 800d6474 00000068 800d6474 0 Interrupt_DownB_Grounded
 800d64dc 00000034 800d64dc 0 Interrupt_UpB_CheckInputOnly
 800d6510 00000068 800d6510 0 Interrupt_UpB_Grounded

@@ -3559,7 +3559,7 @@
 800d67a4 00000020 800d67a4 0 zz_00d67a4_
 800d67c4 00000060 800d67c4 0 Buttons_BButtonCheck
 800d6824 00000068 800d6824 0 Interrupt_NeutralB_Grounded
-800d688c 00000034 800d688c 0 Interrupt_DownB_CheckInputOnly
+800d688c 00000034 800d688c 0 Player_CheckDownBInput
 800d68c0 00000068 800d68c0 0 Interrupt_DownB_Grounded
 800d6928 00000034 800d6928 0 Interrupt_UpB_CheckInputOnly
 800d695c 00000068 800d695c 0 Interrupt_UpB_Grounded
