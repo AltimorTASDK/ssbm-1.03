@@ -115,6 +115,7 @@ void Text_SetFromSIS(Text *text, u32 id);
 void Text_SetSubtextColor(Text *text, s32 subtext, const color_rgba &color);
 
 DevText *DevelopText_Create(u8 id, u16 x, u16 y, s32 width, s32 height, char *buf);
+void DevelopText_Remove(DevText **text);
 void DevelopText_Show(HSD_GObj *unused, DevText *text);
 
 void DevelopText_ShowBackground(DevText *text);

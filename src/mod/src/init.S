@@ -363,8 +363,9 @@ add_hook TapJumpCheck_JumpOoS
 add_hook TapJumpCheck_MultiJump
 add_hook TapJumpCheck_FirstMultiJump
 #endif
-# Debug menu
+# Debug mode menu
 add_hook Menu_SetupLanguageMenu
+add_hook DevelopText_SetupCObj
 # Stage select screen
 add_hook Stage_IsValidRandomChoice
 add_hook SSS_Init
