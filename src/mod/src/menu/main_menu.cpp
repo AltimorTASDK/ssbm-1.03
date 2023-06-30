@@ -27,6 +27,14 @@
 #endif
 #include "resources/manual/manual_header.tex.h"
 
+enum MainMenuPortalID {
+	MainMenu_1PMode   = 0,
+	MainMenu_VSMode   = 1,
+	MainMenu_Trophies = 2,
+	MainMenu_Options  = 3,
+	MainMenu_Data     = 4
+};
+
 enum VsMenuPortalID {
 	VsMenu_Tournament  = 1,
 	VsMenu_Controls    = 1,
@@ -104,6 +112,9 @@ static constexpr auto make_description_text()
 		text_builder::end_color());
 }
 
+constexpr auto options_menu_description = make_description_text<
+	"Adjust rumble and sound.">();
+
 constexpr auto debug_menu_description = make_description_text<
 	"Select debug mode.">();
 
@@ -122,6 +133,12 @@ constexpr auto manual_description = make_description_text<
 	// Swap previews for debug menu and controls
 	MenuTypeDataTable[MenuType_VsMode].preview_anims[1] = { 800, 849, 820 };
 	MenuTypeDataTable[MenuType_VsMode].preview_anims[2] = { 750, 799, 770 };
+}
+
+[[gnu::constructor]] static void restrict_options_menu()
+{
+	// Remove Screen Display, Language, and Erase Data portals
+	MenuTypeDataTable[MenuType_Options].option_count = 2;
 }
 
 extern "C" void orig_VsMenu_Think(HSD_GObj *gobj);
@@ -147,26 +164,6 @@ extern "C" void hook_VsMenu_Think(HSD_GObj *gobj)
 		break;
 	default:
 		orig_VsMenu_Think(gobj);
-	}
-}
-
-extern "C" void orig_OptionsMenu_Think(HSD_GObj *gobj);
-extern "C" void hook_OptionsMenu_Think(HSD_GObj *gobj)
-{
-	if (!(Menu_GetButtonsHelper(PORT_ALL) & MenuButton_Confirm))
-		return orig_OptionsMenu_Think(gobj);
-
-	switch (MenuSelectedIndex) {
-	case OptionsMenu_ScreenDisplay:
-	case OptionsMenu_Language:
-	case OptionsMenu_EraseData:
-		if (get_settings_lock()) {
-			// Don't allow changing system settings when tournament lock is on
-			Menu_PlaySFX(MenuSFX_Error);
-			break;
-		}
-	default:
-		orig_OptionsMenu_Think(gobj);
 	}
 }
 
@@ -239,24 +236,32 @@ extern "C" void hook_Menu_UpdateMainMenuPreview(HSD_GObj *gobj, u8 index_changed
 
 static void update_portal_description(MainMenuData *data, u32 menu_type, u32 index)
 {
-	if (menu_type != MenuType_VsMode)
-		return;
+	switch (menu_type) {
+	case MenuType_Main:
+		if (index == MainMenu_Options)
+			data->description_text->data = options_menu_description.data();
 
-	if (index == VsMenu_DebugMenu && is_20XX()) {
-		// Use the original 20XX description for the shifted debug menu
-		const auto id = MenuTypeDataTable[MenuType_VsMode].descriptions[VsMenu_Tournament];
-		Text_SetFromSIS(data->description_text, id);
-		return;
+		break;
+	case MenuType_VsMode:
+		if (index == VsMenu_DebugMenu && is_20XX()) {
+			// Use the original 20XX description for the shifted debug menu
+			const auto &table = MenuTypeDataTable[MenuType_VsMode];
+			const auto id = table.descriptions[VsMenu_Tournament];
+			Text_SetFromSIS(data->description_text, id);
+			return;
+		}
+
+		if (index == VsMenu_DebugMenu)
+			data->description_text->data = debug_menu_description.data();
+		else if (index == VsMenu_Controls && get_controls() != controls_type::z_jump)
+			data->description_text->data = controls_description.data();
+		else if (index == VsMenu_Controls)
+			data->description_text->data = controls_z_jump_description.data();
+		else if (index == VsMenu_Manual)
+			data->description_text->data = manual_description.data();
+
+		break;
 	}
-
-	if (index == VsMenu_DebugMenu)
-		data->description_text->data = debug_menu_description.data();
-	else if (index == VsMenu_Controls && get_controls() != controls_type::z_jump)
-		data->description_text->data = controls_description.data();
-	else if (index == VsMenu_Controls)
-		data->description_text->data = controls_z_jump_description.data();
-	else if (index == VsMenu_Manual)
-		data->description_text->data = manual_description.data();
 }
 
 extern "C" HSD_GObj *orig_Menu_SetupMainMenu(u8 state);

@@ -49,15 +49,17 @@ enum MenuID {
 };
 
 enum MenuType {
-	MenuType_VsMode = 2,
-	MenuType_Rules = 13,
-	MenuType_ExtraRules = 15,
-	MenuType_ItemSwitch = 16,
-	MenuType_StageMusic = 16,
+	MenuType_Main        = 0,
+	MenuType_VsMode      = 2,
+	MenuType_Options     = 4,
+	MenuType_Rules       = 13,
+	MenuType_ExtraRules  = 15,
+	MenuType_ItemSwitch  = 16,
+	MenuType_StageMusic  = 16,
 	MenuType_RandomStage = 17,
-	MenuType_MenuMusic = 17,
-	MenuType_NameEntry = 18,
-	MenuType_Max = 34
+	MenuType_MenuMusic   = 17,
+	MenuType_NameEntry   = 18,
+	MenuType_Max         = 34
 };
 
 struct MenuCallbacks {
