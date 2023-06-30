@@ -35,6 +35,14 @@ enum VsMenuPortalID {
 	VsMenu_Manual      = 3
 };
 
+enum OptionsMenuPortalID {
+	OptionsMenu_Rumble        = 0,
+	OptionsMenu_Sound         = 1,
+	OptionsMenu_ScreenDisplay = 2,
+	OptionsMenu_Language      = 4,
+	OptionsMenu_EraseData     = 5
+};
+
 struct MainMenuData {
 	u8 menu_type;
 	u8 selected;
@@ -140,6 +148,26 @@ extern "C" void hook_VsMenu_Think(HSD_GObj *gobj)
 		break;
 	default:
 		orig_VsMenu_Think(gobj);
+	}
+}
+
+extern "C" void orig_OptionsMenu_Think(HSD_GObj *gobj);
+extern "C" void hook_OptionsMenu_Think(HSD_GObj *gobj)
+{
+	if (!(Menu_GetButtonsHelper(PORT_ALL) & MenuButton_Confirm))
+		return orig_OptionsMenu_Think(gobj);
+
+	switch (MenuSelectedIndex) {
+	case OptionsMenu_ScreenDisplay:
+	case OptionsMenu_Language:
+	case OptionsMenu_EraseData:
+		if (get_settings_lock()) {
+			// Don't allow changing system settings when tournament lock is on
+			Menu_PlaySFX(MenuSFX_Error);
+			break;
+		}
+	default:
+		orig_OptionsMenu_Think(gobj);
 	}
 }
 

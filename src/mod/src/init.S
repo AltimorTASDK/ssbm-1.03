@@ -501,6 +501,7 @@ add_hook SetMenuRotation
 add_hook Menu_EnterCustomRulesMenu
 # Main menu
 add_hook VsMenu_Think
+add_hook OptionsMenu_Think
 add_hook MainMenu_Enter
 add_hook MainMenu_Init
 add_hook Menu_SetupMainMenu

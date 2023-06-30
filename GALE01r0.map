@@ -2162,7 +2162,7 @@
 8022b75c 000001d4 8022b75c 0 Menus_MeleeRecords_EveryFrame
 8022b930 00000244 8022b930 0 Menus_RegularMatch
 8022bb74 00000298 8022bb74 0 Menus_Data_EveryFrame
-8022be0c 00000248 8022be0c 0 Menus_Options_EveryFrame
+8022be0c 00000248 8022be0c 0 OptionsMenu_Think
 8022c054 00000248 8022c054 0 Menus_Trophies_EveryFrame
 8022c29c 00000260 8022c29c 0 VsMenu_Think
 8022c4fc 0000031c 8022c4fc 0 Menus_1PMode_EveryFrame
