@@ -60,8 +60,8 @@ static constexpr auto stage_text()
 
 constexpr auto bgm_text = multi_array {
 	stage_text<"Balloon Fight">(),
-	stage_text<"Battlefield">(),
 	stage_text<"Battle Theme">(),
+	stage_text<"Battlefield">(),
 	stage_text<"Big Blue">(),
 	stage_text<"Brinstar">(),
 	stage_text<"Brinstar Depths">(),
