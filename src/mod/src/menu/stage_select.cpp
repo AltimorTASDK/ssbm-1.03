@@ -292,9 +292,9 @@ extern "C" void hook_SSS_Think()
 	for (auto port = 0; port < 4; port++) {
 		const auto &pad = HSD_PadMasterStatus[port];
 
-		if (pad.instant_buttons & Button_Z)
+		if (pad.instant_buttons & Button_Y)
 			reset_striking(should_use_oss());
-		else if (pad.instant_buttons & Button_Y)
+		else if (pad.instant_buttons & Button_Z)
 			reset_striking(false);
 		else if (pad.instant_buttons & Button_X)
 			strike_stage();
@@ -363,6 +363,17 @@ static void setup_stage_names()
 	}
 }
 
+static void hide_illegal_stages()
+{
+	for (auto i = 0; i < Icon_Random; i++) {
+		auto *icon = &StageSelectIcons[i];
+		if (!is_legal_stage(icon->stage_id)) {
+			HSD_JObjSetFlagsAll(icon->jobj, HIDDEN);
+			icon->unlocked = UnlockType_Hidden;
+		}
+	}
+}
+
 extern "C" void orig_SSS_Init(void *menu);
 extern "C" void hook_SSS_Init(void *menu)
 {
@@ -382,8 +393,11 @@ extern "C" void hook_SSS_Init(void *menu)
 		MnSlMapModels->NowLoading.joint->child->position.z -= 32.f;
 	}
 
-	if (should_use_oss())
+	if (should_use_oss()) {
+		// Hide non-legal stages by default on OSS
+		hide_illegal_stages();
 		return;
+	}
 
 	setup_stage_names();
 
@@ -415,14 +429,7 @@ extern "C" void hook_SSS_Init(void *menu)
 		setup_icon(&StageSelectIcons[Icon_YS],  icon_joints[5], &matanim_double, 6.f);
 	}
 
-	// Hide non-legal stages
-	for (auto i = 0; i < Icon_Random; i++) {
-		auto *icon = &StageSelectIcons[i];
-		if (!is_legal_stage(icon->stage_id)) {
-			HSD_JObjSetFlagsAll(icon->jobj, HIDDEN);
-			icon->unlocked = UnlockType_Hidden;
-		}
-	}
+	hide_illegal_stages();
 
 	// Replace random icon's gobj proc to apply offset
 	auto *random_joint = HSD_JObjGetFromTreeByIndex(position_jobj, 17);
