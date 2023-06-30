@@ -30,7 +30,7 @@
 	rules->time_limit           = 0;
 	rules->stock_count          = 4;
 	rules->stage_selection_mode = 0;
-	rules->pause                = false;
+	rules->pause                = true;
 }
 
 #ifndef STEALTH
