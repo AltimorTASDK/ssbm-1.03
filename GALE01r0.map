@@ -1410,7 +1410,9 @@
 8015e2c0 00000010 8015e2c0 0 GetPortRumbleFlag
 8015e2d0 00000010 8015e2d0 0 SetPortRumbleFlag
 8015e31c 0000000c 8015e31c 0 GetCharacterUnlockMask
+8015ec90 0000000c 8015ec90 0 SetDeflickerSetting
 8015ec9c 00000088 8015ec9c 0 ApplyVideoSettings
+8015ed24 00000078 8015ed24 0 SetDeflicker
 8015ed9c 00000434 8015ed9c 0 NameTag_InitializeNameTagArea
 8015f1a0 00000134 8015f1a0 0 InitializeSaveData
 8015f39c 000000d0 8015f39c 0 InitializeGlobalData

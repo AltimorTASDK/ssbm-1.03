@@ -10,6 +10,8 @@ extern "C" void UnlockAllStages();
 extern "C" void UnlockAllFeatures();
 extern "C" void UnlockAllTrophies();
 
+extern "C" void SetDeflickerSetting(bool deflicker);
+
 static void unlock_everything()
 {
 	FeatureUnlockMask = 0xFF;
@@ -50,6 +52,9 @@ extern "C" u32 hook_MemoryCard_DoLoadData()
 	// Force rumble off regardless of saved settings
 	for (auto port = 0; port < 4; port++)
 		SetPortRumbleFlag(port, false);
+
+	// Force deflicker off
+	SetDeflickerSetting(false);
 
 	// Apply settings from new save file
 	ApplySoundBalance();
