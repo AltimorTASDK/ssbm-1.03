@@ -160,10 +160,8 @@ constexpr auto controls_descriptions = multi_array {
 
 constexpr auto stage_mod_descriptions = multi_array {
 #ifndef FULL_SSS_ROTATOR
-	make_description_text<"Use 1.03's stage select screen",
-	                      "and play with stage modifications.">(),
-	make_description_text<"Use the original stage select screen",
-	                      "and play without stage modifications.">()
+	make_description_text<"Use 1.03's stage select screen.">(),
+	make_description_text<"Use the original stage select screen.">(),
 #else
 	make_description_text<"Modify all tournament legal",
 	                      "stages except for Battlefield.">(),
