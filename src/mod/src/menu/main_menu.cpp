@@ -108,8 +108,7 @@ constexpr auto controls_z_jump_description = make_description_text<
 	"Remap buttons.">();
 
 constexpr auto manual_description = make_description_text<
-	"Read the 1.03 memory card",
-	"manual.">();
+	"Read the 1.03 manual.">();
 
 [[gnu::constructor]] static void set_preview_anims()
 {
