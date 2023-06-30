@@ -107,7 +107,7 @@ extern "C" void hook_Stage_Fountain_SetupModel(HSD_GObj *gobj)
 	if (is_stage_frozen(Stage_FoD)) {
 		// Use the average of the default platform heights (20 and 28)
 		auto *params = Stage_GetParameters();
-		params->fod.left_plat_height = 24.f;
+		params->fod.left_plat_height  = 24.f;
 		params->fod.right_plat_height = 24.f;
 	}
 
