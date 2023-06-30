@@ -88,11 +88,6 @@ extern "C" void hook_StartMelee(StartMeleeData *data)
 	data->rules.damage_ratio   = 1;
 	data->rules.item_frequency = -1;
 	data->rules.friendly_fire  = true;
-
-	// Prevent friendly_fire and score_display from being accessed by lhz/sth on 1.00 and
-	// making the function smaller than in other versions
-	asm volatile("": : :"memory");
-
 	data->rules.score_display  = false;
 	data->rules.sd_penalty     = -2;
 
