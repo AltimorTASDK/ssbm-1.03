@@ -364,10 +364,7 @@ add_hook TapJumpCheck_MultiJump
 add_hook TapJumpCheck_FirstMultiJump
 #endif
 # Debug menu
-.set GetDebugMenuButtons, DebugMenu_Input+0x1C
-add_hook GetDebugMenuButtons
-add_hook DebugMenu_Exit
-add_hook DebugMenu_Init
+add_hook Menu_SetupLanguageMenu
 # Stage select screen
 add_hook Stage_IsValidRandomChoice
 add_hook SSS_Init

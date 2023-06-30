@@ -94,8 +94,9 @@ void HSD_JObjAddSceneAnimByIndex(HSD_JObj *jobj, const ArchiveModelScene *model,
 void HSD_JObjRemoveAnimAll(HSD_JObj *jobj);
 f32 HSD_JObjGetAnimFrame(HSD_JObj *jobj);
 void HSD_JObjReqAnimAll(HSD_JObj *jobj, f32 frame);
-void HSD_JObjReqAnimAllByFlags(HSD_JObj *jobj, f32 frame, u32 flags);
+void HSD_JObjReqAnimAllByFlags(HSD_JObj *jobj, f32 frame, u8 flags);
 void HSD_JObjAnimAll(HSD_JObj *jobj);
+void HSD_JObjStopAnimByTypeAndFlags(HSD_JObj *jobj, u8 flags, u32 obj_mask);
 f32 HSD_JObjLoopAnim(HSD_JObj *jobj, const HSD_AnimLoop &loop);
 
 void HSD_JObjAddChild(HSD_JObj *jobj, HSD_JObj *child);

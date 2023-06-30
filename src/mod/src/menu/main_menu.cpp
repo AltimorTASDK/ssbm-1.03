@@ -154,13 +154,19 @@ extern "C" void hook_VsMenu_Think(HSD_GObj *gobj)
 		Menu_ExitToScene(Scene_Controls);
 		break;
 	case VsMenu_DebugMenu:
-		if (get_settings_lock()) {
-			// Don't allow using the debug menu when tournament lock is on
-			Menu_PlaySFX(MenuSFX_Error);
-			break;
+		if (is_20XX()) {
+			if (get_settings_lock()) {
+				// Don't allow using the debug menu when tournament lock is on
+				Menu_PlaySFX(MenuSFX_Error);
+				break;
+			}
+			Menu_PlaySFX(MenuSFX_Activate);
+			Menu_ExitToScene(Scene_DebugMenu);
+		} else {
+			Menu_PlaySFX(MenuSFX_Activate);
+			Menu_CreateLanguageMenu(MenuState_EnterTo);
+			GObj_Free(gobj);
 		}
-		Menu_PlaySFX(MenuSFX_Activate);
-		Menu_ExitToScene(Scene_DebugMenu);
 		break;
 	default:
 		orig_VsMenu_Think(gobj);

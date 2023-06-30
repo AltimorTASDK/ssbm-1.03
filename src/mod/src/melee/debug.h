@@ -1,5 +1,7 @@
 #pragma once
 
+#include <gctypes.h>
+
 enum DbLKind {
 	DbLKind_Master       = 0,
 	DbLKind_NoDebugRom   = 1,
@@ -25,3 +27,4 @@ struct DebugMenuEntry {
 };
 
 extern "C" DebugMenuEntry DebugMenuEntries[10];
+extern "C" u32 DbLevel;

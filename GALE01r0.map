@@ -2175,7 +2175,7 @@
 8022da74 00000118 8022da74 0 HSD_JObjLoopAnim
 8022df20 00000050 8022df20 0 ButtonInputs_AllControllers_Load
 8022dfa0 000000c8 8022dfa0 0 HSD_JObjGetAnimFrame
-8022e0e0 00000038 8022e0e0 0 Ab_Unknown_CalledManyTimesOnMenuMovement
+8022e0e0 00000038 8022e0e0 0 HSD_JObjStopAnimByTypeAndFlags
 8022e240 00000650 8022e240 0 Menu_RulesMenuInput
 8022ea20 000001b0 8022ea20 0 Menu_UpdateStockCountOrTimerText
 8022ebd0 000002d0 8022ebd0 0 Menu_UpdateRuleValue

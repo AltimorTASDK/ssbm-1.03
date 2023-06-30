@@ -49,17 +49,20 @@ enum MenuID {
 };
 
 enum MenuType {
-	MenuType_Main        = 0,
-	MenuType_VsMode      = 2,
-	MenuType_Options     = 4,
-	MenuType_Rules       = 13,
-	MenuType_ExtraRules  = 15,
-	MenuType_ItemSwitch  = 16,
-	MenuType_StageMusic  = 16,
-	MenuType_RandomStage = 17,
-	MenuType_MenuMusic   = 17,
-	MenuType_NameEntry   = 18,
-	MenuType_Max         = 34
+	MenuType_Main         = 0,
+	MenuType_VsMode       = 2,
+	MenuType_Options      = 4,
+	MenuType_SpecialMelee = 12,
+	MenuType_Rules        = 13,
+	MenuType_ExtraRules   = 15,
+	MenuType_ItemSwitch   = 16,
+	MenuType_StageMusic   = 16,
+	MenuType_RandomStage  = 17,
+	MenuType_MenuMusic    = 17,
+	MenuType_NameEntry    = 18,
+	MenuType_Language     = 23,
+	MenuType_DebugMode    = 23,
+	MenuType_Max          = 34
 };
 
 struct MenuCallbacks {
@@ -75,7 +78,7 @@ struct MenuTypeData {
 	f32 anim_frame;
 	u16 *descriptions;
 	u8 option_count;
-	void(*think)();
+	void(*think)(HSD_GObj *gobj);
 };
 
 extern "C" {
@@ -102,6 +105,7 @@ void Menu_PlaySFX(s32 sfx);
 
 void Menu_ExitToRulesMenu();
 void Menu_CreateRandomStageMenu();
+void Menu_CreateLanguageMenu(u8 state);
 
 // Frees current gobj
 void Menu_MainMenuTransition(u32 menu_type, u16 index, u8 state);

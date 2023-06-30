@@ -6,24 +6,6 @@
 struct HSD_FObj;
 struct HSD_FObjDesc;
 
-enum ObjType {
-	ObjType_DObj = 3,
-	ObjType_JObj = 6,
-	ObjType_MObj = 8,
-	ObjType_PObj = 9,
-	ObjType_RObj = 10,
-	ObjType_TObj = 11
-};
-
-enum ObjMask {
-	ObjMask_DObj = 0x004,
-	ObjMask_JObj = 0x020,
-	ObjMask_MObj = 0x080,
-	ObjMask_PObj = 0x100,
-	ObjMask_RObj = 0x200,
-	ObjMask_TObj = 0x400
-};
-
 // What args the callback takes
 enum CbType {
 	// Pass aobj + user arg

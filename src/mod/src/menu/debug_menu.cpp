@@ -1,86 +1,68 @@
-#include "compat/20XX.h"
-#include "hsd/pad.h"
+#include "hsd/dobj.h"
+#include "hsd/gobj.h"
+#include "hsd/jobj.h"
 #include "melee/debug.h"
-#include "melee/menu.h"
-#include "melee/preferences.h"
-#include "melee/scene.h"
-#include <cstring>
-#include <gctypes.h>
+#include "melee/text.h"
+#include "util/patch_list.h"
+#include "util/mempool.h"
+#include "util/texture_swap.h"
+#include <array>
 
-enum DebugButton {
-	DebugButton_Up    = 0x10000000,
-	DebugButton_Down  = 0x20000000,
-	DebugButton_Left  = 0x40000000,
-	DebugButton_Right = 0x80000000
+extern "C" HSD_GObj *LanguageMenuGObj;
+
+extern "C" void Menu_LanguageMenuInput(HSD_GObj *gobj);
+
+constexpr auto anim_frames = std::array { 1.f, 0.f, 0.f, 0.f, 0.f };
+
+struct LanguageMenuData {
+	u8 setting;
+	u8 old_setting;
+	bool ready;
+	Text *text;
 };
 
-static s32 repeat_timer[4];
+PATCH_LIST(
+	// Return to Vs Menu
+	// li r3, MenuType_VsMode
+	std::pair { Menu_LanguageMenuInput+0x8C, 0x38600002u },
+	// li r4, 2
+	std::pair { Menu_LanguageMenuInput+0x90, 0x38800002u }
+);
 
-extern "C" u32 get_directional_input(int port)
+extern "C" void orig_Menu_SetupLanguageMenu(u8 state);
+extern "C" void hook_Menu_SetupLanguageMenu(u8 state)
 {
-	constexpr auto threshold = 60;
+	orig_Menu_SetupLanguageMenu(state);
 
-	const auto &pad = HSD_PadCopyStatus[port];
+	float frame;
+	auto *data = LanguageMenuGObj->get<LanguageMenuData>();
+	auto *jobj = LanguageMenuGObj->get_hsd_obj<HSD_JObj>()->child;
 
-	u32 buttons = 0;
-
-	if (pad.raw_stick.x < -threshold)
-		buttons |= DebugButton_Left;
-	else if (pad.raw_stick.x > threshold)
-		buttons |= DebugButton_Right;
-
-	if (pad.raw_stick.y < -threshold)
-		buttons |= DebugButton_Down;
-	else if (pad.raw_stick.y > threshold)
-		buttons |= DebugButton_Up;
-
-	if (buttons == 0) {
-		repeat_timer[port] = 0;
-	} else if (repeat_timer[port] != 0) {
-		repeat_timer[port]--;
-		return 0;
-	} else {
-		repeat_timer[port] = (pad.buttons & Button_R) ? 1 : 8;
+	// Set the highlighted option based on DbLevel
+	switch (DbLevel) {
+	case DbLKind_Develop:
+		data->setting = 1;
+		data->old_setting = 1;
+		frame = 0.f;
+		break;
+	default:
+		data->setting = 0;
+		data->old_setting = 0;
+		frame = 1.f;
+		break;
 	}
 
-	return buttons;
-}
+	HSD_JObjReqAnimAll(jobj, frame);
+	HSD_JObjStopAnimByTypeAndFlags(jobj, 0xFF, ObjMask_JObj);
+	HSD_JObjAnimAll(jobj);
+	HSD_JObjReqAnimAll(jobj, 0.f);
+	HSD_JObjStopAnimByTypeAndFlags(jobj, 0xFF, ObjMask_MObj);
+	HSD_JObjAnimAll(jobj);
 
-extern "C" u32 get_debug_menu_buttons()
-{
-	// Check all ports
-	u32 buttons = 0;
-	for (auto i = 0; i < 4; i++) {
-		buttons |= HSD_PadCopyStatus[i].instant_buttons;
-		buttons |= get_directional_input(i);
-	}
-
-	return buttons;
-}
-
-extern "C" u32 orig_DebugMenu_Exit(u32 arg);
-extern "C" u32 hook_DebugMenu_Exit(u32 arg)
-{
-	if (is_20XX())
-		return orig_DebugMenu_Exit(arg);
-
-	// Exit back to VS menu
-	if (arg == 0) {
-		Menu_PlaySFX(MenuSFX_Back);
-		Scene_SetMajorPending(Scene_Menu);
-		Scene_Exit();
-	}
-
-	return 0;
-}
-
-extern "C" void orig_DebugMenu_Init(SceneMinorData *data);
-extern "C" void hook_DebugMenu_Init(SceneMinorData *data)
-{
-	if (!is_20XX()) {
-		// Set debug menu language to game language
-		*DebugMenuEntries[DebugEntry_Language].value = GetSavedPreferences()->language;
-	}
-
-	orig_DebugMenu_Init(data);
+	// Hide flags
+	HSD_DObjGetByIndex<2>(jobj->u.dobj)->flags |= DOBJ_HIDDEN;
+	HSD_DObjGetByIndex<3>(jobj->u.dobj)->flags |= DOBJ_HIDDEN;
+	HSD_DObjGetByIndex<6>(jobj->u.dobj)->flags |= DOBJ_HIDDEN;
+	HSD_DObjGetByIndex<7>(jobj->u.dobj)->flags |= DOBJ_HIDDEN;
+	HSD_DObjGetByIndex<8>(jobj->u.dobj)->flags |= DOBJ_HIDDEN;
 }

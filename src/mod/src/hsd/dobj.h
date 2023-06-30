@@ -1,6 +1,7 @@
 #pragma once
 
 #include "hsd/object.h"
+#include <cstddef>
 #include <gctypes.h>
 
 struct HSD_AObj;
@@ -8,6 +9,10 @@ struct HSD_MObj;
 struct HSD_MObjDesc;
 struct HSD_PObj;
 struct HSD_PObjDesc;
+
+enum DObjFlag {
+	DOBJ_HIDDEN = (1 << 0)
+};
 
 struct HSD_DObj {
 	HSD_Class parent;
@@ -24,3 +29,12 @@ struct HSD_DObjDesc {
 	HSD_MObjDesc *mobjdesc;
 	HSD_PObjDesc *pobjdesc;
 };
+
+template<size_t N>
+inline HSD_DObj *HSD_DObjGetByIndex(HSD_DObj *dobj)
+{
+	if constexpr (N == 0)
+		return dobj;
+	else
+		return HSD_DObjGetByIndex<N - 1>(dobj->next);
+}
