@@ -105,7 +105,7 @@ static constexpr auto make_description_text()
 }
 
 constexpr auto debug_menu_description = make_description_text<
-	"Toggle debug mode.">();
+	"Select debug mode.">();
 
 constexpr auto controls_description = make_description_text<
 	"Remap buttons and change",
