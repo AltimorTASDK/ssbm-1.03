@@ -3,6 +3,7 @@
 #include "hsd/gobj.h"
 #include "hsd/jobj.h"
 #include "hsd/memory.h"
+#include "hsd/wobj.h"
 #include "melee/camera.h"
 #include "melee/debug.h"
 #include "melee/text.h"
@@ -174,11 +175,45 @@ extern "C" void hook_Menu_SetupLanguageMenu(u8 state)
 	//pool.add(init_texture(flag_master_tex_data, &texture_flag_master));
 }
 
+extern "C" void orig_Menu_UpdateCStickRotation(HSD_GObj *gobj);
+extern "C" void hook_Menu_UpdateCStickRotation(HSD_GObj *gobj)
+{
+	orig_Menu_UpdateCStickRotation(gobj);
+
+	if (text_camera == nullptr)
+		return;
+
+	constexpr auto scale = vec3(1, -1, 1) * TEXT_COORD_SCALE;
+	constexpr auto offset = vec3(CAMERA_X, CAMERA_Y, INTEREST_Z);
+
+	auto *menu_cobj = gobj->get_hsd_obj<HSD_CObj>();
+	auto *text_cobj = text_camera->get_hsd_obj<HSD_CObj>();
+	const auto eye_pos = menu_cobj->eye_position->pos;
+	HSD_CObjSetEyePosition(text_cobj, eye_pos * scale + offset);
+}
+
 extern "C" void orig_DevelopText_SetupCObj();
 extern "C" void hook_DevelopText_SetupCObj()
 {
-	if (text_camera != nullptr)
-		HSD_CObjSetCurrent(text_camera->get_hsd_obj<HSD_CObj>());
-	else
-		orig_DevelopText_SetupCObj();
+	if (text_camera == nullptr)
+		return orig_DevelopText_SetupCObj();
+
+	auto *cobj = text_camera->get_hsd_obj<HSD_CObj>();
+	auto *jobj = LanguageMenuGObj->get_hsd_obj<HSD_JObj>()->child;
+
+	if (jobj->scale.x < .01f) {
+		DevelopText_HideBackground(text_master);
+		DevelopText_HideText(text_master);
+		DevelopText_HideBackground(text_develop);
+		DevelopText_HideText(text_develop);
+	} else {
+		// Scale with menu open animation
+		cobj->u.perspective.aspect = -4.f/3.f / jobj->scale.x;
+		DevelopText_ShowBackground(text_master);
+		DevelopText_ShowText(text_master);
+		DevelopText_ShowBackground(text_develop);
+		DevelopText_ShowText(text_develop);
+	}
+
+	HSD_CObjSetCurrent(cobj);
 }

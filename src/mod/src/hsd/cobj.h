@@ -124,6 +124,7 @@ HSD_CObj *HSD_CObjLoadDesc(const HSD_CObjDesc *desc);
 
 HSD_CObj *HSD_CObjGetCurrent();
 bool HSD_CObjSetCurrent(HSD_CObj *cobj);
+bool HSD_CObjSetEyePosition(HSD_CObj *cobj, const vec3 &position);
 void HSD_CObjGetScissor(const HSD_CObj *cobj, u16 *scissor);
 void HSD_CObjGetViewingMtx(const HSD_CObj *cobj, Mtx out);
 
