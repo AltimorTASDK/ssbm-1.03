@@ -56,6 +56,13 @@ extern "C" u32 hook_MemoryCard_DoLoadData()
 	// Force deflicker off
 	SetDeflickerSetting(false);
 
+	// Force English
+#ifdef PAL
+	GetSavedPreferences()->language = GmLangTypeUK;
+#else
+	GetSavedPreferences()->language = GmLangTypeUS;
+#endif
+
 	// Apply settings from new save file
 	ApplySoundBalance();
 	ApplyVideoSettings();
