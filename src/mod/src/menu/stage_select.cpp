@@ -293,7 +293,7 @@ extern "C" void hook_SSS_Think()
 		const auto &pad = HSD_PadMasterStatus[port];
 
 		if (pad.instant_buttons & Button_Y)
-			reset_striking(should_use_oss());
+			reset_striking(should_use_oss() && !get_settings_lock());
 		else if (pad.instant_buttons & Button_Z)
 			reset_striking(false);
 		else if (pad.instant_buttons & Button_X)
