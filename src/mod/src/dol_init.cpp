@@ -1,5 +1,6 @@
 #ifdef DOL
 
+#include "dolphin/os.h"
 #include "dolphin/thread.h"
 #include "hsd/heap.h"
 #include "melee/scene.h"

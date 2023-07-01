@@ -72,6 +72,9 @@ CFLAGS    += -flto -fuse-linker-plugin
 CXXFLAGS  += -flto -fuse-linker-plugin
 LDFLAGS   += -flto
 
+# Update build timestamp
+$(shell touch src/timestamp.cpp)
+
 .PHONY: gci
 gci: $(GCIFILE)
 
