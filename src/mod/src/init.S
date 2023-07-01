@@ -366,7 +366,6 @@ add_hook TapJumpCheck_FirstMultiJump
 # Debug mode menu
 add_hook Menu_SetupLanguageMenu
 add_hook Menu_UpdateCStickRotation
-add_hook DevelopText_SetupCObj
 # Stage select screen
 add_hook Stage_IsValidRandomChoice
 add_hook SSS_Init

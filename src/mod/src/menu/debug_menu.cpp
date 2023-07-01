@@ -7,6 +7,8 @@
 #include "melee/camera.h"
 #include "melee/debug.h"
 #include "melee/text.h"
+#include "qol/widescreen.h"
+#include "rules/values.h"
 #include "util/patch_list.h"
 #include "util/math.h"
 #include "util/mempool.h"
@@ -192,12 +194,21 @@ extern "C" void hook_Menu_UpdateCStickRotation(HSD_GObj *gobj)
 	HSD_CObjSetEyePosition(text_cobj, eye_pos * scale + offset);
 }
 
-extern "C" void orig_DevelopText_SetupCObj();
-extern "C" void hook_DevelopText_SetupCObj()
+extern "C" void orig_DevelopText_Draw(DevText *text);
+extern "C" void hook_DevelopText_Draw(DevText *text)
 {
-	if (text_camera == nullptr)
-		return orig_DevelopText_SetupCObj();
+	if (text != text_master && text != text_develop) {
+		if (!is_widescreen())
+			return orig_DevelopText_Draw(text);
 
+		// Apply widescreen scaling
+		const auto old_scale_x = text->scale.x;
+		text->scale.x /= aspect_ratio_factor;
+		orig_DevelopText_Draw(text);
+		text->scale.x = old_scale_x;
+	}
+
+	// Use custom camera for debug mode text
 	auto *cobj = text_camera->get_hsd_obj<HSD_CObj>();
 	auto *jobj = LanguageMenuGObj->get_hsd_obj<HSD_JObj>()->child;
 
@@ -215,5 +226,8 @@ extern "C" void hook_DevelopText_SetupCObj()
 		DevelopText_ShowText(text_develop);
 	}
 
+	auto *old_cobj = HSD_CObjGetCurrent();
 	HSD_CObjSetCurrent(cobj);
+	orig_DevelopText_Draw(text);
+	HSD_CObjSetCurrent(old_cobj);
 }
