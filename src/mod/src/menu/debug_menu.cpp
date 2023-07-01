@@ -16,9 +16,6 @@
 #include "util/draw/render.h"
 #include <array>
 
-//#include "resources/debug/flag_develop.tex.h"
-//#include "resources/debug/flag_master.tex.h"
-
 struct LanguageMenuData {
 	u8 setting;
 	u8 old_setting;
@@ -80,10 +77,6 @@ static DevText *text_develop;
 static HSD_GObj *text_camera;
 static char text_master_buf[TEXT_WIDTH * TEXT_HEIGHT * 2];
 static char text_develop_buf[TEXT_WIDTH * TEXT_HEIGHT * 2];
-
-// Flag textures
-//static texture texture_flag_master;
-//static texture texture_flag_develop;
 
 PATCH_LIST(
 	// Return to Vs Menu
@@ -172,9 +165,6 @@ extern "C" void hook_Menu_SetupLanguageMenu(u8 state)
 
 	text_camera = GObj_Create(GOBJ_CLASS_CAMERA, GOBJ_PLINK_MENU_CAMERA, 0);
 	GObj_InitKindObj(text_camera, GOBJ_KIND_CAMERA, HSD_CObjLoadDesc(&text_cobjdesc));
-
-	//pool.add(init_texture(flag_develop_tex_data, &texture_flag_develop));
-	//pool.add(init_texture(flag_master_tex_data, &texture_flag_master));
 }
 
 extern "C" void orig_Menu_UpdateCStickRotation(HSD_GObj *gobj);
