@@ -202,19 +202,11 @@ extern "C" void hook_DevelopText_Draw(DevText *text)
 	auto *cobj = text_camera->get_hsd_obj<HSD_CObj>();
 	auto *jobj = LanguageMenuGObj->get_hsd_obj<HSD_JObj>()->child;
 
-	if (jobj->scale.x < .01f) {
-		DevelopText_HideBackground(text_master);
-		DevelopText_HideText(text_master);
-		DevelopText_HideBackground(text_develop);
-		DevelopText_HideText(text_develop);
-	} else {
-		// Scale with menu open animation
-		cobj->u.perspective.aspect = -4.f/3.f / jobj->scale.x;
-		DevelopText_ShowBackground(text_master);
-		DevelopText_ShowText(text_master);
-		DevelopText_ShowBackground(text_develop);
-		DevelopText_ShowText(text_develop);
-	}
+	if (jobj->scale.x < .01f)
+		return;
+
+	// Scale with menu open animation
+	cobj->u.perspective.aspect = -4.f/3.f / jobj->scale.x;
 
 	auto *old_cobj = HSD_CObjGetCurrent();
 	HSD_CObjSetCurrent(cobj);
