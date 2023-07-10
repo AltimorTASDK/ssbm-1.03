@@ -196,6 +196,8 @@ extern "C" void hook_DevelopText_Draw(DevText *text)
 		text->scale.x /= aspect_ratio_factor;
 		orig_DevelopText_Draw(text);
 		text->scale.x = old_scale_x;
+
+		return;
 	}
 
 	// Use custom camera for debug mode text
