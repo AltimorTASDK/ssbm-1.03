@@ -135,6 +135,7 @@ extern "C" void hook_VsMenu_Think(HSD_GObj *gobj)
 			Menu_ExitToScene(Scene_Controls);
 			break;
 		case VsMenu_Options:
+			Menu_PlaySFX(MenuSFX_Activate);
 			Menu_MainMenuTransition(MenuType_Options, 0, MenuState_EnterTo);
 			break;
 		case VsMenu_DebugMenu:
