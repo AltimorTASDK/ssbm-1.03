@@ -159,7 +159,6 @@ extern "C" void hook_Menu_EnterCustomRulesMenu()
 
 	MenuTypePrevious = MenuType;
 	MenuType = MenuType_Rules;
-	IsEnteringMenu = true;
 
 	auto *gobj = GObj_Create(GOBJ_CLASS_PROC, GOBJ_PLINK_PROC, 0x80);
 	GObj_AddProc(gobj, manual_input, 0);
