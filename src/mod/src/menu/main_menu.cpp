@@ -15,9 +15,9 @@
 #include "util/melee/text_builder.h"
 #include <gctypes.h>
 
-#include "resources/portals/vs_mode_preview.tex.h"
 #include "resources/portals/controls_portal.tex.h"
 #include "resources/portals/controls_preview.tex.h"
+#include "resources/portals/options_preview.tex.h"
 #include "resources/portals/debug_menu.tex.h"
 #include "resources/portals/debug_menu_preview.tex.h"
 #include "resources/portals/manual.tex.h"
@@ -222,8 +222,8 @@ extern "C" void hook_MainMenu_Init(void *menu)
 	// Replace preview textures
 	const auto *previews =
 		MenMainConTop_Top.matanim_joint->child->child->next->child->next->child->matanim;
-	unmanaged_texture_swap(vs_mode_preview_tex_data,  previews->texanim->imagetbl[1]);
 	unmanaged_texture_swap(controls_preview_tex_data, previews->texanim->imagetbl[7]);
+	unmanaged_texture_swap(options_preview_tex_data,  previews->texanim->imagetbl[3]);
 	unmanaged_texture_swap(manual_preview_tex_data,   previews->texanim->imagetbl[8]);
 
 	// Replace menu panel header
