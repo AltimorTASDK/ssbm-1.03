@@ -91,7 +91,7 @@ static void manual_input(HSD_GObj *gobj)
 		pool.dec_ref();
 
 		// Frees gobj
-		return Menu_MainMenuTransition(MenuType_VsMode, 3, MenuState_ExitTo);
+		return Menu_MainMenuTransition(MenuType_VsMode, VsMenu_Manual, MenuState_ExitTo);
 	}
 
 	auto total_y = 0;
@@ -159,6 +159,7 @@ extern "C" void hook_Menu_EnterCustomRulesMenu()
 
 	MenuTypePrevious = MenuType;
 	MenuType = MenuType_Rules;
+	IsEnteringMenu = true;
 
 	auto *gobj = GObj_Create(GOBJ_CLASS_PROC, GOBJ_PLINK_PROC, 0x80);
 	GObj_AddProc(gobj, manual_input, 0);
