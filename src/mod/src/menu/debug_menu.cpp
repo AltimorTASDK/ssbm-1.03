@@ -82,8 +82,8 @@ PATCH_LIST(
 	// Return to Vs Menu
 	// li r3, MenuType_VsMode
 	std::pair { Menu_LanguageMenuInput+0x8C, 0x38600002u },
-	// li r4, 2
-	std::pair { Menu_LanguageMenuInput+0x90, 0x38800002u }
+	// li r4, VsMenu_DebugMenu
+	std::pair { Menu_LanguageMenuInput+0x90, 0x38800003u }
 );
 
 static void pool_free(void *data)
