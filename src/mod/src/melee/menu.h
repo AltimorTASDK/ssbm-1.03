@@ -65,6 +65,34 @@ enum MenuType {
 	MenuType_Max          = 34
 };
 
+enum MainMenuPortalID {
+	MainMenu_1PMode   = 0,
+	MainMenu_VSMode   = 1,
+	MainMenu_Trophies = 2,
+	MainMenu_Options  = 3,
+	MainMenu_Data     = 4
+};
+
+enum VsMenuPortalID {
+	VsMenu_Tournament   = 1,
+	VsMenu_Controls     = 1,
+	VsMenu_SpecialMelee = 2,
+	VsMenu_Options      = 2,
+	VsMenu_CustomRules  = 3,
+	VsMenu_DebugMenu    = 3,
+	VsMenu_NameEntry    = 4,
+	VsMenu_Manual       = 4,
+};
+
+enum OptionsMenuPortalID {
+	OptionsMenu_Rumble        = 0,
+	OptionsMenu_Sound         = 1,
+	OptionsMenu_ScreenDisplay = 2,
+	OptionsMenu_Language      = 4,
+	OptionsMenu_EraseData     = 5
+};
+
+
 struct MenuCallbacks {
 	u8 id;
 	void(*think)();
@@ -106,6 +134,7 @@ void Menu_PlaySFX(s32 sfx);
 void Menu_ExitToRulesMenu();
 void Menu_CreateRandomStageMenu();
 void Menu_CreateLanguageMenu(u8 state);
+void Menu_EnterCustomRulesMenu();
 
 // Frees current gobj
 void Menu_MainMenuTransition(u32 menu_type, u16 index, u8 state);

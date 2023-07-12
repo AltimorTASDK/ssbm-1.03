@@ -290,13 +290,16 @@ PATCH_LIST(
 extern "C" bool is_extra_rule_visible(int index)
 {
 	switch (index) {
-	case ExtraRule_Latency:       return !is_faster_melee();
-#ifndef UCF_ROTATOR
-	case ExtraRule_ControllerFix: return false;
-#endif
 #ifdef TOURNAMENT
 	case ExtraRule_Controls:      return false;
 #endif
+#ifndef SSS_ROTATOR
+	case ExtraRule_StageMods:     return false;
+#endif
+#ifndef UCF_ROTATOR
+	case ExtraRule_ControllerFix: return false;
+#endif
+	case ExtraRule_Latency:       return !is_faster_melee();
 	default:                      return true;
 	}
 }

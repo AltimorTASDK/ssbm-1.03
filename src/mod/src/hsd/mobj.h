@@ -5,7 +5,6 @@
 
 struct HSD_AObj;
 struct HSD_AObjDesc;
-struct HSD_PEDesc;
 struct HSD_RenderAnim;
 struct HSD_TexAnim;
 struct HSD_TObj;
@@ -51,6 +50,21 @@ struct HSD_Material {
 	color_rgba specular;
 	f32 alpha;
 	f32 shininess;
+};
+
+struct HSD_PEDesc {
+	u8 flags;
+	u8 ref0;
+	u8 ref1;
+	u8 dst_alpha;
+	u8 type;
+	u8 src_factor;
+	u8 dst_factor;
+	u8 logic_op;
+	u8 z_comp;
+	u8 alpha_comp0;
+	u8 alpha_op;
+	u8 alpha_comp1;
 };
 
 struct HSD_MObj {

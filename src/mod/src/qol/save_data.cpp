@@ -1,6 +1,8 @@
 #include "compat/unclepunch.h"
+#include "melee/nametag.h"
 #include "melee/player.h"
 #include "melee/preferences.h"
+#include <cstring>
 #include <gctypes.h>
 
 extern "C" u8 FeatureUnlockMask;
@@ -62,6 +64,9 @@ extern "C" u32 hook_MemoryCard_DoLoadData()
 #else
 	GetSavedPreferences()->language = GmLangTypeUS;
 #endif
+
+	// Clear nametags
+	memset(NameTag_GetEntry(0), 0, sizeof(NameTagEntry) * NAMETAG_MAX);
 
 	// Apply settings from new save file
 	ApplySoundBalance();

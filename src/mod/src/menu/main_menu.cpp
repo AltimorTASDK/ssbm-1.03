@@ -1,5 +1,6 @@
 #include "compat/20XX.h"
 #include "hsd/archive.h"
+#include "hsd/dobj.h"
 #include "hsd/gobj.h"
 #include "hsd/jobj.h"
 #include "hsd/mobj.h"
@@ -26,30 +27,6 @@
 #include "resources/portals/le/manual_preview.tex.h"
 #endif
 #include "resources/manual/manual_header.tex.h"
-
-enum MainMenuPortalID {
-	MainMenu_1PMode   = 0,
-	MainMenu_VSMode   = 1,
-	MainMenu_Trophies = 2,
-	MainMenu_Options  = 3,
-	MainMenu_Data     = 4
-};
-
-enum VsMenuPortalID {
-	VsMenu_Tournament  = 1,
-	VsMenu_Controls    = 1,
-	VsMenu_DebugMenu   = 2,
-	VsMenu_CustomRules = 3,
-	VsMenu_Manual      = 3
-};
-
-enum OptionsMenuPortalID {
-	OptionsMenu_Rumble        = 0,
-	OptionsMenu_Sound         = 1,
-	OptionsMenu_ScreenDisplay = 2,
-	OptionsMenu_Language      = 4,
-	OptionsMenu_EraseData     = 5
-};
 
 struct MainMenuData {
 	u8 menu_type;
@@ -130,9 +107,11 @@ constexpr auto manual_description = make_description_text<
 
 [[gnu::constructor]] static void set_preview_anims()
 {
-	// Swap previews for debug menu and controls
-	MenuTypeDataTable[MenuType_VsMode].preview_anims[1] = { 800, 849, 820 };
-	MenuTypeDataTable[MenuType_VsMode].preview_anims[2] = { 750, 799, 770 };
+	// Swap around preview animations
+	MenuTypeDataTable[MenuType_VsMode].preview_anims[VsMenu_Controls]  = { 800, 849, 820 };
+	MenuTypeDataTable[MenuType_VsMode].preview_anims[VsMenu_Options]   = { 150, 199, 170 };
+	MenuTypeDataTable[MenuType_VsMode].preview_anims[VsMenu_DebugMenu] = { 750, 799, 770 };
+	MenuTypeDataTable[MenuType_VsMode].preview_anims[VsMenu_Manual]    = { 850, 899, 870 };
 }
 
 [[gnu::constructor]] static void restrict_options_menu()
@@ -144,32 +123,64 @@ constexpr auto manual_description = make_description_text<
 extern "C" void orig_VsMenu_Think(HSD_GObj *gobj);
 extern "C" void hook_VsMenu_Think(HSD_GObj *gobj)
 {
-	if (!(Menu_GetButtonsHelper(PORT_ALL) & MenuButton_Confirm))
-		return orig_VsMenu_Think(gobj);
+	const auto buttons = Menu_GetButtonsHelper(PORT_ALL);
 
-	switch (MenuSelectedIndex) {
-	case VsMenu_Controls:
-		Menu_PlaySFX(MenuSFX_Activate);
-		store_controls_menu_port();
-		Menu_ExitToScene(Scene_Controls);
-		break;
-	case VsMenu_DebugMenu:
-		if (is_20XX()) {
-			if (get_settings_lock()) {
-				// Don't allow using the debug menu when tournament lock is on
-				Menu_PlaySFX(MenuSFX_Error);
-				break;
+	if (buttons & MenuButton_Confirm) {
+		IsEnteringMenu = true;
+
+		switch (MenuSelectedIndex) {
+		case VsMenu_Controls:
+			Menu_PlaySFX(MenuSFX_Activate);
+			store_controls_menu_port();
+			Menu_ExitToScene(Scene_Controls);
+			break;
+		case VsMenu_Options:
+			Menu_MainMenuTransition(MenuType_Options, 0, MenuState_EnterTo);
+			break;
+		case VsMenu_DebugMenu:
+			if (is_20XX()) {
+				if (get_settings_lock()) {
+					// Don't allow using the debug menu when tournament locked
+					Menu_PlaySFX(MenuSFX_Error);
+					break;
+				}
+				Menu_PlaySFX(MenuSFX_Activate);
+				Menu_ExitToScene(Scene_DebugMenu);
+			} else {
+				Menu_PlaySFX(MenuSFX_Activate);
+				Menu_CreateLanguageMenu(MenuState_EnterTo);
+				GObj_Free(gobj);
 			}
+			break;
+		case VsMenu_Manual:
+			MenuInputCooldown = 5;
 			Menu_PlaySFX(MenuSFX_Activate);
-			Menu_ExitToScene(Scene_DebugMenu);
-		} else {
-			Menu_PlaySFX(MenuSFX_Activate);
-			Menu_CreateLanguageMenu(MenuState_EnterTo);
+			Menu_EnterCustomRulesMenu();
 			GObj_Free(gobj);
+			break;
+		default:
+			orig_VsMenu_Think(gobj);
 		}
-		break;
-	default:
-		orig_VsMenu_Think(gobj);
+	} else if (buttons & MenuButton_B) {
+		Menu_PlaySFX(MenuSFX_Back);
+		Menu_ExitToScene(Scene_TitleScreen);
+	} else {
+			orig_VsMenu_Think(gobj);
+	}
+
+}
+
+extern "C" void orig_OptionsMenu_Think(HSD_GObj *gobj);
+extern "C" void hook_OptionsMenu_Think(HSD_GObj *gobj)
+{
+	const auto buttons = Menu_GetButtonsHelper(PORT_ALL);
+
+	if (!(buttons & MenuButton_Confirm) && (buttons & MenuButton_B)) {
+		IsEnteringMenu = false;
+		Menu_PlaySFX(MenuSFX_Back);
+		Menu_MainMenuTransition(MenuType_VsMode, VsMenu_Options, MenuState_ExitTo);
+	} else {
+		orig_OptionsMenu_Think(gobj);
 	}
 }
 
@@ -180,14 +191,20 @@ extern "C" void hook_MainMenu_Enter(SceneMinorData *minor)
 
 	auto *data = (MainMenuEnterData*)minor->data.enter_data;
 
-	// Hover over controls portal when returning from controls menu
-	if (SceneMajorPrevious == Scene_Controls)
+	switch (SceneMajorPrevious) {
+	case Scene_TitleScreen:
+		// Go straight to VS Mode menu from title screen
+		data->menu_type = MenuType_VsMode;
+		break;
+	case Scene_Controls:
+		// Hover over controls portal when returning from controls menu
 		data->selected = VsMenu_Controls;
-
-	// Go back to debug menu portal when returning from debug menu
-	if (SceneMajorPrevious == Scene_DebugMenu) {
+		break;
+	case Scene_DebugMenu:
+		// Go back to debug menu portal when returning from debug menu
 		data->menu_type = MenuType_VsMode;
 		data->selected = VsMenu_DebugMenu;
+		break;
 	}
 }
 
@@ -199,8 +216,8 @@ extern "C" void hook_MainMenu_Init(void *menu)
 	// Replace portal textures
 	const auto *names = MenMainCursor_Top.matanim_joint->child->child->next->matanim;
 	unmanaged_texture_swap(controls_portal_tex_data, names->texanim->imagetbl[11]);
-	unmanaged_texture_swap(debug_menu_tex_data,      names->texanim->imagetbl[12]);
-	unmanaged_texture_swap(manual_tex_data,          names->texanim->imagetbl[13]);
+	unmanaged_texture_swap(debug_menu_tex_data,      names->texanim->imagetbl[13]);
+	unmanaged_texture_swap(manual_tex_data,          names->texanim->imagetbl[14]);
 
 	// Replace preview textures
 	const auto *previews =
@@ -233,21 +250,14 @@ extern "C" void hook_Menu_UpdateMainMenuPreview(HSD_GObj *gobj, u8 index_changed
 
 	const auto *data = gobj->get<MainMenuData>();
 
-	if (data->menu_type != MenuType_VsMode || MenuSelectedIndex != VsMenu_DebugMenu)
-		return;
-
 	// Hide controllers
-	HSD_JObjSetFlagsAll(data->jobj_tree[36], HIDDEN);
+	if (data->menu_type == MenuType_VsMode && MenuSelectedIndex == VsMenu_DebugMenu)
+		HSD_JObjSetFlagsAll(data->jobj_tree[36], HIDDEN);
 }
 
 static void update_portal_description(MainMenuData *data, u32 menu_type, u32 index)
 {
 	switch (menu_type) {
-	case MenuType_Main:
-		if (index == MainMenu_Options)
-			data->description_text->data = options_menu_description.data();
-
-		break;
 	case MenuType_VsMode:
 		if (index == VsMenu_DebugMenu && is_20XX()) {
 			// Use the original 20XX description for the shifted debug menu
@@ -257,12 +267,14 @@ static void update_portal_description(MainMenuData *data, u32 menu_type, u32 ind
 			return;
 		}
 
-		if (index == VsMenu_DebugMenu)
-			data->description_text->data = debug_menu_description.data();
-		else if (index == VsMenu_Controls && get_controls() != controls_type::z_jump)
+		if (index == VsMenu_Controls && get_controls() != controls_type::z_jump)
 			data->description_text->data = controls_description.data();
 		else if (index == VsMenu_Controls)
 			data->description_text->data = controls_z_jump_description.data();
+		else if (index == VsMenu_Options)
+			data->description_text->data = options_menu_description.data();
+		else if (index == VsMenu_DebugMenu)
+			data->description_text->data = debug_menu_description.data();
 		else if (index == VsMenu_Manual)
 			data->description_text->data = manual_description.data();
 
@@ -273,6 +285,10 @@ static void update_portal_description(MainMenuData *data, u32 menu_type, u32 ind
 extern "C" HSD_GObj *orig_Menu_SetupMainMenu(u8 state);
 extern "C" HSD_GObj *hook_Menu_SetupMainMenu(u8 state)
 {
+	// Replace Special Melee with Options
+	const auto *names = MenMainCursor_Top.matanim_joint->child->child->next->matanim;
+	names->texanim->imagetbl[12] = names->texanim->imagetbl[3];
+
 	auto *gobj = orig_Menu_SetupMainMenu(state);
 	auto *data = gobj->get<MainMenuData>();
 

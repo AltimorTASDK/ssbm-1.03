@@ -5,6 +5,7 @@
 struct SceneMinorData;
 
 enum Scene {
+	Scene_TitleScreen    = 0,
 	Scene_Menu           = 1,
 	Scene_VsMode         = 2,
 	Scene_Classic        = 3,

@@ -92,8 +92,12 @@ inline bool should_use_oss()
 	if (is_20XX_stage_select())
 		return true;
 
+#ifdef SSS_ROTATOR
 	const auto *rules = GetGameRules();
 	return rules->stage_mods == sss_type::oss;
+#else
+	return false;
+#endif
 }
 
 inline bool is_stage_frozen(int id)
@@ -101,6 +105,7 @@ inline bool is_stage_frozen(int id)
 	if (is_20XX_stage_select())
 		return false;
 
+#ifdef SSS_ROTATOR
 #ifdef FULL_SSS_ROTATOR
 	const auto *rules = GetGameRules();
 #endif
@@ -122,4 +127,7 @@ inline bool is_stage_frozen(int id)
 	default:
 		return false;
 	}
+#else
+	return true;
+#endif
 }
