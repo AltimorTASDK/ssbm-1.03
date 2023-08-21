@@ -13,6 +13,14 @@ enum MenuPanelState {
 	MenuPanelState_Idle  = 2
 };
 
+enum HeaderTex {
+	HeaderTex_1PMode   = 0,
+	HeaderTex_VsMode   = 1,
+	HeaderTex_Trophies = 2,
+	HeaderTex_Options  = 3,
+	HeaderTex_Data     = 4,
+};
+
 struct MenuPanelData {
 	u8 menu_type;
 	u8 menu_type_previous;
@@ -27,6 +35,13 @@ struct MenuPanelAnim {
 };
 
 extern "C" MenuPanelAnim MenuPanelAnimTable[MenuType_Max];
+
+extern "C" void orig_Menu_MenuPanelThink(HSD_GObj *gobj);
+
+[[gnu::constructor]] static void make_vs_mode_main_menu()
+{
+	MenuPanelAnimTable[MenuType_VsMode] = MenuPanelAnimTable[MenuType_Main];
+}
 
 static bool is_in_menu_music(const MenuPanelData *data)
 {
@@ -43,13 +58,12 @@ static bool is_in_menu_music(const MenuPanelData *data)
 	return data->menu_type == MenuType_ItemSwitch || data->state == MenuPanelState_Exit;
 }
 
-extern "C" void orig_Menu_MenuPanelThink(HSD_GObj *gobj);
-extern "C" void hook_Menu_MenuPanelThink(HSD_GObj *gobj)
+static bool handle_menu_music(HSD_GObj *gobj)
 {
 	const auto *data = gobj->get<MenuPanelData>();
 
 	if (!is_in_menu_music(data))
-		return orig_Menu_MenuPanelThink(gobj);
+		return false;
 
 	bool first_frame;
 	if (data->menu_type != MenuType_ItemSwitch)
@@ -78,7 +92,7 @@ extern "C" void hook_Menu_MenuPanelThink(HSD_GObj *gobj)
 
 		// Don't interfere with returning to rules menu idle anim
 		if (data->state == MenuPanelState_Idle)
-			return;
+			return true;
 	}
 
 	const auto &ss_anim = MenuPanelAnimTable[MenuType_MenuMusic];
@@ -112,4 +126,36 @@ extern "C" void hook_Menu_MenuPanelThink(HSD_GObj *gobj)
 	}
 
 	HSD_JObjAnimAll(grid);
+
+	return true;
+}
+
+static bool handle_debug_mode(HSD_GObj *gobj)
+{
+	if (MenuType != MenuType_DebugMode && MenuTypePrevious != MenuType_DebugMode)
+		return false;
+
+	// Replace the Options header with Main Menu in the Debug Mode menu
+	auto *jobj = gobj->get_hsd_obj<HSD_JObj>();
+	auto *header = HSD_JObjGetFromTreeByIndex(jobj, 84);
+	auto *main_menu = HSD_JObjGetFromTreeByIndex(jobj, 86);
+	auto *main_menu_tex = main_menu->u.dobj->mobj->tobj->imagedesc;
+	auto *header_imagetbl = header->u.dobj->mobj->tobj->imagetbl;
+	auto *old_options_tex = header_imagetbl[HeaderTex_Options];
+	header_imagetbl[HeaderTex_Options] = main_menu_tex;
+	orig_Menu_MenuPanelThink(gobj);
+	header_imagetbl[HeaderTex_Options] = old_options_tex;
+
+	return true;
+}
+
+extern "C" void hook_Menu_MenuPanelThink(HSD_GObj *gobj)
+{
+	if (handle_menu_music(gobj))
+		return;
+
+	if (handle_debug_mode(gobj))
+		return;
+
+	orig_Menu_MenuPanelThink(gobj);
 }
