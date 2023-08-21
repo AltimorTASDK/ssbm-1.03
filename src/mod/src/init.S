@@ -364,6 +364,7 @@ add_hook TapJumpCheck_MultiJump
 add_hook TapJumpCheck_FirstMultiJump
 #endif
 # Debug mode menu
+add_hook Menu_LanguageMenuInput
 add_hook Menu_SetupLanguageMenu
 add_hook Menu_UpdateCStickRotation
 # Stage select screen

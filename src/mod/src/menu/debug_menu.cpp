@@ -6,6 +6,7 @@
 #include "hsd/wobj.h"
 #include "melee/camera.h"
 #include "melee/debug.h"
+#include "melee/menu.h"
 #include "melee/text.h"
 #include "qol/widescreen.h"
 #include "rules/values.h"
@@ -78,14 +79,6 @@ static HSD_GObj *text_camera;
 static char text_master_buf[TEXT_WIDTH * TEXT_HEIGHT * 2];
 static char text_develop_buf[TEXT_WIDTH * TEXT_HEIGHT * 2];
 
-PATCH_LIST(
-	// Return to Vs Menu
-	// li r3, MenuType_VsMode
-	std::pair { Menu_LanguageMenuInput+0x8C, 0x38600002u },
-	// li r4, VsMenu_DebugMenu
-	std::pair { Menu_LanguageMenuInput+0x90, 0x38800003u }
-);
-
 static void pool_free(void *data)
 {
 	HSD_Free(data); // Default free gobj data
@@ -94,8 +87,37 @@ static void pool_free(void *data)
 		DevelopText_Remove(&text_master);
 		DevelopText_Remove(&text_develop);
 		GObj_Free(text_camera);
+		text_master = nullptr;
+		text_develop = nullptr;
 		text_camera = nullptr;
 	}
+}
+
+static void update_selection(bool joint_anim)
+{
+	auto *data = LanguageMenuGObj->get<LanguageMenuData>();
+	auto *jobj = LanguageMenuGObj->get_hsd_obj<HSD_JObj>()->child;
+
+	// Set matanim for selection
+	HSD_JObjReqAnimAll(jobj, data->setting == 0 ? 1.f : 0.f);
+	HSD_JObjStopAnimByTypeAndFlags(jobj, 0xFF, ObjMask_JObj);
+	HSD_JObjAnimAll(jobj);
+
+	if (joint_anim) {
+		// Set joint anim
+		HSD_JObjReqAnimAll(jobj, 0.f);
+		HSD_JObjStopAnimByTypeAndFlags(jobj, 0xFF, ObjMask_MObj);
+		HSD_JObjAnimAll(jobj);
+	}
+
+	if (data->setting == 0) {
+		DevelopText_SetTextColor(text_master,  color_rgba::hex(0xFF8020FFu));
+		DevelopText_SetTextColor(text_develop, color_rgba::hex(0xE2E2E2FFu));
+	} else {
+		DevelopText_SetTextColor(text_master,  color_rgba::hex(0xE2E2E2FFu));
+		DevelopText_SetTextColor(text_develop, color_rgba::hex(0xFF8020FFu));
+	}
+
 }
 
 extern "C" void orig_Menu_SetupLanguageMenu(u8 state);
@@ -103,30 +125,12 @@ extern "C" void hook_Menu_SetupLanguageMenu(u8 state)
 {
 	orig_Menu_SetupLanguageMenu(state);
 
-	float frame;
 	auto *data = LanguageMenuGObj->get<LanguageMenuData>();
 	auto *jobj = LanguageMenuGObj->get_hsd_obj<HSD_JObj>()->child;
 
 	// Set the highlighted option based on DbLevel
-	switch (DbLevel) {
-	case DbLKind_Develop:
-		data->setting = 1;
-		data->old_setting = 1;
-		frame = 0.f;
-		break;
-	default:
-		data->setting = 0;
-		data->old_setting = 0;
-		frame = 1.f;
-		break;
-	}
-
-	HSD_JObjReqAnimAll(jobj, frame);
-	HSD_JObjStopAnimByTypeAndFlags(jobj, 0xFF, ObjMask_JObj);
-	HSD_JObjAnimAll(jobj);
-	HSD_JObjReqAnimAll(jobj, 0.f);
-	HSD_JObjStopAnimByTypeAndFlags(jobj, 0xFF, ObjMask_MObj);
-	HSD_JObjAnimAll(jobj);
+	data->setting = DbLevel == DbLKind_Develop ? 1 : 0;
+	data->old_setting = data->setting;
 
 	// Hide flags
 	HSD_DObjGetByIndex<2>(jobj->u.dobj)->flags |= DOBJ_HIDDEN;
@@ -138,15 +142,15 @@ extern "C" void hook_Menu_SetupLanguageMenu(u8 state)
 	// Free assets on menu exit
 	LanguageMenuGObj->user_data_remove_func = pool_free;
 
-	if (pool.inc_ref() != 0)
+	if (pool.inc_ref() != 0) {
+		update_selection(true);
 		return;
+	}
 
 	text_master = DevelopText_Create(0x6A, TEXT_MASTER_X, 0,
 	                                 TEXT_WIDTH, TEXT_HEIGHT, text_master_buf);
 	DevelopText_HideCursor(text_master);
-	//DevelopText_SetBGColor(text_master, color_rgba::hex(0x40508080u));
 	DevelopText_SetBGColor(text_master, color_rgba::hex(0x40508080u));
-	DevelopText_SetTextColor(text_master, color_rgba::hex(0xFF8020FFu));
 	DevelopText_SetScale(text_master, TEXT_SCALE_X, TEXT_SCALE_Y);
 	DevelopText_SetCursor(text_master, 0, TEXT_HEIGHT / 2);
 	DevelopText_Print(text_master, "DbLevel: Master");
@@ -156,8 +160,6 @@ extern "C" void hook_Menu_SetupLanguageMenu(u8 state)
 	                                  TEXT_WIDTH, TEXT_HEIGHT, text_develop_buf);
 	DevelopText_HideCursor(text_develop);
 	DevelopText_SetBGColor(text_develop, color_rgba::hex(0x40508080u));
-	//DevelopText_SetTextColor(text_develop, color_rgba::hex(0xFF8020FFu));
-	DevelopText_SetTextColor(text_develop, color_rgba::hex(0xE2E2E2FFu));
 	DevelopText_SetScale(text_develop, TEXT_SCALE_X, TEXT_SCALE_Y);
 	DevelopText_SetCursor(text_develop, 0, TEXT_HEIGHT / 2);
 	DevelopText_Print(text_develop, "DbLevel: Develop");
@@ -165,6 +167,37 @@ extern "C" void hook_Menu_SetupLanguageMenu(u8 state)
 
 	text_camera = GObj_Create(GOBJ_CLASS_CAMERA, GOBJ_PLINK_MENU_CAMERA, 0);
 	GObj_InitKindObj(text_camera, GOBJ_KIND_CAMERA, HSD_CObjLoadDesc(&text_cobjdesc));
+
+	update_selection(true);
+}
+
+extern "C" void hook_Menu_LanguageMenuInput(HSD_GObj *gobj)
+{
+	auto *data = LanguageMenuGObj->get<LanguageMenuData>();
+	const auto buttons = Menu_GetButtons(PORT_ALL);
+
+	if (buttons & MenuButton_B) {
+		// Exit without saving
+		Menu_PlaySFX(MenuSFX_Back);
+		IsEnteringMenu = false;
+		Menu_MainMenuTransition(MenuType_VsMode, VsMenu_DebugMenu, MenuState_ExitTo);
+		return;
+	}
+
+	if (buttons & (MenuButton_Left | MenuButton_Right)) {
+		// Change setting
+		Menu_PlaySFX(MenuSFX_Scroll);
+		data->setting = !data->setting;
+		update_selection(false);
+	}
+
+	if ((buttons & MenuButton_A) && data->setting != data->old_setting) {
+		// Save DbLevel and exit
+		DbLevel = data->setting == 0 ? DbLKind_Master : DbLKind_Develop;
+		Menu_PlaySFX(MenuSFX_Activate);
+		IsEnteringMenu = false;
+		Menu_MainMenuTransition(MenuType_VsMode, VsMenu_DebugMenu, MenuState_ExitTo);
+	}
 }
 
 extern "C" void orig_Menu_UpdateCStickRotation(HSD_GObj *gobj);
