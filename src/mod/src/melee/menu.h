@@ -54,6 +54,7 @@ enum MenuType {
 	MenuType_Options      = 4,
 	MenuType_SpecialMelee = 12,
 	MenuType_Rules        = 13,
+	MenuType_Manual       = 13,
 	MenuType_ExtraRules   = 15,
 	MenuType_ItemSwitch   = 16,
 	MenuType_StageMusic   = 16,

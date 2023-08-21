@@ -149,12 +149,34 @@ static bool handle_debug_mode(HSD_GObj *gobj)
 	return true;
 }
 
+static bool handle_manual(HSD_GObj *gobj)
+{
+	if (MenuType != MenuType_Manual && MenuTypePrevious != MenuType_Manual)
+		return false;
+
+	// Replace the Vs Mode header with Main Menu in the 1.03 Manual menu
+	auto *jobj = gobj->get_hsd_obj<HSD_JObj>();
+	auto *header = HSD_JObjGetFromTreeByIndex(jobj, 84);
+	auto *main_menu = HSD_JObjGetFromTreeByIndex(jobj, 86);
+	auto *main_menu_tex = main_menu->u.dobj->mobj->tobj->imagedesc;
+	auto *header_imagetbl = header->u.dobj->mobj->tobj->imagetbl;
+	auto *old_vs_mode_tex = header_imagetbl[HeaderTex_VsMode];
+	header_imagetbl[HeaderTex_VsMode] = main_menu_tex;
+	orig_Menu_MenuPanelThink(gobj);
+	header_imagetbl[HeaderTex_VsMode] = old_vs_mode_tex;
+
+	return true;
+}
+
 extern "C" void hook_Menu_MenuPanelThink(HSD_GObj *gobj)
 {
 	if (handle_menu_music(gobj))
 		return;
 
 	if (handle_debug_mode(gobj))
+		return;
+
+	if (handle_manual(gobj))
 		return;
 
 	orig_Menu_MenuPanelThink(gobj);
