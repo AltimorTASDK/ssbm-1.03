@@ -75,6 +75,7 @@ enum MainMenuPortalID {
 };
 
 enum VsMenuPortalID {
+	VsMenu_Melee        = 0,
 	VsMenu_Tournament   = 1,
 	VsMenu_Controls     = 1,
 	VsMenu_SpecialMelee = 2,

@@ -1,6 +1,8 @@
 #include "compat/20XX.h"
+#include "hsd/aobj.h"
 #include "hsd/archive.h"
 #include "hsd/dobj.h"
+#include "hsd/fobj.h"
 #include "hsd/gobj.h"
 #include "hsd/jobj.h"
 #include "hsd/mobj.h"
@@ -12,6 +14,7 @@
 #include "rules/values.h"
 #include "util/texture_swap.h"
 #include "util/meta.h"
+#include "util/melee/fobj_builder.h"
 #include "util/melee/text_builder.h"
 #include <gctypes.h>
 
@@ -28,6 +31,14 @@
 #endif
 #include "resources/debug/debug_header.tex.h"
 #include "resources/manual/manual_header.tex.h"
+
+enum MenuColor {
+	MenuColor_Blue   = 0,
+	MenuColor_Red    = 1,
+	MenuColor_Green  = 2,
+	MenuColor_Yellow = 3,
+	MenuColor_Purple = 4,
+};
 
 struct MainMenuData {
 	u8 menu_type;
@@ -106,6 +117,78 @@ constexpr auto controls_z_jump_description = make_description_text<
 constexpr auto manual_description = make_description_text<
 	"Read the 1.03 manual.">();
 
+// red    1.0 0.6 0.6
+// blue   0.3 1.0 1.0
+// yellow 1.0 0.9 0.3
+// green  0.5 1.0 0.5
+// purple 0.8 0.5 0.9
+
+constexpr auto preview_color_r = fobj_builder<HSD_A_FRAC_U16, 32768>::write_keys<
+	HSD_A_OP_CON,
+	{ 0.3f,  50 },    //    0
+	{ 1.0f,  50 },    //   50
+	{ 0.5f,  50 },    //  100
+	{ 1.0f,  49 },    //  150 Options
+	{ 0.8f, 201 },    //  199
+	{ 0.3f, 300 },    //  400
+	{ 1.0f,  50 },    //  700 Melee
+	{ 0.5f,  50 },    //  750 Debug Menu
+	{ 0.3f,  50 },    //  800 Controls
+	{ 0.8f,  50 },    //  850 1.03 Manual
+	{ 1.0f, 100 },    //  900
+	{ 0.5f, 300 },    // 1000
+	{ 1.0f, 300 },    // 1300
+	{ 0.8f, 400 },    // 1600
+	{ 0.3f, 400 },    // 2000
+	{ 1.0f, 550 },    // 2400
+	{ 0.8f, 550 },    // 2950
+	{ 0.3f,  50 },    // 3500
+	{ 0.8f, 450 }>(); // 3550
+
+constexpr auto preview_color_g = fobj_builder<HSD_A_FRAC_U16, 32768>::write_keys<
+	HSD_A_OP_CON,
+	{ 1.0f,  50 },    //    0
+	{ 0.6f,  50 },    //   50
+	{ 1.0f,  50 },    //  100
+	{ 0.9f,  49 },    //  150 Options
+	{ 0.5f, 201 },    //  199
+	{ 1.0f, 300 },    //  400
+	{ 0.6f,  50 },    //  700 Melee
+	{ 1.0f,  50 },    //  750 Debug Menu
+	{ 1.0f,  50 },    //  800 Controls
+	{ 0.5f,  50 },    //  850 1.03 Manual
+	{ 0.6f, 100 },    //  900
+	{ 1.0f, 300 },    // 1000
+	{ 0.9f, 300 },    // 1300
+	{ 0.5f, 400 },    // 1600
+	{ 1.0f, 400 },    // 2000
+	{ 0.6f, 550 },    // 2400
+	{ 0.5f, 550 },    // 2950
+	{ 1.0f,  50 },    // 3500
+	{ 0.5f, 450 }>(); // 3550
+
+constexpr auto preview_color_b = fobj_builder<HSD_A_FRAC_U16, 32768>::write_keys<
+	HSD_A_OP_CON,
+	{ 1.0f,  50 },    //    0
+	{ 0.6f,  50 },    //   50
+	{ 0.5f,  50 },    //  100
+	{ 0.3f,  49 },    //  150 Options
+	{ 0.9f, 201 },    //  199
+	{ 1.0f, 300 },    //  400
+	{ 0.6f,  50 },    //  700 Melee
+	{ 0.5f,  50 },    //  750 Debug Menu
+	{ 1.0f,  50 },    //  800 Controls
+	{ 0.9f,  50 },    //  850 1.03 Manual
+	{ 0.6f, 100 },    //  900
+	{ 0.5f, 300 },    // 1000
+	{ 0.3f, 300 },    // 1300
+	{ 0.9f, 400 },    // 1600
+	{ 1.0f, 400 },    // 2000
+	{ 0.6f, 550 },    // 2400
+	{ 0.9f, 550 },    // 2950
+	{ 1.0f,  50 },    // 3500
+	{ 0.9f, 450 }>(); // 3550
+
 [[gnu::constructor]] static void set_preview_anims()
 {
 	// Swap around preview animations
@@ -119,6 +202,26 @@ constexpr auto manual_description = make_description_text<
 {
 	// Remove Screen Display, Language, and Erase Data portals
 	MenuTypeDataTable[MenuType_Options].option_count = 2;
+}
+
+extern "C" u32 hook_Menu_GetLightColorIndex(u8 type, u16 index)
+{
+	switch (type) {
+	case MenuType_VsMode:
+		switch(index) {
+		case VsMenu_Melee:     return MenuColor_Red;
+		case VsMenu_Controls:  return MenuColor_Blue;
+		case VsMenu_Options:   return MenuColor_Yellow;
+		case VsMenu_DebugMenu: return MenuColor_Green;
+		case VsMenu_Manual:    return MenuColor_Purple;
+		}
+	case MenuType_DebugMode:
+		return MenuColor_Green;
+	case MenuType_Manual:
+		return MenuColor_Purple;
+	default:
+		return MenuColor_Yellow;
+	}
 }
 
 extern "C" void orig_VsMenu_Think(HSD_GObj *gobj);
@@ -291,6 +394,16 @@ extern "C" HSD_GObj *hook_Menu_SetupMainMenu(u8 state)
 	// Replace Special Melee with Options
 	const auto *names = MenMainCursor_Top.matanim_joint->child->child->next->matanim;
 	names->texanim->imagetbl[12] = names->texanim->imagetbl[3];
+
+	// Replace preview background color tracks
+	const auto *preview_bg =
+		MenMainConTop_Top.matanim_joint->child->child->next->child->matanim;
+	auto *fobj_r = preview_bg->aobjdesc->fobjdesc;
+	auto *fobj_g = fobj_r->next;
+	auto *fobj_b = fobj_g->next;
+	fobj_r->ad = preview_color_r.data();
+	fobj_g->ad = preview_color_g.data();
+	fobj_b->ad = preview_color_b.data();
 
 	auto *gobj = orig_Menu_SetupMainMenu(state);
 	auto *data = gobj->get<MainMenuData>();

@@ -499,10 +499,13 @@ add_hook CSS_UpdatePortrait
 add_hook SetMenuRotation
 add_hook Menu_EnterCustomRulesMenu
 # Main menu
+.set GetMenuLightColorIndex, Menu_UpdateLightColor+0x38
+add_hook GetMenuLightColorIndex
 add_hook VsMenu_Think
 add_hook OptionsMenu_Think
 add_hook MainMenu_Enter
 add_hook MainMenu_Init
+add_hook Menu_GetLightColorIndex
 add_hook Menu_SetupMainMenu
 add_hook Menu_UpdateMainMenuPreview
 add_hook Menu_CreatePortalDescriptionText
