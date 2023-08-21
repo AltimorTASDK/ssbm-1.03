@@ -2,6 +2,8 @@
 #include "hsd/dobj.h"
 #include "hsd/gobj.h"
 #include "hsd/jobj.h"
+#include "hsd/mobj.h"
+#include "hsd/tobj.h"
 #include "hsd/memory.h"
 #include "hsd/wobj.h"
 #include "melee/camera.h"
@@ -14,8 +16,11 @@
 #include "util/math.h"
 #include "util/mempool.h"
 #include "util/texture_swap.h"
-#include "util/draw/render.h"
+#include "util/melee/text_builder.h"
 #include <array>
+
+#include "resources/debug/text_develop.tex.h"
+#include "resources/debug/text_master.tex.h"
 
 struct LanguageMenuData {
 	u8 setting;
@@ -25,8 +30,6 @@ struct LanguageMenuData {
 };
 
 extern "C" HSD_GObj *LanguageMenuGObj;
-
-extern "C" void Menu_LanguageMenuInput(HSD_GObj *gobj);
 
 constexpr auto TEXT_WIDTH  = 16;
 constexpr auto TEXT_HEIGHT = 5;
@@ -71,6 +74,24 @@ static constinit auto text_cobjdesc = HSD_CObjDesc {
 		}
 	}
 };
+
+template<string_literal line1>
+static constexpr auto make_description_text()
+{
+	return text_builder::build(
+		text_builder::kern(),
+		text_builder::center(),
+		text_builder::color<170, 170, 170>(),
+		text_builder::scale<179, 179>(),
+		text_builder::type_speed<0, 0>(),
+		text_builder::fit(),
+		text_builder::text<line1>(),
+		text_builder::end_fit(),
+		text_builder::reset_scale(),
+		text_builder::end_color());
+}
+
+constexpr auto bottom_text = make_description_text<"Select debug mode.">();
 
 static mempool pool;
 static DevText *text_master;
@@ -128,6 +149,8 @@ extern "C" void hook_Menu_SetupLanguageMenu(u8 state)
 	auto *data = LanguageMenuGObj->get<LanguageMenuData>();
 	auto *jobj = LanguageMenuGObj->get_hsd_obj<HSD_JObj>()->child;
 
+	data->text->data = bottom_text.data();
+
 	// Set the highlighted option based on DbLevel
 	data->setting = DbLevel == DbLKind_Develop ? 1 : 0;
 	data->old_setting = data->setting;
@@ -167,6 +190,12 @@ extern "C" void hook_Menu_SetupLanguageMenu(u8 state)
 
 	text_camera = GObj_Create(GOBJ_CLASS_CAMERA, GOBJ_PLINK_MENU_CAMERA, 0);
 	GObj_InitKindObj(text_camera, GOBJ_KIND_CAMERA, HSD_CObjLoadDesc(&text_cobjdesc));
+
+	// Replace the EN/JP label textures
+	auto *text_master = jobj->u.dobj->next->next->next->next;
+	auto *text_develop = text_master->next;
+	pool.add_texture_swap(text_master_tex_data, text_master->mobj->tobj->imagedesc);
+	pool.add_texture_swap(text_develop_tex_data, text_develop->mobj->tobj->imagedesc);
 
 	update_selection(true);
 }
