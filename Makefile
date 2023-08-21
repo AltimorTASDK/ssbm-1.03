@@ -30,7 +30,7 @@ endif
 ifneq ($(shell echo "$(MODVERSION)" | grep -P '(^|-)(beta|rc)($$|[\d-])'),)
 export BETA := 1
 endif
-ifneq ($(shell echo "$(MODVERSION)" | grep -P '(^|-)TE($$|[\d-])'),)
+ifeq ($(shell echo "$(MODVERSION)" | grep -P '(^|-)LE($$|[\d-])'),)
 export TOURNAMENT := 1
 endif
 ifneq ($(shell echo "$(MODVERSION)" | grep -P '(^|-)SE($$|[\d-])'),)
