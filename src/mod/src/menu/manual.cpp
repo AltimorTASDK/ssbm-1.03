@@ -64,7 +64,7 @@ constexpr auto bottom_text = text_builder::build(
 	text_builder::center(),
 	text_builder::color<170, 170, 170>(),
 	text_builder::scale<179, 179>(),
-	text_builder::offset<0, -10>(),
+	text_builder::offset<0, -1>(),
 	text_builder::br(),
 	text_builder::type_speed<0, 0>(),
 	text_builder::fit(),
@@ -158,7 +158,7 @@ extern "C" void hook_Menu_EnterCustomRulesMenu()
 	scroll_frames = 0;
 
 	MenuTypePrevious = MenuType;
-	MenuType = MenuType_Rules;
+	MenuType = MenuType_Manual;
 
 	auto *gobj = GObj_Create(GOBJ_CLASS_PROC, GOBJ_PLINK_PROC, 0x80);
 	GObj_AddProc(gobj, manual_input, 0);

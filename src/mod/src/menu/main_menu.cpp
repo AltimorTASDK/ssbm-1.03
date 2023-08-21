@@ -219,6 +219,12 @@ extern "C" u32 hook_Menu_GetLightColorIndex(u8 type, u16 index)
 		return MenuColor_Green;
 	case MenuType_Manual:
 		return MenuColor_Purple;
+	case MenuType_Rules:
+	case MenuType_ExtraRules:
+	case MenuType_StageMusic:
+	case MenuType_MenuMusic:
+	case MenuType_NameEntry:
+		return MenuColor_Red;
 	default:
 		return MenuColor_Yellow;
 	}
@@ -334,7 +340,7 @@ extern "C" void hook_MainMenu_Init(void *menu)
 	// Replace menu panel header
 	const auto *header = MenMainPanel_Top.matanim_joint->child->next->next->child->
 		next->next->next->next->matanim;
-	unmanaged_texture_swap(manual_header_tex_data, header->texanim->imagetbl[8]);
+	unmanaged_texture_swap(manual_header_tex_data, header->texanim->imagetbl[9]);
 	unmanaged_texture_swap(debug_header_tex_data,  header->texanim->imagetbl[14]);
 
 	// Use original debug menu art on 20XX
