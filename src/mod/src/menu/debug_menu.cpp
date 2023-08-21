@@ -91,7 +91,32 @@ static constexpr auto make_description_text()
 		text_builder::end_color());
 }
 
-constexpr auto bottom_text = make_description_text<"Select debug mode.">();
+template<string_literal line1, string_literal line2>
+static constexpr auto make_description_text()
+{
+	return text_builder::build(
+		text_builder::kern(),
+		text_builder::center(),
+		text_builder::color<170, 170, 170>(),
+		text_builder::scale<179, 128>(),
+		text_builder::offset<0, -20>(),
+		text_builder::br(),
+		text_builder::type_speed<0, 0>(),
+		text_builder::fit(),
+		text_builder::text<line1>(),
+		text_builder::end_fit(),
+		text_builder::br(),
+		text_builder::type_speed<0, 0>(),
+		text_builder::fit(),
+		text_builder::text<line2>(),
+		text_builder::end_fit(),
+		text_builder::reset_scale(),
+		text_builder::end_color());
+}
+
+constexpr auto bottom_text = make_description_text<
+	"Choose a debug mode and press",
+	"the A Button to confirm.">();
 
 static mempool pool;
 static DevText *text_master;
