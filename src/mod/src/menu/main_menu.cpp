@@ -26,6 +26,7 @@
 #else
 #include "resources/portals/le/manual_preview.tex.h"
 #endif
+#include "resources/debug/debug_header.tex.h"
 #include "resources/manual/manual_header.tex.h"
 
 struct MainMenuData {
@@ -231,6 +232,7 @@ extern "C" void hook_MainMenu_Init(void *menu)
 	const auto *header = MenMainPanel_Top.matanim_joint->child->next->next->child->
 		next->next->next->next->matanim;
 	unmanaged_texture_swap(manual_header_tex_data, header->texanim->imagetbl[8]);
+	unmanaged_texture_swap(debug_header_tex_data,  header->texanim->imagetbl[14]);
 
 	// Use original debug menu art on 20XX
 	if (is_20XX())
