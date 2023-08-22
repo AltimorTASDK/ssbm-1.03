@@ -297,6 +297,9 @@ extern "C" void hook_DevelopText_Draw(DevText *text)
 	// Scale with menu open animation
 	cobj->u.perspective.aspect = -4.f/3.f / jobj->scale.x;
 
+	if (is_widescreen())
+		cobj->u.perspective.aspect *= aspect_ratio_factor;
+
 	auto *old_cobj = HSD_CObjGetCurrent();
 	HSD_CObjSetCurrent(cobj);
 	orig_DevelopText_Draw(text);
