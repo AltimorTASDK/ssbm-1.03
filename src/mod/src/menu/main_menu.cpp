@@ -132,7 +132,7 @@ constexpr auto preview_color_r = fobj_builder<HSD_A_FRAC_U16, 32768>::write_keys
 	{ 0.8f, 201 },    //  199
 	{ 0.3f, 300 },    //  400
 	{ 1.0f,  50 },    //  700 Melee
-	{ 0.8f,  50 },    //  750 Debug Menu
+	{ 0.8f,  50 },    //  750 Debug Mode
 	{ 0.3f,  50 },    //  800 Controls
 	{ 0.5f,  50 },    //  850 1.03 Manual
 	{ 1.0f, 100 },    //  900
@@ -154,7 +154,7 @@ constexpr auto preview_color_g = fobj_builder<HSD_A_FRAC_U16, 32768>::write_keys
 	{ 0.5f, 201 },    //  199
 	{ 1.0f, 300 },    //  400
 	{ 0.6f,  50 },    //  700 Melee
-	{ 0.5f,  50 },    //  750 Debug Menu
+	{ 0.5f,  50 },    //  750 Debug Mode
 	{ 1.0f,  50 },    //  800 Controls
 	{ 1.0f,  50 },    //  850 1.03 Manual
 	{ 0.6f, 100 },    //  900
@@ -176,7 +176,7 @@ constexpr auto preview_color_b = fobj_builder<HSD_A_FRAC_U16, 32768>::write_keys
 	{ 0.9f, 201 },    //  199
 	{ 1.0f, 300 },    //  400
 	{ 0.6f,  50 },    //  700 Melee
-	{ 0.9f,  50 },    //  750 Debug Menu
+	{ 0.9f,  50 },    //  750 Debug Mode
 	{ 1.0f,  50 },    //  800 Controls
 	{ 0.5f,  50 },    //  850 1.03 Manual
 	{ 0.6f, 100 },    //  900
