@@ -132,9 +132,9 @@ constexpr auto preview_color_r = fobj_builder<HSD_A_FRAC_U16, 32768>::write_keys
 	{ 0.8f, 201 },    //  199
 	{ 0.3f, 300 },    //  400
 	{ 1.0f,  50 },    //  700 Melee
-	{ 0.5f,  50 },    //  750 Debug Menu
+	{ 0.8f,  50 },    //  750 Debug Menu
 	{ 0.3f,  50 },    //  800 Controls
-	{ 0.8f,  50 },    //  850 1.03 Manual
+	{ 0.5f,  50 },    //  850 1.03 Manual
 	{ 1.0f, 100 },    //  900
 	{ 0.5f, 300 },    // 1000
 	{ 1.0f, 300 },    // 1300
@@ -154,9 +154,9 @@ constexpr auto preview_color_g = fobj_builder<HSD_A_FRAC_U16, 32768>::write_keys
 	{ 0.5f, 201 },    //  199
 	{ 1.0f, 300 },    //  400
 	{ 0.6f,  50 },    //  700 Melee
-	{ 1.0f,  50 },    //  750 Debug Menu
+	{ 0.5f,  50 },    //  750 Debug Menu
 	{ 1.0f,  50 },    //  800 Controls
-	{ 0.5f,  50 },    //  850 1.03 Manual
+	{ 1.0f,  50 },    //  850 1.03 Manual
 	{ 0.6f, 100 },    //  900
 	{ 1.0f, 300 },    // 1000
 	{ 0.9f, 300 },    // 1300
@@ -176,9 +176,9 @@ constexpr auto preview_color_b = fobj_builder<HSD_A_FRAC_U16, 32768>::write_keys
 	{ 0.9f, 201 },    //  199
 	{ 1.0f, 300 },    //  400
 	{ 0.6f,  50 },    //  700 Melee
-	{ 0.5f,  50 },    //  750 Debug Menu
+	{ 0.9f,  50 },    //  750 Debug Menu
 	{ 1.0f,  50 },    //  800 Controls
-	{ 0.9f,  50 },    //  850 1.03 Manual
+	{ 0.5f,  50 },    //  850 1.03 Manual
 	{ 0.6f, 100 },    //  900
 	{ 0.5f, 300 },    // 1000
 	{ 0.3f, 300 },    // 1300
@@ -212,13 +212,13 @@ extern "C" u32 hook_Menu_GetLightColorIndex(u8 type, u16 index)
 		case VsMenu_Melee:     return MenuColor_Red;
 		case VsMenu_Controls:  return MenuColor_Blue;
 		case VsMenu_Options:   return MenuColor_Yellow;
-		case VsMenu_DebugMenu: return MenuColor_Green;
-		case VsMenu_Manual:    return MenuColor_Purple;
+		case VsMenu_DebugMenu: return MenuColor_Purple;
+		case VsMenu_Manual:    return MenuColor_Green;
 		}
 	case MenuType_DebugMode:
-		return MenuColor_Green;
-	case MenuType_Manual:
 		return MenuColor_Purple;
+	case MenuType_Manual:
+		return MenuColor_Green;
 	case MenuType_Rules:
 	case MenuType_ExtraRules:
 	case MenuType_StageMusic:
