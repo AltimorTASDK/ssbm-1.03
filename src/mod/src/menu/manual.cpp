@@ -39,7 +39,7 @@
 #include "resources/manual/scrollbar.tex.h"
 
 constexpr auto scissor_w = 516;
-constexpr auto scissor_h = 288;
+constexpr auto scissor_h = 307;
 constexpr auto scissor_x = 320 - scissor_w / 2;
 constexpr auto scissor_y =  88;
 
