@@ -204,6 +204,7 @@ constexpr auto preview_color_b = fobj_builder<HSD_A_FRAC_U16, 32768>::write_keys
 	MenuTypeDataTable[MenuType_Options].option_count = 2;
 }
 
+extern "C" u32 orig_Menu_GetLightColorIndex(u8 type, u16 index);
 extern "C" u32 hook_Menu_GetLightColorIndex(u8 type, u16 index)
 {
 	switch (type) {
@@ -219,14 +220,8 @@ extern "C" u32 hook_Menu_GetLightColorIndex(u8 type, u16 index)
 		return MenuColor_Purple;
 	case MenuType_Manual:
 		return MenuColor_Green;
-	case MenuType_Rules:
-	case MenuType_ExtraRules:
-	case MenuType_StageMusic:
-	case MenuType_MenuMusic:
-	case MenuType_NameEntry:
-		return MenuColor_Red;
 	default:
-		return MenuColor_Yellow;
+		return orig_Menu_GetLightColorIndex(type, index);
 	}
 }
 
