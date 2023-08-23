@@ -238,7 +238,7 @@ extern "C" void hook_Menu_LanguageMenuInput(HSD_GObj *gobj)
 		return;
 	}
 
-	if (buttons & (MenuButton_Left | MenuButton_Right)) {
+	if ((buttons & (MenuButton_Left | MenuButton_Right)) && data->ready) {
 		// Change setting
 		Menu_PlaySFX(MenuSFX_Scroll);
 		data->setting = !data->setting;
