@@ -43,7 +43,7 @@ OBJFILES := \
 ifdef STEALTH
 OBJFILES := $(filter $(OBJDIR)/src/controller_fix/%.o, $(OBJFILES)) \
             $(filter $(OBJDIR)/src/latency/%.o,        $(OBJFILES)) \
-		    $(filter $(OBJDIR)/src/compat/%.o,         $(OBJFILES)) \
+            $(filter $(OBJDIR)/src/compat/%.o,         $(OBJFILES)) \
             $(filter $(OBJDIR)/src/version/%.o,        $(OBJFILES)) \
             $(OBJDIR)/src/dol_init.cpp.o \
             $(OBJDIR)/src/init.S.o \
