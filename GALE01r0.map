@@ -2158,6 +2158,8 @@
 8022a0a8 0000067c 8022a0a8 0 Menu_SetupMainMenu
 8022a724 000002b8 8022a724 0 Menu_UpdateCStickRotation
 8022abe4 000000e0 8022abe4 0 Ab_Menu_TextDraw_VsModeRules?
+8022ad18 00000038 8022ad18 0 Menu_GetLightColorIndex
+8022ae30 000001dc 8022ae30 0 Menu_UpdateLightColor
 8022b00c 000001f0 8022b00c 0 Menu_CustomRulesBackGroundInitialization
 8022b1fc 000002d8 8022b1fc 0 Menus_SpecialMelee_EveryFrame
 8022b4d4 00000288 8022b4d4 0 Menus_Stadium_EveryFrame
@@ -2220,6 +2222,9 @@
 8023b240 00000900 8023b240 0 NameEntry_Stuff
 8023ebc8 00000c44 8023ebc8 0 Menu_MeleeRecordsInput
 80249fa4 00000534 80249fa4 0 SoundTest_ControlStuffEveryFrame
+8024acd4 00000230 8024acd4 0 Menu_LanguageMenuInput
+8024b0b8 000001fc 8024b0b8 0 Menu_SetupLanguageMenu
+8024b2b4 000000cc 8024b2b4 0 Menu_CreateLanguageMenu
 8024bb68 000001a0 8024bb68 0 GetUnlockedEventMatchCount
 8024c558 00000950 8024c558 0 EventMatchThinkAndControl
 80251f8c 000003a4 80251f8c 0 CameraMode_ScreenshotLoad_HighLevel
@@ -2509,6 +2514,7 @@
 80300020 00000060 80300020 0 DebugMenu_MemoryCard_Delete
 8030056c 0000003c 8030056c 0 DebugMenu_CreditsGameStart
 80300720 00000130 80300720 0 DevelopText_TurnOff
+80300860 00000068 80300860 0 DevelopText_Remove
 80300a20 0000034c 80300a20 0 DevelopText_Draw
 80300d6c 00000054 80300d6c 0 DevelopText_DrawAll
 80300e6c 00000098 80300e6c 0 DevelopText_Setup
@@ -4160,6 +4166,7 @@
 804bff3c 00000000 804bff3c 0 HSD_PadCopyStatus
 804c004c 00000000 804c004c 0 HSD_PadGameStatus
 804cefa4 00000000 804cefa4 0 SISData
+804d2888 00000000 804d2888 0 DbLevel
 804bfdf8 00000000 804bfdf8 0 HSD_PadLibData
 804d43d4 00000000 804d43d4 0 plco
 804d4a48 00000000 804d4a48 0 MenuInputCooldown
@@ -4167,6 +4174,7 @@
 804d4a60 00000000 804d4a60 0 ExtraRulesMenuGObj
 804d4a68 00000000 804d4a68 0 ItemMenuGObj
 804d4a70 00000000 804d4a70 0 RandomStageMenuGObj
+804d4ad0 00000000 804d4ad0 0 LanguageMenuGObj
 804d4b10 00000000 804d4b10 0 SSSData
 804d4b18 00000000 804d4b18 0 MnSlMapModels
 804d4b2e 00000000 804d4b2e 0 SelectedStageIcon
