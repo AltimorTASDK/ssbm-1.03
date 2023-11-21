@@ -27,9 +27,16 @@ enum class sss_type : u8 {
 };
 
 enum class ucf_type : u8 {
-	hax = 0,
-	ucf = 1,
+	a   = 0,
+	b   = 1,
+	c   = 2,
+	d   = 3,
+	ucf = 4,
+#ifdef UCF_ROTATOR
 	max
+#else
+	max = d + 1
+#endif
 };
 
 enum class latency_mode : u8 {

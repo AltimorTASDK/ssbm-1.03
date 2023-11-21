@@ -34,10 +34,8 @@
 #include "resources/rules/sss.tex.h"
 #include "resources/rules/sss_values.tex.h"
 #endif
-#ifdef UCF_ROTATOR
 #include "resources/rules/controller_fix.tex.h"
 #include "resources/rules/controller_fix_values.tex.h"
-#endif
 #include "resources/rules/latency.tex.h"
 #include "resources/rules/latency_values.tex.h"
 #include "resources/rules/widescreen.tex.h"
@@ -174,8 +172,14 @@ constexpr auto stage_mod_descriptions = multi_array {
 };
 
 constexpr auto ucf_type_descriptions = multi_array {
-	make_description_text<"Use the 1.03 controller fix.">(),
-	make_description_text<"Use Universal Controller Fix.">()
+	make_description_text<"Fix dash back, wiggle out of tumble,",
+	                      "shield drop, and 1.0 cardinal.">(),
+	make_description_text<"Fix smash DI, ADT shield,",
+	                      "vertical throws, and ledge fall.">(),
+	make_description_text<"Fix walljumps, SquatRv during dash",
+	                      "out of crouch, down-B, and ???.">(),
+	make_description_text<"Increase dash out of crouch's",
+	                      "timing window to 3 frames.">()
 };
 
 constexpr auto latency_descriptions = multi_array {
@@ -296,9 +300,7 @@ extern "C" bool is_extra_rule_visible(int index)
 #ifndef SSS_ROTATOR
 	case ExtraRule_StageMods:     return false;
 #endif
-#ifndef UCF_ROTATOR
-	case ExtraRule_ControllerFix: return false;
-#endif
+	case ExtraRule_ControllerFix: return true;
 	case ExtraRule_Latency:       return !is_faster_melee();
 	default:                      return true;
 	}
@@ -370,12 +372,13 @@ static void fix_value_position(ExtraRulesMenuData *data, int index)
 static u8 get_model_max_value(int index)
 {
 	// Use max value corresponding to 5-value model for controls
-#ifndef TOURNAMENT
-	if (index == ExtraRule_Controls)
+	switch (index) {
+	case ExtraRule_Controls:
+	case ExtraRule_ControllerFix:
 		return 4;
-	else
-#endif
+	default:
 		return ExtraRuleValueBounds[index].max;
+	}
 }
 
 static void set_value_anim(ExtraRulesMenuData *data, int index)
@@ -387,13 +390,13 @@ static void set_value_anim(ExtraRulesMenuData *data, int index)
 	auto *jobj = data->value_jobj_trees[index].tree[0];
 	const auto value = data->values[index];
 
-#ifndef TOURNAMENT
-	if (index == ExtraRule_Controls) {
+	switch (index) {
+	case ExtraRule_Controls:
+	case ExtraRule_ControllerFix:
 		// Shift value for controls to allow for 4-value rotator on 5-value model
 		HSD_JObjReqAnimAll(jobj, RuleValueAnimLoops[value].start);
-	} else
-#endif
-	{
+		break;
+	default:
 		const auto anim_index = value == 0 ? get_model_max_value(index) : value - 1;
 		HSD_JObjReqAnimAll(jobj, RuleValueAnimLoops[anim_index].start);
 	}
@@ -435,9 +438,7 @@ static void load_textures()
 	pool.add_texture_swap(controls_tex_data,        rule_names->texanim->imagetbl[ 9]);
 #endif
 	pool.add_texture_swap(sss_tex_data,             rule_names->texanim->imagetbl[11]);
-#ifdef UCF_ROTATOR
 	pool.add_texture_swap(controller_fix_tex_data,  rule_names->texanim->imagetbl[12]);
-#endif
 	pool.add_texture_swap(latency_tex_data,         rule_names->texanim->imagetbl[13]);
 	widescreen_text = pool.add_texture_swap(widescreen_tex_data);
 }
@@ -453,7 +454,7 @@ extern "C" ArchiveModel *select_extra_rule_model(u32 index)
 #else
 		&MenMainCursorTr03_Top, // Stage Select Screen
 #endif
-		&MenMainCursorTr03_Top, // Controller Fix
+		&MenMainCursorRl05_Top, // Controller Fix
 		&MenMainCursorTr04_Top, // Latency
 		&MenMainCursorTr04_Top, // Widescreen
 	}[index];
@@ -571,9 +572,7 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 #else
 	replace_toggle_texture(data, ExtraRule_StageMods,     sss_values_tex_data, true);
 #endif
-#ifdef UCF_ROTATOR
 	replace_toggle_texture(data, ExtraRule_ControllerFix, controller_fix_values_tex_data, true);
-#endif
 	replace_toggle_texture(data, ExtraRule_Latency,       latency_values_tex_data);
 	replace_toggle_texture(data, ExtraRule_Widescreen,    widescreen_values_tex_data, true);
 
@@ -582,12 +581,14 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 	fix_value_position(data, ExtraRule_Controls);
 #endif
 	fix_value_position(data, ExtraRule_StageMods);
+	fix_value_position(data, ExtraRule_ControllerFix);
 
 	// Set anim frame correctly for 4/5-value model
 #ifndef TOURNAMENT
 	set_value_anim(data, ExtraRule_Controls);
 #endif
 	set_value_anim(data, ExtraRule_StageMods);
+	set_value_anim(data, ExtraRule_ControllerFix);
 
 	// Use rotator for latency (replacing random stage select)
 	set_to_rotator(data, ExtraRule_Latency);
@@ -641,49 +642,43 @@ extern "C" const HSD_AnimLoop &orig_Menu_GetExtraRuleValueAnimLoop(u8 index, u8 
 extern "C" const HSD_AnimLoop &hook_Menu_GetExtraRuleValueAnimLoop(u8 index, u8 value,
                                                                    bool scroll_right)
 {
-#ifndef TOURNAMENT
-	if (index != ExtraRule_Controls && index != ExtraRule_StageMods) {
-#else
-	if (index != ExtraRule_StageMods) {
-#endif
+	switch (index) {
+	default:
 		return orig_Menu_GetExtraRuleValueAnimLoop(index, value, scroll_right);
-	}
-
-	// Use max value corresponding to 5-value model for controls
-	const auto max = get_model_max_value(index);
-
-#ifndef TOURNAMENT
-	// Shift value for controls to allow for 4-value rotator on 5-value model
-	if (index == ExtraRule_Controls)
+	case ExtraRule_Controls:
+	case ExtraRule_ControllerFix:
+		// Shift value for controls to allow for 4-value rotator on 5-value model
 		value++;
-#endif
+	case ExtraRule_StageMods:
+		// Use max value corresponding to 5-value model for controls
+		const auto max = get_model_max_value(index);
 
-	if (!scroll_right)
-		return RuleValueAnimLoops[max - value + 5];
-	else if (value == 0)
-		return RuleValueAnimLoops[max];
-	else
-		return RuleValueAnimLoops[value - 1];
+		if (!scroll_right)
+			return RuleValueAnimLoops[max - value + 5];
+		else if (value == 0)
+			return RuleValueAnimLoops[max];
+		else
+			return RuleValueAnimLoops[value - 1];
+	}
 }
 
 extern "C" void orig_Menu_UpdateExtraRuleValueAnim(HSD_GObj *gobj, HSD_JObj *jobj, u8 index);
 extern "C" void hook_Menu_UpdateExtraRuleValueAnim(HSD_GObj *gobj, HSD_JObj *jobj, u8 index)
 {
-#ifndef TOURNAMENT
-	if (index != ExtraRule_Controls && index != ExtraRule_StageMods) {
-#else
-	if (index != ExtraRule_StageMods) {
-#endif
+	switch (index) {
+	default:
 		return orig_Menu_UpdateExtraRuleValueAnim(gobj, jobj, index);
-	}
+	case ExtraRule_Controls:
+	case ExtraRule_ControllerFix:
+	case ExtraRule_StageMods:
+		const auto frame = HSD_JObjGetAnimFrame(jobj);
 
-	const auto frame = HSD_JObjGetAnimFrame(jobj);
-
-	for (u8 i = 0; i < 10; i++) {
-		const auto &loop = RuleValueAnimLoops[i];
-		if (frame >= loop.start && frame <= loop.end) {
-			HSD_JObjLoopAnim(jobj, loop);
-			return;
+		for (u8 i = 0; i < 10; i++) {
+			const auto &loop = RuleValueAnimLoops[i];
+			if (frame >= loop.start && frame <= loop.end) {
+				HSD_JObjLoopAnim(jobj, loop);
+				return;
+			}
 		}
 	}
 }
