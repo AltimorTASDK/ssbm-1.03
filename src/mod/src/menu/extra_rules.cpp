@@ -374,7 +374,6 @@ static u8 get_model_max_value(int index)
 	// Use max value corresponding to 5-value model for controls
 	switch (index) {
 	case ExtraRule_Controls:
-	case ExtraRule_ControllerFix:
 		return 4;
 	default:
 		return ExtraRuleValueBounds[index].max;
@@ -392,7 +391,6 @@ static void set_value_anim(ExtraRulesMenuData *data, int index)
 
 	switch (index) {
 	case ExtraRule_Controls:
-	case ExtraRule_ControllerFix:
 		// Shift value for controls to allow for 4-value rotator on 5-value model
 		HSD_JObjReqAnimAll(jobj, RuleValueAnimLoops[value].start);
 		break;
@@ -454,7 +452,7 @@ extern "C" ArchiveModel *select_extra_rule_model(u32 index)
 #else
 		&MenMainCursorTr03_Top, // Stage Select Screen
 #endif
-		&MenMainCursorRl05_Top, // Controller Fix
+		&MenMainCursorRl01_Top, // Controller Fix
 		&MenMainCursorTr04_Top, // Latency
 		&MenMainCursorTr04_Top, // Widescreen
 	}[index];
@@ -532,7 +530,7 @@ extern "C" void hook_Menu_UpdateExtraRuleDescriptionText(HSD_GObj *gobj,
 	case ExtraRule_Controls:       text->data = controls_descriptions[value];   break;
 #endif
 	case ExtraRule_StageMods:      text->data = stage_mod_descriptions[value];  break;
-	case ExtraRule_ControllerFix:  text->data = cfix_descriptions[value];   break;
+	case ExtraRule_ControllerFix:  text->data = cfix_descriptions[value];       break;
 	case ExtraRule_Latency:        text->data = latency_descriptions[value];    break;
 	case ExtraRule_Widescreen:     text->data = widescreen_descriptions[value]; break;
 	}
@@ -569,10 +567,11 @@ extern "C" HSD_GObj *hook_Menu_SetupExtraRulesMenu(u8 state)
 #endif
 #ifdef FULL_SSS_ROTATOR
 	replace_toggle_texture(data, ExtraRule_StageMods,     sss_values_tex_data);
+	replace_toggle_texture(data, ExtraRule_ControllerFix, controller_fix_values_tex_data, true);
 #else
 	replace_toggle_texture(data, ExtraRule_StageMods,     sss_values_tex_data, true);
+	replace_toggle_texture(data, ExtraRule_ControllerFix, controller_fix_values_tex_data);
 #endif
-	replace_toggle_texture(data, ExtraRule_ControllerFix, controller_fix_values_tex_data, true);
 	replace_toggle_texture(data, ExtraRule_Latency,       latency_values_tex_data);
 	replace_toggle_texture(data, ExtraRule_Widescreen,    widescreen_values_tex_data, true);
 
@@ -646,9 +645,9 @@ extern "C" const HSD_AnimLoop &hook_Menu_GetExtraRuleValueAnimLoop(u8 index, u8 
 	default:
 		return orig_Menu_GetExtraRuleValueAnimLoop(index, value, scroll_right);
 	case ExtraRule_Controls:
-	case ExtraRule_ControllerFix:
 		// Shift value for controls to allow for 4-value rotator on 5-value model
 		value++;
+	case ExtraRule_ControllerFix:
 	case ExtraRule_StageMods:
 		// Use max value corresponding to 5-value model for controls
 		const auto max = get_model_max_value(index);
