@@ -20,7 +20,7 @@ static void fix_stick(const vec2c &hw_values, vec2 *stick)
 
 extern "C" void apply_cardinal_fix(HSD_GObj *gobj)
 {
-	if (get_ucf_type() == ucf_type::ucf)
+	if (get_cfix() < cfix::a)
 		return;
 
 	auto *player = gobj->get<Player>();

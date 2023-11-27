@@ -26,7 +26,7 @@ extern "C" bool orig_Interrupt_Walljump(HSD_GObj *gobj);
 extern "C" void orig_AS_029_Fall(HSD_GObj *gobj);
 extern "C" void hook_AS_029_Fall(HSD_GObj *gobj)
 {
-	if (get_ucf_type() != ucf_type::ucf) {
+	if (get_cfix() != cfix::ucf) {
 		// Record whether to enable doraki and cstick ledgefall fixes
 		auto *player = gobj->get<Player>();
 		auto *as_data = player->custom_as_data<ledge_data>();
@@ -80,7 +80,7 @@ extern "C" bool hook_Interrupt_Walljump(HSD_GObj *gobj)
 	auto *player = gobj->get<Player>();
 	auto *as_data = &player->custom_as_data<ledge_data>()->doraki;
 
-	if (player->action_state != AS_Fall || get_ucf_type() == ucf_type::ucf)
+	if (get_cfix() < cfix::c || player->action_state != AS_Fall)
 		return orig_Interrupt_Walljump(gobj);
 
 	if (as_data->can_doraki) {
@@ -107,7 +107,7 @@ extern "C" bool hook_Interrupt_JumpAerial(HSD_GObj *gobj, bool meteor)
 {
 	auto *player = gobj->get<Player>();
 
-	if (get_ucf_type() == ucf_type::ucf || player->action_state == AS_Fall)
+	if (get_cfix() < cfix::b || player->action_state == AS_Fall)
 		return orig_Interrupt_JumpAerial(gobj, meteor);
 
 	if (!orig_Interrupt_JumpAerial(gobj, meteor))
@@ -121,7 +121,7 @@ extern "C" bool hook_Interrupt_JumpAerial(HSD_GObj *gobj, bool meteor)
 extern "C" bool orig_Player_CheckCStickAerial(Player *player);
 extern "C" bool hook_Player_CheckCStickAerial(Player *player)
 {
-	if (get_ucf_type() == ucf_type::ucf)
+	if (get_cfix() < cfix::b)
 		return orig_Player_CheckCStickAerial(player);
 
 	const auto state = player->action_state;

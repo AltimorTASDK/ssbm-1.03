@@ -26,17 +26,13 @@ enum class sss_type : u8 {
 #endif
 };
 
-enum class ucf_type : u8 {
-	a   = 0,
-	b   = 1,
-	c   = 2,
-	d   = 3,
-	ucf = 4,
-#ifdef UCF_ROTATOR
+enum class cfix : s8 {
+	ucf = -1,
+	a   =  0,
+	b   =  1,
+	c   =  2,
+	d   =  3,
 	max
-#else
-	max = d + 1
-#endif
 };
 
 enum class latency_mode : u8 {
@@ -117,7 +113,7 @@ struct GameRules {
 	};
 	union {
 		u8 sd_penalty;
-		ucf_type controller_fix;
+		cfix controller_fix;
 	};
 	u8 pad00D;
 	latency_mode latency;

@@ -15,7 +15,7 @@ static bool is_in_adt_shield(const Player *player)
 {
 	// Intentionally doesn't detect Yoshi GuardReflect.
 	// His ADT shield is normally bugged and useless, so he doesn't get ADT PS.
-	return get_ucf_type() != ucf_type::ucf && player->action_state == AS_GuardReflect &&
+	return get_cfix() >= cfix::b && player->action_state == AS_GuardReflect &&
 	       player->custom_as_data<ps_data>()->adt && player->reflect_active;
 }
 
@@ -56,7 +56,7 @@ extern "C" void hook_AS_182_GuardReflect_ADT_YoshiCheck(HSD_GObj *gobj)
 {
 	orig_AS_182_GuardReflect_ADT_YoshiCheck(gobj);
 
-	if (get_ucf_type() == ucf_type::ucf)
+	if (get_cfix() >= cfix::b)
 		return;
 
 	// Enable physical shield

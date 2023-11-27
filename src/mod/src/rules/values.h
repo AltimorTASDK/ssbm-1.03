@@ -49,7 +49,7 @@ inline int get_air_time_limit()
 #endif
 }
 
-inline ucf_type get_ucf_type()
+inline cfix get_cfix()
 {
 	const auto *rules = GetGameRules();
 	return rules->controller_fix;

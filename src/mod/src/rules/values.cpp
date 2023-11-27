@@ -15,7 +15,7 @@
 
 	ExtraRuleValueBounds[ExtraRule_Controls]      = { 0, (u8)controls_type::max   - 1 };
 	ExtraRuleValueBounds[ExtraRule_StageMods]     = { 0, (u8)sss_type::max        - 1 };
-	ExtraRuleValueBounds[ExtraRule_ControllerFix] = { 0, (u8)ucf_type::max        - 1 };
+	ExtraRuleValueBounds[ExtraRule_ControllerFix] = { 0, (u8)cfix::max        - 1 };
 	ExtraRuleValueBounds[ExtraRule_Latency]       = { 0, (u8)latency_mode::max    - 1 };
 	ExtraRuleValueBounds[ExtraRule_Widescreen]    = { 0, (u8)widescreen_mode::max - 1 };
 #else

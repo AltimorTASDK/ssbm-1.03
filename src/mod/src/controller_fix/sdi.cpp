@@ -35,7 +35,7 @@ extern "C" void hook_Player_EnterDamageState(HSD_GObj *gobj, u32 state, f32 dire
 {
 	orig_Player_EnterDamageState(gobj, state, direction);
 
-	if (get_ucf_type() == ucf_type::ucf)
+	if (get_cfix() < cfix::b)
 		return;
 
 	auto *player = gobj->get<Player>();
@@ -52,7 +52,7 @@ extern "C" void hook_Player_ShieldHitCallback(HSD_GObj *gobj)
 {
 	orig_Player_ShieldHitCallback(gobj);
 
-	if (get_ucf_type() == ucf_type::ucf)
+	if (get_cfix() < cfix::b)
 		return;
 
 	auto *player = gobj->get<Player>();
@@ -207,7 +207,7 @@ static vec3 get_next_position(const Player *player)
 extern "C" void orig_Player_SDICallback(HSD_GObj *gobj);
 extern "C" void hook_Player_SDICallback(HSD_GObj *gobj)
 {
-	if (get_ucf_type() == ucf_type::ucf)
+	if (get_cfix() < cfix::b)
 		return orig_Player_SDICallback(gobj);
 
 	auto *player = gobj->get<Player>();
@@ -257,7 +257,7 @@ extern "C" void hook_Player_SDICallback(HSD_GObj *gobj)
 extern "C" void orig_Player_ShieldSDICallback(HSD_GObj *gobj);
 extern "C" void hook_Player_ShieldSDICallback(HSD_GObj *gobj)
 {
-	if (get_ucf_type() == ucf_type::ucf)
+	if (get_cfix() < cfix::b)
 		return orig_Player_ShieldSDICallback(gobj);
 
 	auto *player = gobj->get<Player>();

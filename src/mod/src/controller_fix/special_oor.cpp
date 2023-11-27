@@ -10,7 +10,7 @@ extern "C" bool hook_Player_CheckSideBInput(Player *player)
 	if (!(player->input.instant_buttons & Button_B))
 		return false;
 
-	if (get_ucf_type() != ucf_type::ucf) {
+	if (get_cfix() >= cfix::c) {
 		// Make neutral/down B adjacent to the Run region
 		switch (player->action_state) {
 		case AS_Dash:

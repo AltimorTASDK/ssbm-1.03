@@ -22,7 +22,7 @@ static bool should_suppress_spotdodge(HSD_GObj *gobj)
 	if (player->input.stick_x_hold_time < plco->roll_stick_frames)
 		return false;
 
-	if (get_ucf_type() == ucf_type::ucf) {
+	if (get_cfix() == cfix::ucf) {
 		// Must be above Y -8000 (UCF)
 		if (player->input.stick.y <= -.8000f)
 			return false;

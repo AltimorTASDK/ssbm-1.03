@@ -6,7 +6,7 @@
 
 bool should_suppress_squatrv(const HSD_GObj *gobj)
 {
-	if (get_ucf_type() == ucf_type::ucf)
+	if (get_cfix() < cfix::c)
 		return false;
 
 	const auto *player = gobj->get<Player>();
@@ -38,7 +38,7 @@ extern "C" bool hook_Interrupt_TurnOrDash(HSD_GObj *gobj)
 	if (orig_Interrupt_TurnOrDash(gobj))
 		return true;
 
-	if (get_ucf_type() == ucf_type::ucf)
+	if (get_cfix() < cfix::d)
 		return false;
 
 	auto *player = gobj->get<Player>();

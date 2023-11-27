@@ -23,15 +23,15 @@ static bool should_wiggle_out(HSD_GObj *gobj)
 	// Must be within 2f
 	if (player->input.stick_x_hold_time >= 2)
 		return false;
-		
+
 	// Last frame must not have been a wiggle input i.e. don't allow buffering
 	if (std::abs(player->input.last_stick.x) >= plco->tumble_wiggle_threshold)
 		return false;
-		
+
 	// Hardware value comparison (UCF)
-	if (get_ucf_type() == ucf_type::ucf && !check_ucf_xsmash(player))
+	if (get_cfix() == cfix::ucf && !check_ucf_xsmash(player))
 		return false;
-		
+
 	return true;
 }
 
@@ -40,7 +40,7 @@ extern "C" bool check_tumble_wiggle(HSD_GObj *gobj)
 {
 	if (!should_wiggle_out(gobj))
 		return false;
-		
+
 	AS_029_Fall(gobj);
 	return true;
 }

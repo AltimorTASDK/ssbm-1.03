@@ -48,7 +48,7 @@ static int get_throw_state(const Player *player, bool vanilla = false, bool chec
 extern "C" bool orig_Interrupt_Throw(HSD_GObj *gobj);
 extern "C" bool hook_Interrupt_Throw(HSD_GObj *gobj)
 {
-	if (get_ucf_type() == ucf_type::ucf)
+	if (get_cfix() < cfix::b)
 		return orig_Interrupt_Throw(gobj);
 
 	const auto *player = gobj->get<Player>();
@@ -81,7 +81,7 @@ static int get_cargo_throw_state(const Player *player)
 extern "C" bool orig_Interrupt_DK_ThrowFDecide(HSD_GObj *gobj);
 extern "C" bool hook_Interrupt_DK_ThrowFDecide(HSD_GObj *gobj)
 {
-	if (get_ucf_type() == ucf_type::ucf)
+	if (get_cfix() < cfix::b)
 		return orig_Interrupt_DK_ThrowFDecide(gobj);
 
 	const auto *player = gobj->get<Player>();

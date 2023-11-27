@@ -51,7 +51,7 @@ struct ExtraRulesMenuData {
 			u8 pause;
 			controls_type controls;
 			sss_type stage_mods;
-			ucf_type controller_fix;
+			cfix controller_fix;
 			latency_mode latency;
 			widescreen_mode widescreen;
 		};
@@ -171,13 +171,13 @@ constexpr auto stage_mod_descriptions = multi_array {
 #endif
 };
 
-constexpr auto ucf_type_descriptions = multi_array {
+constexpr auto cfix_descriptions = multi_array {
 	make_description_text<"Fix dash back, wiggle out of tumble,",
 	                      "shield drop, and 1.0 cardinal.">(),
 	make_description_text<"Fix smash DI, ADT shield,",
 	                      "vertical throws, and ledge fall.">(),
-	make_description_text<"Fix walljumps, SquatRv during dash",
-	                      "out of crouch, down-B, and ???.">(),
+	make_description_text<"Fix special out of run, down-B, walljumps,",
+	                      "and SquatRv during dash out of crouch.">(),
 	make_description_text<"Increase dash out of crouch's",
 	                      "timing window to 3 frames.">()
 };
@@ -532,7 +532,7 @@ extern "C" void hook_Menu_UpdateExtraRuleDescriptionText(HSD_GObj *gobj,
 	case ExtraRule_Controls:       text->data = controls_descriptions[value];   break;
 #endif
 	case ExtraRule_StageMods:      text->data = stage_mod_descriptions[value];  break;
-	case ExtraRule_ControllerFix:  text->data = ucf_type_descriptions[value];   break;
+	case ExtraRule_ControllerFix:  text->data = cfix_descriptions[value];   break;
 	case ExtraRule_Latency:        text->data = latency_descriptions[value];    break;
 	case ExtraRule_Widescreen:     text->data = widescreen_descriptions[value]; break;
 	}
