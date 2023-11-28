@@ -55,6 +55,10 @@ void saved_config::load()
 		stage_mods = sss_type::all;
 #endif
 
+	// New controller fix options, reset
+	if (read->version < v::v5)
+		controller_fix = cfix::d;
+
 	// Update to current version
 	version = v::current;
 }

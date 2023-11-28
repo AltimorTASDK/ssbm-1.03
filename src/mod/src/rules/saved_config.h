@@ -12,6 +12,7 @@ enum class config_version : u8 {
 	v2 = 1,
 	v3 = 2,
 	v4 = 3,
+	v5 = 4,
 	max,
 	current = max - 1
 };
@@ -35,7 +36,7 @@ struct [[gnu::packed]] config_values<config_version::v2> : config_values<config_
 	u8 ledge_grab_limit    = 0;
 	u8 air_time_limit      = 0;
 	u8 stock_time_limit    = 8;
-	cfix controller_fix    = cfix::a;
+	cfix controller_fix    = cfix::d;
 	sss_type stage_mods    = sss_type::all;
 };
 
@@ -52,6 +53,11 @@ struct [[gnu::packed]] config_values<config_version::v3> : config_values<config_
 template<>
 struct [[gnu::packed]] config_values<config_version::v4> : config_values<config_version::v3> {
 	// Added a member to controls_type enum
+};
+
+template<>
+struct [[gnu::packed]] config_values<config_version::v5> : config_values<config_version::v4> {
+	// Controller fix rotator now used for wave A/B/C/D
 };
 
 struct [[gnu::packed]] saved_config : config_values<config_version::current> {
