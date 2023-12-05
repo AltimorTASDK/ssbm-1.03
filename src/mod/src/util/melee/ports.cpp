@@ -40,7 +40,7 @@ static int get_doubles_index(u32 port)
 		if (PlayerBlock_GetSlotType(i) == SlotType_None)
 			continue;
 
-		auto team = PlayerBlock_GetTeam(i);
+		const auto team = PlayerBlock_GetTeam(i);
 		int index;
 
 		if (team1 == -1) {
