@@ -532,7 +532,7 @@ struct Player {
 	union {
 		char raw[0xAC];
 		struct {
-			u32 is_smash_turn;
+			u32 turn_finished;
 			f32 turn_direction;
 			f32 dash_direction;
 			u32 pad00C;

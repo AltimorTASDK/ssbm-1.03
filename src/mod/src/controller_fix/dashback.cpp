@@ -14,7 +14,7 @@ static void check_dashback(HSD_GObj *gobj)
 	if (player->animation_frame != 2.f)
 		return;
 
-	if (player->as_data.Turn.is_smash_turn)
+	if (player->as_data.Turn.turn_finished)
 		return;
 
 	// Must satisfy vanilla xsmash conditions
@@ -30,7 +30,7 @@ static void check_dashback(HSD_GObj *gobj)
 		return;
 
 	player->direction = -player->direction;
-	player->as_data.Turn.is_smash_turn = true;
+	player->as_data.Turn.turn_finished = true;
 	player->as_data.Turn.can_dash = true;
 
 	if (player->character_id != CID_Popo)
