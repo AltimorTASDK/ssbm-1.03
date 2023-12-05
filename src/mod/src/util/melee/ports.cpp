@@ -16,8 +16,7 @@ static int get_singles_index(u32 port)
 		if (i == port)
 			result = count;
 
-		if (++count > 2)
-			return -1;
+		count++;
 	}
 
 	if (count != 2)
