@@ -42,9 +42,9 @@
 
 enum CSSPlayerState {
 	CSSPlayerState_HoveringPorts = 0,
-	CSSPlayerState_HoldingPuck = 1,
-	CSSPlayerState_Idle = 2,
-	CSSPlayerState_Unplugged = 3
+	CSSPlayerState_HoldingPuck   = 1,
+	CSSPlayerState_Idle          = 2,
+	CSSPlayerState_Unplugged     = 3
 };
 
 enum CharacterIcon {
