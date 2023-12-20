@@ -19,6 +19,8 @@
 #include "util/melee/text_builder.h"
 #include <array>
 
+#ifndef STEALTH
+
 #include "resources/debug/text_develop.tex.h"
 #include "resources/debug/text_master.tex.h"
 
@@ -271,10 +273,14 @@ extern "C" void hook_Menu_UpdateCStickRotation(HSD_GObj *gobj)
 	HSD_CObjSetEyePosition(text_cobj, eye_pos * scale + offset);
 }
 
+#endif // !STEALTH
+
 extern "C" void orig_DevelopText_Draw(DevText *text);
 extern "C" void hook_DevelopText_Draw(DevText *text)
 {
+#ifndef STEALTH
 	if (text != text_master && text != text_develop) {
+#endif
 		if (!is_widescreen())
 			return orig_DevelopText_Draw(text);
 
@@ -285,6 +291,7 @@ extern "C" void hook_DevelopText_Draw(DevText *text)
 		text->scale.x = old_scale_x;
 
 		return;
+#ifndef STEALTH
 	}
 
 	// Use custom camera for debug mode text
@@ -304,4 +311,5 @@ extern "C" void hook_DevelopText_Draw(DevText *text)
 	HSD_CObjSetCurrent(cobj);
 	orig_DevelopText_Draw(text);
 	HSD_CObjSetCurrent(old_cobj);
+#endif
 }

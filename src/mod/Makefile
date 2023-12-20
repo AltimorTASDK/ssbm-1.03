@@ -40,7 +40,36 @@ OBJFILES := \
     $(patsubst %, $(OBJDIR)/%.o, $(CXXFILES)) \
     $(patsubst %, $(OBJDIR)/%.o, $(SFILES))
 
-ifdef STEALTH
+ifdef VERSION_A
+OBJFILES := $(filter $(OBJDIR)/src/controller_fix/%.o, $(OBJFILES)) \
+            $(filter $(OBJDIR)/src/latency/%.o,        $(OBJFILES)) \
+            $(filter $(OBJDIR)/src/compat/%.o,         $(OBJFILES)) \
+            $(filter $(OBJDIR)/src/version/%.o,        $(OBJFILES)) \
+            $(filter $(OBJDIR)/src/stages/%.o,         $(OBJFILES)) \
+            $(OBJDIR)/src/dol_init.cpp.o \
+            $(OBJDIR)/src/init.S.o \
+            $(OBJDIR)/src/controls/z_jump.cpp.o \
+            $(OBJDIR)/src/libcxx/alloc.cpp.o \
+            $(OBJDIR)/src/menu/character_select.cpp.o \
+            $(OBJDIR)/src/menu/debug_menu.cpp.o \
+            $(OBJDIR)/src/menu/stage_select.cpp.o \
+            $(OBJDIR)/src/rules/decide_match.cpp.o \
+            $(OBJDIR)/src/rules/settings_lock.cpp.o \
+            $(OBJDIR)/src/rules/values.cpp.o \
+            $(OBJDIR)/src/util/draw/render.cpp.o \
+            $(OBJDIR)/src/util/melee/pad.cpp.o \
+            $(OBJDIR)/src/util/melee/pad.S.o \
+            $(OBJDIR)/src/util/gc/memcard.cpp.o \
+            $(OBJDIR)/src/qol/save_data.cpp.o \
+            $(OBJDIR)/src/qol/widescreen.cpp.o \
+            $(OBJDIR)/src/qol/lras_macro.cpp.o \
+            $(OBJDIR)/src/qol/match_results.cpp.o \
+            $(OBJDIR)/src/qol/nametags.cpp.o \
+            $(OBJDIR)/src/qol/nametags.S.o \
+            $(OBJDIR)/src/qol/player_hud.cpp.o \
+            $(OBJDIR)/src/qol/spawns.cpp.o \
+            $(OBJDIR)/src/util/melee/ports.cpp.o
+else ifdef STEALTH
 OBJFILES := $(filter $(OBJDIR)/src/controller_fix/%.o, $(OBJFILES)) \
             $(filter $(OBJDIR)/src/latency/%.o,        $(OBJFILES)) \
             $(filter $(OBJDIR)/src/compat/%.o,         $(OBJFILES)) \
@@ -50,12 +79,15 @@ OBJFILES := $(filter $(OBJDIR)/src/controller_fix/%.o, $(OBJFILES)) \
             $(OBJDIR)/src/controls/z_jump.cpp.o \
             $(OBJDIR)/src/libcxx/alloc.cpp.o \
             $(OBJDIR)/src/menu/character_select.cpp.o \
+            $(OBJDIR)/src/menu/debug_menu.cpp.o \
             $(OBJDIR)/src/rules/settings_lock.cpp.o \
             $(OBJDIR)/src/rules/values.cpp.o \
+            $(OBJDIR)/src/util/draw/render.cpp.o \
             $(OBJDIR)/src/util/melee/pad.cpp.o \
             $(OBJDIR)/src/util/melee/pad.S.o \
             $(OBJDIR)/src/util/gc/memcard.cpp.o \
-            $(OBJDIR)/src/qol/save_data.cpp.o
+            $(OBJDIR)/src/qol/save_data.cpp.o \
+            $(OBJDIR)/src/qol/widescreen.cpp.o
 endif
 
 DEPFILES := $(patsubst $(OBJDIR)/%.o, $(DEPDIR)/%.d, $(OBJFILES))

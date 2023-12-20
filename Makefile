@@ -36,9 +36,18 @@ endif
 ifneq ($(shell echo "$(MODVERSION)" | grep -P '(^|-)SE($$|[\d-])'),)
 export STEALTH := 1
 endif
+ifneq ($(shell echo "$(MODVERSION)" | grep -P '(^|-)A($$|[\d-])'),)
+export VERSION_A := 1
+endif
 export MODNAME := ssbm-1.03-$(MODVERSION)
 else
+export TOURNAMENT := 1
 export MODNAME := ssbm-1.03
+endif
+
+# 1.03-A is a variant of stealth
+ifdef VERSION_A
+export STEALTH := 1
 endif
 
 export DEFINES  = $(foreach def, $(USERDEFS), -D$(def))
@@ -56,6 +65,9 @@ endif
 ifdef STEALTH
 export DEFINES += -DSTEALTH
 endif
+ifdef VERSION_A
+export DEFINES += -DVERSION_A
+endif
 
 export DEFINES += -DMODNAME=\"$(MODNAME)\"
 
@@ -71,7 +83,9 @@ DEFINES_PAL := -DPAL
 export MELEELD  = $(MELEELD_$(VERSION))
 export DEFINES += $(DEFINES_$(VERSION))
 
-ifdef STEALTH
+ifdef VERSION_A
+export EDITION := A
+else ifdef STEALTH
 export EDITION := SE
 else ifdef TOURNAMENT
 export EDITION := TE

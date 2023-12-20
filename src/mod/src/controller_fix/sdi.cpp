@@ -134,7 +134,7 @@ static bool check_sdi(const Player *player, bool *is_extension)
 		return true;
 	}
 
-	if (!player->custom_as_data<sdi_data>()->allow_sdi_extension)
+	if (get_cfix() < cfix::b || !player->custom_as_data<sdi_data>()->allow_sdi_extension)
 		return false;
 
 	// Check for a valid extension input
@@ -159,7 +159,7 @@ static bool check_shield_sdi(const Player *player, bool *is_extension)
 		return true;
 	}
 
-	if (!player->custom_as_data<sdi_data>()->allow_sdi_extension)
+	if (get_cfix() < cfix::b || !player->custom_as_data<sdi_data>()->allow_sdi_extension)
 		return false;
 
 	// Check for a valid extension input
@@ -207,7 +207,7 @@ static vec3 get_next_position(const Player *player)
 extern "C" void orig_Player_SDICallback(HSD_GObj *gobj);
 extern "C" void hook_Player_SDICallback(HSD_GObj *gobj)
 {
-	if (get_cfix() < cfix::b)
+	if (get_cfix() < cfix::a)
 		return orig_Player_SDICallback(gobj);
 
 	auto *player = gobj->get<Player>();
@@ -257,7 +257,7 @@ extern "C" void hook_Player_SDICallback(HSD_GObj *gobj)
 extern "C" void orig_Player_ShieldSDICallback(HSD_GObj *gobj);
 extern "C" void hook_Player_ShieldSDICallback(HSD_GObj *gobj)
 {
-	if (get_cfix() < cfix::b)
+	if (get_cfix() < cfix::a)
 		return orig_Player_ShieldSDICallback(gobj);
 
 	auto *player = gobj->get<Player>();

@@ -6,7 +6,7 @@
 #include <cstddef>
 #include <new>
 
-#ifndef DOL
+#if !defined(DOL) || defined(STEALTH)
 extern "C" char __LOAD_BASE__;
 constexpr void *load_base = &__LOAD_BASE__;
 
@@ -161,6 +161,7 @@ static void fix_heap(OSHeap *heap)
 }
 #endif
 
+#ifndef STEALTH
 extern "C" void orig_HSD_ResetScene();
 extern "C" void hook_HSD_ResetScene()
 {
@@ -177,3 +178,4 @@ extern "C" void hook_HSD_ResetScene()
 
 	orig_HSD_ResetScene();
 }
+#endif

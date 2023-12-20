@@ -1,5 +1,7 @@
 #pragma once
 
+#ifndef STEALTH
+
 #include "hsd/tobj.h"
 #include "util/texture_swap.h"
 #include "util/objpool.h"
@@ -152,3 +154,5 @@ private:
 			next->prev = prev;
 	}
 };
+
+#endif

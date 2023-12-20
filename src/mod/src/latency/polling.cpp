@@ -377,6 +377,7 @@ static void update_text(HSD_GObj *gobj)
 extern "C" void orig_Scene_RunLoop(void(*think_callback)());
 extern "C" void hook_Scene_RunLoop(void(*think_callback)())
 {
+#if !defined(STEALTH) || defined(VERSION_A)
 	text = DevelopText_Create(0x69, 20, 20, TEXT_WIDTH, TEXT_HEIGHT, text_buf);
 	if (text == nullptr)
 		return orig_Scene_RunLoop(think_callback);
@@ -405,6 +406,8 @@ extern "C" void hook_Scene_RunLoop(void(*think_callback)())
 
 	auto *gobj = GObj_Create(GOBJ_CLASS_UI, GOBJ_PLINK_DEV_TEXT, 0);
 	GObj_AddProc(gobj, update_text, 0);
+
+#endif // !defined(STEALTH) || defined(VERSION_A)
 
 	orig_Scene_RunLoop(think_callback);
 }

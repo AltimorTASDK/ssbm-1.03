@@ -190,8 +190,9 @@ add_hook Player_CheckSideBInput
 # add_hook Player_AirMovement
 # Z jump
 add_hook PADRead
-# Z jump + rumble CSS toggles
+# CSS
 add_hook CSS_PlayerThink
+add_hook CSS_Setup
 # PDF+Latency
 .set SceneLoopStart,   Scene_RunLoop+0x68
 .set FirstEngineFrame, Scene_RunLoop+0xA8
@@ -209,6 +210,19 @@ add_hook HSD_PerfSetStartTime
 add_hook HSD_VIGetXFBDrawEnable
 add_hook HSD_VIPreRetraceCB
 #endif
+# Widescreen
+add_hook Bubble_GetPosition
+add_hook CmSubject_WorldToScreen
+add_hook CObjLoad
+add_hook DevelopText_Draw
+add_hook HSD_StartRender
+add_hook NameTag_SetupForPlayer
+add_hook PauseOverlay_Create
+add_hook Text_UpdateSubtextSize
+add_hook TrainingMenu_Create
+add_hook TrainingMenu_Think
+# Widescreen crop
+add_hook HSD_VICopyEFB2XFBPtr
 # Nana hardware input buffer
 add_hook Player_Nana_RecordPopoData
 # Memcard
@@ -275,34 +289,7 @@ add_hook ThrowSyncSideB
 add_hook OnTriggerboxHitItem
 #endif
 
-#ifndef STEALTH
-
-# Allow stealing stocks with A
-.set CheckStockStealInput, Match_CheckStockSteal+0xF8
-add_hook CheckStockStealInput
-# Centered player HUDs
-add_hook HUD_GetPlayerHUDPosition
-# Skip results on non-timeout and add salty runback
-add_hook Scene_Match_Exit
-# Hide nametags for invisible players
-.set ShowNameTagCheck, NameTag_Think+0x28
-add_hook ShowNameTagCheck
-# Panel at top of menu for menu music screen
-add_hook Menu_MenuPanelThink
-# Memory management
-add_hook HSD_ResetScene
-# LRAS macro
-add_hook Match_HandlePause
-# LGL/ATL enforcement
-add_hook MatchController_UpdateTeamWinners
-add_hook MatchController_UpdateWinners
-# Custom menu BGM
-add_hook Menu_GetBGM
-add_hook Menu_RandomStageMenuInput
-add_hook Menu_RandomStageMenuScroll
-add_hook Menu_SetupRandomStageMenu
-add_hook Menu_SetupRandomStageToggles
-add_hook Menu_UpdateRandomStageDisplay
+#if !defined(STEALTH) || defined(VERSION_A)
 # Frozen stages
 add_hook Stage_Dreamland_WhispyUpdate
 add_hook Stage_FinalDestination_BackgroundUpdate
@@ -313,6 +300,39 @@ add_hook Stage_Fountain_UpdateReflection
 add_hook Stage_PokemonStadium_TransformationDecide
 add_hook Stage_Setup
 add_hook Stage_YoshisStory_ShyGuyUpdate
+# Hide nametags for invisible players
+.set ShowNameTagCheck, NameTag_Think+0x28
+add_hook ShowNameTagCheck
+# Centered player HUDs
+add_hook HUD_GetPlayerHUDPosition
+# LRAS macro
+add_hook Match_HandlePause
+# Neutral spawns
+add_hook Stage_GetSpawnPoint
+add_hook PlayerBlock_GetRespawnPoint
+add_hook Match_SetSpawnFacingDirections
+# LGL/ATL enforcement
+add_hook MatchController_UpdateTeamWinners
+add_hook MatchController_UpdateWinners
+#endif
+
+#ifndef STEALTH
+# Allow stealing stocks with A
+.set CheckStockStealInput, Match_CheckStockSteal+0xF8
+add_hook CheckStockStealInput
+# Skip results on non-timeout and add salty runback
+add_hook Scene_Match_Exit
+# Panel at top of menu for menu music screen
+add_hook Menu_MenuPanelThink
+# Memory management
+add_hook HSD_ResetScene
+# Custom menu BGM
+add_hook Menu_GetBGM
+add_hook Menu_RandomStageMenuInput
+add_hook Menu_RandomStageMenuScroll
+add_hook Menu_SetupRandomStageMenu
+add_hook Menu_SetupRandomStageToggles
+add_hook Menu_UpdateRandomStageDisplay
 #ifndef TOURNAMENT
 # Perfect angles
 add_hook Player_GetAirdodgeAngle
@@ -446,19 +466,6 @@ add_hook Menu_ExtraRulesMenuInput
 add_hook Menu_GetExtraRuleValueAnimLoop
 add_hook Menu_UpdateExtraRuleValueAnim
 add_hook Menu_UpdateExtraRuleDescriptionText
-# Widescreen
-add_hook Bubble_GetPosition
-add_hook CmSubject_WorldToScreen
-add_hook CObjLoad
-add_hook DevelopText_Draw
-add_hook HSD_StartRender
-add_hook NameTag_SetupForPlayer
-add_hook PauseOverlay_Create
-add_hook Text_UpdateSubtextSize
-add_hook TrainingMenu_Create
-add_hook TrainingMenu_Think
-# Widescreen crop
-add_hook HSD_VICopyEFB2XFBPtr
 # 1P mode
 #ifdef USE_CUSTOM_1P_CAMERA
 add_hook Camera_GetBounds
@@ -466,10 +473,6 @@ add_hook Camera_GetBounds
 add_hook Camera_SetNormal
 add_hook Player_CheckForDeath
 add_hook Player_StopAllSFX
-# Neutral spawns
-add_hook Stage_GetSpawnPoint
-add_hook PlayerBlock_GetRespawnPoint
-add_hook Match_SetSpawnFacingDirections
 # Match rules
 add_hook VsMode_InitDataFromRules
 add_hook Match_CheckToPause
@@ -492,7 +495,9 @@ add_hook CheckCSSModeSwap
 add_hook CheckIsCPUPuck
 add_hook CSS_ChooseTopString
 add_hook CSS_Init
-add_hook CSS_Setup
+# # Moved to stealth/1.03-A hooks
+# add_hook CSS_PlayerThink
+# add_hook CSS_Setup
 #ifdef OLD_CSS_TOGGLES
 add_hook CSS_UpdatePortrait
 #endif
@@ -518,7 +523,6 @@ add_hook InitRandomStageToggle
 # 20XX compatibility
 add_hook SSS_CursorThink
 #endif
-
 #endif
 
 hooks_end:

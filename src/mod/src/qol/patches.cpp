@@ -24,8 +24,6 @@ extern "C" void TitleScreen_Think();
 
 extern "C" void CreateScorePopup(u8 port);
 
-extern "C" void NameTag_Think(HSD_GObj *gobj);
-
 extern "C" void VsMenu_Think();
 
 extern "C" void Damage_DamageStale();
@@ -96,18 +94,6 @@ PATCH_LIST(
 	// li r3, NULL
 	std::pair { CreateScorePopup+0x0,          0x38600000u },
 	std::pair { CreateScorePopup+0x4,          BLR },
-	// Remove in-game port tags (P1/P2 etc)
-#ifdef PAL
-	std::pair { NameTag_Think+0x7C,            NOP },
-	std::pair { NameTag_Think+0x9C,            NOP },
-	// li r3, 0
-	std::pair { NameTag_Think+0xA4,            0x38600000u },
-#else
-	std::pair { NameTag_Think+0x60,            NOP },
-	std::pair { NameTag_Think+0x80,            NOP },
-	// li r3, 0
-	std::pair { NameTag_Think+0x88,            0x38600000u },
-#endif
 	// Enable damage staling in develop mode
 	// b 0x8
 	std::pair { Damage_DamageStale+0x28,       0x48000008u },

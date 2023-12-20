@@ -18,8 +18,12 @@ bool get_settings_lock();
 
 inline bool is_match_crew(const StartMeleeRules &rules)
 {
+#ifdef STEALTH
+	return false;
+#else
 	// Check whether the currently running match is crew and not 1p mode
 	return GetGameRules()->mode == Mode_Crew && rules.is_stock_match;
+#endif
 }
 
 inline int get_ledge_grab_limit()
@@ -51,8 +55,12 @@ inline int get_air_time_limit()
 
 inline cfix get_cfix()
 {
+#ifdef STEALTH
+	return cfix::a;
+#else
 	const auto *rules = GetGameRules();
 	return rules->controller_fix;
+#endif
 }
 
 inline bool is_widescreen()
@@ -85,6 +93,9 @@ inline controls_type get_controls()
 
 inline bool should_use_oss()
 {
+#ifdef STEALTH
+	return true;
+#else
 	if (is_20XX_stage_select())
 		return true;
 
@@ -93,6 +104,7 @@ inline bool should_use_oss()
 	return rules->stage_mods == sss_type::oss;
 #else
 	return false;
+#endif
 #endif
 }
 

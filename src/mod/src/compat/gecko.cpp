@@ -153,12 +153,20 @@ extern "C" void hook_HSD_InitComponent()
 		rules->widescreen = widescreen_mode::crop;
 	else if (use_wide)
 		rules->widescreen = widescreen_mode::on;
+#ifdef STEALTH
+	else
+		rules->widescreen = widescreen_mode::off;
+#endif
 
 	if (use_low)
 		rules->latency = latency_mode::low;
 	else if (use_lcd)
 		rules->latency = latency_mode::lcd;
+#ifdef STEALTH
+	else
+#else
 	else if (use_crt)
+#endif
 		rules->latency = latency_mode::crt;
 }
 

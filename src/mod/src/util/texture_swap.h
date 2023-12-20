@@ -4,8 +4,6 @@
 #include "util/draw/texture.h"
 #include <gctypes.h>
 
-#ifndef STEALTH
-
 // Automatically restore old texture params on free
 class texture_swap {
 	HSD_ImageDesc image_copy;
@@ -24,11 +22,3 @@ u8 *unmanaged_texture_swap(const u8 *data, HSD_ImageDesc *image);
 
 // Returns buffer
 u8 *init_texture(const u8 *data, texture *out);
-
-#else
-
-struct texture_swap {
-	texture_swap(const u8 *data, HSD_ImageDesc *image = nullptr) {}
-};
-
-#endif

@@ -249,7 +249,6 @@ static const HSD_PadStatus &get_css_input(u8 port)
 		return HSD_PadCopyStatus[port];
 }
 
-#ifndef STEALTH
 static void rumble_toggle(u8 port)
 {
 	// 20XX uses dpad up for metal characters
@@ -276,7 +275,6 @@ static void rumble_toggle(u8 port)
 			HSD_PadRumble(port, 0, 0, 60);
 	}
 }
-#endif
 
 static void check_css_toggle(u8 port, u32 *timer, auto &&check_callback, auto &&apply_callback)
 {
@@ -498,9 +496,7 @@ extern "C" void hook_CSS_PlayerThink(HSD_GObj *gobj)
 
 	// CSS toggles
 	if (get_css_input(data->port).err == 0) {
-#ifndef STEALTH
 		rumble_toggle(data->port);
-#endif
 		z_jump_toggle(data->port);
 #ifdef OLD_CSS_TOGGLES
 		perfect_angles_toggle(data->port);
@@ -603,6 +599,8 @@ extern "C" void hook_CSS_ChooseTopString()
 		orig_CSS_ChooseTopString();
 }
 
+#endif // !STEALTH
+
 #ifdef BETA
 static void create_watermark()
 {
@@ -615,8 +613,7 @@ static void create_watermark()
 		text_builder::br(),
 		text_builder::type_speed<0, 0>(),
 		text_builder::text<MODNAME>(),
-		text_builder::reset_scale(),
-		text_builder::end_color());
+		text_builder::reset_scale());
 
 	constexpr auto watermark_x = -2.9f;
 	constexpr auto watermark_y = 24.5f;
@@ -638,6 +635,29 @@ static void create_watermark()
 }
 #endif
 
+#ifdef VERSION_A
+static void create_indicator_a()
+{
+	// 1.03-A indicator
+	static constexpr auto indicator = text_builder::build(
+		text_builder::kern(),
+		text_builder::center(),
+		text_builder::scale<115, 115>(),
+		text_builder::type_speed<0, 0>(),
+		text_builder::text<"1.03-A">(),
+		text_builder::reset_scale());
+
+	constexpr auto indicator_x = -28.f;
+	constexpr auto indicator_y = -26.f;
+
+	auto *text = Text_Create(0, 0, indicator_x, indicator_y, 0.f, 640.f, 480.f);
+	text->stretch.x = 0.1f;
+	text->stretch.y = 0.1f;
+	Text_SetFromSIS(text, 0);
+	text->data = indicator.data();
+}
+#endif
+
 extern "C" void orig_CSS_Setup();
 extern "C" void hook_CSS_Setup()
 {
@@ -648,6 +668,7 @@ extern "C" void hook_CSS_Setup()
 	if (SceneMajor != Scene_VsMode)
 		return orig_CSS_Setup();
 
+#ifndef STEALTH
 	// Free any assets from previous CSS setup
 	pool.dec_ref();
 	pool.inc_ref();
@@ -688,9 +709,11 @@ extern "C" void hook_CSS_Setup()
 	// Apply controls settings
 	for (auto &controls : controller_configs)
 		controls.make_legal();
+#endif
 
 	orig_CSS_Setup();
 
+#ifndef STEALTH
 	replace_textures();
 
 	// Don't consider fake HMN ports freshly unplugged when entering the CSS
@@ -700,10 +723,13 @@ extern "C" void hook_CSS_Setup()
 
 		player_states[CSSPlayers[i]->port] = CSSPlayers[i]->state;
 	}
+#endif
 
 #ifdef BETA
 	create_watermark();
 #endif
-}
 
-#endif // !STEALTH
+#ifdef VERSION_A
+	create_indicator_a();
+#endif
+}
