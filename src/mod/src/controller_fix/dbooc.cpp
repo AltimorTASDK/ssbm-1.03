@@ -6,9 +6,6 @@
 
 bool should_suppress_squatrv(const HSD_GObj *gobj)
 {
-	if (get_cfix() < cfix::c)
-		return false;
-
 	const auto *player = gobj->get<Player>();
 
 	if (Player_IsCPUControlled(player))
