@@ -4,7 +4,6 @@
 #include "hsd/memory.h"
 #include "melee/scene.h"
 #include "util/math.h"
-#include "util/mempool.h"
 #include "util/gc/wait_object.h"
 #include <algorithm>
 #include <cstring>
@@ -18,8 +17,6 @@ extern "C" u32 MemCardState;
 
 extern "C" void InitCardBuffers();
 extern "C" void MemoryCard_RequestSave();
-
-static mempool pool;
 
 static auto first_save_check = false;
 
