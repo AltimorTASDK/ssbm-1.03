@@ -58,6 +58,8 @@ static bool attempt_doraki(Player *player)
 	const auto position = player->position;
 	const auto collide = player->phys.collide;
 	const auto ecb = player->phys.ecb;
+	const auto walljump_direction = player->walljump_direction;
+	const auto walljump_eligible_frames = player->walljump_eligible_frames;
 	player->position = player->last_position;
 	player->phys.position = player->position;
 	player->phys.collide = player->phys.last_collide;
@@ -71,6 +73,8 @@ static bool attempt_doraki(Player *player)
 	player->phys.position = position;
 	player->phys.collide = collide;
 	player->phys.ecb = ecb;
+	player->walljump_direction = walljump_direction;
+	player->walljump_eligible_frames = walljump_eligible_frames;
 	return false;
 }
 
