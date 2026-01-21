@@ -56,7 +56,7 @@ extern "C" void hook_AS_182_GuardReflect_ADT_YoshiCheck(HSD_GObj *gobj)
 {
 	orig_AS_182_GuardReflect_ADT_YoshiCheck(gobj);
 
-	if (get_cfix() >= cfix::b)
+	if (get_cfix() < cfix::b)
 		return;
 
 	// Enable physical shield
