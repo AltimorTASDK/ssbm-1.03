@@ -78,11 +78,11 @@ static void card_done()
 {
 	CARD_Unmount(op.card);
 
-	// Wake up the main thread
-	op.wait.wake();
-
 	// Restore gamecode
 	__CARDSetDiskID(__GameCode);
+
+	// Wake up the main thread
+	op.wait.wake();
 
 	// Check if the game is waiting to use the memcard
 	if (op.save_pending) {
