@@ -1,4 +1,4 @@
-#if defined(NTSC102) && (defined(DOL) || !defined(NOPAL))
+#ifdef NTSC102
 
 #include "compat/20XX.h"
 #include "compat/gecko.h"
@@ -203,8 +203,6 @@ void check_hdmi_prompts()
 
 #endif // DOL
 
-#endif // defined(NTSC102) && (defined(DOL) || !defined(NOPAL))
-
 [[gnu::constructor]] static void disable_ucf()
 {
 	u32_patch_list {
@@ -213,3 +211,5 @@ void check_hdmi_prompts()
 		// The rest is a subset of 1.03's fixes and doesn't need to be disabled
 	};
 }
+
+#endif // NTSC102
