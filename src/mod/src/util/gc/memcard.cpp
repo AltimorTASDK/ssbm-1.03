@@ -86,7 +86,9 @@ static void card_done()
 
 	// Check if the game is waiting to use the memcard
 	if (op.save_pending) {
+		const auto irq_enable = OSDisableInterrupts();
 		orig_MemoryCard_RequestSave();
+		OSRestoreInterrupts(irq_enable);
 		op.save_pending = false;
 	}
 }
