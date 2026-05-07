@@ -143,6 +143,10 @@ extern "C" void hook_HSD_InitComponent()
 	u32_patch_list {
 		std::pair { 0x8034BAFC, 0x4E800020 }
 	};
+
+	u32_patch_list {
+		std::pair { 0x801A4C24, 0xC042B008 },
+	};
 }
 
 [[gnu::constructor]] static void apply_settings()
@@ -200,3 +204,12 @@ void check_hdmi_prompts()
 #endif // DOL
 
 #endif // defined(NTSC102) && (defined(DOL) || !defined(NOPAL))
+
+[[gnu::constructor]] static void disable_ucf()
+{
+	u32_patch_list {
+		// Disable UCF .84 upward shield drop extension
+		std::pair { 0x8009A0B8, 0x4C401382 },
+		// The rest is a subset of 1.03's fixes and doesn't need to be disabled
+	};
+}
