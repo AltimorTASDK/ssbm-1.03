@@ -6,10 +6,15 @@
 #include <cstddef>
 #include <new>
 
-#if !defined(DOL) || defined(STEALTH)
-extern "C" char __LOAD_BASE__;
-constexpr void *load_base = &__LOAD_BASE__;
+#ifdef DOL
+extern "C" char __NEW_BASE__;
+constexpr void *load_base = &__NEW_BASE__;
+#else
+extern "C" char __LOADER_BASE__;
+constexpr void *load_base = &__LOADER_BASE__;
+#endif
 
+#if !defined(DOL) || defined(STEALTH)
 static constexpr auto NEW_HEAP_COUNT = 5;
 static OSHeap new_heap_list[NEW_HEAP_COUNT];
 
@@ -64,15 +69,31 @@ void free(void *ptr)
 		HSD_Free(ptr);
 }
 #else
+
+#ifdef DEBUG_ALLOCATIONS
+static s32 alloc_total = 0;
+#endif
+
 void *malloc(size_t count)
 {
+#ifdef DEBUG_ALLOCATIONS
+	alloc_total += count;
+	OSReport("0x%08X malloc 0x%08X total 0x%08X\n", __builtin_return_address(0), count, alloc_total);
+#endif
 	return HSD_MemAlloc(count);
 }
 
 void free(void *ptr)
 {
-	if (ptr != nullptr)
+	if (ptr != nullptr) {
+#ifdef DEBUG_ALLOCATIONS
+		const auto *chunk = (OSHeapChunk*)((char*)ptr - 0x20);
+		const auto count = chunk->size - 0x20;
+		alloc_total -= count;
+		OSReport("0x%08X free 0x%08X total 0x%08X\n", __builtin_return_address(0), count, alloc_total);
+#endif
 		HSD_Free(ptr);
+	}
 }
 #endif
 
@@ -106,14 +127,13 @@ void operator delete[](void *ptr, size_t sz)
 	free(ptr);
 }
 
-#ifndef DOL
 static void fix_heap(OSHeap *heap)
 {
 	// Resize the heap to avoid overwriting mod code
 	auto *chunk = heap->free_list;
 
 	while (chunk != nullptr) {
-		const auto *chunk_end = (char*)chunk + chunk->size;
+		auto *next = chunk->next;
 
 		if (chunk >= load_base) {
 			// Chunk is entirely within code space, unlink
@@ -124,22 +144,26 @@ static void fix_heap(OSHeap *heap)
 
 			if (chunk->next != nullptr)
 				chunk->next->prev = chunk->prev;
+		} else {
+			const auto *chunk_end = (char*)chunk + chunk->size;
 
-			break;
-		} else if (chunk_end > load_base) {
-			// Chunk is partially within code space, reduce size
-			chunk->size = (s32)load_base - (s32)chunk;
+			if (chunk_end > load_base) {
+				// Chunk is partially within code space, reduce size
+				chunk->size = (s32)load_base - (s32)chunk;
+			}
 		}
 
-		chunk = chunk->next;
+		chunk = next;
 	}
 }
 
 [[gnu::constructor]] static void manage_heaps()
 {
 	for (auto i = 0; i < MaxHeapCount; i++) {
+#ifndef DOL
 		if (i == get_heap())
 			continue;
+#endif
 
 		auto *heap = &HeapList[i];
 		if (heap->size >= 0)
@@ -159,7 +183,6 @@ static void fix_heap(OSHeap *heap)
 			heap->size = (u32)load_base - (u32)heap->start;
 	}
 }
-#endif
 
 #ifndef STEALTH
 extern "C" void orig_HSD_ResetScene();
@@ -167,6 +190,11 @@ extern "C" void hook_HSD_ResetScene()
 {
 	// Run destructors and clear pool refcounts on heap destruction
 	mempool::free_all();
+	
+#ifdef DEBUG_ALLOCATIONS
+	alloc_total = 0;
+#endif
+	OSReport("ResetScene\n");
 
 #ifndef DOL
 	// Reset 1.03 heap
