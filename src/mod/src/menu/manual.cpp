@@ -22,17 +22,21 @@
 #ifdef DOL
 #include "resources/manual/te/dol/manual_p1.tex.h"
 #include "resources/manual/te/dol/manual_p2.tex.h"
+#include "resources/manual/te/dol/manual_p3.tex.h"
 #else
 #include "resources/manual/te/manual_p1.tex.h"
 #include "resources/manual/te/manual_p2.tex.h"
+#include "resources/manual/te/manual_p3.tex.h"
 #endif
 #else
 #ifdef DOL
 #include "resources/manual/le/dol/manual_p1.tex.h"
 #include "resources/manual/le/dol/manual_p2.tex.h"
+#include "resources/manual/le/dol/manual_p3.tex.h"
 #else
 #include "resources/manual/le/manual_p1.tex.h"
 #include "resources/manual/le/manual_p2.tex.h"
+#include "resources/manual/le/manual_p3.tex.h"
 #endif
 #endif
 #include "resources/manual/manual_border.tex.h"
@@ -47,6 +51,7 @@ constexpr auto manual_margin = 13;
 
 static texture texture_p1;
 static texture texture_p2;
+static texture texture_p3;
 static texture texture_border;
 static texture texture_scrollbar;
 
@@ -75,7 +80,7 @@ constexpr auto bottom_text = text_builder::build(
 
 static float max_scroll_offset()
 {
-	const auto total_height = texture_p1.height() + texture_p2.height();
+	const auto total_height = texture_p1.height() + texture_p2.height() + texture_p3.height();
 	return (float)std::max(total_height - (scissor_h - manual_margin * 2), 0);
 }
 
@@ -127,9 +132,11 @@ static void draw_manual(HSD_GObj *gobj, u32 pass)
 
 	const auto pos_p1 = vec3(320, scissor_y + manual_margin - scroll_offset, manual_z);
 	const auto pos_p2 = pos_p1 + vec3(0, texture_p1.height(), 0);
+	const auto pos_p3 = pos_p2 + vec3(0, texture_p2.height(), 0);
 
 	rs.fill_rect(pos_p1, vec2(texture_p1.size()), texture_p1, align::top);
 	rs.fill_rect(pos_p2, vec2(texture_p2.size()), texture_p2, align::top);
+	rs.fill_rect(pos_p3, vec2(texture_p3.size()), texture_p3, align::top);
 
 	constexpr auto border_color = color_rgba::hex(0x929196FFu);
 
@@ -169,6 +176,7 @@ extern "C" void hook_Menu_EnterCustomRulesMenu()
 
 	pool.add(init_texture(manual_p1_tex_data, &texture_p1));
 	pool.add(init_texture(manual_p2_tex_data, &texture_p2));
+	pool.add(init_texture(manual_p3_tex_data, &texture_p3));
 	pool.add(init_texture(manual_border_tex_data, &texture_border));
 	pool.add(init_texture(scrollbar_tex_data, &texture_scrollbar));
 
