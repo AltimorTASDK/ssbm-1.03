@@ -14,7 +14,14 @@ constexpr auto air_time_limit_values = std::array {
 	0, 120, 150, 180, 210, 240, 270, 300, 330, 360
 };
 
+#ifdef STEALTH
+constexpr bool get_settings_lock()
+{
+	return false;
+}
+#else
 bool get_settings_lock();
+#endif
 
 inline bool is_match_crew(const StartMeleeRules &rules)
 {

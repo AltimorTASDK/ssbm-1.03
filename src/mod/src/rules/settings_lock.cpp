@@ -28,12 +28,14 @@ extern "C" void hook_Scene_Reset()
 }
 #endif
 
+#ifndef STEALTH
 static bool settings_lock = false;
 
 bool get_settings_lock()
 {
 	return settings_lock;
 }
+#endif
 
 extern "C" void orig_InitializeSaveData(u32 status);
 extern "C" void hook_InitializeSaveData(u32 status)

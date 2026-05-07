@@ -39,10 +39,10 @@ endif
 ifneq ($(shell echo "$(MODVERSION)" | grep -P '(^|-)A($$|[\d-])'),)
 export VERSION_A := 1
 endif
-export MODNAME := ssbm-1.03-$(MODVERSION)
+export MODNAME := ssbm-20XX-$(MODVERSION)
 else
 export TOURNAMENT := 1
-export MODNAME := ssbm-1.03
+export MODNAME := ssbm-20XX
 endif
 
 # 1.03-A is a variant of stealth

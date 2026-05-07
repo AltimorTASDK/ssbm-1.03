@@ -150,11 +150,27 @@ struct CharacterDat {
 };
 
 struct CharacterStats {
-	char pad000[0x38];
+	float walk_accel_extra;
+	float walk_accel_base;
+	float walk_speed;
+	float walk_anim_scale;
+	float walk_middle_speed;
+	float walk_fast_speed;
+	float traction;
+	float initial_dash_speed;
+	float dash_accel_extra;
+	float dash_accel_base;
+	float final_dash_speed;
+	char pad02C[0x38 - 0x2C];
 	f32 jumpsquat;
 	char pad03C[0x58 - 0x3C];
 	s32 jumps;
-	char pad05C[0x84 - 0x5C];
+	char pad05C[0x64 - 0x5C];
+	f32 air_accel_extra;
+	f32 air_accel_base;
+	f32 air_speed;
+	f32 air_friction;
+	char pad074[0x84 - 0x74];
 	f32 tilt_turn_frames;
 	char pad088[0x184 - 0x88];
 };
@@ -192,12 +208,29 @@ struct MultiJumpStats {
 	s32 start_state_helmet;
 };
 
+union SpecialStats {
+	struct {
+		char pad000[0x5C];
+		float morph_speed_mult;
+		float morph_air_speed_mult;
+		float morph_accel_mult;
+		float morph_air_accel_mult;
+		char pad06C[0xD4 - 0x6C];
+	} samus;
+};
+
 struct ExtraStats {
 	ItemGrabBox item_grab_box[3];
 	JostleBox jostle;
 	void *dk_stats;
 	MultiJumpStats *multijump_stats;
-	char pad040[0x5C - 0x40];
+	SpecialStats *special_stats;
+	SpecialStats *special_stats_buffer;
+	float walk_slow_animation_length;
+	float walk_middle_animation_length;
+	float walk_fast_animation_length;
+	float guard_on_animation_length;
+	float landing_animation_length;
 };
 
 struct Player {
@@ -231,8 +264,8 @@ struct Player {
 	vec3 delta_vel;
 	vec3 kb_vel_accumulator;
 	u32 airborne;
-	f32 ground_vel_delta;
 	f32 ground_accel;
+	f32 ground_vel_delta;
 	f32 ground_vel;
 	f32 ground_knockback_vel;
 	f32 ground_pushback_vel;

@@ -566,7 +566,7 @@ static void replace_textures()
 	// Replace MELEE/TEAM BATTLE textures
 	auto *banner = MnSlChrModels->Menu.matanim_joint->child->next->next->next->child->matanim;
 
-	if (get_cfix() == cfix::hax) {
+	if (get_cfix() != cfix::ucf) {
 		pool.add_texture_swap(banner_103_tex_data,      banner->texanim->imagetbl[0]);
 		pool.add_texture_swap(banner_103_team_tex_data, banner->texanim->imagetbl[1]);
 	} else {

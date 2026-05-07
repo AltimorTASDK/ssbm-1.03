@@ -1,7 +1,10 @@
 #pragma once
 
+#include <gctypes.h>
+
 struct OSContext {
-	char pad000[0x2C8];
+	u32 gpr[32];
+	char pad080[0x2C8 - 0x80];
 };
 
 extern "C" {

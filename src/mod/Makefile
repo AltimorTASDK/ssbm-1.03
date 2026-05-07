@@ -66,6 +66,7 @@ OBJFILES := $(filter $(OBJDIR)/src/controller_fix/%.o, $(OBJFILES)) \
             $(OBJDIR)/src/qol/match_results.cpp.o \
             $(OBJDIR)/src/qol/nametags.cpp.o \
             $(OBJDIR)/src/qol/nametags.S.o \
+            $(OBJDIR)/src/qol/patches.cpp.o \
             $(OBJDIR)/src/qol/player_hud.cpp.o \
             $(OBJDIR)/src/qol/spawns.cpp.o \
             $(OBJDIR)/src/util/melee/ports.cpp.o
@@ -158,7 +159,6 @@ dol: $(DOLFILE)
 
 $(DOLFILE): $(DOLELF) $(PATCHES) $(TOOLS)/patch_dol.py
 	@[ -d $(@D) ] || mkdir -p $(@D)
-	@[ $(DOLSRC) ] || ( echo "\$$DOLSRC must be set to the path of an NTSC 1.02 main.dol file." >& 2; exit 1 )
 	$(OBJCOPY) -O binary -R .patches $< $@
 	python $(TOOLS)/patch_dol.py $@ $@ $(OUTPUTMAP) $(PATCHES)
 
@@ -172,6 +172,7 @@ $(DOLELF): $(OBJFILES) $(DOLDATA) $(DOLLD) $(MELEELD) $(COMMONLD) | clean-unused
 
 $(DOLDATA): $(DOLSRC)
 	@[ -d $(@D) ] || mkdir -p $(@D)
+	@[ $(DOLSRC) ] || ( echo "\$$DOLSRC must be set to the path of an NTSC 1.02 main.dol file." >& 2; exit 1 )
 # skip dol header
 	dd if=$(DOLSRC) of=$(DOLDATA) bs=256 skip=1
 

@@ -187,7 +187,10 @@ add_hook CheckItemHitShield
 add_hook Player_CheckStickDirectionChanged
 add_hook Player_CheckDownBInput
 add_hook Player_CheckSideBInput
-# add_hook Player_AirMovement
+add_hook Player_AirMovement
+add_hook PlayerThink_Collision
+add_hook PlayerThink_Physics
+add_hook Player_SpecialAccel
 # Z jump
 add_hook PADRead
 # CSS
@@ -314,14 +317,18 @@ add_hook Match_SetSpawnFacingDirections
 # LGL/ATL enforcement
 add_hook MatchController_UpdateTeamWinners
 add_hook MatchController_UpdateWinners
+# Stage select screen
+add_hook Stage_IsValidRandomChoice
+add_hook SSS_Init
+add_hook SSS_Think
+# Skip results on non-timeout and add salty runback
+add_hook Scene_Match_Exit
 #endif
 
 #ifndef STEALTH
 # Allow stealing stocks with A
 .set CheckStockStealInput, Match_CheckStockSteal+0xF8
 add_hook CheckStockStealInput
-# Skip results on non-timeout and add salty runback
-add_hook Scene_Match_Exit
 # Panel at top of menu for menu music screen
 add_hook Menu_MenuPanelThink
 # Memory management
@@ -389,10 +396,6 @@ add_hook TapJumpCheck_FirstMultiJump
 add_hook Menu_LanguageMenuInput
 add_hook Menu_SetupLanguageMenu
 add_hook Menu_UpdateCStickRotation
-# Stage select screen
-add_hook Stage_IsValidRandomChoice
-add_hook SSS_Init
-add_hook SSS_Think
 # Stage music menu
 add_hook Menu_ExitToRulesMenu
 add_hook Menu_ItemMenuInput
@@ -524,5 +527,7 @@ add_hook InitRandomStageToggle
 add_hook SSS_CursorThink
 #endif
 #endif
+# Extra crash debugging
+add_hook PrintStackTrace
 
 hooks_end:

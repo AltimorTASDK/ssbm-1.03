@@ -6,6 +6,8 @@
 
 constexpr auto NO_LINE = -1;
 
+using PlatformPassCallback = bool(void *param, int line_id);
+
 // GObj proc slinks
 enum SLink {
 	SLink_Hitlag          = 0,
@@ -51,7 +53,20 @@ struct Physics {
 	vec3 trace_start_position;
 	vec3 start_position;
 	vec3 last_position;
-	char pad0034[0x84 - 0x34];
+	u8 push_flags;
+	u16 direction;
+	s32 last_stage_animation_frame;
+	s32 platform_pass_line;
+	s32 right_ledge_line;
+	s32 left_ledge_line;
+	s32 exclude_joint;
+	s32 only_check_joint;
+	f32 weight;
+	f32 ledge_grab_width;
+	f32 ledge_grab_y_offset;
+	f32 ledge_grab_height;
+	f32 stick_x;
+	ECB unsqueezed_ecb;
 	ECB desired_ecb;
 	ECB ecb;
 	ECB trace_start_ecb;
@@ -59,7 +74,9 @@ struct Physics {
 	s32 use_ecb_bones;
 	HSD_JObj *root_bone;
 	HSD_JObj *ecb_bones[6];
-	char pad0124[0x130 - 0x124];
+	f32 ecb_side_y_offset;
+	f32 min_asymmetrical_ecb_height;
+	f32 min_asymmetrical_ecb_width;
 	u32 ecb_flags;
 	u32 collide;
 	u32 last_collide;

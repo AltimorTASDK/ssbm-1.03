@@ -38,6 +38,21 @@ constexpr u32 NOP = 0x60000000;
 constexpr u32 BLR = 0x4E800020;
 
 PATCH_LIST(
+	// LRAStart at menu goes back to CSS
+	// li r3, Scene_VsMode
+	std::pair { SSS_Think+0x6C,                0x38600002u },
+	// li r3, Scene_VsMode
+	std::pair { CSS_Input+0x1F0,               0x38600002u },
+	// li r0, Scene_VsMode
+	std::pair { MainMenu_Think+0x54,           0x38000002u },
+	// Return to VS menu like normal after exiting CSS
+	std::pair { SSS_Think+0x68,                NOP },
+	std::pair { CSS_Input+0x1EC,               NOP },
+	std::pair { MainMenu_Think+0x34,           NOP }
+);
+
+#ifndef STEALTH
+PATCH_LIST(
 	// Enable cstick in develop mode
 	std::pair { PlayerThink_Input+0x188,       NOP },
 	std::pair { PlayerThink_Input+0xF0,        NOP },
@@ -120,17 +135,6 @@ PATCH_LIST(
 	// Clone characters slide out from behind CSS
 	std::pair { &CSSAnimStartFrame,            0.0 },
 #endif
-	// LRAStart at menu goes back to CSS
-	// li r3, Scene_VsMode
-	std::pair { SSS_Think+0x6C,                0x38600002u },
-	// li r3, Scene_VsMode
-	std::pair { CSS_Input+0x1F0,               0x38600002u },
-	// li r0, Scene_VsMode
-	std::pair { MainMenu_Think+0x54,           0x38000002u },
-	// Return to VS menu like normal after exiting CSS
-	std::pair { SSS_Think+0x68,                NOP },
-	std::pair { CSS_Input+0x1EC,               NOP },
-	std::pair { MainMenu_Think+0x34,           NOP },
 	// Disable attract mode
 	// b 0x18
 	std::pair { TitleScreen_Think+0x48,        0x48000018u },
@@ -144,3 +148,4 @@ PATCH_LIST(
 	std::pair { Menu_MeleeRecordsInput+0x2EC,  NOP },
 	std::pair { Menu_MeleeRecordsInput+0x2FC,  NOP }
 );
+#endif
