@@ -300,7 +300,7 @@ extern "C" bool is_extra_rule_visible(int index)
 #ifndef SSS_ROTATOR
 	case ExtraRule_StageMods:     return false;
 #endif
-	case ExtraRule_ControllerFix: return true;
+	case ExtraRule_ControllerFix: return false;
 	case ExtraRule_Latency:       return !is_faster_melee();
 	default:                      return true;
 	}
