@@ -30,7 +30,7 @@ endif
 ifneq ($(shell echo "$(MODVERSION)" | grep -P '(^|-)(beta|rc)($$|[\d-])'),)
 export BETA := 1
 endif
-ifeq ($(shell echo "$(MODVERSION)" | grep -P '(^|-)LE($$|[\d-])'),)
+ifneq ($(shell echo "$(MODVERSION)" | grep -P '(^|-)TE($$|[\d-])'),)
 export TOURNAMENT := 1
 endif
 ifneq ($(shell echo "$(MODVERSION)" | grep -P '(^|-)SE($$|[\d-])'),)
@@ -41,7 +41,6 @@ export VERSION_A := 1
 endif
 export MODNAME := ssbm-20XX-$(MODVERSION)
 else
-export TOURNAMENT := 1
 export MODNAME := ssbm-20XX
 endif
 
