@@ -9,7 +9,7 @@ extern "C" void hook_PrintStackTrace(const OSContext *context, u32 max_depth)
 
 	const auto *stack = (u32*)context->gpr[1];
 
-	OSReport("1.03 Stack Dump ------------------\n");
+	OSReport("20XX Stack Dump ------------------\n");
 	for (auto i = -16; i <= 16; i++) {
 		const auto gpr = i + 16;
 		if (gpr < 32)

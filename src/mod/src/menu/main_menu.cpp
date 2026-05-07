@@ -115,7 +115,7 @@ constexpr auto controls_z_jump_description = make_description_text<
 	"Remap buttons.">();
 
 constexpr auto manual_description = make_description_text<
-	"Read the 1.03 manual.">();
+	"Read the 20XX manual.">();
 
 // red    1.0 0.6 0.6
 // blue   0.3 1.0 1.0

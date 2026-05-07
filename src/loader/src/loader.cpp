@@ -148,13 +148,13 @@ const file_entry *get_file(const void *data, int index)
 
 	if (entry->compressed_len == 0) {
 #if defined(NTSC102)
-		panic("This build of 1.03 does not support NTSC 1.02. lmao\n");
+		panic("This build of 20XX does not support NTSC 1.02. lmao\n");
 #elif defined(NTSC101)
-		panic("This build of 1.03 does not support NTSC 1.01.\n");
+		panic("This build of 20XX does not support NTSC 1.01.\n");
 #elif defined(NTSC100)
-		panic("This build of 1.03 does not support NTSC 1.00.\n");
+		panic("This build of 20XX does not support NTSC 1.00.\n");
 #elif defined(PAL)
-		panic("This build of 1.03 does not support PAL.\n");
+		panic("This build of 20XX does not support PAL.\n");
 #endif
 	}
 
@@ -193,7 +193,7 @@ static void *decompress(const file_entry *entry)
 
 extern "C" [[gnu::section(".loader")]] void load_mod()
 {
-	OSReport("Running 1.03 loader\n");
+	OSReport("Running 20XX loader\n");
 
 	patch_crash_screen();
 
@@ -255,7 +255,7 @@ extern "C" [[gnu::section(".loader")]] void load_mod()
 	memset(NameTag_GetEntry(0), 0, sizeof(NameTagEntry) * NAMETAG_MAX);
 
 	// Run mod init
-	OSReport("Running 1.03\n");
+	OSReport("Running 20XX\n");
 	((void(*)())&__MOD_BASE__)();
 
 	// Load new save file
